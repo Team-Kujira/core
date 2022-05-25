@@ -9,7 +9,7 @@ faucet:
   coins:
     - 5ukuji
 genesis:
-  chain_id: harpoon-1
+  chain_id: harpoon-2
   app_state:
     crisis:
       constant_fee:
