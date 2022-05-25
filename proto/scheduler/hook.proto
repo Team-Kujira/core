@@ -12,8 +12,7 @@ message Hook {
   string contract = 3; 
   bytes msg = 4 [ (gogoproto.casttype) = "github.com/CosmWasm/wasmd/x/wasm/types.RawContractMessage" ]; 
   int64 frequency = 5; 
-  string creator = 6;
-  repeated cosmos.base.v1beta1.Coin funds = 7 [
+  repeated cosmos.base.v1beta1.Coin funds = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];

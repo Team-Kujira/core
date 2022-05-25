@@ -119,9 +119,10 @@ import (
 	denomtypes "kujira/x/denom/types"
 
 	"kujira/docs"
-	schedulermodule "kujira/x/scheduler"
-	schedulermodulekeeper "kujira/x/scheduler/keeper"
-	schedulermoduletypes "kujira/x/scheduler/types"
+	scheduler "kujira/x/scheduler"
+	schedulerclient "kujira/x/scheduler/client"
+	schedulerkeeper "kujira/x/scheduler/keeper"
+	schedulertypes "kujira/x/scheduler/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -133,10 +134,12 @@ const (
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
-	var govProposalHandlers []govclient.ProposalHandler
 	// this line is used by starport scaffolding # stargate/app/govProposalHandlers
 
-	govProposalHandlers = append(govProposalHandlers,
+	var govProposalHandlers = append(wasmclient.ProposalHandlers,
+		schedulerclient.CreateHookProposalHandler,
+		schedulerclient.UpdateHookProposalHandler,
+		schedulerclient.DeleteHookProposalHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -165,17 +168,7 @@ var (
 		staking.AppModuleBasic{},
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			append(
-				wasmclient.ProposalHandlers,
-				paramsclient.ProposalHandler,
-				distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler,
-				upgradeclient.CancelProposalHandler,
-				ibcclientclient.UpdateClientProposalHandler,
-				ibcclientclient.UpgradeProposalHandler,
-			)...,
-		), params.AppModuleBasic{},
+		gov.NewAppModuleBasic(getGovProposalHandlers()...), params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
@@ -188,7 +181,7 @@ var (
 		ica.AppModuleBasic{},
 		intertx.AppModuleBasic{},
 		denom.AppModuleBasic{},
-		schedulermodule.AppModuleBasic{},
+		scheduler.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -204,6 +197,7 @@ var (
 		icatypes.ModuleName:            nil,
 		wasm.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		schedulertypes.ModuleName:      nil,
 
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
@@ -263,6 +257,7 @@ type App struct {
 	FeeGrantKeeper      feegrantkeeper.Keeper
 	WasmKeeper          wasm.Keeper
 	DenomKeeper         *denomkeeper.Keeper
+	SchedulerKeeper     schedulerkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -272,7 +267,6 @@ type App struct {
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
-	SchedulerKeeper schedulermodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -315,7 +309,7 @@ func New(
 		wasm.StoreKey, denomtypes.StoreKey,
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		intertxtypes.StoreKey,
-		schedulermoduletypes.StoreKey,
+		schedulertypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
@@ -427,6 +421,12 @@ func New(
 	// You will likely want to swap out the second argument with your own reviewed and maintained ica auth module
 	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interTxIBCModule)
 
+	app.SchedulerKeeper = schedulerkeeper.NewKeeper(
+		appCodec,
+		keys[denomtypes.StoreKey],
+		app.GetSubspace(schedulertypes.ModuleName),
+	)
+
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
@@ -434,7 +434,8 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasm.EnableAllProposals))
+		AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasm.EnableAllProposals)).
+		AddRoute(schedulertypes.RouterKey, schedulerkeeper.NewSchedulerProposalHandler(app.SchedulerKeeper))
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -503,20 +504,6 @@ func New(
 		&stakingKeeper, govRouter,
 	)
 
-	app.SchedulerKeeper = *schedulermodulekeeper.NewKeeper(
-		appCodec,
-		keys[schedulermoduletypes.StoreKey],
-		keys[schedulermoduletypes.MemStoreKey],
-		app.GetSubspace(schedulermoduletypes.ModuleName),
-		app.AccountKeeper.GetModuleAddress(govtypes.ModuleName).String(),
-	)
-	schedulerModule := schedulermodule.NewAppModule(appCodec,
-		app.SchedulerKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		wasmkeeper.NewGovPermissionKeeper(app.WasmKeeper),
-	)
-
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -565,8 +552,7 @@ func New(
 		denom.NewAppModule(appCodec, *app.DenomKeeper, app.AccountKeeper, app.BankKeeper),
 		icaModule,
 		interTxModule,
-
-		schedulerModule,
+		scheduler.NewAppModule(appCodec, app.SchedulerKeeper, app.AccountKeeper, app.BankKeeper, wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -597,7 +583,7 @@ func New(
 		intertxtypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
-		schedulermoduletypes.ModuleName,
+		schedulertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -624,7 +610,7 @@ func New(
 		intertxtypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
-		schedulermoduletypes.ModuleName,
+		schedulertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -656,7 +642,7 @@ func New(
 		intertxtypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
-		schedulermoduletypes.ModuleName,
+		schedulertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -889,7 +875,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(denomtypes.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
-	paramsKeeper.Subspace(schedulermoduletypes.ModuleName)
+	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

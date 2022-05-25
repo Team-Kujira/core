@@ -2,10 +2,10 @@ package keeper
 
 import (
 	"encoding/binary"
+	"kujira/x/scheduler/types"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"kujira/x/scheduler/types"
 )
 
 // GetHookCount get the total number of hook
@@ -62,7 +62,11 @@ func (k Keeper) SetHook(ctx sdk.Context, hook types.Hook) {
 
 // GetHook returns a hook from its id
 func (k Keeper) GetHook(ctx sdk.Context, id uint64) (val types.Hook, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.HookKey))
+	parent := ctx.KVStore(k.storeKey)
+	store := prefix.NewStore(
+		parent,
+		types.KeyPrefix(types.HookKey),
+	)
 	b := store.Get(GetHookIDBytes(id))
 	if b == nil {
 		return val, false

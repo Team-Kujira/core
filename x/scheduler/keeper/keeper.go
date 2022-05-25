@@ -16,31 +16,25 @@ type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
 		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
-		authority  string // the address capable of managing hooks. Usually the gov module account
 	}
 )
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey sdk.StoreKey,
+	storeKey sdk.StoreKey,
 	ps paramtypes.Subspace,
-	authority string,
-) *Keeper {
+) Keeper {
+
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
-
+	return Keeper{
 		cdc:        cdc,
 		storeKey:   storeKey,
-		memKey:     memKey,
 		paramstore: ps,
-		authority:  authority,
 	}
 }
 

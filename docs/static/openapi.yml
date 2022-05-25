@@ -32571,8 +32571,6 @@ paths:
                     frequency:
                       type: string
                       format: int64
-                    creator:
-                      type: string
                     funds:
                       type: array
                       items:
@@ -32721,8 +32719,6 @@ paths:
                   frequency:
                     type: string
                     format: int64
-                  creator:
-                    type: string
                   funds:
                     type: array
                     items:
@@ -54914,8 +54910,6 @@ definitions:
       frequency:
         type: string
         format: int64
-      creator:
-        type: string
       funds:
         type: array
         items:
@@ -54930,16 +54924,6 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  kujira.scheduler.MsgCreateHookResponse:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-  kujira.scheduler.MsgDeleteHookResponse:
-    type: object
-  kujira.scheduler.MsgUpdateHookResponse:
-    type: object
   kujira.scheduler.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -54964,8 +54948,6 @@ definitions:
             frequency:
               type: string
               format: int64
-            creator:
-              type: string
             funds:
               type: array
               items:
@@ -55027,8 +55009,6 @@ definitions:
           frequency:
             type: string
             format: int64
-          creator:
-            type: string
           funds:
             type: array
             items:

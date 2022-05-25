@@ -6,8 +6,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 
 	"kujira/testutil/network"
@@ -19,7 +20,13 @@ func TestCreateHook(t *testing.T) {
 	val := net.Validators[0]
 	ctx := val.ClientCtx
 
-	fields := []string{"xyz", "xyz", "xyz"}
+	fields := []string{
+		"kujira14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sl4e867",
+		"kujira14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sl4e867",
+		"'{}'",
+		"2",
+		"100ukuji",
+	}
 	for _, tc := range []struct {
 		desc string
 		args []string
@@ -29,6 +36,8 @@ func TestCreateHook(t *testing.T) {
 		{
 			desc: "valid",
 			args: []string{
+				fmt.Sprintf("--%s=%s", govcli.FlagTitle, "Title"),
+				fmt.Sprintf("--%s=%s", govcli.FlagDescription, "Description"),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -41,116 +50,8 @@ func TestCreateHook(t *testing.T) {
 			args := []string{}
 			args = append(args, fields...)
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateHook(), args)
-			if tc.err != nil {
-				require.ErrorIs(t, err, tc.err)
-			} else {
-				require.NoError(t, err)
-				var resp sdk.TxResponse
-				require.NoError(t, ctx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.Equal(t, tc.code, resp.Code)
-			}
-		})
-	}
-}
 
-func TestUpdateHook(t *testing.T) {
-	net := network.New(t)
-
-	val := net.Validators[0]
-	ctx := val.ClientCtx
-
-	fields := []string{"xyz", "xyz", "xyz"}
-	common := []string{
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(net.Config.BondDenom, sdk.NewInt(10))).String()),
-	}
-	args := []string{}
-	args = append(args, fields...)
-	args = append(args, common...)
-	_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateHook(), args)
-	require.NoError(t, err)
-
-	for _, tc := range []struct {
-		desc string
-		id   string
-		args []string
-		code uint32
-		err  error
-	}{
-		{
-			desc: "valid",
-			id:   "0",
-			args: common,
-		},
-		{
-			desc: "key not found",
-			id:   "1",
-			args: common,
-			code: sdkerrors.ErrKeyNotFound.ABCICode(),
-		},
-	} {
-		tc := tc
-		t.Run(tc.desc, func(t *testing.T) {
-			args := []string{tc.id}
-			args = append(args, fields...)
-			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdUpdateHook(), args)
-			if tc.err != nil {
-				require.ErrorIs(t, err, tc.err)
-			} else {
-				require.NoError(t, err)
-				var resp sdk.TxResponse
-				require.NoError(t, ctx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.Equal(t, tc.code, resp.Code)
-			}
-		})
-	}
-}
-
-func TestDeleteHook(t *testing.T) {
-	net := network.New(t)
-
-	val := net.Validators[0]
-	ctx := val.ClientCtx
-
-	fields := []string{"xyz", "xyz", "xyz"}
-	common := []string{
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(net.Config.BondDenom, sdk.NewInt(10))).String()),
-	}
-	args := []string{}
-	args = append(args, fields...)
-	args = append(args, common...)
-	_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateHook(), args)
-	require.NoError(t, err)
-
-	for _, tc := range []struct {
-		desc string
-		id   string
-		args []string
-		code uint32
-		err  error
-	}{
-		{
-			desc: "valid",
-			id:   "0",
-			args: common,
-		},
-		{
-			desc: "key not found",
-			id:   "1",
-			args: common,
-			code: sdkerrors.ErrKeyNotFound.ABCICode(),
-		},
-	} {
-		tc := tc
-		t.Run(tc.desc, func(t *testing.T) {
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdDeleteHook(), append([]string{tc.id}, tc.args...))
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CreateHookProposalCmd(), args)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {

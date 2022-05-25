@@ -178,11 +178,14 @@ func (am AppModule) EndBlock(ctx sdk.Context, block abci.RequestEndBlock) []abci
 	hooks := am.keeper.GetAllHook(ctx)
 	for _, hook := range hooks {
 		if hook.Frequency == 0 || block.Height%hook.Frequency == 0 {
-			am.wasmKeeper.Execute(ctx,
-				sdk.AccAddress(hook.Contract),
-				sdk.AccAddress(hook.Executor),
-				[]byte(hook.Msg),
-				sdk.Coins{})
+			am.keeper.Logger(ctx).Info(fmt.Sprintf("scheduled hook %d: %s %s", hook.Id, hook.Contract, string(hook.Msg)))
+			// These have been validated already in types/proposal.go
+			contract, _ := sdk.AccAddressFromBech32(hook.Contract)
+			executor, _ := sdk.AccAddressFromBech32(hook.Executor)
+			_, err := am.wasmKeeper.Execute(ctx, contract, executor, []byte(hook.Msg), hook.Funds)
+			if err != nil {
+				am.keeper.Logger(ctx).Error(err.Error())
+			}
 		}
 	}
 
