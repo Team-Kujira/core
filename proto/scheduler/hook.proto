@@ -1,0 +1,20 @@
+syntax = "proto3";
+package kujira.scheduler;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "kujira/x/scheduler/types";
+
+message Hook {
+  uint64 id = 1;
+  string executor = 2; 
+  string contract = 3; 
+  bytes msg = 4 [ (gogoproto.casttype) = "github.com/CosmWasm/wasmd/x/wasm/types.RawContractMessage" ]; 
+  int64 frequency = 5; 
+  string creator = 6;
+  repeated cosmos.base.v1beta1.Coin funds = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}

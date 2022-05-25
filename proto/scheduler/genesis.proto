@@ -1,0 +1,17 @@
+syntax = "proto3";
+package kujira.scheduler;
+
+import "gogoproto/gogo.proto";
+import "scheduler/params.proto";
+import "scheduler/hook.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "kujira/x/scheduler/types";
+
+// GenesisState defines the scheduler module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Hook hookList = 2 [(gogoproto.nullable) = false];
+  uint64 hookCount = 3;
+  // this line is used by starport scaffolding # genesis/proto/state
+}

@@ -1,0 +1,50 @@
+validator:
+  name: bob
+  staked: 100000000ukuji
+client:
+  openapi:
+    path: docs/static/openapi.yml
+faucet:
+  name: bob
+  coins:
+    - 5ukuji
+genesis:
+  chain_id: kujira-1
+  app_state:
+    crisis:
+      constant_fee:
+        denom: ukuji
+        amount: "1000"
+    gov:
+      deposit_params:
+        min_deposit:
+          denom: ukuji
+          amount: "10000000"
+    mint:
+      minter:
+        annual_provisions: "0.0"
+        inflation: "0.0"
+      params:
+        blocks_per_year: "6311520"
+        goal_bonded: "0.67"
+        inflation_max: "0.2"
+        inflation_min: "0.07"
+        inflation_rate_change: "0.13"
+        mint_denom: ukuji
+    staking:
+      params:
+        bond_denom: ukuji
+    denom:
+      params:
+        creation_fee:
+          - amount: "1000000"
+            denom: "ukuji"
+    wasm:
+      params:
+        code_upload_access:
+          permission: "Nobody"
+        instantiate_default_permission: "Nobody"
+accounts:
+  - name: bob
+    coins:
+      - 1000000000ukuji

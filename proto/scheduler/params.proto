@@ -1,0 +1,12 @@
+syntax = "proto3";
+package kujira.scheduler;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "kujira/x/scheduler/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
