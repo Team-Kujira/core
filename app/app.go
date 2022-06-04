@@ -347,8 +347,11 @@ func New(
 	app.AuthzKeeper = authzkeeper.NewKeeper(
 		keys[authz.ModuleName], appCodec, app.MsgServiceRouter(),
 	)
+
+	var blockedAddrs = app.ModuleAccountAddrs()
+	blockedAddrs[authtypes.NewModuleAddress(authtypes.FeeCollectorName).String()] = false
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
-		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.ModuleAccountAddrs(),
+		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), blockedAddrs,
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName),
