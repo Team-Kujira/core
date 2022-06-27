@@ -26,7 +26,7 @@ func NewParams(creationFee sdk.Coins) Params {
 // default gamm module parameters.
 func DefaultParams() Params {
 	return Params{
-		CreationFee: sdk.NewCoins(sdk.NewInt64Coin("stake", 10_000_000)),
+		CreationFee: sdk.NewCoins(sdk.NewInt64Coin("ukuji", 10_000_000)),
 	}
 }
 
