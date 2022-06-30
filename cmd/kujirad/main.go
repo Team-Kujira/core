@@ -6,7 +6,7 @@ import (
 	"kujira/app"
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/tendermint/spm/cosmoscmd"
+	"github.com/ignite-hq/cli/ignite/pkg/cosmoscmd"
 )
 
 func main() {
