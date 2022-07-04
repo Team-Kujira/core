@@ -2,6 +2,8 @@ module kujira
 
 go 1.18
 
+replace github.com/tendermint/tendermint v0.34.19 => github.com/Team-Kujira/tendermint v0.34.20-0.20220703161359-04f63fc186fc
+
 require (
 	github.com/CosmWasm/wasmd v0.27.0
 	github.com/cosmos/cosmos-sdk v0.45.4
