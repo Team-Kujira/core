@@ -46,6 +46,10 @@ genesis:
         code_upload_access:
           permission: "Everybody"
         instantiate_default_permission: "Everybody"
+    oracle: 
+      params: 
+        whitelist: 
+          - name: "ukuji"
 accounts:
   - name: bob
     coins:

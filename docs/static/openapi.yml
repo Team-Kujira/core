@@ -17356,6 +17356,9 @@ paths:
                         }
       parameters:
         - name: body
+          description: |-
+            SimulateRequest is the request type for the Service.Simulate
+            RPC method.
           in: body
           required: true
           schema:
@@ -18155,6 +18158,11 @@ paths:
                         }
       parameters:
         - name: body
+          description: >-
+            BroadcastTxRequest is the request type for the
+            Service.BroadcastTxRequest
+
+            RPC method.
           in: body
           required: true
           schema:
@@ -32681,16 +32689,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   '/kujira/scheduler/hook/{id}':
@@ -32796,6 +32794,528 @@ paths:
                     '@type':
                       type: string
                   additionalProperties: {}
+      tags:
+        - Query
+  /oracle/denoms/actives:
+    get:
+      summary: Actives returns all active denoms
+      operationId: TerraOracleV1Beta1Actives
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              actives:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  actives defines a list of the denomination which oracle prices
+                  aggreed upon.
+            description: |-
+              QueryActivesResponse is response type for the
+              Query/Actives RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /oracle/denoms/exchange_rates:
+    get:
+      summary: ExchangeRates returns exchange rates of all denoms
+      operationId: TerraOracleV1Beta1ExchangeRates
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              exchange_rates:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    DecCoin defines a token with a denomination and a decimal
+                    amount.
+
+
+                    NOTE: The amount field is an Dec which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+                description: >-
+                  exchange_rates defines a list of the exchange rate for all
+                  whitelisted denoms.
+            description: |-
+              QueryExchangeRatesResponse is response type for the
+              Query/ExchangeRates RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  '/oracle/denoms/{denom}/exchange_rate':
+    get:
+      summary: ExchangeRate returns exchange rate of a denom
+      operationId: TerraOracleV1Beta1ExchangeRate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              exchange_rate:
+                type: string
+                title: >-
+                  exchange_rate defines the exchange rate of Luna denominated in
+                  various Terra
+            description: |-
+              QueryExchangeRateResponse is response type for the
+              Query/ExchangeRate RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: denom
+          description: denom defines the denomination to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /oracle/params:
+    get:
+      summary: Params queries all parameters.
+      operationId: TerraOracleV1Beta1Params
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params defines the parameters of the module.
+                type: object
+                properties:
+                  vote_period:
+                    type: string
+                    format: uint64
+                  vote_threshold:
+                    type: string
+                  reward_band:
+                    type: string
+                  reward_distribution_window:
+                    type: string
+                    format: uint64
+                  whitelist:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                      title: Denom - the object to hold configurations of each denom
+                  slash_fraction:
+                    type: string
+                  slash_window:
+                    type: string
+                    format: uint64
+                  min_valid_per_window:
+                    type: string
+            description: >-
+              QueryParamsResponse is the response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  '/oracle/valdiators/{validator_addr}/aggregate_vote':
+    get:
+      summary: AggregateVote returns an aggregate vote of a validator
+      operationId: TerraOracleV1Beta1AggregateVote
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_vote:
+                title: >-
+                  aggregate_vote defines oracle aggregate vote submitted by a
+                  validator in the current vote period
+                type: object
+                properties:
+                  exchange_rate_tuples:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        exchange_rate:
+                          type: string
+                      title: >-
+                        ExchangeRateTuple - struct to store interpreted exchange
+                        rates data to store
+                  voter:
+                    type: string
+                description: >-
+                  MsgAggregateExchangeRateVote - struct for voting on
+
+                  the exchange rates of Luna denominated in various Terra
+                  assets.
+            description: |-
+              QueryAggregateVoteResponse is response type for the
+              Query/AggregateVote RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /oracle/validators/aggregate_prevotes:
+    get:
+      summary: AggregatePrevotes returns aggregate prevotes of all validators
+      operationId: TerraOracleV1Beta1AggregatePrevotes
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_prevotes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    hash:
+                      type: string
+                    voter:
+                      type: string
+                    submit_block:
+                      type: string
+                      format: uint64
+                  title: >-
+                    struct for aggregate prevoting on the ExchangeRateVote.
+
+                    The purpose of aggregate prevote is to hide vote exchange
+                    rates with hash
+
+                    which is formatted as hex string in SHA256("{salt}:{exchange
+                    rate}{denom},...,{exchange rate}{denom}:{voter}")
+                title: >-
+                  aggregate_prevotes defines all oracle aggregate prevotes
+                  submitted in the current vote period
+            description: |-
+              QueryAggregatePrevotesResponse is response type for the
+              Query/AggregatePrevotes RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /oracle/validators/aggregate_votes:
+    get:
+      summary: AggregateVotes returns aggregate votes of all validators
+      operationId: TerraOracleV1Beta1AggregateVotes
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_votes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    exchange_rate_tuples:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          exchange_rate:
+                            type: string
+                        title: >-
+                          ExchangeRateTuple - struct to store interpreted
+                          exchange rates data to store
+                    voter:
+                      type: string
+                  description: >-
+                    MsgAggregateExchangeRateVote - struct for voting on
+
+                    the exchange rates of Luna denominated in various Terra
+                    assets.
+                title: >-
+                  aggregate_votes defines all oracle aggregate votes submitted
+                  in the current vote period
+            description: |-
+              QueryAggregateVotesResponse is response type for the
+              Query/AggregateVotes RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  '/oracle/validators/{validator_addr}/aggregate_prevote':
+    get:
+      summary: AggregatePrevote returns an aggregate prevote of a validator
+      operationId: TerraOracleV1Beta1AggregatePrevote
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_prevote:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                  voter:
+                    type: string
+                  submit_block:
+                    type: string
+                    format: uint64
+                title: >-
+                  struct for aggregate prevoting on the ExchangeRateVote.
+
+                  The purpose of aggregate prevote is to hide vote exchange
+                  rates with hash
+
+                  which is formatted as hex string in SHA256("{salt}:{exchange
+                  rate}{denom},...,{exchange rate}{denom}:{voter}")
+            description: |-
+              QueryAggregatePrevoteResponse is response type for the
+              Query/AggregatePrevote RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  '/oracle/validators/{validator_addr}/feeder':
+    get:
+      summary: FeederDelegation returns feeder delegation of a validator
+      operationId: TerraOracleV1Beta1FeederDelegation
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              feeder_addr:
+                type: string
+                title: feeder_addr defines the feeder delegation of a validator
+            description: |-
+              QueryFeederDelegationResponse is response type for the
+              Query/FeederDelegation RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  '/oracle/validators/{validator_addr}/miss':
+    get:
+      summary: MissCounter returns oracle miss counter of a validator
+      operationId: TerraOracleV1Beta1MissCounter
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              miss_counter:
+                type: string
+                format: uint64
+                title: miss_counter defines the oracle miss counter of a validator
+            description: |-
+              QueryMissCounterResponse is response type for the
+              Query/MissCounter RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
       tags:
         - Query
 definitions:
@@ -55033,3 +55553,312 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  terra.oracle.v1beta1.AggregateExchangeRatePrevote:
+    type: object
+    properties:
+      hash:
+        type: string
+      voter:
+        type: string
+      submit_block:
+        type: string
+        format: uint64
+    title: >-
+      struct for aggregate prevoting on the ExchangeRateVote.
+
+      The purpose of aggregate prevote is to hide vote exchange rates with hash
+
+      which is formatted as hex string in SHA256("{salt}:{exchange
+      rate}{denom},...,{exchange rate}{denom}:{voter}")
+  terra.oracle.v1beta1.AggregateExchangeRateVote:
+    type: object
+    properties:
+      exchange_rate_tuples:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            exchange_rate:
+              type: string
+          title: >-
+            ExchangeRateTuple - struct to store interpreted exchange rates data
+            to store
+      voter:
+        type: string
+    description: |-
+      MsgAggregateExchangeRateVote - struct for voting on
+      the exchange rates of Luna denominated in various Terra assets.
+  terra.oracle.v1beta1.Denom:
+    type: object
+    properties:
+      name:
+        type: string
+    title: Denom - the object to hold configurations of each denom
+  terra.oracle.v1beta1.ExchangeRateTuple:
+    type: object
+    properties:
+      denom:
+        type: string
+      exchange_rate:
+        type: string
+    title: >-
+      ExchangeRateTuple - struct to store interpreted exchange rates data to
+      store
+  terra.oracle.v1beta1.MsgAggregateExchangeRatePrevoteResponse:
+    type: object
+    description: >-
+      MsgAggregateExchangeRatePrevoteResponse defines the
+      Msg/AggregateExchangeRatePrevote response type.
+  terra.oracle.v1beta1.MsgAggregateExchangeRateVoteResponse:
+    type: object
+    description: >-
+      MsgAggregateExchangeRateVoteResponse defines the
+      Msg/AggregateExchangeRateVote response type.
+  terra.oracle.v1beta1.MsgDelegateFeedConsentResponse:
+    type: object
+    description: >-
+      MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent
+      response type.
+  terra.oracle.v1beta1.Params:
+    type: object
+    properties:
+      vote_period:
+        type: string
+        format: uint64
+      vote_threshold:
+        type: string
+      reward_band:
+        type: string
+      reward_distribution_window:
+        type: string
+        format: uint64
+      whitelist:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+          title: Denom - the object to hold configurations of each denom
+      slash_fraction:
+        type: string
+      slash_window:
+        type: string
+        format: uint64
+      min_valid_per_window:
+        type: string
+    description: Params defines the parameters for the oracle module.
+  terra.oracle.v1beta1.QueryActivesResponse:
+    type: object
+    properties:
+      actives:
+        type: array
+        items:
+          type: string
+        description: >-
+          actives defines a list of the denomination which oracle prices aggreed
+          upon.
+    description: |-
+      QueryActivesResponse is response type for the
+      Query/Actives RPC method.
+  terra.oracle.v1beta1.QueryAggregatePrevoteResponse:
+    type: object
+    properties:
+      aggregate_prevote:
+        type: object
+        properties:
+          hash:
+            type: string
+          voter:
+            type: string
+          submit_block:
+            type: string
+            format: uint64
+        title: >-
+          struct for aggregate prevoting on the ExchangeRateVote.
+
+          The purpose of aggregate prevote is to hide vote exchange rates with
+          hash
+
+          which is formatted as hex string in SHA256("{salt}:{exchange
+          rate}{denom},...,{exchange rate}{denom}:{voter}")
+    description: |-
+      QueryAggregatePrevoteResponse is response type for the
+      Query/AggregatePrevote RPC method.
+  terra.oracle.v1beta1.QueryAggregatePrevotesResponse:
+    type: object
+    properties:
+      aggregate_prevotes:
+        type: array
+        items:
+          type: object
+          properties:
+            hash:
+              type: string
+            voter:
+              type: string
+            submit_block:
+              type: string
+              format: uint64
+          title: >-
+            struct for aggregate prevoting on the ExchangeRateVote.
+
+            The purpose of aggregate prevote is to hide vote exchange rates with
+            hash
+
+            which is formatted as hex string in SHA256("{salt}:{exchange
+            rate}{denom},...,{exchange rate}{denom}:{voter}")
+        title: >-
+          aggregate_prevotes defines all oracle aggregate prevotes submitted in
+          the current vote period
+    description: |-
+      QueryAggregatePrevotesResponse is response type for the
+      Query/AggregatePrevotes RPC method.
+  terra.oracle.v1beta1.QueryAggregateVoteResponse:
+    type: object
+    properties:
+      aggregate_vote:
+        title: >-
+          aggregate_vote defines oracle aggregate vote submitted by a validator
+          in the current vote period
+        type: object
+        properties:
+          exchange_rate_tuples:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                exchange_rate:
+                  type: string
+              title: >-
+                ExchangeRateTuple - struct to store interpreted exchange rates
+                data to store
+          voter:
+            type: string
+        description: |-
+          MsgAggregateExchangeRateVote - struct for voting on
+          the exchange rates of Luna denominated in various Terra assets.
+    description: |-
+      QueryAggregateVoteResponse is response type for the
+      Query/AggregateVote RPC method.
+  terra.oracle.v1beta1.QueryAggregateVotesResponse:
+    type: object
+    properties:
+      aggregate_votes:
+        type: array
+        items:
+          type: object
+          properties:
+            exchange_rate_tuples:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  exchange_rate:
+                    type: string
+                title: >-
+                  ExchangeRateTuple - struct to store interpreted exchange rates
+                  data to store
+            voter:
+              type: string
+          description: |-
+            MsgAggregateExchangeRateVote - struct for voting on
+            the exchange rates of Luna denominated in various Terra assets.
+        title: >-
+          aggregate_votes defines all oracle aggregate votes submitted in the
+          current vote period
+    description: |-
+      QueryAggregateVotesResponse is response type for the
+      Query/AggregateVotes RPC method.
+  terra.oracle.v1beta1.QueryExchangeRateResponse:
+    type: object
+    properties:
+      exchange_rate:
+        type: string
+        title: >-
+          exchange_rate defines the exchange rate of Luna denominated in various
+          Terra
+    description: |-
+      QueryExchangeRateResponse is response type for the
+      Query/ExchangeRate RPC method.
+  terra.oracle.v1beta1.QueryExchangeRatesResponse:
+    type: object
+    properties:
+      exchange_rates:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            DecCoin defines a token with a denomination and a decimal amount.
+
+            NOTE: The amount field is an Dec which implements the custom method
+            signatures required by gogoproto.
+        description: >-
+          exchange_rates defines a list of the exchange rate for all whitelisted
+          denoms.
+    description: |-
+      QueryExchangeRatesResponse is response type for the
+      Query/ExchangeRates RPC method.
+  terra.oracle.v1beta1.QueryFeederDelegationResponse:
+    type: object
+    properties:
+      feeder_addr:
+        type: string
+        title: feeder_addr defines the feeder delegation of a validator
+    description: |-
+      QueryFeederDelegationResponse is response type for the
+      Query/FeederDelegation RPC method.
+  terra.oracle.v1beta1.QueryMissCounterResponse:
+    type: object
+    properties:
+      miss_counter:
+        type: string
+        format: uint64
+        title: miss_counter defines the oracle miss counter of a validator
+    description: |-
+      QueryMissCounterResponse is response type for the
+      Query/MissCounter RPC method.
+  terra.oracle.v1beta1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params defines the parameters of the module.
+        type: object
+        properties:
+          vote_period:
+            type: string
+            format: uint64
+          vote_threshold:
+            type: string
+          reward_band:
+            type: string
+          reward_distribution_window:
+            type: string
+            format: uint64
+          whitelist:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+              title: Denom - the object to hold configurations of each denom
+          slash_fraction:
+            type: string
+          slash_window:
+            type: string
+            format: uint64
+          min_valid_per_window:
+            type: string
+    description: QueryParamsResponse is the response type for the Query/Params RPC method.

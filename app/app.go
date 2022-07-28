@@ -99,9 +99,9 @@ import (
 	intertxkeeper "github.com/cosmos/interchain-accounts/x/inter-tx/keeper"
 	intertxtypes "github.com/cosmos/interchain-accounts/x/inter-tx/types"
 
-	"github.com/spf13/cast"
 	"github.com/ignite-hq/cli/ignite/pkg/cosmoscmd"
 	"github.com/ignite-hq/cli/ignite/pkg/openapiconsole"
+	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -121,6 +121,10 @@ import (
 	schedulerclient "kujira/x/scheduler/client"
 	schedulerkeeper "kujira/x/scheduler/keeper"
 	schedulertypes "kujira/x/scheduler/types"
+
+	"kujira/x/oracle"
+	oraclekeeper "kujira/x/oracle/keeper"
+	oracletypes "kujira/x/oracle/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -180,6 +184,8 @@ var (
 		intertx.AppModuleBasic{},
 		denom.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
+		oracle.AppModuleBasic{},
+
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -196,6 +202,7 @@ var (
 		wasm.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		schedulertypes.ModuleName:      nil,
+		oracletypes.ModuleName:         nil,
 
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
@@ -256,6 +263,7 @@ type App struct {
 	WasmKeeper          wasm.Keeper
 	DenomKeeper         *denomkeeper.Keeper
 	SchedulerKeeper     schedulerkeeper.Keeper
+	OracleKeeper        oraclekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -308,6 +316,7 @@ func New(
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		intertxtypes.StoreKey,
 		schedulertypes.StoreKey,
+		oracletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
@@ -425,6 +434,11 @@ func New(
 		appCodec,
 		keys[denomtypes.StoreKey],
 		app.GetSubspace(schedulertypes.ModuleName),
+	)
+
+	app.OracleKeeper = oraclekeeper.NewKeeper(
+		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, &stakingKeeper, distrtypes.ModuleName,
 	)
 
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
@@ -554,6 +568,7 @@ func New(
 		icaModule,
 		interTxModule,
 		scheduler.NewAppModule(appCodec, app.SchedulerKeeper, app.AccountKeeper, app.BankKeeper, wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)),
+		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -585,6 +600,7 @@ func New(
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
+		oracletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -612,6 +628,7 @@ func New(
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
+		oracletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -644,6 +661,7 @@ func New(
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
+		oracletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -668,6 +686,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		denom.NewAppModule(appCodec, *app.DenomKeeper, app.AccountKeeper, app.BankKeeper),
+		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -880,6 +899,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(denomtypes.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
+	paramsKeeper.Subspace(oracletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
