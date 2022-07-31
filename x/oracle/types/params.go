@@ -23,16 +23,15 @@ var (
 
 // Default parameter values
 const (
-	DefaultVotePeriod               = 14       // 30 seconds
-	DefaultSlashWindow              = 274000   // window for a week
-	DefaultRewardDistributionWindow = 14250000 // window for a year
+	DefaultVotePeriod               = uint64(14)       // 30 seconds
+	DefaultSlashWindow              = uint64(274000)   // window for a week
+	DefaultRewardDistributionWindow = uint64(14250000) // window for a year
 )
 
 // Default parameter values
 var (
 	DefaultVoteThreshold     = sdk.NewDecWithPrec(50, 2) // 50%
 	DefaultRewardBand        = sdk.NewDecWithPrec(2, 2)  // 2% (-1, 1)
-	DefaultTobinTax          = sdk.NewDecWithPrec(25, 4) // 0.25%
 	DefaultWhitelist         = DenomList{}
 	DefaultSlashFraction     = sdk.NewDecWithPrec(1, 4) // 0.01%
 	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%

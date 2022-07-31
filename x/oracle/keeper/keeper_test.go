@@ -40,7 +40,7 @@ func TestExchangeRate(t *testing.T) {
 
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomA, exchangeRateA)
 	rate, _ = input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomA)
-	require.Equal(t, sdk.OneDec(), rate)
+	require.Equal(t, exchangeRateA, rate)
 
 	input.OracleKeeper.DeleteExchangeRate(input.Ctx, types.TestDenomC)
 	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomC)

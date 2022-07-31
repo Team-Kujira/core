@@ -24,7 +24,7 @@ func TestOracleFilters(t *testing.T) {
 	require.Error(t, err)
 
 	// Case 2: Normal MsgAggregateExchangeRatePrevote submission goes through
-	salt := "1"
+	salt := "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 
 	hash := types.GetAggregateVoteHash(salt, randomExchangeRate.String()+types.TestDenomD, keeper.ValAddrs[0])
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
@@ -39,7 +39,7 @@ func TestOracleFilters(t *testing.T) {
 	// Case 4: a non-validator sending an oracle message fails
 	nonValidatorPub := secp256k1.GenPrivKey().PubKey()
 	nonValidatorAddr := nonValidatorPub.Address()
-	salt = "2"
+	salt = "4c81c928f466a08b07171def7aeb2b3c266df7bb7486158a15a2291a7d55c8f9"
 	hash = types.GetAggregateVoteHash(salt, randomExchangeRate.String()+types.TestDenomD, sdk.ValAddress(nonValidatorAddr))
 
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, sdk.AccAddress(nonValidatorAddr), sdk.ValAddress(nonValidatorAddr))
@@ -50,7 +50,7 @@ func TestOracleFilters(t *testing.T) {
 func TestFeederDelegation(t *testing.T) {
 	input, h := setup(t)
 
-	salt := "1"
+	salt := "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	hash := types.GetAggregateVoteHash(salt, randomExchangeRate.String()+types.TestDenomD, keeper.ValAddrs[0])
 
 	// Case 1: empty message
@@ -107,7 +107,7 @@ func TestFeederDelegation(t *testing.T) {
 func TestAggregatePrevoteVote(t *testing.T) {
 	input, h := setup(t)
 
-	salt := "1"
+	salt := "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	exchangeRatesStr := fmt.Sprintf("1000.23%s,0.29%s,0.27%s", types.TestDenomC, types.TestDenomB, types.TestDenomD)
 	otherExchangeRateStr := fmt.Sprintf("1000.12%s,0.29%s,0.27%s", types.TestDenomC, types.TestDenomB, types.TestDenomB)
 	unintendedExchageRateStr := fmt.Sprintf("1000.23%s,0.29%s,0.27%s", types.TestDenomC, types.TestDenomB, types.TestDenomE)

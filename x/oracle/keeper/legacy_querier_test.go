@@ -128,8 +128,8 @@ func TestLegacyQueryExchangeRates(t *testing.T) {
 	err2 := input.Cdc.UnmarshalJSON(res, &queriedRate)
 	require.NoError(t, err2)
 	require.Equal(t, sdk.DecCoins{
-		sdk.NewDecCoinFromDec(types.TestDenomD, rate),
 		sdk.NewDecCoinFromDec(types.TestDenomB, rate),
+		sdk.NewDecCoinFromDec(types.TestDenomD, rate),
 	}, queriedRate)
 }
 
@@ -146,9 +146,9 @@ func TestLegacyQueryActives(t *testing.T) {
 	require.NoError(t, err)
 
 	targetDenoms := []string{
+		types.TestDenomB,
 		types.TestDenomC,
 		types.TestDenomD,
-		types.TestDenomB,
 	}
 
 	var denoms []string
@@ -335,19 +335,4 @@ func TestLegacyQueryAggregateVotes(t *testing.T) {
 	err = input.Cdc.UnmarshalJSON(res, &votes)
 	require.NoError(t, err)
 	require.Equal(t, expectedVotes, votes)
-}
-
-func TestLegacyQueryVoteTargets(t *testing.T) {
-	input := CreateTestInput(t)
-	querier := NewLegacyQuerier(input.OracleKeeper, input.Cdc)
-
-	voteTargets := []string{"denom", "denom2", "denom3"}
-
-	res, err := querier(input.Ctx, []string{types.QueryVoteTargets}, abci.RequestQuery{})
-	require.NoError(t, err)
-
-	var voteTargetsRes []string
-	err2 := input.Cdc.UnmarshalJSON(res, &voteTargetsRes)
-	require.NoError(t, err2)
-	require.Equal(t, voteTargets, voteTargetsRes)
 }

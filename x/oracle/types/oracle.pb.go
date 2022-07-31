@@ -253,11 +253,11 @@ func (m *ExchangeRateTuple) XXX_DiscardUnknown() {
 var xxx_messageInfo_ExchangeRateTuple proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*Params)(nil), "terra.oracle.v1beta1.Params")
-	proto.RegisterType((*Denom)(nil), "terra.oracle.v1beta1.Denom")
-	proto.RegisterType((*AggregateExchangeRatePrevote)(nil), "terra.oracle.v1beta1.AggregateExchangeRatePrevote")
-	proto.RegisterType((*AggregateExchangeRateVote)(nil), "terra.oracle.v1beta1.AggregateExchangeRateVote")
-	proto.RegisterType((*ExchangeRateTuple)(nil), "terra.oracle.v1beta1.ExchangeRateTuple")
+	proto.RegisterType((*Params)(nil), "kujira.oracle.Params")
+	proto.RegisterType((*Denom)(nil), "kujira.oracle.Denom")
+	proto.RegisterType((*AggregateExchangeRatePrevote)(nil), "kujira.oracle.AggregateExchangeRatePrevote")
+	proto.RegisterType((*AggregateExchangeRateVote)(nil), "kujira.oracle.AggregateExchangeRateVote")
+	proto.RegisterType((*ExchangeRateTuple)(nil), "kujira.oracle.ExchangeRateTuple")
 }
 
 func init() { proto.RegisterFile("oracle/oracle.proto", fileDescriptor_dc470b50b143d488) }

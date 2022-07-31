@@ -51,7 +51,7 @@ $ kujirad query oracle exchange-rates
 
 Or, can filter with denom
 
-$ kujirad query oracle exchange-rates ukuji
+$ kujirad query oracle exchange-rates KUJI
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -92,11 +92,11 @@ func GetCmdQueryActives() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "actives",
 		Args:  cobra.NoArgs,
-		Short: "Query the active list of Terra assets recognized by the oracle",
+		Short: "Query the active list of assets recognized by the oracle",
 		Long: strings.TrimSpace(`
-Query the active list of Terra assets recognized by the types.
+Query the active list of assets recognized by the types.
 
-$ terrad query oracle actives
+$ kujirad query oracle actives
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -153,7 +153,7 @@ func GetCmdQueryFeederDelegation() *cobra.Command {
 		Long: strings.TrimSpace(`
 Query the account the validator's oracle voting right is delegated to.
 
-$ terrad query oracle feeder terravaloper...
+$ kujirad query oracle feeder kujiravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -194,7 +194,7 @@ func GetCmdQueryMissCounter() *cobra.Command {
 		Long: strings.TrimSpace(`
 Query the # of vote periods missed in this oracle slash window.
 
-$ terrad query oracle miss terravaloper...
+$ kujirad query oracle miss kujiravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -234,11 +234,11 @@ func GetCmdQueryAggregatePrevote() *cobra.Command {
 		Long: strings.TrimSpace(`
 Query outstanding oracle aggregate prevotes.
 
-$ terrad query oracle aggregate-prevotes
+$ kujirad query oracle aggregate-prevotes
 
 Or, can filter with voter address
 
-$ terrad query oracle aggregate-prevotes terravaloper...
+$ kujirad query oracle aggregate-prevotes kujiravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -290,11 +290,11 @@ func GetCmdQueryAggregateVote() *cobra.Command {
 		Long: strings.TrimSpace(`
 Query outstanding oracle aggregate vote.
 
-$ terrad query oracle aggregate-votes 
+$ kujirad query oracle aggregate-votes 
 
 Or, can filter with voter address
 
-$ terrad query oracle aggregate-votes terravaloper...
+$ kujirad query oracle aggregate-votes kujiravaloper...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)

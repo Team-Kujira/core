@@ -85,14 +85,14 @@ func TestMsgAggregateExchangeRateVote(t *testing.T) {
 		exchangeRates string
 		expectPass    bool
 	}{
-		{addrs[0], sdk.ValAddress(addrs[0]), "123", exchangeRates, true},
-		{addrs[0], sdk.ValAddress(addrs[0]), "123", invalidExchangeRates, false},
-		{addrs[0], sdk.ValAddress(addrs[0]), "123", abstainExchangeRates, true},
-		{addrs[0], sdk.ValAddress(addrs[0]), "123", overFlowExchangeRates, false},
-		{sdk.AccAddress{}, sdk.ValAddress(addrs[0]), "123", exchangeRates, false},
-		{addrs[0], sdk.ValAddress(addrs[0]), "123", "", false},
+		{addrs[0], sdk.ValAddress(addrs[0]), "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", exchangeRates, true},
+		{addrs[0], sdk.ValAddress(addrs[0]), "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", invalidExchangeRates, false},
+		{addrs[0], sdk.ValAddress(addrs[0]), "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", abstainExchangeRates, true},
+		{addrs[0], sdk.ValAddress(addrs[0]), "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", overFlowExchangeRates, false},
+		{sdk.AccAddress{}, sdk.ValAddress(addrs[0]), "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", exchangeRates, false},
+		{addrs[0], sdk.ValAddress(addrs[0]), "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", "", false},
 		{addrs[0], sdk.ValAddress(addrs[0]), "", randSeq(4097), false},
-		{addrs[0], sdk.ValAddress{}, "123", abstainExchangeRates, false},
+		{addrs[0], sdk.ValAddress{}, "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80", abstainExchangeRates, false},
 		{addrs[0], sdk.ValAddress(addrs[0]), "", abstainExchangeRates, false},
 	}
 

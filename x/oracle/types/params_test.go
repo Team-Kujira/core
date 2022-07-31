@@ -57,12 +57,6 @@ func TestParamsEqual(t *testing.T) {
 	err = p7.Validate()
 	require.Error(t, err)
 
-	// empty name
-	p10 := types.DefaultParams()
-	p10.Whitelist[0].Name = ""
-	err = p10.Validate()
-	require.Error(t, err)
-
 	p11 := types.DefaultParams()
 	require.NotNil(t, p11.ParamSetPairs())
 	require.NotNil(t, p11.String())
@@ -92,18 +86,10 @@ func TestValidate(t *testing.T) {
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(-1, 2)))
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(101, 2)))
 		case bytes.Compare(types.KeyWhitelist, pair.Key) == 0:
-			require.NoError(t, pair.ValidatorFn(types.DenomList{
-				{Name: "denom"},
-			}))
+			require.NoError(t, pair.ValidatorFn(types.DenomList{}))
 			require.Error(t, pair.ValidatorFn("invalid"))
 			require.Error(t, pair.ValidatorFn(types.DenomList{
 				{Name: ""},
-			}))
-			require.Error(t, pair.ValidatorFn(types.DenomList{
-				{Name: "denom"},
-			}))
-			require.Error(t, pair.ValidatorFn(types.DenomList{
-				{Name: "denom"},
 			}))
 		}
 	}

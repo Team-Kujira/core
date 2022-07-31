@@ -16,9 +16,6 @@ const (
 	QueryAggregatePrevotes = "aggregatePrevotes"
 	QueryAggregateVote     = "aggregateVote"
 	QueryAggregateVotes    = "aggregateVotes"
-	QueryVoteTargets       = "voteTargets"
-	QueryTobinTax          = "tobinTax"
-	QueryTobinTaxes        = "tobinTaxes"
 )
 
 // QueryExchangeRateParams defines the params for the following queries:
@@ -98,15 +95,4 @@ type QueryAggregateVoteParams struct {
 // NewQueryAggregateVoteParams returns params for feeder delegation query
 func NewQueryAggregateVoteParams(validator sdk.ValAddress) QueryAggregateVoteParams {
 	return QueryAggregateVoteParams{validator}
-}
-
-// QueryTobinTaxParams defines the params for the following queries:
-// - 'custom/oracle/tobinTax'
-type QueryTobinTaxParams struct {
-	Denom string
-}
-
-// NewQueryTobinTaxParams returns params for tobin tax query
-func NewQueryTobinTaxParams(denom string) QueryTobinTaxParams {
-	return QueryTobinTaxParams{denom}
 }

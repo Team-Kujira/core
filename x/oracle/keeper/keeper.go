@@ -68,7 +68,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 //-----------------------------------
 // ExchangeRate logic
 
-// GetExchangeRate gets the consensus exchange rate of Luna denominated in the denom asset from the store.
+// GetExchangeRate gets the consensus exchange rate of the denom asset from the store.
 func (k Keeper) GetExchangeRate(ctx sdk.Context, denom string) (sdk.Dec, error) {
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetExchangeRateKey(denom))
@@ -81,15 +81,14 @@ func (k Keeper) GetExchangeRate(ctx sdk.Context, denom string) (sdk.Dec, error) 
 	return dp.Dec, nil
 }
 
-// SetExchangeRate sets the consensus exchange rate of Luna denominated in the denom asset to the store.
+// SetExchangeRate sets the consensus exchange rate of the denom asset to the store.
 func (k Keeper) SetExchangeRate(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&sdk.DecProto{Dec: exchangeRate})
 	store.Set(types.GetExchangeRateKey(denom), bz)
 }
 
-// SetExchangeRateWithEvent sets the consensus exchange rate of Luna
-// denominated in the denom asset to the store with ABCI event
+// SetExchangeRateWithEvent sets the consensus exchange rate of the denom asset to the store with ABCI event
 func (k Keeper) SetExchangeRateWithEvent(ctx sdk.Context, denom string, exchangeRate sdk.Dec) {
 	k.SetExchangeRate(ctx, denom, exchangeRate)
 	ctx.EventManager().EmitEvent(
@@ -100,7 +99,7 @@ func (k Keeper) SetExchangeRateWithEvent(ctx sdk.Context, denom string, exchange
 	)
 }
 
-// DeleteExchangeRate deletes the consensus exchange rate of Luna denominated in the denom asset from the store.
+// DeleteExchangeRate deletes the consensus exchange rate of the denom asset from the store.
 func (k Keeper) DeleteExchangeRate(ctx sdk.Context, denom string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetExchangeRateKey(denom))

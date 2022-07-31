@@ -16,7 +16,7 @@ type VoteHash []byte
 
 type ExchangeRatePrevote struct {
 	Hash        VoteHash       // Vote hex hash to protect centralize data source problem
-	Denom       string         // Ticker name of target fiat currency
+	Denom       string         // Ticker name of native denom
 	Voter       sdk.ValAddress // Voter val address
 	SubmitBlock int64
 }
@@ -30,23 +30,23 @@ type ExchangeRatePrevote struct {
 
 ```go
 type ExchangeRateVote struct {
-	ExchangeRate sdk.Dec        // ExchangeRate of Luna in target fiat currency
-	Denom        string         // Ticker name of target fiat currency
+	ExchangeRate sdk.Dec        // ExchangeRate of denom in USD
+	Denom        string         // Ticker name of native denom
 	Voter        sdk.ValAddress // voter val address of validator
 }
 ```
 
 ## ExchangeRate
 
-An `sdk.Dec` that stores the current Luna exchange rate against a given denom, which is used by the [Market](../../market/spec/README.md) module for pricing swaps.
+An `sdk.Dec` that stores the current exchange rate for a given denom.
 
-You can get the active list of denoms trading against `Luna` (denominations with votes past `VoteThreshold`) with `k.GetActiveDenoms()`.
+You can get the active list of denoms (denominations with votes past `VoteThreshold`) with `k.GetActiveDenoms()`.
 
 - ExchangeRate: `0x03<denom_Bytes> -> amino(sdk.Dec)`
 
 ## FeederDelegation
 
-An `sdk.AccAddress` (`terra-` account) address of `operator`'s delegated price feeder.
+An `sdk.AccAddress` (`kujira-` account) address of `operator`'s delegated price feeder.
 
 - FeederDelegation: `0x04<valAddress_Bytes> -> amino(sdk.AccAddress)`
 
@@ -93,9 +93,3 @@ type AggregateExchangeRateVote struct {
 	Voter              sdk.ValAddress     // voter val address of validator
 }
 ```
-
-## TobinTax
-
-`sdk.Dec` that stores spread tax for the denom whose ballot is passed, which is used by the [Market](../../market/spec/README.md) module for spot-converting Terra<>Terra.
-
-- TobinTax: `0x08<denom_Bytes> -> amino(sdk.Dec)`

@@ -37,11 +37,17 @@ func TestSlashAndResetMissCounters(t *testing.T) {
 	)
 	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr1).GetBondedTokens())
 
-	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
+	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).
+		QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).
+		TruncateInt64()
+
 	slashFraction := input.OracleKeeper.SlashFraction(input.Ctx)
 	minValidVotes := input.OracleKeeper.MinValidPerWindow(input.Ctx).MulInt64(votePeriodsPerWindow).TruncateInt64()
 	// Case 1, no slash
-	input.OracleKeeper.SetMissCounter(input.Ctx, ValAddrs[0], uint64(votePeriodsPerWindow-minValidVotes))
+	input.OracleKeeper.SetMissCounter(input.Ctx,
+		ValAddrs[0],
+		uint64(votePeriodsPerWindow-minValidVotes-1),
+	)
 	input.OracleKeeper.SlashAndResetMissCounters(input.Ctx)
 	staking.EndBlocker(input.Ctx, input.StakingKeeper)
 

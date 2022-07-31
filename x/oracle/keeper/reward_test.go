@@ -53,9 +53,10 @@ func TestRewardBallotWinners(t *testing.T) {
 	err = FundAccount(input, acc.GetAddress(), givingAmt)
 	require.NoError(t, err)
 
-	var (
-		voteTargets []string
-	)
+	voteTargets := []string{
+		types.TestDenomA,
+		types.TestDenomB,
+	}
 
 	votePeriodsPerWindow := sdk.NewDec((int64)(input.OracleKeeper.RewardDistributionWindow(input.Ctx))).
 		QuoInt64((int64)(input.OracleKeeper.VotePeriod(input.Ctx))).

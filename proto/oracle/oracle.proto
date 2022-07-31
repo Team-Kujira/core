@@ -1,5 +1,5 @@
 syntax = "proto3";
-package terra.oracle.v1beta1;
+package kujira.oracle;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
@@ -63,8 +63,7 @@ message AggregateExchangeRatePrevote {
   uint64 submit_block = 3 [(gogoproto.moretags) = "yaml:\"submit_block\""];
 }
 
-// MsgAggregateExchangeRateVote - struct for voting on
-// the exchange rates of Luna denominated in various Terra assets.
+// MsgAggregateExchangeRateVote - struct for voting on exchange rates.
 message AggregateExchangeRateVote {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;

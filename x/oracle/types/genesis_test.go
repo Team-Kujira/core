@@ -19,9 +19,13 @@ func TestGenesisValidation(t *testing.T) {
 
 func TestGetGenesisStateFromAppState(t *testing.T) {
 	cdc := types.ModuleCdc
-	appState := make(map[string]json.RawMessage)
-
 	defaultGenesisState := types.DefaultGenesisState()
-	appState[types.ModuleName] = cdc.MustMarshalJSON(defaultGenesisState)
-	require.Equal(t, *defaultGenesisState, *types.GetGenesisStateFromAppState(cdc, appState))
+	bz, err := cdc.MarshalJSON(defaultGenesisState)
+
+	require.Nil(t, err)
+
+	require.NotNil(t, types.GetGenesisStateFromAppState(cdc, map[string]json.RawMessage{
+		types.ModuleName: bz,
+	}))
+	require.NotNil(t, types.GetGenesisStateFromAppState(cdc, map[string]json.RawMessage{}))
 }

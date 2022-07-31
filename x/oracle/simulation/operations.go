@@ -24,15 +24,11 @@ const (
 	OpWeightMsgAggregateExchangeRateVote    = "op_weight_msg_exchange_rate_aggregate_vote"
 	OpWeightMsgDelegateFeedConsent          = "op_weight_msg_exchange_feed_consent"
 
-	salt = "1234"
-
-	denomA = "testdenoma"
-	denomB = "testdenomb"
-	denomC = "testdenomc"
+	salt = "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 )
 
 var (
-	whitelist                     = []string{denomA, denomB, denomC}
+	whitelist                     = []string{types.TestDenomA, types.TestDenomB, types.TestDenomC}
 	voteHashMap map[string]string = make(map[string]string)
 )
 

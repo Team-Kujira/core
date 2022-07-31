@@ -16,7 +16,7 @@ import (
 
 //nolint
 const (
-	TestDenomA = "denomA"
+	TestDenomA = "ukuji"
 	TestDenomB = "denomB"
 	TestDenomC = "denomC"
 	TestDenomD = "denomD"

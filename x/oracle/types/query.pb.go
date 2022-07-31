@@ -959,28 +959,28 @@ func (m *QueryParamsResponse) GetParams() Params {
 }
 
 func init() {
-	proto.RegisterType((*QueryExchangeRateRequest)(nil), "terra.oracle.v1beta1.QueryExchangeRateRequest")
-	proto.RegisterType((*QueryExchangeRateResponse)(nil), "terra.oracle.v1beta1.QueryExchangeRateResponse")
-	proto.RegisterType((*QueryExchangeRatesRequest)(nil), "terra.oracle.v1beta1.QueryExchangeRatesRequest")
-	proto.RegisterType((*QueryExchangeRatesResponse)(nil), "terra.oracle.v1beta1.QueryExchangeRatesResponse")
-	proto.RegisterType((*QueryActivesRequest)(nil), "terra.oracle.v1beta1.QueryActivesRequest")
-	proto.RegisterType((*QueryActivesResponse)(nil), "terra.oracle.v1beta1.QueryActivesResponse")
-	proto.RegisterType((*QueryVoteTargetsRequest)(nil), "terra.oracle.v1beta1.QueryVoteTargetsRequest")
-	proto.RegisterType((*QueryVoteTargetsResponse)(nil), "terra.oracle.v1beta1.QueryVoteTargetsResponse")
-	proto.RegisterType((*QueryFeederDelegationRequest)(nil), "terra.oracle.v1beta1.QueryFeederDelegationRequest")
-	proto.RegisterType((*QueryFeederDelegationResponse)(nil), "terra.oracle.v1beta1.QueryFeederDelegationResponse")
-	proto.RegisterType((*QueryMissCounterRequest)(nil), "terra.oracle.v1beta1.QueryMissCounterRequest")
-	proto.RegisterType((*QueryMissCounterResponse)(nil), "terra.oracle.v1beta1.QueryMissCounterResponse")
-	proto.RegisterType((*QueryAggregatePrevoteRequest)(nil), "terra.oracle.v1beta1.QueryAggregatePrevoteRequest")
-	proto.RegisterType((*QueryAggregatePrevoteResponse)(nil), "terra.oracle.v1beta1.QueryAggregatePrevoteResponse")
-	proto.RegisterType((*QueryAggregatePrevotesRequest)(nil), "terra.oracle.v1beta1.QueryAggregatePrevotesRequest")
-	proto.RegisterType((*QueryAggregatePrevotesResponse)(nil), "terra.oracle.v1beta1.QueryAggregatePrevotesResponse")
-	proto.RegisterType((*QueryAggregateVoteRequest)(nil), "terra.oracle.v1beta1.QueryAggregateVoteRequest")
-	proto.RegisterType((*QueryAggregateVoteResponse)(nil), "terra.oracle.v1beta1.QueryAggregateVoteResponse")
-	proto.RegisterType((*QueryAggregateVotesRequest)(nil), "terra.oracle.v1beta1.QueryAggregateVotesRequest")
-	proto.RegisterType((*QueryAggregateVotesResponse)(nil), "terra.oracle.v1beta1.QueryAggregateVotesResponse")
-	proto.RegisterType((*QueryParamsRequest)(nil), "terra.oracle.v1beta1.QueryParamsRequest")
-	proto.RegisterType((*QueryParamsResponse)(nil), "terra.oracle.v1beta1.QueryParamsResponse")
+	proto.RegisterType((*QueryExchangeRateRequest)(nil), "kujira.oracle.QueryExchangeRateRequest")
+	proto.RegisterType((*QueryExchangeRateResponse)(nil), "kujira.oracle.QueryExchangeRateResponse")
+	proto.RegisterType((*QueryExchangeRatesRequest)(nil), "kujira.oracle.QueryExchangeRatesRequest")
+	proto.RegisterType((*QueryExchangeRatesResponse)(nil), "kujira.oracle.QueryExchangeRatesResponse")
+	proto.RegisterType((*QueryActivesRequest)(nil), "kujira.oracle.QueryActivesRequest")
+	proto.RegisterType((*QueryActivesResponse)(nil), "kujira.oracle.QueryActivesResponse")
+	proto.RegisterType((*QueryVoteTargetsRequest)(nil), "kujira.oracle.QueryVoteTargetsRequest")
+	proto.RegisterType((*QueryVoteTargetsResponse)(nil), "kujira.oracle.QueryVoteTargetsResponse")
+	proto.RegisterType((*QueryFeederDelegationRequest)(nil), "kujira.oracle.QueryFeederDelegationRequest")
+	proto.RegisterType((*QueryFeederDelegationResponse)(nil), "kujira.oracle.QueryFeederDelegationResponse")
+	proto.RegisterType((*QueryMissCounterRequest)(nil), "kujira.oracle.QueryMissCounterRequest")
+	proto.RegisterType((*QueryMissCounterResponse)(nil), "kujira.oracle.QueryMissCounterResponse")
+	proto.RegisterType((*QueryAggregatePrevoteRequest)(nil), "kujira.oracle.QueryAggregatePrevoteRequest")
+	proto.RegisterType((*QueryAggregatePrevoteResponse)(nil), "kujira.oracle.QueryAggregatePrevoteResponse")
+	proto.RegisterType((*QueryAggregatePrevotesRequest)(nil), "kujira.oracle.QueryAggregatePrevotesRequest")
+	proto.RegisterType((*QueryAggregatePrevotesResponse)(nil), "kujira.oracle.QueryAggregatePrevotesResponse")
+	proto.RegisterType((*QueryAggregateVoteRequest)(nil), "kujira.oracle.QueryAggregateVoteRequest")
+	proto.RegisterType((*QueryAggregateVoteResponse)(nil), "kujira.oracle.QueryAggregateVoteResponse")
+	proto.RegisterType((*QueryAggregateVotesRequest)(nil), "kujira.oracle.QueryAggregateVotesRequest")
+	proto.RegisterType((*QueryAggregateVotesResponse)(nil), "kujira.oracle.QueryAggregateVotesResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "kujira.oracle.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "kujira.oracle.QueryParamsResponse")
 }
 
 func init() { proto.RegisterFile("oracle/query.proto", fileDescriptor_562b782cb9ac197e) }
@@ -1099,7 +1099,7 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 
 func (c *queryClient) ExchangeRate(ctx context.Context, in *QueryExchangeRateRequest, opts ...grpc.CallOption) (*QueryExchangeRateResponse, error) {
 	out := new(QueryExchangeRateResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/ExchangeRate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/ExchangeRate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1108,7 +1108,7 @@ func (c *queryClient) ExchangeRate(ctx context.Context, in *QueryExchangeRateReq
 
 func (c *queryClient) ExchangeRates(ctx context.Context, in *QueryExchangeRatesRequest, opts ...grpc.CallOption) (*QueryExchangeRatesResponse, error) {
 	out := new(QueryExchangeRatesResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/ExchangeRates", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/ExchangeRates", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1117,7 +1117,7 @@ func (c *queryClient) ExchangeRates(ctx context.Context, in *QueryExchangeRatesR
 
 func (c *queryClient) Actives(ctx context.Context, in *QueryActivesRequest, opts ...grpc.CallOption) (*QueryActivesResponse, error) {
 	out := new(QueryActivesResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/Actives", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/Actives", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1126,7 +1126,7 @@ func (c *queryClient) Actives(ctx context.Context, in *QueryActivesRequest, opts
 
 func (c *queryClient) FeederDelegation(ctx context.Context, in *QueryFeederDelegationRequest, opts ...grpc.CallOption) (*QueryFeederDelegationResponse, error) {
 	out := new(QueryFeederDelegationResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/FeederDelegation", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/FeederDelegation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1135,7 +1135,7 @@ func (c *queryClient) FeederDelegation(ctx context.Context, in *QueryFeederDeleg
 
 func (c *queryClient) MissCounter(ctx context.Context, in *QueryMissCounterRequest, opts ...grpc.CallOption) (*QueryMissCounterResponse, error) {
 	out := new(QueryMissCounterResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/MissCounter", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/MissCounter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1144,7 +1144,7 @@ func (c *queryClient) MissCounter(ctx context.Context, in *QueryMissCounterReque
 
 func (c *queryClient) AggregatePrevote(ctx context.Context, in *QueryAggregatePrevoteRequest, opts ...grpc.CallOption) (*QueryAggregatePrevoteResponse, error) {
 	out := new(QueryAggregatePrevoteResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/AggregatePrevote", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregatePrevote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1153,7 +1153,7 @@ func (c *queryClient) AggregatePrevote(ctx context.Context, in *QueryAggregatePr
 
 func (c *queryClient) AggregatePrevotes(ctx context.Context, in *QueryAggregatePrevotesRequest, opts ...grpc.CallOption) (*QueryAggregatePrevotesResponse, error) {
 	out := new(QueryAggregatePrevotesResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/AggregatePrevotes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregatePrevotes", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1162,7 +1162,7 @@ func (c *queryClient) AggregatePrevotes(ctx context.Context, in *QueryAggregateP
 
 func (c *queryClient) AggregateVote(ctx context.Context, in *QueryAggregateVoteRequest, opts ...grpc.CallOption) (*QueryAggregateVoteResponse, error) {
 	out := new(QueryAggregateVoteResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/AggregateVote", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregateVote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1171,7 +1171,7 @@ func (c *queryClient) AggregateVote(ctx context.Context, in *QueryAggregateVoteR
 
 func (c *queryClient) AggregateVotes(ctx context.Context, in *QueryAggregateVotesRequest, opts ...grpc.CallOption) (*QueryAggregateVotesResponse, error) {
 	out := new(QueryAggregateVotesResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/AggregateVotes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregateVotes", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1180,7 +1180,7 @@ func (c *queryClient) AggregateVotes(ctx context.Context, in *QueryAggregateVote
 
 func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/terra.oracle.v1beta1.Query/Params", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/Params", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1260,7 +1260,7 @@ func _Query_ExchangeRate_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/ExchangeRate",
+		FullMethod: "/kujira.oracle.Query/ExchangeRate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).ExchangeRate(ctx, req.(*QueryExchangeRateRequest))
@@ -1278,7 +1278,7 @@ func _Query_ExchangeRates_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/ExchangeRates",
+		FullMethod: "/kujira.oracle.Query/ExchangeRates",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).ExchangeRates(ctx, req.(*QueryExchangeRatesRequest))
@@ -1296,7 +1296,7 @@ func _Query_Actives_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/Actives",
+		FullMethod: "/kujira.oracle.Query/Actives",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Actives(ctx, req.(*QueryActivesRequest))
@@ -1314,7 +1314,7 @@ func _Query_FeederDelegation_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/FeederDelegation",
+		FullMethod: "/kujira.oracle.Query/FeederDelegation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).FeederDelegation(ctx, req.(*QueryFeederDelegationRequest))
@@ -1332,7 +1332,7 @@ func _Query_MissCounter_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/MissCounter",
+		FullMethod: "/kujira.oracle.Query/MissCounter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).MissCounter(ctx, req.(*QueryMissCounterRequest))
@@ -1350,7 +1350,7 @@ func _Query_AggregatePrevote_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/AggregatePrevote",
+		FullMethod: "/kujira.oracle.Query/AggregatePrevote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AggregatePrevote(ctx, req.(*QueryAggregatePrevoteRequest))
@@ -1368,7 +1368,7 @@ func _Query_AggregatePrevotes_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/AggregatePrevotes",
+		FullMethod: "/kujira.oracle.Query/AggregatePrevotes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AggregatePrevotes(ctx, req.(*QueryAggregatePrevotesRequest))
@@ -1386,7 +1386,7 @@ func _Query_AggregateVote_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/AggregateVote",
+		FullMethod: "/kujira.oracle.Query/AggregateVote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AggregateVote(ctx, req.(*QueryAggregateVoteRequest))
@@ -1404,7 +1404,7 @@ func _Query_AggregateVotes_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/AggregateVotes",
+		FullMethod: "/kujira.oracle.Query/AggregateVotes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AggregateVotes(ctx, req.(*QueryAggregateVotesRequest))
@@ -1422,7 +1422,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/terra.oracle.v1beta1.Query/Params",
+		FullMethod: "/kujira.oracle.Query/Params",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
@@ -1431,7 +1431,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "terra.oracle.v1beta1.Query",
+	ServiceName: "kujira.oracle.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

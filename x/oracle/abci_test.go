@@ -23,7 +23,7 @@ func TestOracleThreshold(t *testing.T) {
 
 	// Case 1.
 	// Less than the threshold signs, exchange rate consensus fails
-	salt := "1"
+	salt := "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	hash := types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[0])
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
 	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRateStr, keeper.Addrs[0], keeper.ValAddrs[0])
@@ -35,12 +35,13 @@ func TestOracleThreshold(t *testing.T) {
 
 	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
+	x, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
+	fmt.Println(x)
 	require.Error(t, err)
 
 	// Case 2.
 	// More than the threshold signs, exchange rate consensus succeeds
-	salt = "1"
+	salt = "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	hash = types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[0])
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRateStr, keeper.Addrs[0], keeper.ValAddrs[0])
@@ -50,7 +51,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	salt = "2"
+	salt = "4c81c928f466a08b07171def7aeb2b3c266df7bb7486158a15a2291a7d55c8f9"
 	hash = types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[1])
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRateStr, keeper.Addrs[1], keeper.ValAddrs[1])
@@ -60,7 +61,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	salt = "3"
+	salt = "fc246cf5a18c7a650a6a226ebc589d49a9a814d6f1f586405e8726e5cf2a7d80"
 	hash = types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[2])
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[2], keeper.ValAddrs[2])
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRateStr, keeper.Addrs[2], keeper.ValAddrs[2])
@@ -81,7 +82,7 @@ func TestOracleThreshold(t *testing.T) {
 	val, _ := input.StakingKeeper.GetValidator(input.Ctx, keeper.ValAddrs[2])
 	input.StakingKeeper.Delegate(input.Ctx.WithBlockHeight(0), keeper.Addrs[2], stakingAmt.MulRaw(3), stakingtypes.Unbonded, val, false)
 
-	salt = "1"
+	salt = "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	hash = types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[0])
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[0], keeper.ValAddrs[0])
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRateStr, keeper.Addrs[0], keeper.ValAddrs[0])
@@ -91,7 +92,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	salt = "2"
+	salt = "4c81c928f466a08b07171def7aeb2b3c266df7bb7486158a15a2291a7d55c8f9"
 	hash = types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[1])
 	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[1], keeper.ValAddrs[1])
 	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRateStr, keeper.Addrs[1], keeper.ValAddrs[1])
@@ -604,10 +605,6 @@ func TestVoteTargets(t *testing.T) {
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 
-	// change DenomC tobin tax
-	params.Whitelist = types.DenomList{{Name: types.TestDenomC}}
-	input.OracleKeeper.SetParams(input.Ctx, params)
-
 	// DenomC, no missing
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 1)
@@ -632,7 +629,7 @@ func TestAbstainWithSmallStakingPower(t *testing.T) {
 
 func makeAggregatePrevoteAndVote(t *testing.T, input keeper.TestInput, h sdk.Handler, height int64, rates sdk.DecCoins, idx int) {
 	// Account 1, DenomD
-	salt := "1"
+	salt := "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	hash := types.GetAggregateVoteHash(salt, rates.String(), keeper.ValAddrs[idx])
 
 	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, keeper.Addrs[idx], keeper.ValAddrs[idx])

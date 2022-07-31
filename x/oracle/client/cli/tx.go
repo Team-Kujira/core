@@ -46,9 +46,9 @@ Delegate the permission to submit exchange rate votes for the oracle to an addre
 
 Delegation can keep your validator operator key offline and use a separate replaceable key online.
 
-$ terrad tx oracle set-feeder terra1...
+$ kujirad tx oracle set-feeder kujira1...
 
-where "terra1..." is the address you want to delegate your voting rights to.
+where "kujira1..." is the address you want to delegate your voting rights to.
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -89,19 +89,19 @@ func GetCmdAggregateExchangeRatePrevote() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aggregate-prevote [salt] [exchange-rates] [validator]",
 		Args:  cobra.RangeArgs(2, 3),
-		Short: "Submit an oracle aggregate prevote for the exchange rates of Luna",
+		Short: "Submit an oracle aggregate prevote for the exchange rates",
 		Long: strings.TrimSpace(`
-Submit an oracle aggregate prevote for the exchange rates of Luna denominated in multiple denoms.
+Submit an oracle aggregate prevote for the exchange rates of multiple denoms.
 The purpose of aggregate prevote is to hide aggregate exchange rate vote with hash which is formatted 
 as hex string in SHA256("{salt}:{exchange_rate}{denom},...,{exchange_rate}{denom}:{voter}")
 
 # Aggregate Prevote
-$ terrad tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr 
+$ kujirad tx oracle aggregate-prevote 1234 0.1ATOM,1.001USDT
 
-where "ukrw,uusd,usdr" is the denominating currencies, and "8888.0,1.243,0.99" is the exchange rates of micro Luna in micro denoms from the voter's point of view.
+where "ATOM,USDT" is the denominating currencies, and "0.1.0,1.001" is the exchange rates of USD from the voter's point of view.
 
 If voting from a voting delegate, set "validator" to the address of the validator to vote on behalf of:
-$ terrad tx oracle aggregate-prevote 1234 8888.0ukrw,1.243uusd,0.99usdr terravaloper1...
+$ kujirad tx oracle aggregate-prevote 1234 0.1ATOM,1.001USDT kujiravaloper1...
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -157,14 +157,14 @@ func GetCmdAggregateExchangeRateVote() *cobra.Command {
 		Long: strings.TrimSpace(`
 Submit a aggregate vote for the exchange_rates of Luna w.r.t the input denom. Companion to a prevote submitted in the previous vote period. 
 
-$ terrad tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr 
+$ kujirad tx oracle aggregate-vote 1234 0.1ATOM,1.001USDT 
 
-where "ukrw,uusd,usdr" is the denominating currencies, and "8888.0,1.243,0.99" is the exchange rates of micro Luna in micro denoms from the voter's point of view.
+where "ATOM,USDT" is the denominating currencies, and "0.1.0,1.001" is the exchange rates of USD from the voter's point of view.
 
 "salt" should match the salt used to generate the SHA256 hex in the aggregated pre-vote. 
 
 If voting from a voting delegate, set "validator" to the address of the validator to vote on behalf of:
-$ terrad tx oracle aggregate-vote 1234 8888.0ukrw,1.243uusd,0.99usdr terravaloper1....
+$ kujirad tx oracle aggregate-vote 1234 0.1ATOM,1.001USDT kujiravaloper1....
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

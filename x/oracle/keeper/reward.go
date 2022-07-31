@@ -19,14 +19,7 @@ func (k Keeper) RewardBallotWinners(
 	ballotWinners map[string]types.Claim,
 ) {
 
-	rewardDenoms := make([]string, len(voteTargets)+1)
-	rewardDenoms[0] = k.rewardDenom
-
-	i := 1
-	for _, denom := range voteTargets {
-		rewardDenoms[i] = denom
-		i++
-	}
+	rewardDenoms := voteTargets
 
 	// Sum weight of the claims
 	ballotPowerSum := int64(0)

@@ -76,8 +76,8 @@ func TestQueryExchangeRates(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, sdk.DecCoins{
-		sdk.NewDecCoinFromDec(types.TestDenomD, rate),
 		sdk.NewDecCoinFromDec(types.TestDenomB, rate),
+		sdk.NewDecCoinFromDec(types.TestDenomD, rate),
 	}, res.ExchangeRates)
 }
 
@@ -95,9 +95,9 @@ func TestQueryActives(t *testing.T) {
 	require.NoError(t, err)
 
 	targetDenoms := []string{
+		types.TestDenomB,
 		types.TestDenomC,
 		types.TestDenomD,
-		types.TestDenomB,
 	}
 
 	require.Equal(t, targetDenoms, res.Actives)

@@ -22,6 +22,5 @@ var (
 	ErrInvalidSaltFormat     = sdkerrors.Register(ModuleName, 10, "invalid salt format")
 	ErrNoAggregatePrevote    = sdkerrors.Register(ModuleName, 11, "no aggregate prevote")
 	ErrNoAggregateVote       = sdkerrors.Register(ModuleName, 12, "no aggregate vote")
-	ErrNoTobinTax            = sdkerrors.Register(ModuleName, 13, "no tobin tax")
-	ErrUnknownDenom          = sdkerrors.Register(ModuleName, 14, "unknown denom")
+	ErrUnknownDenom          = sdkerrors.Register(ModuleName, 13, "unknown denom")
 )

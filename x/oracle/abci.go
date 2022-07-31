@@ -13,7 +13,6 @@ import (
 // EndBlocker is called at the end of every block
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
-
 	params := k.GetParams(ctx)
 	if IsPeriodLastBlock(ctx, params.VotePeriod) {
 
@@ -38,7 +37,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 		}
 
-		// Denom-TobinTax map
 		var (
 			// voteTargets defines the symbol (ticker) denoms that we require votes on
 			voteTargets []string
@@ -57,7 +55,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		// NOTE: **Filter out inactive or jailed validators**
 		// NOTE: **Make abstain votes to have zero vote power**
 		voteMap := k.OrganizeBallotByDenom(ctx, validatorClaimMap)
-
 		// Iterate through ballots and update exchange rates; drop if not enough votes have been achieved.
 		for denom, ballot := range voteMap {
 
