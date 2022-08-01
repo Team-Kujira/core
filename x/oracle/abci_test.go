@@ -320,9 +320,9 @@ func TestOracleMultiRewardDistribution(t *testing.T) {
 
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
 
-	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(3).MulRaw(2)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
-	expectedRewardAmt2 := sdk.ZeroInt() // even vote power is same DenomC with DenomD, DenomC chosen referenceTerra because alphabetical order
-	expectedRewardAmt3 := sdk.NewDecFromInt(rewardAmt.QuoRaw(3)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
+	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(4).MulRaw(2)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
+	expectedRewardAmt2 := sdk.NewDecFromInt(rewardAmt.QuoRaw(4)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt() // even vote power is same DenomC with DenomD, DenomC chosen referenceTerra because alphabetical order
+	expectedRewardAmt3 := sdk.NewDecFromInt(rewardAmt.QuoRaw(4)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
 
 	rewards := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[0])
 	require.Equal(t, expectedRewardAmt, rewards.Rewards.AmountOf(types.TestDenomA).TruncateInt())
@@ -338,15 +338,26 @@ func TestOracleExchangeRate(t *testing.T) {
 	krwRandomExchangeRate := sdk.NewDecWithPrec(1000000000, int64(6)).MulInt64(types.MicroUnit)
 	usdRandomExchangeRate := sdk.NewDecWithPrec(1000000, int64(6)).MulInt64(types.MicroUnit)
 
-	// DenomC has been chosen as referenceTerra by highest voting power
 	// Account 1, DenomB, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: usdRandomExchangeRate}, {Denom: types.TestDenomC, Amount: krwRandomExchangeRate}}, 0)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomB, Amount: usdRandomExchangeRate},
+			{Denom: types.TestDenomC, Amount: krwRandomExchangeRate},
+		}, 0)
 
 	// Account 2, DenomB, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: usdRandomExchangeRate}, {Denom: types.TestDenomC, Amount: krwRandomExchangeRate}}, 1)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomB, Amount: usdRandomExchangeRate},
+			{Denom: types.TestDenomC, Amount: krwRandomExchangeRate},
+		}, 1)
 
 	// Account 3, DenomC, DenomD
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: krwRandomExchangeRate}, {Denom: types.TestDenomD, Amount: randomExchangeRate}}, 2)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomC, Amount: krwRandomExchangeRate},
+			{Denom: types.TestDenomD, Amount: randomExchangeRate},
+		}, 2)
 
 	rewardAmt := sdk.NewInt(100000000)
 	err := input.BankKeeper.MintCoins(input.Ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(types.TestDenomA, rewardAmt)))
@@ -391,87 +402,6 @@ func TestOracleEnsureSorted(t *testing.T) {
 			oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 		})
 	}
-}
-
-func TestOracleExchangeRateVal5(t *testing.T) {
-	input, h := setupVal5(t)
-
-	exchangeRateA := sdk.NewDecWithPrec(505000, int64(6)).MulInt64(types.MicroUnit)
-	exchangeRateAWithErr := sdk.NewDecWithPrec(500000, int64(6)).MulInt64(types.MicroUnit)
-	exchangeRateB := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
-	exchangeRateBWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
-
-	// DenomC has been chosen as referenceTerra by highest voting power
-	// Account 1, DenomC, DenomB
-	makeAggregatePrevoteAndVote(t, input, h, 0,
-		sdk.DecCoins{
-			{Denom: types.TestDenomC, Amount: exchangeRateA},
-			{Denom: types.TestDenomB, Amount: exchangeRateB},
-		},
-		0,
-	)
-
-	// Account 2, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0,
-		sdk.DecCoins{{Denom: types.TestDenomC, Amount: exchangeRateA}},
-		1,
-	)
-
-	// Account 3, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0,
-		sdk.DecCoins{{Denom: types.TestDenomC, Amount: exchangeRateA}},
-		2,
-	)
-
-	// Account 4, DenomC, DenomB
-	makeAggregatePrevoteAndVote(t, input, h, 0,
-		sdk.DecCoins{
-			{Denom: types.TestDenomC, Amount: exchangeRateAWithErr},
-			{Denom: types.TestDenomB, Amount: exchangeRateBWithErr},
-		},
-		3,
-	)
-
-	// Account 5, DenomC, DenomB
-	makeAggregatePrevoteAndVote(t, input, h, 0,
-		sdk.DecCoins{
-			{Denom: types.TestDenomC, Amount: exchangeRateAWithErr},
-			{Denom: types.TestDenomB, Amount: exchangeRateBWithErr},
-		},
-		4,
-	)
-
-	rewardAmt := sdk.NewInt(100000000)
-	err := input.BankKeeper.MintCoins(input.Ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(types.TestDenomA, rewardAmt)))
-	require.NoError(t, err)
-
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
-
-	krw, err := input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomC)
-	require.NoError(t, err)
-	usd, err := input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomB)
-	require.NoError(t, err)
-
-	// legacy version case
-	require.NotEqual(t, exchangeRateBWithErr, usd)
-
-	// new version case
-	require.Equal(t, exchangeRateA, krw)
-	require.Equal(t, exchangeRateB, usd)
-
-	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
-	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(8).MulRaw(2)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
-	expectedRewardAmt2 := sdk.NewDecFromInt(rewardAmt.QuoRaw(8).MulRaw(1)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
-	rewards := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[0])
-	require.Equal(t, expectedRewardAmt, rewards.Rewards.AmountOf(types.TestDenomA).TruncateInt())
-	rewards1 := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[1])
-	require.Equal(t, expectedRewardAmt2, rewards1.Rewards.AmountOf(types.TestDenomA).TruncateInt())
-	rewards2 := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[2])
-	require.Equal(t, expectedRewardAmt2, rewards2.Rewards.AmountOf(types.TestDenomA).TruncateInt())
-	rewards3 := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[3])
-	require.Equal(t, expectedRewardAmt, rewards3.Rewards.AmountOf(types.TestDenomA).TruncateInt())
-	rewards4 := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[4])
-	require.Equal(t, expectedRewardAmt, rewards4.Rewards.AmountOf(types.TestDenomA).TruncateInt())
 }
 
 func TestInvalidVotesSlashing(t *testing.T) {
@@ -566,9 +496,9 @@ func TestNotPassedBallotSlashing(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 
 	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
-	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 }
 
 func TestAbstainSlashing(t *testing.T) {
@@ -613,25 +543,25 @@ func TestVoteTargets(t *testing.T) {
 
 	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
 
-	// no missing current
-	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	// missed D
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 
 	// delete DenomD
 	params.Whitelist = types.DenomList{{Name: types.TestDenomC}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// DenomC, missing
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 1)
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{}, 0)
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{}, 1)
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{}, 2)
 
 	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
 
-	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 
 	// DenomC, no missing
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
@@ -640,9 +570,9 @@ func TestVoteTargets(t *testing.T) {
 
 	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
 
-	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
-	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
-	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 }
 
 func TestAbstainWithSmallStakingPower(t *testing.T) {
