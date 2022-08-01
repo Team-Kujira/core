@@ -1,10 +1,7 @@
 package types
 
 import (
-	"fmt"
-	"math"
 	"sort"
-	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -55,11 +52,11 @@ func (pb ExchangeRateBallot) Power() int64 {
 	return totalPower
 }
 
-// WeightedMedianWithAssertion returns the median weighted by the power of the ExchangeRateVote.
+// WeightedMedian returns the median weighted by the power of the ExchangeRateVote.
 // CONTRACT: ballot must be sorted
-func (pb ExchangeRateBallot) WeightedMedianWithAssertion() sdk.Dec {
+func (pb ExchangeRateBallot) WeightedMedian() (sdk.Dec, error) {
 	if !sort.IsSorted(pb) {
-		panic("ballot must be sorted")
+		return sdk.ZeroDec(), ErrBallotNotSorted
 	}
 
 	totalPower := pb.Power()
@@ -70,38 +67,46 @@ func (pb ExchangeRateBallot) WeightedMedianWithAssertion() sdk.Dec {
 
 			pivot += votePower
 			if pivot >= (totalPower / 2) {
-				return v.ExchangeRate
+				return v.ExchangeRate, nil
 			}
 		}
 	}
-	return sdk.ZeroDec()
+	return sdk.ZeroDec(), nil
 }
 
 // StandardDeviation returns the standard deviation by the power of the ExchangeRateVote.
-func (pb ExchangeRateBallot) StandardDeviation(median sdk.Dec) (standardDeviation sdk.Dec) {
+func (pb ExchangeRateBallot) StandardDeviation() (sdk.Dec, error) {
 	if len(pb) == 0 {
-		return sdk.ZeroDec()
+		return sdk.ZeroDec(), nil
 	}
 
-	defer func() {
-		if e := recover(); e != nil {
-			standardDeviation = sdk.ZeroDec()
-		}
-	}()
+	median, err := pb.WeightedMedian()
+	if err != nil {
+		return sdk.ZeroDec(), err
+	}
 
 	sum := sdk.ZeroDec()
+	ballotLength := int64(len(pb))
 	for _, v := range pb {
-		deviation := v.ExchangeRate.Sub(median)
-		sum = sum.Add(deviation.Mul(deviation))
+		func() {
+			defer func() {
+				if e := recover(); e != nil {
+					ballotLength--
+				}
+			}()
+			deviation := v.ExchangeRate.Sub(median)
+			sum = sum.Add(deviation.Mul(deviation))
+		}()
 	}
 
-	variance := sum.QuoInt64(int64(len(pb)))
+	variance := sum.QuoInt64(ballotLength)
 
-	floatNum, _ := strconv.ParseFloat(variance.String(), 64)
-	floatNum = math.Sqrt(floatNum)
-	standardDeviation, _ = sdk.NewDecFromStr(fmt.Sprintf("%f", floatNum))
+	standardDeviation, err := variance.ApproxSqrt()
+	if err != nil {
+		return sdk.ZeroDec(), err
+	}
 
-	return
+	return standardDeviation, nil
 }
 
 // Len implements sort.Interface

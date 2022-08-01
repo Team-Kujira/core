@@ -2,7 +2,6 @@ package wasm_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -81,7 +80,6 @@ func TestQueryExchangeRates(t *testing.T) {
 
 	err = json.Unmarshal(res, &exchangeRatesResponse)
 	require.NoError(t, err)
-	fmt.Println(exchangeRatesResponse)
 	require.Equal(t, exchangeRatesResponse, wasm.ExchangeRatesQueryResponse{
 		BaseDenom: types.TestDenomA,
 		ExchangeRates: []wasm.ExchangeRateItem{

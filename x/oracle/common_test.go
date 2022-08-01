@@ -45,6 +45,7 @@ func setup(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	params.VotePeriod = 1
 	params.SlashWindow = 100
 	params.RewardDistributionWindow = 100
+	params.Whitelist = types.DenomList{{Name: types.TestDenomA}, {Name: types.TestDenomC}, {Name: types.TestDenomD}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := oracle.NewHandler(input.OracleKeeper)
 

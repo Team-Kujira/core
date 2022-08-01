@@ -35,8 +35,7 @@ func TestOracleThreshold(t *testing.T) {
 
 	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	x, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
-	fmt.Println(x)
+	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.Error(t, err)
 
 	// Case 2.
@@ -170,8 +169,8 @@ func TestOracleTally(t *testing.T) {
 		}
 	}
 	sort.Sort(ballot)
-	weightedMedian := ballot.WeightedMedianWithAssertion()
-	standardDeviation := ballot.StandardDeviation(weightedMedian)
+	weightedMedian, _ := ballot.WeightedMedian()
+	standardDeviation, _ := ballot.StandardDeviation()
 	maxSpread := weightedMedian.Mul(input.OracleKeeper.RewardBand(input.Ctx).QuoInt64(2))
 
 	if standardDeviation.GT(maxSpread) {
@@ -200,7 +199,7 @@ func TestOracleTally(t *testing.T) {
 		}
 	}
 
-	tallyMedian := oracle.Tally(input.Ctx, ballot, input.OracleKeeper.RewardBand(input.Ctx), validatorClaimMap)
+	tallyMedian, _ := oracle.Tally(input.Ctx, ballot, input.OracleKeeper.RewardBand(input.Ctx), validatorClaimMap)
 
 	require.Equal(t, validatorClaimMap, expectedValidatorClaimMap)
 	require.Equal(t, tallyMedian.MulInt64(100).TruncateInt(), weightedMedian.MulInt64(100).TruncateInt())
@@ -298,15 +297,20 @@ func TestOracleRewardBand(t *testing.T) {
 func TestOracleMultiRewardDistribution(t *testing.T) {
 	input, h := setup(t)
 
-	// DenomD and DenomC have the same voting power, but DenomC has been chosen as referenceTerra by alphabetical order.
 	// Account 1, DenomD, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomD, Amount: randomExchangeRate}, {Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomD, Amount: randomExchangeRate},
+			{Denom: types.TestDenomC, Amount: randomExchangeRate},
+		}, 0)
 
 	// Account 2, DenomD
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomD, Amount: randomExchangeRate}}, 1)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{{Denom: types.TestDenomD, Amount: randomExchangeRate}}, 1)
 
 	// Account 3, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
 	rewardAmt := sdk.NewInt(100000000)
 	err := input.BankKeeper.MintCoins(input.Ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(types.TestDenomA, rewardAmt)))
@@ -365,23 +369,23 @@ func TestOracleEnsureSorted(t *testing.T) {
 	input, h := setup(t)
 
 	for i := 0; i < 100; i++ {
-		krwExchangeRate1 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
-		usdExchangeRate1 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateA1 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateB1 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
 
-		krwExchangeRate2 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
-		usdExchangeRate2 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateA2 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateB2 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
 
-		krwExchangeRate3 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
-		usdExchangeRate3 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateA3 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateB3 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
 
 		// Account 1, DenomB, DenomC
-		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: usdExchangeRate1}, {Denom: types.TestDenomC, Amount: krwExchangeRate1}}, 0)
+		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: exchangeRateB1}, {Denom: types.TestDenomC, Amount: exchangeRateA1}}, 0)
 
 		// Account 2, DenomB, DenomC
-		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: usdExchangeRate2}, {Denom: types.TestDenomC, Amount: krwExchangeRate2}}, 1)
+		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: exchangeRateB2}, {Denom: types.TestDenomC, Amount: exchangeRateA2}}, 1)
 
 		// Account 3, DenomB, DenomC
-		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: krwExchangeRate3}, {Denom: types.TestDenomC, Amount: usdExchangeRate3}}, 2)
+		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: exchangeRateA3}, {Denom: types.TestDenomC, Amount: exchangeRateB3}}, 2)
 
 		require.NotPanics(t, func() {
 			oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
@@ -392,26 +396,50 @@ func TestOracleEnsureSorted(t *testing.T) {
 func TestOracleExchangeRateVal5(t *testing.T) {
 	input, h := setupVal5(t)
 
-	krwExchangeRate := sdk.NewDecWithPrec(505000, int64(6)).MulInt64(types.MicroUnit)
-	krwExchangeRateWithErr := sdk.NewDecWithPrec(500000, int64(6)).MulInt64(types.MicroUnit)
-	usdExchangeRate := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
-	usdExchangeRateWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
+	exchangeRateA := sdk.NewDecWithPrec(505000, int64(6)).MulInt64(types.MicroUnit)
+	exchangeRateAWithErr := sdk.NewDecWithPrec(500000, int64(6)).MulInt64(types.MicroUnit)
+	exchangeRateB := sdk.NewDecWithPrec(505, int64(6)).MulInt64(types.MicroUnit)
+	exchangeRateBWithErr := sdk.NewDecWithPrec(500, int64(6)).MulInt64(types.MicroUnit)
 
 	// DenomC has been chosen as referenceTerra by highest voting power
 	// Account 1, DenomC, DenomB
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: krwExchangeRate}, {Denom: types.TestDenomB, Amount: usdExchangeRate}}, 0)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomC, Amount: exchangeRateA},
+			{Denom: types.TestDenomB, Amount: exchangeRateB},
+		},
+		0,
+	)
 
 	// Account 2, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: krwExchangeRate}}, 1)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{{Denom: types.TestDenomC, Amount: exchangeRateA}},
+		1,
+	)
 
 	// Account 3, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: krwExchangeRate}}, 2)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{{Denom: types.TestDenomC, Amount: exchangeRateA}},
+		2,
+	)
 
 	// Account 4, DenomC, DenomB
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: krwExchangeRateWithErr}, {Denom: types.TestDenomB, Amount: usdExchangeRateWithErr}}, 3)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomC, Amount: exchangeRateAWithErr},
+			{Denom: types.TestDenomB, Amount: exchangeRateBWithErr},
+		},
+		3,
+	)
 
 	// Account 5, DenomC, DenomB
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: krwExchangeRateWithErr}, {Denom: types.TestDenomB, Amount: usdExchangeRateWithErr}}, 4)
+	makeAggregatePrevoteAndVote(t, input, h, 0,
+		sdk.DecCoins{
+			{Denom: types.TestDenomC, Amount: exchangeRateAWithErr},
+			{Denom: types.TestDenomB, Amount: exchangeRateBWithErr},
+		},
+		4,
+	)
 
 	rewardAmt := sdk.NewInt(100000000)
 	err := input.BankKeeper.MintCoins(input.Ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(types.TestDenomA, rewardAmt)))
@@ -425,11 +453,11 @@ func TestOracleExchangeRateVal5(t *testing.T) {
 	require.NoError(t, err)
 
 	// legacy version case
-	require.NotEqual(t, usdExchangeRateWithErr, usd)
+	require.NotEqual(t, exchangeRateBWithErr, usd)
 
 	// new version case
-	require.Equal(t, krwExchangeRate, krw)
-	require.Equal(t, usdExchangeRate, usd)
+	require.Equal(t, exchangeRateA, krw)
+	require.Equal(t, exchangeRateB, usd)
 
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
 	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(8).MulRaw(2)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()

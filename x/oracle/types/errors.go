@@ -23,4 +23,5 @@ var (
 	ErrNoAggregatePrevote    = sdkerrors.Register(ModuleName, 11, "no aggregate prevote")
 	ErrNoAggregateVote       = sdkerrors.Register(ModuleName, 12, "no aggregate vote")
 	ErrUnknownDenom          = sdkerrors.Register(ModuleName, 13, "unknown denom")
+	ErrBallotNotSorted       = sdkerrors.Register(ModuleName, 14, "ballot not sorted")
 )

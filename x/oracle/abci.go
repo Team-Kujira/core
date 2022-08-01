@@ -11,7 +11,7 @@ import (
 )
 
 // EndBlocker is called at the end of every block
-func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
+func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 	params := k.GetParams(ctx)
 	if IsPeriodLastBlock(ctx, params.VotePeriod) {
@@ -52,17 +52,24 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		})
 
 		// Organize votes to ballot by denom
-		// NOTE: **Filter out inactive or jailed validators**
-		// NOTE: **Make abstain votes to have zero vote power**
 		voteMap := k.OrganizeBallotByDenom(ctx, validatorClaimMap)
 		// Iterate through ballots and update exchange rates; drop if not enough votes have been achieved.
 		for denom, ballot := range voteMap {
+			totalBondedPower := sdk.TokensToConsensusPower(k.StakingKeeper.TotalBondedTokens(ctx), k.StakingKeeper.PowerReduction(ctx))
+			voteThreshold := k.VoteThreshold(ctx)
+			thresholdVotes := voteThreshold.MulInt64(totalBondedPower).RoundInt()
+			ballotPower := sdk.NewInt(ballot.Power())
 
-			// Get weighted median of cross exchange rates
-			exchangeRate := Tally(ctx, ballot, params.RewardBand, validatorClaimMap)
+			if !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes) {
+				// Get weighted median of cross exchange rates
+				exchangeRate, err := Tally(ctx, ballot, params.RewardBand, validatorClaimMap)
+				if err != nil {
+					return err
+				}
 
-			// Set the exchange rate, emit ABCI event
-			k.SetExchangeRateWithEvent(ctx, denom, exchangeRate)
+				// Set the exchange rate, emit ABCI event
+				k.SetExchangeRateWithEvent(ctx, denom, exchangeRate)
+			}
 		}
 
 		//---------------------------
@@ -99,7 +106,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		k.SlashAndResetMissCounters(ctx)
 	}
 
-	return
+	return nil
 }
 
 func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod uint64) bool {

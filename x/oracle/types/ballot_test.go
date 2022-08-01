@@ -184,9 +184,9 @@ func TestPBWeightedMedian(t *testing.T) {
 		}
 
 		if tc.panic {
-			require.Panics(t, func() { pb.WeightedMedianWithAssertion() })
+			require.Panics(t, func() { pb.WeightedMedian() })
 		} else {
-			require.Equal(t, tc.median, pb.WeightedMedianWithAssertion())
+			require.Equal(t, tc.median, pb.WeightedMedian())
 		}
 	}
 }
@@ -249,7 +249,7 @@ func TestPBStandardDeviation(t *testing.T) {
 			pb = append(pb, vote)
 		}
 
-		require.Equal(t, tc.standardDeviation, pb.StandardDeviation(pb.WeightedMedianWithAssertion()))
+		require.Equal(t, tc.standardDeviation, pb.StandardDeviation(pb.WeightedMedian()))
 	}
 }
 
@@ -270,7 +270,7 @@ func TestPBStandardDeviationOverflow(t *testing.T) {
 		1,
 	)}
 
-	require.Equal(t, sdk.ZeroDec(), pb.StandardDeviation(pb.WeightedMedianWithAssertion()))
+	require.Equal(t, sdk.ZeroDec(), pb.StandardDeviation(pb.WeightedMedian()))
 }
 
 func TestNewClaim(t *testing.T) {
