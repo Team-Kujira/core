@@ -33,45 +33,37 @@ func TestQueryExchangeRates(t *testing.T) {
 
 	// not existing quote denom query
 	queryParams := wasm.ExchangeRateQueryParams{
-		BaseDenom:   types.TestDenomA,
-		QuoteDenoms: []string{types.TestDenomI},
+		Denom: types.TestDenomI,
 	}
 	bz, err := json.Marshal(wasm.CosmosQuery{
-		ExchangeRates: &queryParams,
+		ExchangeRate: &queryParams,
 	})
 	require.NoError(t, err)
 
 	res, err := querier.QueryCustom(input.Ctx, bz)
-	require.NoError(t, err)
+	require.Error(t, err)
 
 	var exchangeRatesResponse wasm.ExchangeRatesQueryResponse
 	err = json.Unmarshal(res, &exchangeRatesResponse)
-	require.NoError(t, err)
-	require.Equal(t, wasm.ExchangeRatesQueryResponse{
-		BaseDenom:     types.TestDenomA,
-		ExchangeRates: nil,
-	}, exchangeRatesResponse)
+	require.Error(t, err)
 
 	// not existing base denom query
 	queryParams = wasm.ExchangeRateQueryParams{
-		BaseDenom:   types.TestDenomE,
-		QuoteDenoms: []string{types.TestDenomC, types.TestDenomB, types.TestDenomD},
+		Denom: types.TestDenomC,
 	}
 	bz, err = json.Marshal(wasm.CosmosQuery{
-		ExchangeRates: &queryParams,
+		ExchangeRate: &queryParams,
 	})
 	require.NoError(t, err)
 
 	res, err = querier.QueryCustom(input.Ctx, bz)
-	require.Error(t, err)
+	require.NoError(t, err)
 
-	// valid query luna exchange rates
 	queryParams = wasm.ExchangeRateQueryParams{
-		BaseDenom:   types.TestDenomA,
-		QuoteDenoms: []string{types.TestDenomC, types.TestDenomB, types.TestDenomD},
+		Denom: types.TestDenomB,
 	}
 	bz, err = json.Marshal(wasm.CosmosQuery{
-		ExchangeRates: &queryParams,
+		ExchangeRate: &queryParams,
 	})
 	require.NoError(t, err)
 
@@ -81,20 +73,8 @@ func TestQueryExchangeRates(t *testing.T) {
 	err = json.Unmarshal(res, &exchangeRatesResponse)
 	require.NoError(t, err)
 	require.Equal(t, exchangeRatesResponse, wasm.ExchangeRatesQueryResponse{
-		BaseDenom: types.TestDenomA,
-		ExchangeRates: []wasm.ExchangeRateItem{
-			{
-				ExchangeRate: ExchangeRateC.String(),
-				QuoteDenom:   types.TestDenomC,
-			},
-			{
-				ExchangeRate: ExchangeRateB.String(),
-				QuoteDenom:   types.TestDenomB,
-			},
-			{
-				ExchangeRate: ExchangeRateD.String(),
-				QuoteDenom:   types.TestDenomD,
-			},
+		ExchangeRate: wasm.ExchangeRateItem{
+			ExchangeRate: ExchangeRateB.String(),
 		},
 	})
 }

@@ -125,6 +125,7 @@ import (
 	"kujira/x/oracle"
 	oraclekeeper "kujira/x/oracle/keeper"
 	oracletypes "kujira/x/oracle/types"
+	oraclewasm "kujira/x/oracle/wasm"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -296,7 +297,6 @@ func New(
 	// wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) cosmoscmd.App {
-	var wasmOpts []wasm.Option
 
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
@@ -450,7 +450,10 @@ func New(
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := "iterator,staking,stargate"
+	supportedFeatures := "iterator,staking,stargate,oracle"
+	wasmPlugins := wasmkeeper.QueryPlugins{
+		Custom: oraclewasm.NewWasmQuerier(app.OracleKeeper).QueryCustom,
+	}
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -468,7 +471,7 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		wasmOpts...,
+		wasmkeeper.WithQueryPlugins(&wasmPlugins),
 	)
 
 	// register the proposal types

@@ -1,6 +1,6 @@
 ## Abstract
 
-The Oracle module fork's Terra Classic's Oracle module with the following changes
+The Oracle module forks Terra Classic's Oracle module with the following changes
 
 - Removal of Tobin Tax. Tobin Tax was used for the Market module in stableswaps.
 - Quote denom. On Terra Classic, all prices are quoted in LUNC. Our prices are quoted in USD
