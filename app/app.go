@@ -451,7 +451,7 @@ func New(
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,oracle"
 	wasmPlugins := wasmkeeper.QueryPlugins{
-		Custom: NewWasmQuerier(app.OracleKeeper).QueryCustom,
+		Custom: NewWasmQuerier(app.BankKeeper, app.OracleKeeper).QueryCustom,
 	}
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,

@@ -2,6 +2,7 @@ package app_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -12,6 +13,8 @@ import (
 	"kujira/x/oracle/keeper"
 	"kujira/x/oracle/types"
 	"kujira/x/oracle/wasm"
+
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 func TestQueryExchangeRates(t *testing.T) {
@@ -25,7 +28,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomB, ExchangeRateB)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomD, ExchangeRateD)
 
-	querier := app.NewWasmQuerier(input.OracleKeeper)
+	querier := app.NewWasmQuerier(input.BankKeeper, input.OracleKeeper)
 	var err error
 
 	// empty data will occur error
@@ -36,7 +39,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	queryParams := wasm.ExchangeRateQueryParams{
 		Denom: types.TestDenomI,
 	}
-	bz, err := json.Marshal(wasm.CosmosQuery{
+	bz, err := json.Marshal(app.CosmosQuery{
 		Oracle: &wasm.OracleQuery{
 			ExchangeRate: &queryParams,
 		},
@@ -54,7 +57,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	queryParams = wasm.ExchangeRateQueryParams{
 		Denom: types.TestDenomC,
 	}
-	bz, err = json.Marshal(wasm.CosmosQuery{
+	bz, err = json.Marshal(app.CosmosQuery{
 		Oracle: &wasm.OracleQuery{
 			ExchangeRate: &queryParams,
 		},
@@ -67,7 +70,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	queryParams = wasm.ExchangeRateQueryParams{
 		Denom: types.TestDenomB,
 	}
-	bz, err = json.Marshal(wasm.CosmosQuery{
+	bz, err = json.Marshal(app.CosmosQuery{
 		Oracle: &wasm.OracleQuery{
 			ExchangeRate: &queryParams,
 		},
@@ -82,4 +85,32 @@ func TestQueryExchangeRates(t *testing.T) {
 	require.Equal(t, exchangeRatesResponse, wasm.ExchangeRateQueryResponse{
 		Rate: ExchangeRateB.String(),
 	})
+}
+
+func TestSupply(t *testing.T) {
+	input := keeper.CreateTestInput(t)
+
+	querier := app.NewWasmQuerier(input.BankKeeper, input.OracleKeeper)
+	var err error
+
+	// empty data will occur error
+	_, err = querier.QueryCustom(input.Ctx, []byte{})
+	require.Error(t, err)
+
+	queryParams := banktypes.QuerySupplyOfRequest{
+		Denom: types.TestDenomA,
+	}
+	bz, err := json.Marshal(app.CosmosQuery{
+		Bank: &app.BankQuery{
+			Supply: &queryParams,
+		},
+	})
+	require.NoError(t, err)
+	var x banktypes.QuerySupplyOfResponse
+
+	res, err := querier.QueryCustom(input.Ctx, bz)
+
+	err = json.Unmarshal(res, &x)
+	require.NoError(t, err)
+	fmt.Println(x)
 }

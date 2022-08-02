@@ -28,10 +28,6 @@ type ExchangeRateQueryParams struct {
 	Denom string `json:"denom"`
 }
 
-type CosmosQuery struct {
-	Oracle *OracleQuery
-}
-
 // OracleQuery custom query interface for oracle querier
 type OracleQuery struct {
 	ExchangeRate *ExchangeRateQueryParams `json:"exchange_rate,omitempty"`

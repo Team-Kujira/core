@@ -10,16 +10,20 @@ import (
 
 	oraclekeeper "kujira/x/oracle/keeper"
 	oracle "kujira/x/oracle/wasm"
+
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 // WasmQuerier - staking query interface for wasm contract
 type WasmQuerier struct {
+	bankkeeper   bankkeeper.Keeper
 	oraclekeeper oraclekeeper.Keeper
 }
 
 // NewWasmQuerier return bank wasm query interface
-func NewWasmQuerier(oraclekeeper oraclekeeper.Keeper) WasmQuerier {
-	return WasmQuerier{oraclekeeper}
+func NewWasmQuerier(bankkeeper bankkeeper.Keeper, oraclekeeper oraclekeeper.Keeper) WasmQuerier {
+	return WasmQuerier{bankkeeper, oraclekeeper}
 }
 
 // Query - implement query function
@@ -27,7 +31,12 @@ func (WasmQuerier) Query(_ sdk.Context, _ wasmvmtypes.QueryRequest) ([]byte, err
 	return nil, nil
 }
 
+type BankQuery struct {
+	Supply *banktypes.QuerySupplyOfRequest `json:"supply,omitempty"`
+}
+
 type CosmosQuery struct {
+	Bank   *BankQuery
 	Oracle *oracle.OracleQuery
 }
 
@@ -40,12 +49,14 @@ func (querier WasmQuerier) QueryCustom(ctx sdk.Context, data json.RawMessage) ([
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	var (
-		res any
-	)
-
+	var res any
 	if params.Oracle != nil {
 		res, err = oracle.Handle(querier.oraclekeeper, ctx, params.Oracle)
+	} else if params.Bank != nil {
+		coin := querier.bankkeeper.GetSupply(ctx, params.Bank.Supply.Denom)
+		res = banktypes.QuerySupplyOfResponse{
+			Amount: coin,
+		}
 	} else {
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
