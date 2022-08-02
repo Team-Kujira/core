@@ -36,7 +36,9 @@ func TestQueryExchangeRates(t *testing.T) {
 		Denom: types.TestDenomI,
 	}
 	bz, err := json.Marshal(wasm.CosmosQuery{
-		ExchangeRate: &queryParams,
+		Oracle: &wasm.OracleQuery{
+			ExchangeRate: &queryParams,
+		},
 	})
 	require.NoError(t, err)
 
@@ -52,7 +54,9 @@ func TestQueryExchangeRates(t *testing.T) {
 		Denom: types.TestDenomC,
 	}
 	bz, err = json.Marshal(wasm.CosmosQuery{
-		ExchangeRate: &queryParams,
+		Oracle: &wasm.OracleQuery{
+			ExchangeRate: &queryParams,
+		},
 	})
 	require.NoError(t, err)
 
@@ -63,7 +67,9 @@ func TestQueryExchangeRates(t *testing.T) {
 		Denom: types.TestDenomB,
 	}
 	bz, err = json.Marshal(wasm.CosmosQuery{
-		ExchangeRate: &queryParams,
+		Oracle: &wasm.OracleQuery{
+			ExchangeRate: &queryParams,
+		},
 	})
 	require.NoError(t, err)
 

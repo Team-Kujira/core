@@ -31,8 +31,12 @@ type ExchangeRateQueryParams struct {
 	Denom string `json:"denom"`
 }
 
-// CosmosQuery custom query interface for oracle querier
 type CosmosQuery struct {
+	Oracle *OracleQuery
+}
+
+// OracleQuery custom query interface for oracle querier
+type OracleQuery struct {
 	ExchangeRate *ExchangeRateQueryParams `json:"exchange_rate,omitempty"`
 }
 
@@ -50,8 +54,8 @@ func (querier WasmQuerier) QueryCustom(ctx sdk.Context, data json.RawMessage) ([
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	if params.ExchangeRate != nil {
-		rate, err := querier.keeper.GetExchangeRate(ctx, params.ExchangeRate.Denom)
+	if params.Oracle.ExchangeRate != nil {
+		rate, err := querier.keeper.GetExchangeRate(ctx, params.Oracle.ExchangeRate.Denom)
 		if err != nil {
 			return nil, err
 		}
