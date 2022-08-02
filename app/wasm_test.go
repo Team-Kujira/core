@@ -1,4 +1,4 @@
-package wasm_test
+package app_test
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"kujira/app"
 	"kujira/x/oracle/keeper"
 	"kujira/x/oracle/types"
 	"kujira/x/oracle/wasm"
@@ -24,7 +25,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomB, ExchangeRateB)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomD, ExchangeRateD)
 
-	querier := wasm.NewWasmQuerier(input.OracleKeeper)
+	querier := app.NewWasmQuerier(input.OracleKeeper)
 	var err error
 
 	// empty data will occur error

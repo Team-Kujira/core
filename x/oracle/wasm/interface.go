@@ -1,10 +1,7 @@
 package wasm
 
 import (
-	"encoding/json"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 
@@ -46,29 +43,17 @@ type ExchangeRateQueryResponse struct {
 }
 
 // QueryCustom implements custom query interface
-func (querier WasmQuerier) QueryCustom(ctx sdk.Context, data json.RawMessage) ([]byte, error) {
-	var params CosmosQuery
-	err := json.Unmarshal(data, &params)
+func Handle(keeper keeper.Keeper, ctx sdk.Context, q *OracleQuery) (any, error) {
 
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
-	}
-
-	if params.Oracle.ExchangeRate != nil {
-		rate, err := querier.keeper.GetExchangeRate(ctx, params.Oracle.ExchangeRate.Denom)
+	if q.ExchangeRate != nil {
+		rate, err := keeper.GetExchangeRate(ctx, q.ExchangeRate.Denom)
 		if err != nil {
 			return nil, err
 		}
 
-		bz, err := json.Marshal(ExchangeRateQueryResponse{
+		return ExchangeRateQueryResponse{
 			Rate: rate.String(),
-		})
-
-		if err != nil {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-		}
-
-		return bz, nil
+		}, nil
 	}
 
 	return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Oracle variant"}

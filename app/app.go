@@ -125,7 +125,6 @@ import (
 	"kujira/x/oracle"
 	oraclekeeper "kujira/x/oracle/keeper"
 	oracletypes "kujira/x/oracle/types"
-	oraclewasm "kujira/x/oracle/wasm"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -452,7 +451,7 @@ func New(
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,oracle"
 	wasmPlugins := wasmkeeper.QueryPlugins{
-		Custom: oraclewasm.NewWasmQuerier(app.OracleKeeper).QueryCustom,
+		Custom: NewWasmQuerier(app.OracleKeeper).QueryCustom,
 	}
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
