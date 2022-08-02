@@ -33,17 +33,12 @@ type ExchangeRateQueryParams struct {
 
 // CosmosQuery custom query interface for oracle querier
 type CosmosQuery struct {
-	ExchangeRate *ExchangeRateQueryParams `json:"exchange_rates,omitempty"`
+	ExchangeRate *ExchangeRateQueryParams `json:"exchange_rate,omitempty"`
 }
 
-// ExchangeRatesQueryResponseItem - exchange rates query response item
-type ExchangeRateItem struct {
-	ExchangeRate string `json:"exchange_rate"`
-}
-
-// ExchangeRatesQueryResponse - exchange rates query response for wasm module
-type ExchangeRatesQueryResponse struct {
-	ExchangeRate ExchangeRateItem `json:"exchange_rate"`
+// ExchangeRateQueryResponse - exchange rates query response item
+type ExchangeRateQueryResponse struct {
+	Rate string `json:"rate"`
 }
 
 // QueryCustom implements custom query interface
@@ -61,8 +56,8 @@ func (querier WasmQuerier) QueryCustom(ctx sdk.Context, data json.RawMessage) ([
 			return nil, err
 		}
 
-		bz, err := json.Marshal(ExchangeRatesQueryResponse{
-			ExchangeRate: ExchangeRateItem{ExchangeRate: rate.String()},
+		bz, err := json.Marshal(ExchangeRateQueryResponse{
+			Rate: rate.String(),
 		})
 
 		if err != nil {

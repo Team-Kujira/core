@@ -43,7 +43,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	res, err := querier.QueryCustom(input.Ctx, bz)
 	require.Error(t, err)
 
-	var exchangeRatesResponse wasm.ExchangeRatesQueryResponse
+	var exchangeRatesResponse wasm.ExchangeRateQueryResponse
 	err = json.Unmarshal(res, &exchangeRatesResponse)
 	require.Error(t, err)
 
@@ -72,9 +72,7 @@ func TestQueryExchangeRates(t *testing.T) {
 
 	err = json.Unmarshal(res, &exchangeRatesResponse)
 	require.NoError(t, err)
-	require.Equal(t, exchangeRatesResponse, wasm.ExchangeRatesQueryResponse{
-		ExchangeRate: wasm.ExchangeRateItem{
-			ExchangeRate: ExchangeRateB.String(),
-		},
+	require.Equal(t, exchangeRatesResponse, wasm.ExchangeRateQueryResponse{
+		Rate: ExchangeRateB.String(),
 	})
 }
