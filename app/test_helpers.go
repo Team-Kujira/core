@@ -13,7 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Setup initializes a new OsmosisApp.
+// Setup initializes a new KujiraApp.
 func Setup(isCheckTx bool) *App {
 	db := dbm.NewMemDB()
 	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
@@ -36,11 +36,11 @@ func Setup(isCheckTx bool) *App {
 	return app
 }
 
-// SetupTestingAppWithLevelDb initializes a new OsmosisApp intended for testing,
+// SetupTestingAppWithLevelDb initializes a new KujiraApp intended for testing,
 // with LevelDB as a db.
 func SetupTestingAppWithLevelDb(isCheckTx bool) (app *App, cleanupFn func()) {
-	dir := "osmosis_testing"
-	db, err := sdk.NewLevelDB("osmosis_leveldb_testing", dir)
+	dir := "kujira_testing"
+	db, err := sdk.NewLevelDB("kujira_leveldb_testing", dir)
 	if err != nil {
 		panic(err)
 	}

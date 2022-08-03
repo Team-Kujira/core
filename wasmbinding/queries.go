@@ -1,11 +1,6 @@
 package wasmbinding
 
 import (
-	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"kujira/wasmbinding/bindings"
 	denomkeeper "kujira/x/denom/keeper"
 
 	oraclekeeper "kujira/x/oracle/keeper"
@@ -26,14 +21,4 @@ func NewQueryPlugin(bk bankkeeper.Keeper, ok oraclekeeper.Keeper, dk denomkeeper
 		bankkeeper:   bk,
 		oraclekeeper: ok,
 	}
-}
-
-// GetDenomAdmin is a query to get denom admin.
-func (qp QueryPlugin) GetDenomAdmin(ctx sdk.Context, denom string) (*bindings.DenomAdminResponse, error) {
-	metadata, err := qp.denomKeeper.GetAuthorityMetadata(ctx, denom)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get admin for denom: %s", denom)
-	}
-
-	return &bindings.DenomAdminResponse{Admin: metadata.Admin}, nil
 }
