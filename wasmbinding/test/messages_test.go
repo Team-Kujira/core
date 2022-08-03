@@ -20,9 +20,9 @@ import (
 	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-func fundAccount(t *testing.T, ctx sdk.Context, osmosis *app.App, addr sdk.AccAddress, coins sdk.Coins) {
+func fundAccount(t *testing.T, ctx sdk.Context, app *app.App, addr sdk.AccAddress, coins sdk.Coins) {
 	err := simapp.FundAccount(
-		osmosis.BankKeeper,
+		app.BankKeeper,
 		ctx,
 		addr,
 		coins,
