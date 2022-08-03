@@ -1,52 +1,58 @@
-package app_test
+package wasmbinding_test
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/app"
-	"kujira/x/oracle/keeper"
 	"kujira/x/oracle/types"
 	"kujira/x/oracle/wasm"
 
+	"kujira/app"
+	"kujira/wasmbinding"
+	"kujira/wasmbinding/bindings"
+
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestQueryExchangeRates(t *testing.T) {
-	input := keeper.CreateTestInput(t)
+	app := app.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	ExchangeRateC := sdk.NewDec(1700)
 	ExchangeRateB := sdk.NewDecWithPrec(17, 1)
 	ExchangeRateD := sdk.NewDecWithPrec(19, 1)
-	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomA, sdk.NewDec(1))
-	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomC, ExchangeRateC)
-	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomB, ExchangeRateB)
-	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomD, ExchangeRateD)
+	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomA, sdk.NewDec(1))
+	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomC, ExchangeRateC)
+	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomB, ExchangeRateB)
+	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomD, ExchangeRateD)
 
-	querier := app.NewWasmQuerier(input.BankKeeper, input.OracleKeeper)
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)
+	querier := wasmbinding.CustomQuerier(plugin)
 	var err error
 
 	// empty data will occur error
-	_, err = querier.QueryCustom(input.Ctx, []byte{})
+	_, err = querier(ctx, []byte{})
 	require.Error(t, err)
 
 	// not existing quote denom query
 	queryParams := wasm.ExchangeRateQueryParams{
 		Denom: types.TestDenomI,
 	}
-	bz, err := json.Marshal(app.CosmosQuery{
+	bz, err := json.Marshal(bindings.CosmosQuery{
 		Oracle: &wasm.OracleQuery{
 			ExchangeRate: &queryParams,
 		},
 	})
 	require.NoError(t, err)
 
-	res, err := querier.QueryCustom(input.Ctx, bz)
+	res, err := querier(ctx, bz)
 	require.Error(t, err)
 
 	var exchangeRatesResponse wasm.ExchangeRateQueryResponse
@@ -57,27 +63,27 @@ func TestQueryExchangeRates(t *testing.T) {
 	queryParams = wasm.ExchangeRateQueryParams{
 		Denom: types.TestDenomC,
 	}
-	bz, err = json.Marshal(app.CosmosQuery{
+	bz, err = json.Marshal(bindings.CosmosQuery{
 		Oracle: &wasm.OracleQuery{
 			ExchangeRate: &queryParams,
 		},
 	})
 	require.NoError(t, err)
 
-	res, err = querier.QueryCustom(input.Ctx, bz)
+	res, err = querier(ctx, bz)
 	require.NoError(t, err)
 
 	queryParams = wasm.ExchangeRateQueryParams{
 		Denom: types.TestDenomB,
 	}
-	bz, err = json.Marshal(app.CosmosQuery{
+	bz, err = json.Marshal(bindings.CosmosQuery{
 		Oracle: &wasm.OracleQuery{
 			ExchangeRate: &queryParams,
 		},
 	})
 	require.NoError(t, err)
 
-	res, err = querier.QueryCustom(input.Ctx, bz)
+	res, err = querier(ctx, bz)
 	require.NoError(t, err)
 
 	err = json.Unmarshal(res, &exchangeRatesResponse)
@@ -88,27 +94,30 @@ func TestQueryExchangeRates(t *testing.T) {
 }
 
 func TestSupply(t *testing.T) {
-	input := keeper.CreateTestInput(t)
+	app := app.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	querier := app.NewWasmQuerier(input.BankKeeper, input.OracleKeeper)
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)
+	querier := wasmbinding.CustomQuerier(plugin)
+
 	var err error
 
 	// empty data will occur error
-	_, err = querier.QueryCustom(input.Ctx, []byte{})
+	_, err = querier(ctx, []byte{})
 	require.Error(t, err)
 
 	queryParams := banktypes.QuerySupplyOfRequest{
 		Denom: types.TestDenomA,
 	}
-	bz, err := json.Marshal(app.CosmosQuery{
-		Bank: &app.BankQuery{
+	bz, err := json.Marshal(bindings.CosmosQuery{
+		Bank: &bindings.BankQuery{
 			Supply: &queryParams,
 		},
 	})
 	require.NoError(t, err)
 	var x banktypes.QuerySupplyOfResponse
 
-	res, err := querier.QueryCustom(input.Ctx, bz)
+	res, err := querier(ctx, bz)
 
 	err = json.Unmarshal(res, &x)
 	require.NoError(t, err)

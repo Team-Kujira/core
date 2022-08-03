@@ -112,6 +112,7 @@ import (
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
+	"kujira/wasmbinding"
 	"kujira/x/denom"
 	denomkeeper "kujira/x/denom/keeper"
 	denomtypes "kujira/x/denom/types"
@@ -282,6 +283,25 @@ type App struct {
 	sm *module.SimulationManager
 }
 
+func NewIgniteApp(
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	loadLatest bool,
+	skipUpgradeHeights map[int64]bool,
+	homePath string,
+	invCheckPeriod uint,
+	encodingConfig cosmoscmd.EncodingConfig,
+	appOpts servertypes.AppOptions,
+	baseAppOptions ...func(*baseapp.BaseApp),
+) cosmoscmd.App {
+	return New(logger,
+		db, traceStore, loadLatest,
+		skipUpgradeHeights, homePath, invCheckPeriod,
+		encodingConfig, appOpts, baseAppOptions...,
+	)
+}
+
 // New returns a reference to an initialized blockchain app
 func New(
 	logger log.Logger,
@@ -295,7 +315,7 @@ func New(
 	appOpts servertypes.AppOptions,
 	// wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) cosmoscmd.App {
+) *App {
 
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
@@ -440,6 +460,16 @@ func New(
 		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, &stakingKeeper, distrtypes.ModuleName,
 	)
 
+	denomKeeper := denomkeeper.NewKeeper(
+		appCodec,
+		app.keys[denomtypes.StoreKey],
+		app.GetSubspace(denomtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
+		app.DistrKeeper,
+	)
+	app.DenomKeeper = &denomKeeper
+
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -450,9 +480,6 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,oracle"
-	wasmPlugins := wasmkeeper.QueryPlugins{
-		Custom: NewWasmQuerier(app.BankKeeper, app.OracleKeeper).QueryCustom,
-	}
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -470,7 +497,7 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		wasmkeeper.WithQueryPlugins(&wasmPlugins),
+		wasmbinding.RegisterCustomPlugins(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)...,
 	)
 
 	// register the proposal types
@@ -505,16 +532,6 @@ func New(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
-
-	denomKeeper := denomkeeper.NewKeeper(
-		appCodec,
-		app.keys[denomtypes.StoreKey],
-		app.GetSubspace(denomtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
-		app.DistrKeeper,
-	)
-	app.DenomKeeper = &denomKeeper
 
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
