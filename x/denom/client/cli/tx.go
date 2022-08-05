@@ -65,9 +65,9 @@ func NewCreateDenomCmd() *cobra.Command {
 // NewMintCmd broadcast MsgMint
 func NewMintCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mint [amount] [flags]",
+		Use:   "mint [amount] [recipient] [flags]",
 		Short: "Mint a denom to an address. Must have admin authority to do so.",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -84,6 +84,7 @@ func NewMintCmd() *cobra.Command {
 			msg := types.NewMsgMint(
 				clientCtx.GetFromAddress().String(),
 				amount,
+				args[1],
 			)
 
 			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)

@@ -17356,6 +17356,9 @@ paths:
                         }
       parameters:
         - name: body
+          description: |-
+            SimulateRequest is the request type for the Service.Simulate
+            RPC method.
           in: body
           required: true
           schema:
@@ -18155,6 +18158,11 @@ paths:
                         }
       parameters:
         - name: body
+          description: >-
+            BroadcastTxRequest is the request type for the
+            Service.BroadcastTxRequest
+
+            RPC method.
           in: body
           required: true
           schema:
@@ -32543,6 +32551,522 @@ paths:
           type: string
       tags:
         - Query
+  /oracle/denoms/actives:
+    get:
+      summary: Actives returns all active denoms
+      operationId: KujiraOracleActives
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              actives:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  actives defines a list of the denomination which oracle prices
+                  aggreed upon.
+            description: |-
+              QueryActivesResponse is response type for the
+              Query/Actives RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /oracle/denoms/exchange_rates:
+    get:
+      summary: ExchangeRates returns exchange rates of all denoms
+      operationId: KujiraOracleExchangeRates
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              exchange_rates:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    DecCoin defines a token with a denomination and a decimal
+                    amount.
+
+
+                    NOTE: The amount field is an Dec which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+                description: >-
+                  exchange_rates defines a list of the exchange rate for all
+                  whitelisted denoms.
+            description: |-
+              QueryExchangeRatesResponse is response type for the
+              Query/ExchangeRates RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  '/oracle/denoms/{denom}/exchange_rate':
+    get:
+      summary: ExchangeRate returns exchange rate of a denom
+      operationId: KujiraOracleExchangeRate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              exchange_rate:
+                type: string
+                title: exchange_rate defines the exchange rate of whitelisted assets
+            description: |-
+              QueryExchangeRateResponse is response type for the
+              Query/ExchangeRate RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: denom
+          description: denom defines the denomination to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /oracle/params:
+    get:
+      summary: Params queries all parameters.
+      operationId: KujiraOracleParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params defines the parameters of the module.
+                type: object
+                properties:
+                  vote_period:
+                    type: string
+                    format: uint64
+                  vote_threshold:
+                    type: string
+                  reward_band:
+                    type: string
+                  reward_distribution_window:
+                    type: string
+                    format: uint64
+                  whitelist:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                      title: Denom - the object to hold configurations of each denom
+                  slash_fraction:
+                    type: string
+                  slash_window:
+                    type: string
+                    format: uint64
+                  min_valid_per_window:
+                    type: string
+            description: >-
+              QueryParamsResponse is the response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  '/oracle/valdiators/{validator_addr}/aggregate_vote':
+    get:
+      summary: AggregateVote returns an aggregate vote of a validator
+      operationId: KujiraOracleAggregateVote
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_vote:
+                title: >-
+                  aggregate_vote defines oracle aggregate vote submitted by a
+                  validator in the current vote period
+                type: object
+                properties:
+                  exchange_rate_tuples:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        exchange_rate:
+                          type: string
+                      title: >-
+                        ExchangeRateTuple - struct to store interpreted exchange
+                        rates data to store
+                  voter:
+                    type: string
+                description: >-
+                  MsgAggregateExchangeRateVote - struct for voting on exchange
+                  rates.
+            description: |-
+              QueryAggregateVoteResponse is response type for the
+              Query/AggregateVote RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /oracle/validators/aggregate_prevotes:
+    get:
+      summary: AggregatePrevotes returns aggregate prevotes of all validators
+      operationId: KujiraOracleAggregatePrevotes
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_prevotes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    hash:
+                      type: string
+                    voter:
+                      type: string
+                    submit_block:
+                      type: string
+                      format: uint64
+                  title: >-
+                    struct for aggregate prevoting on the ExchangeRateVote.
+
+                    The purpose of aggregate prevote is to hide vote exchange
+                    rates with hash
+
+                    which is formatted as hex string in SHA256("{salt}:{exchange
+                    rate}{denom},...,{exchange rate}{denom}:{voter}")
+                title: >-
+                  aggregate_prevotes defines all oracle aggregate prevotes
+                  submitted in the current vote period
+            description: |-
+              QueryAggregatePrevotesResponse is response type for the
+              Query/AggregatePrevotes RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /oracle/validators/aggregate_votes:
+    get:
+      summary: AggregateVotes returns aggregate votes of all validators
+      operationId: KujiraOracleAggregateVotes
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_votes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    exchange_rate_tuples:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          exchange_rate:
+                            type: string
+                        title: >-
+                          ExchangeRateTuple - struct to store interpreted
+                          exchange rates data to store
+                    voter:
+                      type: string
+                  description: >-
+                    MsgAggregateExchangeRateVote - struct for voting on exchange
+                    rates.
+                title: >-
+                  aggregate_votes defines all oracle aggregate votes submitted
+                  in the current vote period
+            description: |-
+              QueryAggregateVotesResponse is response type for the
+              Query/AggregateVotes RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  '/oracle/validators/{validator_addr}/aggregate_prevote':
+    get:
+      summary: AggregatePrevote returns an aggregate prevote of a validator
+      operationId: KujiraOracleAggregatePrevote
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              aggregate_prevote:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                  voter:
+                    type: string
+                  submit_block:
+                    type: string
+                    format: uint64
+                title: >-
+                  struct for aggregate prevoting on the ExchangeRateVote.
+
+                  The purpose of aggregate prevote is to hide vote exchange
+                  rates with hash
+
+                  which is formatted as hex string in SHA256("{salt}:{exchange
+                  rate}{denom},...,{exchange rate}{denom}:{voter}")
+            description: |-
+              QueryAggregatePrevoteResponse is response type for the
+              Query/AggregatePrevote RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  '/oracle/validators/{validator_addr}/feeder':
+    get:
+      summary: FeederDelegation returns feeder delegation of a validator
+      operationId: KujiraOracleFeederDelegation
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              feeder_addr:
+                type: string
+                title: feeder_addr defines the feeder delegation of a validator
+            description: |-
+              QueryFeederDelegationResponse is response type for the
+              Query/FeederDelegation RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  '/oracle/validators/{validator_addr}/miss':
+    get:
+      summary: MissCounter returns oracle miss counter of a validator
+      operationId: KujiraOracleMissCounter
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              miss_counter:
+                type: string
+                format: uint64
+                title: miss_counter defines the oracle miss counter of a validator
+            description: |-
+              QueryMissCounterResponse is response type for the
+              Query/MissCounter RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: validator_addr
+          description: validator defines the validator address to query for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /kujira/scheduler/hook:
     get:
       summary: Queries a list of Hook items.
@@ -32678,16 +33202,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -54893,6 +55407,307 @@ definitions:
 
                 signatures required by gogoproto.
         title: Params holds parameters for the denom module
+    description: QueryParamsResponse is the response type for the Query/Params RPC method.
+  kujira.oracle.AggregateExchangeRatePrevote:
+    type: object
+    properties:
+      hash:
+        type: string
+      voter:
+        type: string
+      submit_block:
+        type: string
+        format: uint64
+    title: >-
+      struct for aggregate prevoting on the ExchangeRateVote.
+
+      The purpose of aggregate prevote is to hide vote exchange rates with hash
+
+      which is formatted as hex string in SHA256("{salt}:{exchange
+      rate}{denom},...,{exchange rate}{denom}:{voter}")
+  kujira.oracle.AggregateExchangeRateVote:
+    type: object
+    properties:
+      exchange_rate_tuples:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            exchange_rate:
+              type: string
+          title: >-
+            ExchangeRateTuple - struct to store interpreted exchange rates data
+            to store
+      voter:
+        type: string
+    description: MsgAggregateExchangeRateVote - struct for voting on exchange rates.
+  kujira.oracle.Denom:
+    type: object
+    properties:
+      name:
+        type: string
+    title: Denom - the object to hold configurations of each denom
+  kujira.oracle.ExchangeRateTuple:
+    type: object
+    properties:
+      denom:
+        type: string
+      exchange_rate:
+        type: string
+    title: >-
+      ExchangeRateTuple - struct to store interpreted exchange rates data to
+      store
+  kujira.oracle.MsgAggregateExchangeRatePrevoteResponse:
+    type: object
+    description: >-
+      MsgAggregateExchangeRatePrevoteResponse defines the
+      Msg/AggregateExchangeRatePrevote response type.
+  kujira.oracle.MsgAggregateExchangeRateVoteResponse:
+    type: object
+    description: >-
+      MsgAggregateExchangeRateVoteResponse defines the
+      Msg/AggregateExchangeRateVote response type.
+  kujira.oracle.MsgDelegateFeedConsentResponse:
+    type: object
+    description: >-
+      MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent
+      response type.
+  kujira.oracle.Params:
+    type: object
+    properties:
+      vote_period:
+        type: string
+        format: uint64
+      vote_threshold:
+        type: string
+      reward_band:
+        type: string
+      reward_distribution_window:
+        type: string
+        format: uint64
+      whitelist:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+          title: Denom - the object to hold configurations of each denom
+      slash_fraction:
+        type: string
+      slash_window:
+        type: string
+        format: uint64
+      min_valid_per_window:
+        type: string
+    description: Params defines the parameters for the oracle module.
+  kujira.oracle.QueryActivesResponse:
+    type: object
+    properties:
+      actives:
+        type: array
+        items:
+          type: string
+        description: >-
+          actives defines a list of the denomination which oracle prices aggreed
+          upon.
+    description: |-
+      QueryActivesResponse is response type for the
+      Query/Actives RPC method.
+  kujira.oracle.QueryAggregatePrevoteResponse:
+    type: object
+    properties:
+      aggregate_prevote:
+        type: object
+        properties:
+          hash:
+            type: string
+          voter:
+            type: string
+          submit_block:
+            type: string
+            format: uint64
+        title: >-
+          struct for aggregate prevoting on the ExchangeRateVote.
+
+          The purpose of aggregate prevote is to hide vote exchange rates with
+          hash
+
+          which is formatted as hex string in SHA256("{salt}:{exchange
+          rate}{denom},...,{exchange rate}{denom}:{voter}")
+    description: |-
+      QueryAggregatePrevoteResponse is response type for the
+      Query/AggregatePrevote RPC method.
+  kujira.oracle.QueryAggregatePrevotesResponse:
+    type: object
+    properties:
+      aggregate_prevotes:
+        type: array
+        items:
+          type: object
+          properties:
+            hash:
+              type: string
+            voter:
+              type: string
+            submit_block:
+              type: string
+              format: uint64
+          title: >-
+            struct for aggregate prevoting on the ExchangeRateVote.
+
+            The purpose of aggregate prevote is to hide vote exchange rates with
+            hash
+
+            which is formatted as hex string in SHA256("{salt}:{exchange
+            rate}{denom},...,{exchange rate}{denom}:{voter}")
+        title: >-
+          aggregate_prevotes defines all oracle aggregate prevotes submitted in
+          the current vote period
+    description: |-
+      QueryAggregatePrevotesResponse is response type for the
+      Query/AggregatePrevotes RPC method.
+  kujira.oracle.QueryAggregateVoteResponse:
+    type: object
+    properties:
+      aggregate_vote:
+        title: >-
+          aggregate_vote defines oracle aggregate vote submitted by a validator
+          in the current vote period
+        type: object
+        properties:
+          exchange_rate_tuples:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                exchange_rate:
+                  type: string
+              title: >-
+                ExchangeRateTuple - struct to store interpreted exchange rates
+                data to store
+          voter:
+            type: string
+        description: MsgAggregateExchangeRateVote - struct for voting on exchange rates.
+    description: |-
+      QueryAggregateVoteResponse is response type for the
+      Query/AggregateVote RPC method.
+  kujira.oracle.QueryAggregateVotesResponse:
+    type: object
+    properties:
+      aggregate_votes:
+        type: array
+        items:
+          type: object
+          properties:
+            exchange_rate_tuples:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  exchange_rate:
+                    type: string
+                title: >-
+                  ExchangeRateTuple - struct to store interpreted exchange rates
+                  data to store
+            voter:
+              type: string
+          description: MsgAggregateExchangeRateVote - struct for voting on exchange rates.
+        title: >-
+          aggregate_votes defines all oracle aggregate votes submitted in the
+          current vote period
+    description: |-
+      QueryAggregateVotesResponse is response type for the
+      Query/AggregateVotes RPC method.
+  kujira.oracle.QueryExchangeRateResponse:
+    type: object
+    properties:
+      exchange_rate:
+        type: string
+        title: exchange_rate defines the exchange rate of whitelisted assets
+    description: |-
+      QueryExchangeRateResponse is response type for the
+      Query/ExchangeRate RPC method.
+  kujira.oracle.QueryExchangeRatesResponse:
+    type: object
+    properties:
+      exchange_rates:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            DecCoin defines a token with a denomination and a decimal amount.
+
+            NOTE: The amount field is an Dec which implements the custom method
+            signatures required by gogoproto.
+        description: >-
+          exchange_rates defines a list of the exchange rate for all whitelisted
+          denoms.
+    description: |-
+      QueryExchangeRatesResponse is response type for the
+      Query/ExchangeRates RPC method.
+  kujira.oracle.QueryFeederDelegationResponse:
+    type: object
+    properties:
+      feeder_addr:
+        type: string
+        title: feeder_addr defines the feeder delegation of a validator
+    description: |-
+      QueryFeederDelegationResponse is response type for the
+      Query/FeederDelegation RPC method.
+  kujira.oracle.QueryMissCounterResponse:
+    type: object
+    properties:
+      miss_counter:
+        type: string
+        format: uint64
+        title: miss_counter defines the oracle miss counter of a validator
+    description: |-
+      QueryMissCounterResponse is response type for the
+      Query/MissCounter RPC method.
+  kujira.oracle.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params defines the parameters of the module.
+        type: object
+        properties:
+          vote_period:
+            type: string
+            format: uint64
+          vote_threshold:
+            type: string
+          reward_band:
+            type: string
+          reward_distribution_window:
+            type: string
+            format: uint64
+          whitelist:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+              title: Denom - the object to hold configurations of each denom
+          slash_fraction:
+            type: string
+          slash_window:
+            type: string
+            format: uint64
+          min_valid_per_window:
+            type: string
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
   kujira.scheduler.Hook:
     type: object

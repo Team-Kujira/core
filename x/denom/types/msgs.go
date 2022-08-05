@@ -52,10 +52,11 @@ func (m MsgCreateDenom) GetSigners() []sdk.AccAddress {
 var _ sdk.Msg = &MsgMint{}
 
 // NewMsgMint creates a message to mint tokens
-func NewMsgMint(sender string, amount sdk.Coin) *MsgMint {
+func NewMsgMint(sender string, amount sdk.Coin, recipient string) *MsgMint {
 	return &MsgMint{
-		Sender: sender,
-		Amount: amount,
+		Sender:    sender,
+		Amount:    amount,
+		Recipient: recipient,
 	}
 }
 

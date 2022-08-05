@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -71,6 +72,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
@@ -99,9 +101,9 @@ import (
 	intertxkeeper "github.com/cosmos/interchain-accounts/x/inter-tx/keeper"
 	intertxtypes "github.com/cosmos/interchain-accounts/x/inter-tx/types"
 
-	"github.com/spf13/cast"
 	"github.com/ignite-hq/cli/ignite/pkg/cosmoscmd"
 	"github.com/ignite-hq/cli/ignite/pkg/openapiconsole"
+	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -112,6 +114,7 @@ import (
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
+	"kujira/wasmbinding"
 	"kujira/x/denom"
 	denomkeeper "kujira/x/denom/keeper"
 	denomtypes "kujira/x/denom/types"
@@ -121,6 +124,10 @@ import (
 	schedulerclient "kujira/x/scheduler/client"
 	schedulerkeeper "kujira/x/scheduler/keeper"
 	schedulertypes "kujira/x/scheduler/types"
+
+	"kujira/x/oracle"
+	oraclekeeper "kujira/x/oracle/keeper"
+	oracletypes "kujira/x/oracle/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -180,6 +187,8 @@ var (
 		intertx.AppModuleBasic{},
 		denom.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
+		oracle.AppModuleBasic{},
+
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -196,6 +205,7 @@ var (
 		wasm.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		schedulertypes.ModuleName:      nil,
+		oracletypes.ModuleName:         nil,
 
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
@@ -256,6 +266,7 @@ type App struct {
 	WasmKeeper          wasm.Keeper
 	DenomKeeper         *denomkeeper.Keeper
 	SchedulerKeeper     schedulerkeeper.Keeper
+	OracleKeeper        oraclekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -274,6 +285,25 @@ type App struct {
 	sm *module.SimulationManager
 }
 
+func NewIgniteApp(
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	loadLatest bool,
+	skipUpgradeHeights map[int64]bool,
+	homePath string,
+	invCheckPeriod uint,
+	encodingConfig cosmoscmd.EncodingConfig,
+	appOpts servertypes.AppOptions,
+	baseAppOptions ...func(*baseapp.BaseApp),
+) cosmoscmd.App {
+	return New(logger,
+		db, traceStore, loadLatest,
+		skipUpgradeHeights, homePath, invCheckPeriod,
+		encodingConfig, appOpts, baseAppOptions...,
+	)
+}
+
 // New returns a reference to an initialized blockchain app
 func New(
 	logger log.Logger,
@@ -287,8 +317,7 @@ func New(
 	appOpts servertypes.AppOptions,
 	// wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) cosmoscmd.App {
-	var wasmOpts []wasm.Option
+) *App {
 
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
@@ -308,6 +337,7 @@ func New(
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		intertxtypes.StoreKey,
 		schedulertypes.StoreKey,
+		oracletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
@@ -324,6 +354,8 @@ func New(
 		tkeys:             tkeys,
 		memKeys:           memKeys,
 	}
+
+	cfg := module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
 
@@ -371,7 +403,28 @@ func New(
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
+	app.UpgradeKeeper.SetUpgradeHandler("v0.5.0",
+		func(
+			ctx sdk.Context,
+			plan upgradetypes.Plan,
+			fromVM module.VersionMap,
+		) (module.VersionMap, error) {
+			return app.mm.RunMigrations(ctx, cfg, fromVM)
+		})
 
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+
+	if upgradeInfo.Name == "v0.5.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{oracletypes.ModuleName},
+		}
+
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
@@ -427,6 +480,21 @@ func New(
 		app.GetSubspace(schedulertypes.ModuleName),
 	)
 
+	app.OracleKeeper = oraclekeeper.NewKeeper(
+		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, &stakingKeeper, distrtypes.ModuleName,
+	)
+
+	denomKeeper := denomkeeper.NewKeeper(
+		appCodec,
+		app.keys[denomtypes.StoreKey],
+		app.GetSubspace(denomtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
+		app.DistrKeeper,
+	)
+	app.DenomKeeper = &denomKeeper
+
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -436,7 +504,7 @@ func New(
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := "iterator,staking,stargate"
+	supportedFeatures := "iterator,staking,stargate,oracle"
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -454,7 +522,7 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		wasmOpts...,
+		wasmbinding.RegisterCustomPlugins(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)...,
 	)
 
 	// register the proposal types
@@ -489,16 +557,6 @@ func New(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
-
-	denomKeeper := denomkeeper.NewKeeper(
-		appCodec,
-		app.keys[denomtypes.StoreKey],
-		app.GetSubspace(denomtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
-		app.DistrKeeper,
-	)
-	app.DenomKeeper = &denomKeeper
 
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
@@ -554,6 +612,7 @@ func New(
 		icaModule,
 		interTxModule,
 		scheduler.NewAppModule(appCodec, app.SchedulerKeeper, app.AccountKeeper, app.BankKeeper, wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)),
+		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -585,6 +644,7 @@ func New(
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
+		oracletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -612,6 +672,7 @@ func New(
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
+		oracletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -644,12 +705,13 @@ func New(
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
+		oracletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.mm.RegisterServices(cfg)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
@@ -668,6 +730,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		denom.NewAppModule(appCodec, *app.DenomKeeper, app.AccountKeeper, app.BankKeeper),
+		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -880,6 +943,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(denomtypes.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
+	paramsKeeper.Subspace(oracletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

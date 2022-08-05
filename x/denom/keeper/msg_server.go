@@ -53,7 +53,7 @@ func (server msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.
 		return nil, types.ErrUnauthorized
 	}
 
-	err = server.Keeper.mintTo(ctx, msg.Amount, msg.Sender)
+	err = server.Keeper.mintTo(ctx, msg.Amount, msg.Recipient)
 	if err != nil {
 		return nil, err
 	}
