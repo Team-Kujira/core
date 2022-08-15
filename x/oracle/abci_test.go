@@ -12,9 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"kujira/x/oracle"
-	"kujira/x/oracle/keeper"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 func TestOracleThreshold(t *testing.T) {
@@ -292,6 +292,47 @@ func TestOracleRewardBand(t *testing.T) {
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 
+	// no one will miss the vote if someone submits an extra denom
+	// Account 1, DenomC
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Sub(rewardSpread)}}, 0)
+
+	// Account 2, DenomC
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 1)
+
+	// Account 3, DenomC +  Denom D
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{
+		{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(rewardSpread)},
+		{Denom: types.TestDenomE, Amount: randomExchangeRate.Add(rewardSpread)},
+	}, 2)
+
+	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+
+	// no one will miss the vote if there is threshold of an extra denom
+	// Account 1, DenomC
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Sub(rewardSpread)}}, 0)
+
+	// Account 2, DenomC
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{
+		{Denom: types.TestDenomC, Amount: randomExchangeRate},
+		{Denom: types.TestDenomE, Amount: randomExchangeRate.Add(rewardSpread)},
+	}, 1)
+
+	// Account 3, DenomC +  Denom D
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{
+		{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(rewardSpread)},
+		{Denom: types.TestDenomE, Amount: randomExchangeRate.Add(rewardSpread)},
+	}, 2)
+
+	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+
+	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
+	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
+	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
+
 }
 
 func TestOracleMultiRewardDistribution(t *testing.T) {
@@ -343,6 +384,7 @@ func TestOracleExchangeRate(t *testing.T) {
 		sdk.DecCoins{
 			{Denom: types.TestDenomB, Amount: usdRandomExchangeRate},
 			{Denom: types.TestDenomC, Amount: krwRandomExchangeRate},
+			{Denom: types.TestDenomD, Amount: randomExchangeRate},
 		}, 0)
 
 	// Account 2, DenomB, DenomC
@@ -350,11 +392,13 @@ func TestOracleExchangeRate(t *testing.T) {
 		sdk.DecCoins{
 			{Denom: types.TestDenomB, Amount: usdRandomExchangeRate},
 			{Denom: types.TestDenomC, Amount: krwRandomExchangeRate},
+			{Denom: types.TestDenomD, Amount: randomExchangeRate},
 		}, 1)
 
 	// Account 3, DenomC, DenomD
 	makeAggregatePrevoteAndVote(t, input, h, 0,
 		sdk.DecCoins{
+			{Denom: types.TestDenomB, Amount: usdRandomExchangeRate},
 			{Denom: types.TestDenomC, Amount: krwRandomExchangeRate},
 			{Denom: types.TestDenomD, Amount: randomExchangeRate},
 		}, 2)
@@ -365,9 +409,11 @@ func TestOracleExchangeRate(t *testing.T) {
 
 	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
+	fmt.Println(rewardAmt)
+
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
-	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(5).MulRaw(2)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
-	expectedRewardAmt2 := sdk.NewDecFromInt(rewardAmt.QuoRaw(5).MulRaw(1)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
+	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(9).MulRaw(3)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
+	expectedRewardAmt2 := sdk.NewDecFromInt(rewardAmt.QuoRaw(9).MulRaw(3)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
 	rewards := input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[0])
 	require.Equal(t, expectedRewardAmt, rewards.Rewards.AmountOf(types.TestDenomA).TruncateInt())
 	rewards = input.DistrKeeper.GetValidatorOutstandingRewards(input.Ctx.WithBlockHeight(2), keeper.ValAddrs[1])

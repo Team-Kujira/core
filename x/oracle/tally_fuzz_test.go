@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/x/oracle"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 func TestFuzz_Tally(t *testing.T) {

@@ -3,11 +3,11 @@ package scheduler_test
 import (
 	"testing"
 
+	keepertest "github.com/Team-Kujira/core/testutil/keeper"
+	"github.com/Team-Kujira/core/testutil/nullify"
+	"github.com/Team-Kujira/core/x/scheduler"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	"github.com/stretchr/testify/require"
-	keepertest "kujira/testutil/keeper"
-	"kujira/testutil/nullify"
-	"kujira/x/scheduler"
-	"kujira/x/scheduler/types"
 )
 
 func TestGenesis(t *testing.T) {

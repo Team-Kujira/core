@@ -3,12 +3,12 @@ package keeper_test
 import (
 	"testing"
 
+	keepertest "github.com/Team-Kujira/core/testutil/keeper"
+	"github.com/Team-Kujira/core/testutil/nullify"
+	"github.com/Team-Kujira/core/x/scheduler/keeper"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	keepertest "kujira/testutil/keeper"
-	"kujira/testutil/nullify"
-	"kujira/x/scheduler/keeper"
-	"kujira/x/scheduler/types"
 )
 
 func createNHook(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Hook {

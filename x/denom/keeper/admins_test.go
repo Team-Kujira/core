@@ -3,8 +3,8 @@ package keeper_test
 // import (
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-// 	"kujira/x/denom/keeper"
-// 	"kujira/x/denom/types"
+// 	"github.com/Team-Kujira/core/x/denom/keeper"
+// 	"github.com/Team-Kujira/core/x/denom/types"
 // )
 
 // func (suite *KeeperTestSuite) TestAdminMsgs() {
