@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/types"
 )
 
 var _ types.QueryServer = Keeper{}

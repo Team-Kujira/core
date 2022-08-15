@@ -114,20 +114,20 @@ import (
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	"kujira/wasmbinding"
-	"kujira/x/denom"
-	denomkeeper "kujira/x/denom/keeper"
-	denomtypes "kujira/x/denom/types"
+	"github.com/Team-Kujira/core/wasmbinding"
+	"github.com/Team-Kujira/core/x/denom"
+	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
+	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
-	"kujira/docs"
-	scheduler "kujira/x/scheduler"
-	schedulerclient "kujira/x/scheduler/client"
-	schedulerkeeper "kujira/x/scheduler/keeper"
-	schedulertypes "kujira/x/scheduler/types"
+	"github.com/Team-Kujira/core/docs"
+	scheduler "github.com/Team-Kujira/core/x/scheduler"
+	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
+	schedulerkeeper "github.com/Team-Kujira/core/x/scheduler/keeper"
+	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
 
-	"kujira/x/oracle"
-	oraclekeeper "kujira/x/oracle/keeper"
-	oracletypes "kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle"
+	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
+	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 

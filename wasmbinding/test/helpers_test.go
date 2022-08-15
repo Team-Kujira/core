@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/app"
+	"github.com/Team-Kujira/core/app"
 )
 
 func CreateTestInput() (*app.App, sdk.Context) {

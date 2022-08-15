@@ -19,9 +19,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"kujira/x/denom/client/cli"
-	"kujira/x/denom/keeper"
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/client/cli"
+	"github.com/Team-Kujira/core/x/denom/keeper"
+	"github.com/Team-Kujira/core/x/denom/types"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
 
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/types"
 )
 
 // GetAuthorityMetadata returns the authority metadata for a specific denom

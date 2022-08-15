@@ -9,11 +9,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
-	"kujira/wasmbinding/bindings"
+	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
-	denom "kujira/x/denom/wasm"
+	denom "github.com/Team-Kujira/core/x/denom/wasm"
 
-	denomkeeper "kujira/x/denom/keeper"
+	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages

@@ -2,8 +2,9 @@ package rest
 
 import (
 	"encoding/json"
-	"kujira/x/scheduler/types"
 	"net/http"
+
+	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/client"

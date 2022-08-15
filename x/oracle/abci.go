@@ -3,8 +3,8 @@ package oracle
 import (
 	"time"
 
-	"kujira/x/oracle/keeper"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -61,7 +61,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 			ballotPower := sdk.NewInt(ballot.Power())
 
 			if !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes) {
-				// Get weighted median of cross exchange rates
 				exchangeRate, err := Tally(ctx, ballot, params.RewardBand, validatorClaimMap)
 				if err != nil {
 					return err
@@ -78,7 +77,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		for _, claim := range validatorClaimMap {
 			// Skip abstain & valid voters
-			if int(claim.WinCount) == voteTargetsLen {
+			if int(claim.WinCount) >= voteTargetsLen {
 				continue
 			}
 

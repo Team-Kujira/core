@@ -1,9 +1,9 @@
 package scheduler
 
 import (
+	"github.com/Team-Kujira/core/x/scheduler/keeper"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"kujira/x/scheduler/keeper"
-	"kujira/x/scheduler/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

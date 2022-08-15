@@ -7,7 +7,7 @@ import "cosmos/base/v1beta1/coin.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
-option go_package = "kujira/x/scheduler/types";
+option go_package = "github.com/Team-Kujira/core/x/scheduler/types";
 option (gogoproto.goproto_stringer_all) = false;
 
 

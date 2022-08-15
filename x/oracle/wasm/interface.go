@@ -5,7 +5,7 @@ import (
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 
-	"kujira/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
 )
 
 // WasmQuerier - staking query interface for wasm contract

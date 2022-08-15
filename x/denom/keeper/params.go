@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

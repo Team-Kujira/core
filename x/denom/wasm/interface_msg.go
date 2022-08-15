@@ -1,9 +1,9 @@
 package wasm
 
 import (
-	denomkeeper "kujira/x/denom/keeper"
+	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 
-	denomtypes "kujira/x/denom/types"
+	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

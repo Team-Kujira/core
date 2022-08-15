@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"kujira/x/scheduler/types"
 )
 
 // GetParams get all parameters as types.Params

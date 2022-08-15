@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/x/oracle/keeper"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // InitGenesis initialize default parameters

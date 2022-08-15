@@ -4,7 +4,7 @@ package keeper
 import (
 	"testing"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 
 	auth "github.com/cosmos/cosmos-sdk/x/auth"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"

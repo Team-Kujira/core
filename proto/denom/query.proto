@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "denom/authorityMetadata.proto";
 import "denom/params.proto";
 
-option go_package = "kujira/x/denom/types";
+option go_package = "github.com/Team-Kujira/core/x/denom/types";
 
 // Query defines the gRPC querier service.
 service Query {

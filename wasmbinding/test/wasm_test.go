@@ -9,12 +9,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/x/oracle/types"
-	"kujira/x/oracle/wasm"
+	"github.com/Team-Kujira/core/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/wasm"
 
-	"kujira/app"
-	"kujira/wasmbinding"
-	"kujira/wasmbinding/bindings"
+	"github.com/Team-Kujira/core/app"
+	"github.com/Team-Kujira/core/wasmbinding"
+	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"

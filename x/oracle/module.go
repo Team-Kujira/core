@@ -20,10 +20,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"kujira/x/oracle/client/cli"
-	"kujira/x/oracle/keeper"
-	"kujira/x/oracle/simulation"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/client/cli"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/simulation"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 var (

@@ -11,8 +11,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/app"
-	"kujira/x/denom/wasm"
+	"github.com/Team-Kujira/core/app"
+	"github.com/Team-Kujira/core/x/denom/wasm"
 )
 
 func TestFullDenom(t *testing.T) {

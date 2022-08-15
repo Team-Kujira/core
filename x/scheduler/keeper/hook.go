@@ -2,7 +2,8 @@ package keeper
 
 import (
 	"encoding/binary"
-	"kujira/x/scheduler/types"
+
+	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"

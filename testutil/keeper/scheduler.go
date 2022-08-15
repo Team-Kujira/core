@@ -3,8 +3,8 @@ package keeper
 import (
 	"testing"
 
-	"kujira/x/scheduler/keeper"
-	"kujira/x/scheduler/types"
+	"github.com/Team-Kujira/core/x/scheduler/keeper"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"

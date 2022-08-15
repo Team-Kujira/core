@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"kujira/app"
+	"github.com/Team-Kujira/core/app"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

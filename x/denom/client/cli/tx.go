@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/types"
 )
 
 // GetTxCmd returns the transaction commands for this module

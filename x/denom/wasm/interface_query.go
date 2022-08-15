@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"kujira/x/denom/keeper"
-	denomtypes "kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/keeper"
+	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 )
 
 // WasmQuerier - staking query interface for wasm contract

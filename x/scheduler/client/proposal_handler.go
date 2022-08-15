@@ -1,8 +1,8 @@
 package client
 
 import (
-	"kujira/x/scheduler/client/cli"
-	"kujira/x/scheduler/client/rest"
+	"github.com/Team-Kujira/core/x/scheduler/client/cli"
+	"github.com/Team-Kujira/core/x/scheduler/client/rest"
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 )

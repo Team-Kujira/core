@@ -2,7 +2,8 @@ package keeper
 
 import (
 	"fmt"
-	"kujira/x/scheduler/types"
+
+	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

@@ -2,7 +2,7 @@
 //DONTCOVER
 package exported
 
-import "kujira/x/oracle/types"
+import "github.com/Team-Kujira/core/x/oracle/types"
 
 type (
 	MsgAggregateExchangeRatePrevote = types.MsgAggregateExchangeRatePrevote
