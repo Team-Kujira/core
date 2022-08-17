@@ -67,5 +67,8 @@ go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"
 		@go mod verify
 
+lint:
+    golangci-lint run --out-format=tab
+
 build:
 	go build $(BUILD_FLAGS) -o ./build/kujirad ./cmd/kujirad
