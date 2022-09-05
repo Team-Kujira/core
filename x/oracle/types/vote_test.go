@@ -3,7 +3,7 @@ package types_test
 import (
 	"testing"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 
 	"github.com/stretchr/testify/require"
 )

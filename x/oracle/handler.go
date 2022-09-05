@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"kujira/x/oracle/keeper"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // NewHandler returns a handler for "oracle" type messages.

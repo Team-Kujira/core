@@ -6,7 +6,7 @@ import "scheduler/params.proto";
 import "scheduler/hook.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "kujira/x/scheduler/types";
+option go_package = "github.com/Team-Kujira/core/x/scheduler/types";
 
 // GenesisState defines the scheduler module's genesis state.
 message GenesisState {

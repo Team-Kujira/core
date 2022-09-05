@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

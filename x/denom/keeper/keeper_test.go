@@ -3,7 +3,7 @@ package keeper_test
 // import (
 // 	"testing"
 
-// 	"kujira/x/denom/types"
+// 	"github.com/Team-Kujira/core/x/denom/types"
 
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 // 	"github.com/stretchr/testify/suite"

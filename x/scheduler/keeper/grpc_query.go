@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"kujira/x/scheduler/types"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 )
 
 var _ types.QueryServer = Keeper{}

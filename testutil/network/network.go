@@ -18,7 +18,7 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
-	"kujira/app"
+	"github.com/Team-Kujira/core/app"
 )
 
 type (

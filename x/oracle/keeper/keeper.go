@@ -13,7 +13,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // Keeper of the oracle store

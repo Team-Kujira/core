@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"kujira/testutil/network"
-	"kujira/testutil/nullify"
-	"kujira/x/scheduler/client/cli"
-	"kujira/x/scheduler/types"
+	"github.com/Team-Kujira/core/testutil/network"
+	"github.com/Team-Kujira/core/testutil/nullify"
+	"github.com/Team-Kujira/core/x/scheduler/client/cli"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 )
 
 func networkWithHookObjects(t *testing.T, n int) (*network.Network, []types.Hook) {

@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "denom/authorityMetadata.proto";
 import "denom/params.proto";
 
-option go_package = "kujira/x/denom/types";
+option go_package = "github.com/Team-Kujira/core/x/denom/types";
 
 // GenesisState defines the denom module's genesis state.
 message GenesisState {

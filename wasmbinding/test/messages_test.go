@@ -7,13 +7,13 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/x/denom/wasm"
+	"github.com/Team-Kujira/core/x/denom/wasm"
 
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/types"
 
 	"github.com/stretchr/testify/require"
 
-	"kujira/app"
+	"github.com/Team-Kujira/core/app"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 

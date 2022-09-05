@@ -3,10 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	testkeeper "github.com/Team-Kujira/core/testutil/keeper"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	testkeeper "kujira/testutil/keeper"
-	"kujira/x/scheduler/types"
 )
 
 func TestParamsQuery(t *testing.T) {

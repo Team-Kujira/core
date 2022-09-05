@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // GetOracleAccount returns oracle ModuleAccount

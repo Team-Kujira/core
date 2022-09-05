@@ -12,9 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 
-	"kujira/x/oracle/keeper"
-	sim "kujira/x/oracle/simulation"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	sim "github.com/Team-Kujira/core/x/oracle/simulation"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 var (

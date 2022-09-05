@@ -3,10 +3,10 @@ package cli
 import (
 	"context"
 
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"kujira/x/scheduler/types"
 )
 
 func CmdQueryParams() *cobra.Command {

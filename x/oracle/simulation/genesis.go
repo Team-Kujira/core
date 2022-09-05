@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // Simulation parameter constants

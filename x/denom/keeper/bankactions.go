@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"kujira/x/denom/types"
+	"github.com/Team-Kujira/core/x/denom/types"
 )
 
 func (k Keeper) mintTo(ctx sdk.Context, amount sdk.Coin, mintTo string) error {

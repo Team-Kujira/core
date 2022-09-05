@@ -3,8 +3,8 @@ package types_test
 import (
 	"testing"
 
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	"github.com/stretchr/testify/require"
-	"kujira/x/scheduler/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

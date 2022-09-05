@@ -11,9 +11,9 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"kujira/x/scheduler/client/cli"
-	"kujira/x/scheduler/keeper"
-	"kujira/x/scheduler/types"
+	"github.com/Team-Kujira/core/x/scheduler/client/cli"
+	"github.com/Team-Kujira/core/x/scheduler/keeper"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -3,9 +3,9 @@ package wasmbinding
 import (
 	"encoding/json"
 
-	"kujira/wasmbinding/bindings"
-	denom "kujira/x/denom/wasm"
-	oracle "kujira/x/oracle/wasm"
+	"github.com/Team-Kujira/core/wasmbinding/bindings"
+	denom "github.com/Team-Kujira/core/x/denom/wasm"
+	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

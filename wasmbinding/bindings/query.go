@@ -1,8 +1,8 @@
 package bindings
 
 import (
-	denom "kujira/x/denom/wasm"
-	oracle "kujira/x/oracle/wasm"
+	denom "github.com/Team-Kujira/core/x/denom/wasm"
+	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )

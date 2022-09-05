@@ -10,9 +10,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	keepertest "kujira/testutil/keeper"
-	"kujira/testutil/nullify"
-	"kujira/x/scheduler/types"
+	keepertest "github.com/Team-Kujira/core/testutil/keeper"
+	"github.com/Team-Kujira/core/testutil/nullify"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 )
 
 func TestHookQuerySingle(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/types"
 
 	"github.com/stretchr/testify/require"
 

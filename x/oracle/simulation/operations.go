@@ -14,8 +14,8 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"kujira/x/oracle/keeper"
-	"kujira/x/oracle/types"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // Simulation operation weights constants

@@ -10,11 +10,11 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateDenom{}, "kujira/denom/create-denom", nil)
-	cdc.RegisterConcrete(&MsgMint{}, "kujira/denom/mint", nil)
-	cdc.RegisterConcrete(&MsgBurn{}, "kujira/denom/burn", nil)
-	// cdc.RegisterConcrete(&MsgForceTransfer{}, "kujira/denom/force-transfer", nil)
-	cdc.RegisterConcrete(&MsgChangeAdmin{}, "kujira/denom/change-admin", nil)
+	cdc.RegisterConcrete(&MsgCreateDenom{}, "github.com/Team-Kujira/core/denom/create-denom", nil)
+	cdc.RegisterConcrete(&MsgMint{}, "github.com/Team-Kujira/core/denom/mint", nil)
+	cdc.RegisterConcrete(&MsgBurn{}, "github.com/Team-Kujira/core/denom/burn", nil)
+	// cdc.RegisterConcrete(&MsgForceTransfer{}, "github.com/Team-Kujira/core/denom/force-transfer", nil)
+	cdc.RegisterConcrete(&MsgChangeAdmin{}, "github.com/Team-Kujira/core/denom/change-admin", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

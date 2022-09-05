@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	"kujira/x/scheduler/types"
+	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"

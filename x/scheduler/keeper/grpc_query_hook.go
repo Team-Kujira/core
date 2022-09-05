@@ -3,13 +3,13 @@ package keeper
 import (
 	"context"
 
+	"github.com/Team-Kujira/core/x/scheduler/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"kujira/x/scheduler/types"
 )
 
 func (k Keeper) HookAll(c context.Context, req *types.QueryAllHookRequest) (*types.QueryAllHookResponse, error) {

@@ -11,8 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"kujira/testutil/network"
-	"kujira/x/scheduler/client/cli"
+	"github.com/Team-Kujira/core/testutil/network"
+	"github.com/Team-Kujira/core/x/scheduler/client/cli"
 )
 
 func TestCreateHook(t *testing.T) {

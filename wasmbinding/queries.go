@@ -1,9 +1,9 @@
 package wasmbinding
 
 import (
-	denomkeeper "kujira/x/denom/keeper"
+	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 
-	oraclekeeper "kujira/x/oracle/keeper"
+	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 )

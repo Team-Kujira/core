@@ -1,7 +1,7 @@
 package bindings
 
 import (
-	denom "kujira/x/denom/wasm"
+	denom "github.com/Team-Kujira/core/x/denom/wasm"
 )
 
 type CosmosMsg struct {

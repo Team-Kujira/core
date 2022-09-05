@@ -3,7 +3,7 @@ package kujira.denom;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "kujira/x/denom/types";
+option go_package = "github.com/Team-Kujira/core/x/denom/types";
 
 // DenomAuthorityMetadata specifies metadata for addresses that have specific
 // capabilities over a token factory denom. Right now there is only one Admin
