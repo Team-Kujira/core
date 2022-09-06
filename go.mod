@@ -7,7 +7,9 @@ replace github.com/tendermint/tendermint v0.34.19 => github.com/Team-Kujira/tend
 require (
 	github.com/CosmWasm/wasmd v0.27.0
 	github.com/CosmWasm/wasmvm v1.0.0
+	github.com/cosmos/cosmos-proto v1.0.0-alpha7
 	github.com/cosmos/cosmos-sdk v0.45.4
+	github.com/cosmos/gogoproto v1.4.1
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/cosmos/interchain-accounts v0.1.0
 	github.com/gogo/protobuf v1.3.3
@@ -17,14 +19,13 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ignite-hq/cli v0.22.1
 	github.com/pkg/errors v0.9.1
-	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20220728213248-dd149ef739b9
-	google.golang.org/grpc v1.48.0
+	google.golang.org/grpc v1.49.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -140,6 +141,7 @@ require (
 	github.com/radovskyb/watcher v1.0.7 // indirect
 	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
+	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/rs/zerolog v1.26.1 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect

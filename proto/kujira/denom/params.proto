@@ -2,7 +2,7 @@ syntax = "proto3";
 package kujira.denom;
 
 import "gogoproto/gogo.proto";
-import "denom/authorityMetadata.proto";
+import "kujira/denom/authorityMetadata.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 

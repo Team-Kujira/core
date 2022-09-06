@@ -4,8 +4,8 @@ package kujira.scheduler;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "scheduler/params.proto";
-import "scheduler/hook.proto";
+import "kujira/scheduler/params.proto";
+import "kujira/scheduler/hook.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "kujira/x/scheduler/types";
@@ -17,16 +17,16 @@ service Query {
     option (google.api.http).get = "/kujira/scheduler/params";
   }
   // Queries a Hook by id.
-	rpc Hook(QueryGetHookRequest) returns (QueryGetHookResponse) {
-		option (google.api.http).get = "/kujira/scheduler/hook/{id}";
-	}
+  rpc Hook(QueryGetHookRequest) returns (QueryGetHookResponse) {
+    option (google.api.http).get = "/kujira/scheduler/hook/{id}";
+  }
 
-	// Queries a list of Hook items.
-	rpc HookAll(QueryAllHookRequest) returns (QueryAllHookResponse) {
-		option (google.api.http).get = "/kujira/scheduler/hook";
-	}
+  // Queries a list of Hook items.
+  rpc HookAll(QueryAllHookRequest) returns (QueryAllHookResponse) {
+    option (google.api.http).get = "/kujira/scheduler/hook";
+  }
 
-// this line is used by starport scaffolding # 2
+  // this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -35,24 +35,20 @@ message QueryParamsRequest {}
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
   // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [ (gogoproto.nullable) = false ];
 }
 
-message QueryGetHookRequest {
-	uint64 id = 1;
-}
+message QueryGetHookRequest { uint64 id = 1; }
 
-message QueryGetHookResponse {
-	Hook Hook = 1 [(gogoproto.nullable) = false];
-}
+message QueryGetHookResponse { Hook Hook = 1 [ (gogoproto.nullable) = false ]; }
 
 message QueryAllHookRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryAllHookResponse {
-	repeated Hook Hook = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated Hook Hook = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

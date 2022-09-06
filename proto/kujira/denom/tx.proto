@@ -33,7 +33,7 @@ message MsgCreateDenomResponse {
 }
 
 // MsgMint is the sdk.Msg type for allowing an admin account to mint
-// more of a token. 
+// more of a token.
 message MsgMint {
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   cosmos.base.v1beta1.Coin amount = 2 [
