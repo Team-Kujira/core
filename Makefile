@@ -68,7 +68,7 @@ go.sum: go.mod
 		@go mod verify
 
 lint:
-    golangci-lint run --out-format=tab
+	golangci-lint run --out-format=tab
 
 build:
 	go build $(BUILD_FLAGS) -o ./build/kujirad ./cmd/kujirad
