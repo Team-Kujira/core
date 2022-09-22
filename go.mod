@@ -4,6 +4,8 @@ go 1.18
 
 replace github.com/tendermint/tendermint v0.34.19 => github.com/Team-Kujira/tendermint v0.34.20-0.20220703161359-04f63fc186fc
 
+replace github.com/cosmos/ibc-go/v3 v3.0.0 => github.com/Team-Kujira/ibc-go/v3 v3.0.1-0.20220919133212-1d20b3c15463
+
 require (
 	github.com/CosmWasm/wasmd v0.27.0
 	github.com/CosmWasm/wasmvm v1.0.0
@@ -23,7 +25,7 @@ require (
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/genproto v0.0.0-20220805133916-01dd62135a58
+	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
 	google.golang.org/grpc v1.48.0
 	gopkg.in/yaml.v2 v2.4.0
 )

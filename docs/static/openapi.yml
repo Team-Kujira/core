@@ -23200,6 +23200,16 @@ paths:
                       transfers to this
 
                       chain.
+                  slash_prefix:
+                    type: string
+                    title: >-
+                      In order to provide backward compatibility with IBC
+                      transfers to other 
+
+                      IBCv3 chains, we can provide a prefix for denoms
+                      containing `/` so that they
+
+                      are escaped on send and receive with `:`
             description: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method.
@@ -50978,6 +50988,16 @@ definitions:
           this
 
           chain.
+      slash_prefix:
+        type: string
+        title: >-
+          In order to provide backward compatibility with IBC transfers to
+          other 
+
+          IBCv3 chains, we can provide a prefix for denoms containing `/` so
+          that they
+
+          are escaped on send and receive with `:`
     description: >-
       Params defines the set of IBC transfer parameters.
 
@@ -51088,6 +51108,16 @@ definitions:
               transfers to this
 
               chain.
+          slash_prefix:
+            type: string
+            title: >-
+              In order to provide backward compatibility with IBC transfers to
+              other 
+
+              IBCv3 chains, we can provide a prefix for denoms containing `/` so
+              that they
+
+              are escaped on send and receive with `:`
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
   ibc.core.client.v1.Height:
     type: object
