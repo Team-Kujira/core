@@ -34,6 +34,20 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			return bz, nil
 		} else if contractQuery.Bank != nil {
+			if contractQuery.Bank.DenomMetadata != nil {
+				metadata, _ := qp.bankkeeper.GetDenomMetaData(ctx, contractQuery.Bank.DenomMetadata.Denom)
+				res := banktypes.QueryDenomMetadataResponse{
+					Metadata: metadata,
+				}
+
+				bz, err := json.Marshal(res)
+				if err != nil {
+					return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				}
+
+				return bz, nil
+			}
+
 			coin := qp.bankkeeper.GetSupply(ctx, contractQuery.Bank.Supply.Denom)
 			res := banktypes.QuerySupplyOfResponse{
 				Amount: coin,
@@ -45,6 +59,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
+
 		} else if contractQuery.Denom != nil {
 			res, err := denom.HandleQuery(qp.denomKeeper, ctx, contractQuery.Denom)
 			if err != nil {

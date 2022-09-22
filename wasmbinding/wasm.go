@@ -7,6 +7,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 )
 
@@ -14,6 +15,7 @@ func RegisterCustomPlugins(
 	bank bankkeeper.BaseKeeper,
 	oracle oraclekeeper.Keeper,
 	denom denomkeeper.Keeper,
+	auth authkeeper.AccountKeeper,
 ) []wasmkeeper.Option {
 	wasmQueryPlugin := NewQueryPlugin(bank, oracle, denom)
 
@@ -22,7 +24,7 @@ func RegisterCustomPlugins(
 	})
 
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(bank, denom),
+		CustomMessageDecorator(bank, denom, auth),
 	)
 
 	return []wasm.Option{

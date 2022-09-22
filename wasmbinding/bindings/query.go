@@ -16,5 +16,6 @@ type CosmosQuery struct {
 }
 
 type BankQuery struct {
-	Supply *banktypes.QuerySupplyOfRequest `json:"supply,omitempty"`
+	DenomMetadata *banktypes.QueryDenomMetadataRequest `json:"denom_metadata,omitempty"`
+	Supply        *banktypes.QuerySupplyOfRequest      `json:"supply,omitempty"`
 }
