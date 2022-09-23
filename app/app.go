@@ -470,7 +470,7 @@ func New(
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(
 		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, &stakingKeeper, distrtypes.ModuleName,
+		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, app.SlashingKeeper, &stakingKeeper, distrtypes.ModuleName,
 	)
 
 	denomKeeper := denomkeeper.NewKeeper(

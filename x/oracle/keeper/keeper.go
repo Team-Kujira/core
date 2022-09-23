@@ -22,10 +22,11 @@ type Keeper struct {
 	storeKey   sdk.StoreKey
 	paramSpace paramstypes.Subspace
 
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
-	distrKeeper   types.DistributionKeeper
-	StakingKeeper types.StakingKeeper
+	accountKeeper  types.AccountKeeper
+	bankKeeper     types.BankKeeper
+	distrKeeper    types.DistributionKeeper
+	SlashingKeeper types.SlashingKeeper
+	StakingKeeper  types.StakingKeeper
 
 	distrName   string
 	rewardDenom string
@@ -35,7 +36,7 @@ type Keeper struct {
 func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey,
 	paramspace paramstypes.Subspace, accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper, distrKeeper types.DistributionKeeper,
-	stakingKeeper types.StakingKeeper, distrName string) Keeper {
+	slashingkeeper types.SlashingKeeper, stakingKeeper types.StakingKeeper, distrName string) Keeper {
 
 	// ensure oracle module account is set
 	if addr := accountKeeper.GetModuleAddress(types.ModuleName); addr == nil {
@@ -48,15 +49,16 @@ func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey,
 	}
 
 	return Keeper{
-		cdc:           cdc,
-		storeKey:      storeKey,
-		paramSpace:    paramspace,
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
-		distrKeeper:   distrKeeper,
-		StakingKeeper: stakingKeeper,
-		distrName:     distrName,
-		rewardDenom:   "ukuji",
+		cdc:            cdc,
+		storeKey:       storeKey,
+		paramSpace:     paramspace,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
+		distrKeeper:    distrKeeper,
+		SlashingKeeper: slashingkeeper,
+		StakingKeeper:  stakingKeeper,
+		distrName:      distrName,
+		rewardDenom:    "ukuji",
 	}
 }
 

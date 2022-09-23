@@ -409,8 +409,6 @@ func TestOracleExchangeRate(t *testing.T) {
 
 	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
 
-	fmt.Println(rewardAmt)
-
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
 	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(9).MulRaw(3)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
 	expectedRewardAmt2 := sdk.NewDecFromInt(rewardAmt.QuoRaw(9).MulRaw(3)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()
