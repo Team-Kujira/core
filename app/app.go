@@ -140,7 +140,7 @@ const (
 func getGovProposalHandlers() []govclient.ProposalHandler {
 	// this line is used by starport scaffolding # stargate/app/govProposalHandlers
 
-	var govProposalHandlers = append(wasmclient.ProposalHandlers,
+	govProposalHandlers := append(wasmclient.ProposalHandlers,
 		schedulerclient.CreateHookProposalHandler,
 		schedulerclient.UpdateHookProposalHandler,
 		schedulerclient.DeleteHookProposalHandler,
@@ -317,7 +317,6 @@ func New(
 	// wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -377,7 +376,7 @@ func New(
 		keys[authz.ModuleName], appCodec, app.MsgServiceRouter(),
 	)
 
-	var blockedAddrs = app.ModuleAccountAddrs()
+	blockedAddrs := app.ModuleAccountAddrs()
 	blockedAddrs[authtypes.NewModuleAddress(authtypes.FeeCollectorName).String()] = false
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), blockedAddrs,
@@ -568,7 +567,7 @@ func New(
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
-	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.

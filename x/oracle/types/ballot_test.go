@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,24 +21,20 @@ func TestToMap(t *testing.T) {
 		votes   []types.VoteForTally
 		isValid []bool
 	}{
-
 		[]types.VoteForTally{
 			{
-
 				Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
 				Denom:        types.TestDenomC,
 				ExchangeRate: sdk.NewDec(1600),
 				Power:        100,
 			},
 			{
-
 				Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
 				Denom:        types.TestDenomC,
 				ExchangeRate: sdk.ZeroDec(),
 				Power:        100,
 			},
 			{
-
 				Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
 				Denom:        types.TestDenomC,
 				ExchangeRate: sdk.NewDec(1500),
@@ -75,7 +70,6 @@ func TestSqrt(t *testing.T) {
 }
 
 func TestPBPower(t *testing.T) {
-
 	ctx := sdk.NewContext(nil, tmproto.Header{}, false, nil)
 	_, valAccAddrs, sk := types.GenerateRandomTestCase()
 	pb := types.ExchangeRateBallot{}

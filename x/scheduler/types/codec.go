@@ -20,7 +20,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&DeleteHookProposal{},
 	)
 	// this line is used by starport scaffolding # 3
-
 }
 
 var (

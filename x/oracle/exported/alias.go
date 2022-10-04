@@ -1,5 +1,6 @@
+// DONTCOVER
+//
 //nolint:deadcode,unused
-//DONTCOVER
 package exported
 
 import "github.com/Team-Kujira/core/x/oracle/types"
