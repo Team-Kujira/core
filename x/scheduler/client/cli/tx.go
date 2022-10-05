@@ -7,10 +7,9 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 )
 
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
+var DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
 
+//nolint:unused
 const (
 	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
 	listSeparator              = ","

@@ -79,7 +79,7 @@ type UpdateHookProposalJSONReq struct {
 	Proposer string    `json:"proposer" yaml:"proposer"`
 	Deposit  sdk.Coins `json:"deposit" yaml:"deposit"`
 
-	Id       uint64          `json:"id" yaml:"id"`
+	Id       uint64          `json:"id" yaml:"id"` //nolint:revive,stylecheck
 	Contract string          `json:"contract" yaml:"contract"`
 	Msg      json.RawMessage `json:"msg" yaml:"msg"`
 	// Executor is the role that is passed to the contract's environment
@@ -136,7 +136,7 @@ type DeleteHookProposalJSONReq struct {
 	Proposer string    `json:"proposer" yaml:"proposer"`
 	Deposit  sdk.Coins `json:"deposit" yaml:"deposit"`
 
-	Id uint64 `json:"id" yaml:"id"`
+	Id uint64 `json:"id" yaml:"id"` //nolint:revive,stylecheck
 }
 
 func (s DeleteHookProposalJSONReq) Content() govtypes.Content {

@@ -7,7 +7,10 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 )
 
-// ProposalHandlers define the wasm cli proposal types and rest handler.
+// CreateHookProposalHandler make handlers that define the wasm cli proposal types and rest handler.
 var CreateHookProposalHandler = govclient.NewProposalHandler(cli.CreateHookProposalCmd, rest.CreateHookProposalHandler)
-var UpdateHookProposalHandler = govclient.NewProposalHandler(cli.UpdateHookProposalCmd, rest.UpdateHookProposalHandler)
-var DeleteHookProposalHandler = govclient.NewProposalHandler(cli.DeleteHookProposalCmd, rest.DeleteHookProposalHandler)
+
+var (
+	UpdateHookProposalHandler = govclient.NewProposalHandler(cli.UpdateHookProposalCmd, rest.UpdateHookProposalHandler)
+	DeleteHookProposalHandler = govclient.NewProposalHandler(cli.DeleteHookProposalCmd, rest.DeleteHookProposalHandler)
+)

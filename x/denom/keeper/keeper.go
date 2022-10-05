@@ -28,16 +28,6 @@ type (
 	}
 )
 
-func permContains(perms []string, perm string) bool {
-	for _, v := range perms {
-		if v == perm {
-			return true
-		}
-	}
-
-	return false
-}
-
 // NewKeeper returns a new instance of the x/denom keeper
 func NewKeeper(
 	cdc codec.Codec,
