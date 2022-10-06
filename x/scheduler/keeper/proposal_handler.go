@@ -16,7 +16,7 @@ func NewSchedulerProposalHandler(k Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.CreateHookProposal:
 
-			var hook = types.Hook{
+			hook := types.Hook{
 				Executor:  c.Executor,
 				Contract:  c.Contract,
 				Msg:       c.Msg,
@@ -30,7 +30,7 @@ func NewSchedulerProposalHandler(k Keeper) govtypes.Handler {
 
 		case *types.UpdateHookProposal:
 
-			var hook = types.Hook{
+			hook := types.Hook{
 				Executor:  c.Executor,
 				Id:        c.Id,
 				Contract:  c.Contract,

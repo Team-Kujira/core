@@ -32,7 +32,6 @@ func (k Keeper) HookAll(c context.Context, req *types.QueryAllHookRequest) (*typ
 		hooks = append(hooks, hook)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

@@ -37,10 +37,8 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 			}
 		}
 
-		var (
-			// voteTargets defines the symbol (ticker) denoms that we require votes on
-			voteTargets []string
-		)
+		// voteTargets defines the symbol (ticker) denoms that we require votes on
+		var voteTargets []string
 		for _, v := range params.Whitelist {
 			voteTargets = append(voteTargets, v.Name)
 		}
