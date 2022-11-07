@@ -36,7 +36,6 @@ func TestFuzz_Tally(t *testing.T) {
 			}
 		},
 		func(e *types.ExchangeRateBallot, c fuzz.Continue) {
-
 			ballot := types.ExchangeRateBallot{}
 			for addr, power := range validators {
 				addr, _ := sdk.ValAddressFromBech32(addr)
@@ -68,6 +67,6 @@ func TestFuzz_Tally(t *testing.T) {
 	f.Fuzz(&rewardBand)
 
 	require.NotPanics(t, func() {
-		oracle.Tally(input.Ctx, ballot, rewardBand, claimMap)
+		oracle.Tally(input.Ctx, ballot, rewardBand, claimMap) //nolint:errcheck
 	})
 }
