@@ -12,8 +12,8 @@ import (
 func Tally(ctx sdk.Context,
 	pb types.ExchangeRateBallot,
 	rewardBand sdk.Dec,
-	validatorClaimMap map[string]types.Claim) (sdk.Dec, error) {
-
+	validatorClaimMap map[string]types.Claim,
+) (sdk.Dec, error) {
 	weightedMedian, err := pb.WeightedMedian()
 	if err != nil {
 		return sdk.ZeroDec(), err
@@ -45,6 +45,8 @@ func Tally(ctx sdk.Context,
 }
 
 // ballot for the asset is passing the threshold amount of voting power
+//
+//nolint:unused
 func ballotIsPassing(ballot types.ExchangeRateBallot, thresholdVotes sdk.Int) (sdk.Int, bool) {
 	ballotPower := sdk.NewInt(ballot.Power())
 	return ballotPower, !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes)

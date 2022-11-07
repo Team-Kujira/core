@@ -2,9 +2,8 @@ package oracle
 
 import (
 	"context"
-	"fmt"
-
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -102,7 +101,8 @@ func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
-	bankKeeper types.BankKeeper) AppModule {
+	bankKeeper types.BankKeeper,
+) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc},
 		keeper:         keeper,
@@ -161,8 +161,10 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 func (AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 // EndBlock returns the end blocker for the oracle module.
+//
+//nolint:unused
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	EndBlocker(ctx, am.keeper)
+	EndBlocker(ctx, am.keeper) //nolint:errcheck
 	return []abci.ValidatorUpdate{}
 }
 
