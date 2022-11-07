@@ -3,7 +3,7 @@ module github.com/Team-Kujira/core
 go 1.19
 
 // replace tendermint with kujira patched tendermint
-replace github.com/tendermint/tendermint => github.com/Team-Kujira/tendermint v0.34.20-0.20221013085557-680002777ef3
+replace github.com/tendermint/tendermint => github.com/notional-labs/tendermint v0.34.14-0.20221107075655-f7feb1e08d80
 
 // safer ibc-go
 replace github.com/cosmos/ibc-go/v3 v3.0.0 => github.com/Team-Kujira/ibc-go/v3 v3.0.1-0.20220919133212-1d20b3c15463
@@ -61,7 +61,7 @@ require (
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
-	github.com/cosmos/iavl v0.19.3 // indirect
+	github.com/cosmos/iavl v0.19.4 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/danieljoos/wincred v1.0.2 // indirect
