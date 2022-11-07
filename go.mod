@@ -1,6 +1,6 @@
 module github.com/Team-Kujira/core
 
-go 1.18
+go 1.19
 
 // replace tendermint with kujira patched tendermint
 replace github.com/tendermint/tendermint => github.com/Team-Kujira/tendermint v0.34.20-0.20221013085557-680002777ef3
