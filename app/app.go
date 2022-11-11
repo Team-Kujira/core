@@ -117,9 +117,9 @@ import (
 	"github.com/Team-Kujira/core/x/denom"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
+	"github.com/Team-Kujira/core/x/scheduler"
 
 	"github.com/Team-Kujira/core/docs"
-	scheduler "github.com/Team-Kujira/core/x/scheduler"
 	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
 	schedulerkeeper "github.com/Team-Kujira/core/x/scheduler/keeper"
 	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
