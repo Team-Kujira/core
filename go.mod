@@ -2,6 +2,8 @@ module github.com/Team-Kujira/core
 
 go 1.19
 
+replace github.com/cosmos/ibc-go/v3 v3.4.0 => github.com/Team-Kujira/ibc-go/v3 v3.4.0-factory
+
 // ics23
 replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 
