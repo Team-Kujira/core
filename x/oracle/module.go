@@ -161,6 +161,8 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 func (AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 // EndBlock returns the end blocker for the oracle module.
+//
+//nolint:unused
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	EndBlocker(ctx, am.keeper) //nolint:errcheck
 	return []abci.ValidatorUpdate{}

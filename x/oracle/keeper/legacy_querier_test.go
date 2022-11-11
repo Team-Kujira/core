@@ -179,7 +179,7 @@ func TestLegacyQueryFeederDelegation(t *testing.T) {
 	require.NoError(t, err)
 
 	var delegate sdk.AccAddress
-	input.Cdc.UnmarshalJSON(res, &delegate)
+	input.Cdc.UnmarshalJSON(res, &delegate) //nolint:errcheck
 	require.Equal(t, Addrs[1], delegate)
 }
 

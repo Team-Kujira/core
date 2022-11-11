@@ -69,7 +69,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	res, err = querier(ctx, bz)
+	_, err = querier(ctx, bz)
 	require.NoError(t, err)
 
 	queryParams = wasm.ExchangeRateQueryParams{
@@ -116,7 +116,7 @@ func TestSupply(t *testing.T) {
 	require.NoError(t, err)
 	var x banktypes.QuerySupplyOfResponse
 
-	res, err := querier(ctx, bz)
+	res, _ := querier(ctx, bz)
 
 	err = json.Unmarshal(res, &x)
 	require.NoError(t, err)

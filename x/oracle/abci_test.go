@@ -33,7 +33,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper) //nolint:errcheck
 
 	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.Error(t, err)
@@ -70,7 +70,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper) //nolint:errcheck
 
 	rate, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.NoError(t, err)
@@ -79,7 +79,7 @@ func TestOracleThreshold(t *testing.T) {
 	// Case 3.
 	// Increase voting power of absent validator, exchange rate consensus fails
 	val, _ := input.StakingKeeper.GetValidator(input.Ctx, keeper.ValAddrs[2])
-	input.StakingKeeper.Delegate(input.Ctx.WithBlockHeight(0), keeper.Addrs[2], stakingAmt.MulRaw(3), stakingtypes.Unbonded, val, false)
+	input.StakingKeeper.Delegate(input.Ctx.WithBlockHeight(0), keeper.Addrs[2], stakingAmt.MulRaw(3), stakingtypes.Unbonded, val, false) //nolint:errcheck
 
 	salt = "fc5bb0bc63e54b2918d9334bf3259f5dc575e8d7a4df4e836dd80f1ad62aa89b"
 	hash = types.GetAggregateVoteHash(salt, exchangeRateStr, keeper.ValAddrs[0])
@@ -101,7 +101,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper) //nolint:errcheck
 
 	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.Error(t, err)
