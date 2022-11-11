@@ -130,9 +130,11 @@ func (p UpdateHookProposal) String() string {
 }
 
 // MarshalYAML pretty prints the init message
+//
+//nolint:revive
 func (p UpdateHookProposal) MarshalYAML() (interface{}, error) {
 	return struct {
-		Id          uint64    `yaml:"id"`
+		Id          uint64    `yaml:"id"` //nolint:stylecheck
 		Title       string    `yaml:"title"`
 		Description string    `yaml:"description"`
 		Contract    string    `yaml:"contract"`
@@ -178,7 +180,7 @@ func (p DeleteHookProposal) MarshalYAML() (interface{}, error) {
 	return struct {
 		Title       string `yaml:"title"`
 		Description string `yaml:"description"`
-		Id          uint64 `yaml:"id"`
+		Id          uint64 `yaml:"id"` //nolint:revive,stylecheck
 	}{
 		Title:       p.Title,
 		Description: p.Description,

@@ -32,7 +32,6 @@ func Tally(ctx sdk.Context,
 		if (vote.ExchangeRate.GTE(weightedMedian.Sub(rewardSpread)) &&
 			vote.ExchangeRate.LTE(weightedMedian.Add(rewardSpread))) ||
 			!vote.ExchangeRate.IsPositive() {
-
 			key := vote.Voter.String()
 			claim := validatorClaimMap[key]
 			claim.Weight += vote.Power
@@ -42,10 +41,4 @@ func Tally(ctx sdk.Context,
 	}
 
 	return weightedMedian, nil
-}
-
-// ballot for the asset is passing the threshold amount of voting power
-func ballotIsPassing(ballot types.ExchangeRateBallot, thresholdVotes sdk.Int) (sdk.Int, bool) {
-	ballotPower := sdk.NewInt(ballot.Power())
-	return ballotPower, !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes)
 }

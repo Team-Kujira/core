@@ -1,0 +1,37 @@
+run:
+  concurrency: 16
+  timeout: 5m
+  tests: false
+  allow-parallel-runners: true
+
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - depguard
+    - errcheck
+    - forcetypeassert
+    - gofumpt
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - revive
+    - nakedret
+    - nolintlint
+    - staticcheck
+    - stylecheck
+    - testpackage
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+
+linters-settings:
+  nolintlint:
+    allow-leading-space: true

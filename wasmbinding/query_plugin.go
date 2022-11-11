@@ -59,7 +59,6 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-
 		} else if contractQuery.Denom != nil {
 			res, err := denom.HandleQuery(qp.denomKeeper, ctx, contractQuery.Denom)
 			if err != nil {

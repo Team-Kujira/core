@@ -19,6 +19,8 @@ import (
 )
 
 // Simulation operation weights constants
+//
+//nolint:gosec //these aren't hard coded credentials
 const (
 	OpWeightMsgAggregateExchangeRatePrevote = "op_weight_msg_exchange_rate_aggregate_prevote"
 	OpWeightMsgAggregateExchangeRateVote    = "op_weight_msg_exchange_rate_aggregate_vote"
@@ -28,8 +30,8 @@ const (
 )
 
 var (
-	whitelist                     = []string{types.TestDenomA, types.TestDenomB, types.TestDenomC}
-	voteHashMap map[string]string = make(map[string]string)
+	whitelist   = []string{types.TestDenomA, types.TestDenomB, types.TestDenomC}
+	voteHashMap = make(map[string]string)
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -80,7 +82,6 @@ func WeightedOperations(
 }
 
 // SimulateMsgAggregateExchangeRatePrevote generates a MsgAggregateExchangeRatePrevote with random values.
-// nolint: funlen
 func SimulateMsgAggregateExchangeRatePrevote(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -143,7 +144,6 @@ func SimulateMsgAggregateExchangeRatePrevote(ak types.AccountKeeper, bk types.Ba
 }
 
 // SimulateMsgAggregateExchangeRateVote generates a MsgAggregateExchangeRateVote with random values.
-// nolint: funlen
 func SimulateMsgAggregateExchangeRateVote(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -211,7 +211,6 @@ func SimulateMsgAggregateExchangeRateVote(ak types.AccountKeeper, bk types.BankK
 }
 
 // SimulateMsgDelegateFeedConsent generates a MsgDelegateFeedConsent with random values.
-// nolint: funlen
 func SimulateMsgDelegateFeedConsent(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
