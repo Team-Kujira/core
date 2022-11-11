@@ -71,7 +71,6 @@ func CreateHookProposalCmd() *cobra.Command {
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
-
 			if err != nil {
 				return err
 			}
@@ -149,7 +148,6 @@ func UpdateHookProposalCmd() *cobra.Command {
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
-
 			if err != nil {
 				return err
 			}
@@ -206,7 +204,6 @@ func DeleteHookProposalCmd() *cobra.Command {
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
-
 			if err != nil {
 				return err
 			}

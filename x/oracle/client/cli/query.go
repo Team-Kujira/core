@@ -34,7 +34,6 @@ func GetQueryCmd() *cobra.Command {
 	)
 
 	return oracleQueryCmd
-
 }
 
 // GetCmdQueryExchangeRates implements the query rate command.
@@ -79,7 +78,6 @@ $ kujirad query oracle exchange-rates KUJI
 			}
 
 			return clientCtx.PrintProto(res)
-
 		},
 	}
 
@@ -172,7 +170,6 @@ $ kujirad query oracle feeder kujiravaloper...
 				context.Background(),
 				&types.QueryFeederDelegationRequest{ValidatorAddr: validator.String()},
 			)
-
 			if err != nil {
 				return err
 			}

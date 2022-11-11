@@ -12,8 +12,8 @@ import (
 func Tally(ctx sdk.Context,
 	pb types.ExchangeRateBallot,
 	rewardBand sdk.Dec,
-	validatorClaimMap map[string]types.Claim) (sdk.Dec, error) {
-
+	validatorClaimMap map[string]types.Claim,
+) (sdk.Dec, error) {
 	weightedMedian, err := pb.WeightedMedian()
 	if err != nil {
 		return sdk.ZeroDec(), err

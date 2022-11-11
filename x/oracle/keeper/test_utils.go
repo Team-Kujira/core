@@ -1,8 +1,9 @@
-//nolint
+// nolint
 package keeper
 
 import (
 	"testing"
+	"time"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
@@ -12,8 +13,6 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/stretchr/testify/require"
-
-	"time"
 
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -39,6 +38,8 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -135,6 +136,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	keyParams := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tKeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 	keyOracle := sdk.NewKVStoreKey(types.StoreKey)
+	keySlashing := sdk.NewKVStoreKey(slashingtypes.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
 	keyDistr := sdk.NewKVStoreKey(distrtypes.StoreKey)
 
@@ -149,6 +151,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	ms.MountStoreWithDB(tKeyParams, sdk.StoreTypeTransient, db)
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyOracle, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keySlashing, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyStaking, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyDistr, sdk.StoreTypeIAVL, db)
 
@@ -189,6 +192,8 @@ func CreateTestInput(t *testing.T) TestInput {
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = testdenom
 	stakingKeeper.SetParams(ctx, stakingParams)
+
+	slashingKeeper := slashingkeeper.NewKeeper(appCodec, keySlashing, &stakingKeeper, paramsKeeper.Subspace(slashingtypes.ModuleName))
 
 	distrKeeper := distrkeeper.NewKeeper(
 		appCodec,
@@ -231,6 +236,7 @@ func CreateTestInput(t *testing.T) TestInput {
 		accountKeeper,
 		bankKeeper,
 		distrKeeper,
+		slashingKeeper,
 		stakingKeeper,
 		distrtypes.ModuleName,
 	)
