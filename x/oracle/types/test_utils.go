@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package types
 
 import (
@@ -14,7 +14,7 @@ import (
 	tmprotocrypto "github.com/tendermint/tendermint/proto/tendermint/crypto"
 )
 
-//nolint
+// nolint
 const (
 	TestDenomA = "ukuji"
 	TestDenomB = "denomB"
@@ -144,6 +144,7 @@ func (MockValidator) GetConsAddr() (sdk.ConsAddress, error) { return nil, nil }
 func (v MockValidator) GetTokens() sdk.Int {
 	return sdk.TokensFromConsensusPower(v.power, sdk.DefaultPowerReduction)
 }
+
 func (v MockValidator) GetBondedTokens() sdk.Int {
 	return sdk.TokensFromConsensusPower(v.power, sdk.DefaultPowerReduction)
 }

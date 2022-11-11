@@ -52,7 +52,7 @@ func (s AuthHandler) CreateVestingAccount(ctx sdk.Context, msg *types.MsgCreateV
 	}
 
 	baseAccount := authtypes.NewBaseAccountWithAddress(to)
-	baseAccount = ak.NewAccount(ctx, baseAccount).(*authtypes.BaseAccount)
+	baseAccount = ak.NewAccount(ctx, baseAccount).(*authtypes.BaseAccount) //nolint:forcetypeassert
 	baseVestingAccount := types.NewBaseVestingAccount(baseAccount, msg.Amount.Sort(), msg.EndTime)
 
 	var vestingAccount authtypes.AccountI

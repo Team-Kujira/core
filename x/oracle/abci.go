@@ -15,7 +15,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 	params := k.GetParams(ctx)
 	if IsPeriodLastBlock(ctx, params.VotePeriod) {
-
 		// Build claim map over all validators in active set
 		validatorClaimMap := make(map[string]types.Claim)
 
@@ -37,10 +36,8 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 			}
 		}
 
-		var (
-			// voteTargets defines the symbol (ticker) denoms that we require votes on
-			voteTargets []string
-		)
+		// voteTargets defines the symbol (ticker) denoms that we require votes on
+		var voteTargets []string
 		for _, v := range params.Whitelist {
 			voteTargets = append(voteTargets, v.Name)
 		}
@@ -96,7 +93,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		// Clear the ballot
 		k.ClearBallots(ctx, params.VotePeriod)
-
 	}
 
 	// Do slash who did miss voting over threshold and

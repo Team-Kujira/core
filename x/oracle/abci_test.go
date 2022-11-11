@@ -332,7 +332,6 @@ func TestOracleRewardBand(t *testing.T) {
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
-
 }
 
 func TestOracleMultiRewardDistribution(t *testing.T) {
@@ -408,8 +407,6 @@ func TestOracleExchangeRate(t *testing.T) {
 	require.NoError(t, err)
 
 	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
-
-	fmt.Println(rewardAmt)
 
 	rewardDistributedWindow := input.OracleKeeper.RewardDistributionWindow(input.Ctx)
 	expectedRewardAmt := sdk.NewDecFromInt(rewardAmt.QuoRaw(9).MulRaw(3)).QuoInt64(int64(rewardDistributedWindow)).TruncateInt()

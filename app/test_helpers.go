@@ -38,7 +38,7 @@ func Setup(isCheckTx bool) *App {
 
 // SetupTestingAppWithLevelDb initializes a new KujiraApp intended for testing,
 // with LevelDB as a db.
-func SetupTestingAppWithLevelDb(isCheckTx bool) (app *App, cleanupFn func()) {
+func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 	dir := "kujira_testing"
 	db, err := sdk.NewLevelDB("kujira_leveldb_testing", dir)
 	if err != nil {

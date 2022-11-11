@@ -71,7 +71,6 @@ func CreateHookProposalCmd() *cobra.Command {
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
-
 			if err != nil {
 				return err
 			}
@@ -88,7 +87,7 @@ func CreateHookProposalCmd() *cobra.Command {
 func UpdateHookProposalCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-hook [id] [contract] [executor] [msg] [frequency] [funds]",
-		Short: "Update an exsiting smart contract msg hook",
+		Short: "Update an existing smart contract msg hook",
 		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			id, err := strconv.ParseUint(args[0], 10, 64)
@@ -149,7 +148,6 @@ func UpdateHookProposalCmd() *cobra.Command {
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
-
 			if err != nil {
 				return err
 			}
@@ -206,7 +204,6 @@ func DeleteHookProposalCmd() *cobra.Command {
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
-
 			if err != nil {
 				return err
 			}
