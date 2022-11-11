@@ -401,14 +401,12 @@ func New(
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
-	app.UpgradeKeeper.SetUpgradeHandler("v0.6.0",
+	app.UpgradeKeeper.SetUpgradeHandler("v0.7.1",
 		func(
 			ctx sdk.Context,
 			plan upgradetypes.Plan,
 			fromVM module.VersionMap,
 		) (module.VersionMap, error) {
-			// register new keys
-			app.TransferKeeper.SetParams(ctx, ibctransfertypes.DefaultParams())
 			return app.mm.RunMigrations(ctx, cfg, fromVM)
 		})
 
