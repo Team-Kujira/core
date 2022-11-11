@@ -1,8 +1,9 @@
-//nolint
+// nolint
 package keeper
 
 import (
 	"testing"
+	"time"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
@@ -12,8 +13,6 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/stretchr/testify/require"
-
-	"time"
 
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
