@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/Team-Kujira/core/x/oracle"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	"github.com/Team-Kujira/core/x/oracle/types"
 
@@ -22,14 +21,14 @@ var (
 	anotherRandomExchangeRate = sdk.NewDecWithPrec(4882, 2) // swap rate
 )
 
-func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, sdk.Handler) {
+func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	input := keeper.CreateTestInput(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
 	params.VotePeriod = 1
 	params.SlashWindow = 100
 	params.RewardDistributionWindow = 100
 	input.OracleKeeper.SetParams(input.Ctx, params)
-	h := oracle.NewHandler(input.OracleKeeper)
+	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
 	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
 	_, err := sh.CreateValidator(input.Ctx,
@@ -45,7 +44,7 @@ func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	return input, h
 }
 
-func setup(t *testing.T) (keeper.TestInput, sdk.Handler) {
+func setup(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	input := keeper.CreateTestInput(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
 	params.VotePeriod = 1
@@ -53,7 +52,7 @@ func setup(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	params.RewardDistributionWindow = 100
 	params.Whitelist = types.DenomList{{Name: types.TestDenomA}, {Name: types.TestDenomC}, {Name: types.TestDenomD}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
-	h := oracle.NewHandler(input.OracleKeeper)
+	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
 	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
 
@@ -69,14 +68,14 @@ func setup(t *testing.T) (keeper.TestInput, sdk.Handler) {
 	return input, h
 }
 
-func setupVal5(t *testing.T) (keeper.TestInput, sdk.Handler) {
+func setupVal5(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	input := keeper.CreateTestInput(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
 	params.VotePeriod = 1
 	params.SlashWindow = 100
 	params.RewardDistributionWindow = 100
 	input.OracleKeeper.SetParams(input.Ctx, params)
-	h := oracle.NewHandler(input.OracleKeeper)
+	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
 	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
 
