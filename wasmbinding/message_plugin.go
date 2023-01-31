@@ -9,7 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
@@ -20,7 +20,7 @@ import (
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages
 func CustomMessageDecorator(
-	bank bankkeeper.BaseKeeper,
+	bank bankkeeper.Keeper,
 	denom denomkeeper.Keeper,
 	auth authkeeper.AccountKeeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
@@ -37,7 +37,7 @@ func CustomMessageDecorator(
 type CustomMessenger struct {
 	wrapped wasmkeeper.Messenger
 	auth    authkeeper.AccountKeeper
-	bank    bankkeeper.BaseKeeper
+	bank    bankkeeper.Keeper
 	denom   denomkeeper.Keeper
 }
 

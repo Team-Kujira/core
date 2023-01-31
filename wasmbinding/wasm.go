@@ -8,11 +8,11 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 )
 
 func RegisterCustomPlugins(
-	bank bankkeeper.BaseKeeper,
+	bank bankkeeper.Keeper,
 	oracle oraclekeeper.Keeper,
 	denom denomkeeper.Keeper,
 	auth authkeeper.AccountKeeper,

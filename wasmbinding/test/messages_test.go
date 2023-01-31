@@ -15,13 +15,13 @@ import (
 
 	"github.com/Team-Kujira/core/app"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func fundAccount(t *testing.T, ctx sdk.Context, app *app.App, addr sdk.AccAddress, coins sdk.Coins) {
-	err := simapp.FundAccount(
+	err := testutil.FundAccount(
 		app.BankKeeper,
 		ctx,
 		addr,
