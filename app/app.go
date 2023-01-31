@@ -407,11 +407,6 @@ func New(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName),
 	)
 
-	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(),
-			app.SlashingKeeper.Hooks(), app.AllianceKeeper.StakingHooks()),
-	)
-
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
 		keys[alliancemoduletypes.StoreKey],
@@ -456,7 +451,8 @@ func New(
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(),
+			app.AllianceKeeper.StakingHooks()),
 	)
 
 	// ... other modules keepers
