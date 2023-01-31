@@ -2,8 +2,6 @@ module github.com/Team-Kujira/core
 
 go 1.19
 
-replace github.com/CosmWasm/wasmd => github.com/notional-labs/wasmd v0.30.0-sdk46
-
 require (
 	github.com/CosmWasm/wasmd v0.30.0
 	github.com/CosmWasm/wasmvm v1.2.0
@@ -166,12 +164,13 @@ require (
 replace (
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
+	github.com/CosmWasm/wasmd => github.com/notional-labs/wasmd v0.30.0-sdk46
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+	github.com/cosmos/ibc-go/v6 => github.com/Team-Kujira/ibc-go/v6 v6.1.0-factory
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
 )
