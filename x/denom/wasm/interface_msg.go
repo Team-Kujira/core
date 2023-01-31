@@ -8,7 +8,7 @@ import (
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 )
 
 type DenomMsg struct {
@@ -55,7 +55,7 @@ type Burn struct {
 }
 
 // create creates a new token denom
-func create(ctx sdk.Context, contractAddr sdk.AccAddress, create *Create, dk denomkeeper.Keeper, bk bankkeeper.BaseKeeper) ([]sdk.Event, [][]byte, error) {
+func create(ctx sdk.Context, contractAddr sdk.AccAddress, create *Create, dk denomkeeper.Keeper, bk bankkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
 	err := PerformCreate(dk, bk, ctx, contractAddr, create)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "perform create denom")
@@ -64,7 +64,7 @@ func create(ctx sdk.Context, contractAddr sdk.AccAddress, create *Create, dk den
 }
 
 // PerformCreate is used with create to create a token denom; validates the msgCreate.
-func PerformCreate(f denomkeeper.Keeper, b bankkeeper.BaseKeeper, ctx sdk.Context, contractAddr sdk.AccAddress, create *Create) error {
+func PerformCreate(f denomkeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, create *Create) error {
 	if create == nil {
 		return wasmvmtypes.InvalidRequest{Err: "create denom null create denom"}
 	}
@@ -89,7 +89,7 @@ func PerformCreate(f denomkeeper.Keeper, b bankkeeper.BaseKeeper, ctx sdk.Contex
 }
 
 // mint mints tokens of a specified denom to an address.
-func mint(ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint, dk denomkeeper.Keeper, bk bankkeeper.BaseKeeper) ([]sdk.Event, [][]byte, error) {
+func mint(ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint, dk denomkeeper.Keeper, bk bankkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
 	err := PerformMint(dk, bk, ctx, contractAddr, mint)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "perform mint")
@@ -98,7 +98,7 @@ func mint(ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint, dk denomkeep
 }
 
 // PerformMint used with mint to validate the mint message and mint through token factory.
-func PerformMint(f denomkeeper.Keeper, b bankkeeper.BaseKeeper, ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint) error {
+func PerformMint(f denomkeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint) error {
 	if mint == nil {
 		return wasmvmtypes.InvalidRequest{Err: "mint token null mint"}
 	}
@@ -185,7 +185,7 @@ func PerformBurn(f denomkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddr
 }
 
 // QueryCustom implements custom query interface
-func HandleMsg(dk denomkeeper.Keeper, bk bankkeeper.BaseKeeper, contractAddr sdk.AccAddress, ctx sdk.Context, q *DenomMsg) ([]sdk.Event, [][]byte, error) {
+func HandleMsg(dk denomkeeper.Keeper, bk bankkeeper.Keeper, contractAddr sdk.AccAddress, ctx sdk.Context, q *DenomMsg) ([]sdk.Event, [][]byte, error) {
 	if q.Create != nil {
 		return create(ctx, contractAddr, q.Create, dk, bk)
 	}
