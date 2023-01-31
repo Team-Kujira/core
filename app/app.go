@@ -411,7 +411,7 @@ func New(
 		app.BaseApp,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-	app.UpgradeKeeper.SetUpgradeHandler("v0.7.1",
+	app.UpgradeKeeper.SetUpgradeHandler("v0.8.0",
 		func(
 			ctx sdk.Context,
 			plan upgradetypes.Plan,

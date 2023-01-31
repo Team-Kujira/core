@@ -1,6 +1,6 @@
 module github.com/Team-Kujira/core
 
-go 1.18
+go 1.19
 
 replace github.com/CosmWasm/wasmd => github.com/notional-labs/wasmd v0.30.0-sdk46
 
