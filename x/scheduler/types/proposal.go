@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 type ProposalType string
@@ -18,12 +19,9 @@ const (
 )
 
 func init() { // register new content types with the sdk
-	govtypes.RegisterProposalType(string(ProposalTypeCreateHook))
-	govtypes.RegisterProposalType(string(ProposalTypeUpdateHook))
-	govtypes.RegisterProposalType(string(ProposalTypeDeleteHook))
-	govtypes.RegisterProposalTypeCodec(&CreateHookProposal{}, "scheduler/CreateHookProposal")
-	govtypes.RegisterProposalTypeCodec(&UpdateHookProposal{}, "scheduler/UpdateHookProposal")
-	govtypes.RegisterProposalTypeCodec(&DeleteHookProposal{}, "scheduler/DeleteHookProposal")
+	govtypesv1beta.RegisterProposalType(string(ProposalTypeCreateHook))
+	govtypesv1beta.RegisterProposalType(string(ProposalTypeUpdateHook))
+	govtypesv1beta.RegisterProposalType(string(ProposalTypeDeleteHook))
 }
 
 // ProposalRoute returns the routing key of a parameter change proposal.
@@ -195,8 +193,8 @@ func validateProposalCommons(title, description string) error {
 	if len(title) == 0 {
 		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal title cannot be blank")
 	}
-	if len(title) > govtypes.MaxTitleLength {
-		return sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "proposal title is longer than max length of %d", govtypes.MaxTitleLength)
+	if len(title) > govtypesv1beta.MaxTitleLength {
+		return sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "proposal title is longer than max length of %d", govtypesv1beta.MaxTitleLength)
 	}
 	if strings.TrimSpace(description) != description {
 		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal description must not start/end with white spaces")
@@ -204,8 +202,8 @@ func validateProposalCommons(title, description string) error {
 	if len(description) == 0 {
 		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal description cannot be blank")
 	}
-	if len(description) > govtypes.MaxDescriptionLength {
-		return sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "proposal description is longer than max length of %d", govtypes.MaxDescriptionLength)
+	if len(description) > govtypesv1beta.MaxDescriptionLength {
+		return sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "proposal description is longer than max length of %d", govtypesv1beta.MaxDescriptionLength)
 	}
 	return nil
 }

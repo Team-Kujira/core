@@ -8,6 +8,7 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -19,7 +20,7 @@ import (
 // Keeper of the oracle store
 type Keeper struct {
 	cdc        codec.BinaryCodec
-	storeKey   sdk.StoreKey
+	storeKey   storetypes.StoreKey
 	paramSpace paramstypes.Subspace
 
 	accountKeeper  types.AccountKeeper
@@ -33,7 +34,7 @@ type Keeper struct {
 }
 
 // NewKeeper constructs a new keeper for oracle
-func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey,
+func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey,
 	paramspace paramstypes.Subspace, accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper, distrKeeper types.DistributionKeeper,
 	slashingkeeper types.SlashingKeeper, stakingKeeper types.StakingKeeper, distrName string,

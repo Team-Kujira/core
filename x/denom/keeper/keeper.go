@@ -11,6 +11,7 @@ import (
 
 	"github.com/Team-Kujira/core/x/denom/types"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -18,7 +19,7 @@ import (
 type (
 	Keeper struct {
 		cdc      codec.Codec
-		storeKey sdk.StoreKey
+		storeKey storetypes.StoreKey
 
 		paramSpace paramtypes.Subspace
 
@@ -31,7 +32,7 @@ type (
 // NewKeeper returns a new instance of the x/denom keeper
 func NewKeeper(
 	cdc codec.Codec,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
