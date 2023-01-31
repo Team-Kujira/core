@@ -24,6 +24,10 @@ func init() { // register new content types with the sdk
 	govtypesv1beta.RegisterProposalType(string(ProposalTypeDeleteHook))
 }
 
+var _ govtypesv1beta.Content = &CreateHookProposal{}
+var _ govtypesv1beta.Content = &UpdateHookProposal{}
+var _ govtypesv1beta.Content = &DeleteHookProposal{}
+
 // ProposalRoute returns the routing key of a parameter change proposal.
 func (p CreateHookProposal) ProposalRoute() string { return RouterKey }
 
