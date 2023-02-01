@@ -1,27 +1,41 @@
-validator:
-  name: bob
-  staked: 100000000ukuji
-client:
-  openapi:
-    path: docs/static/openapi.yml
+version: 1
+build:
+  binary: kujirad
+  proto:
+    path: proto
+    third_party_paths:
+      - third_party/proto
+      - proto_vendor
+accounts:
+  - name: bob
+    coins:
+      - 1000000000ukuji
 faucet:
   name: bob
   coins:
     - 5ukuji
+  host: 0.0.0.0:4500
+client:
+  openapi:
+    path: docs/static/openapi.yml
 genesis:
-  chain_id: harpoon-2
   app_state:
     crisis:
       constant_fee:
-        denom: ukuji
         amount: "1000"
+        denom: ukuji
+    denom:
+      params:
+        creation_fee:
+          - amount: "1000000"
+            denom: ukuji
     gov:
-      voting_params:
-        voting_period: "5m"
       deposit_params:
         min_deposit:
-          - denom: ukuji
-            amount: "10000000"
+          - amount: "10000000"
+            denom: ukuji
+      voting_params:
+        voting_period: 5m
     mint:
       minter:
         annual_provisions: "0.0"
@@ -33,24 +47,19 @@ genesis:
         inflation_min: "0.07"
         inflation_rate_change: "0.13"
         mint_denom: ukuji
+    oracle:
+      params:
+        whitelist:
+          - name: ukuji
     staking:
       params:
         bond_denom: ukuji
-    denom:
-      params:
-        creation_fee:
-          - amount: "1000000"
-            denom: "ukuji"
     wasm:
       params:
         code_upload_access:
-          permission: "Everybody"
-        instantiate_default_permission: "Everybody"
-    oracle: 
-      params: 
-        whitelist: 
-          - name: "ukuji"
-accounts:
+          permission: Everybody
+        instantiate_default_permission: Everybody
+  chain_id: harpoon-2
+validators:
   - name: bob
-    coins:
-      - 1000000000ukuji
+    bonded: 100000000ukuji

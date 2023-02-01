@@ -6,6 +6,21 @@ Please refer to [docs.kujira.app](https://docs.kujira.app/) and join our [Discor
 
 ## Get started
 
+Ensure your ignite version is 0.26.1
+
+```
+ignite version
+```
+
+If not, you can download the latest. See [the docs](https://docs.ignite.com/welcome/install#verify-your-ignite-cli-version) for more info
+
+```
+curl https://get.ignite.com/cli | bash
+sudo mv ignite /usr/local/bin/
+```
+
+Then start the chain
+
 ```
 ignite chain serve
 ```
