@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -455,22 +456,12 @@ func New(
 				return nil, err
 			}
 
-			return app.mm.RunMigrations(ctx, cfg, fromVM)
+			toVM, err := app.mm.RunMigrations(ctx, cfg, fromVM)
+			genesis := alliancemodule.DefaultGenesisState()
+			genesis.Params.LastTakeRateClaimTime = time.Unix(1676497078, 0)
+			app.AllianceKeeper.InitGenesis(ctx, genesis)
+			return toVM, err
 		})
-
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(err)
-	}
-
-	if upgradeInfo.Name == "v0.8.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{alliancemoduletypes.ModuleName},
-		}
-
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-	}
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
