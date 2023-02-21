@@ -71,10 +71,10 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		//---------------------------
 		// Do miss counting & slashing
-		denomMap := map[string]map[string]bool{}
+		denomMap := map[string]map[string]struct{}{}
 
 		for _, denom := range voteTargets {
-			denomMap[denom] = map[string]bool{}
+			denomMap[denom] = map[string]struct{}{}
 		}
 
 		for denom, votes := range voteMap {
@@ -85,7 +85,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 					continue
 				}
 
-				denomMap[denom][vote.Voter.String()] = true
+				denomMap[denom][vote.Voter.String()] = struct{}{}
 			}
 		}
 
@@ -101,12 +101,10 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 				}
 			}
 
-			if !missing {
-				continue
+			if missing {
+				// Increase miss counter
+				k.SetMissCounter(ctx, claim.Recipient, k.GetMissCounter(ctx, claim.Recipient)+1)
 			}
-
-			// Increase miss counter
-			k.SetMissCounter(ctx, claim.Recipient, k.GetMissCounter(ctx, claim.Recipient)+1)
 		}
 
 		// // Distribute rewards to ballot winners
