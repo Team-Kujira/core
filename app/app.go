@@ -143,7 +143,12 @@ import (
 const (
 	AccountAddressPrefix = "kujira"
 	Name                 = "kujira"
-	alliancestorekey     = "alliance2"
+	// Either the SDK or some combination of the creation of the alliance module
+	// in 0.8.0 means that deleting the module leaves remenants at the original store key.
+	// This puts the module storage under a new key, meaning we can bypass the faulty removal
+	// of the old module store
+	// N.B don't use the original
+	AllianceStoreKey = "alliance2"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -358,7 +363,7 @@ func New(
 		intertxtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
-		alliancestorekey,
+		AllianceStoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
@@ -412,7 +417,7 @@ func New(
 
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
-		keys[alliancestorekey],
+		keys[AllianceStoreKey],
 		app.GetSubspace(alliancemoduletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -464,7 +469,7 @@ func New(
 
 	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := &storetypes.StoreUpgrades{
-			Added: []string{alliancestorekey},
+			Added: []string{AllianceStoreKey},
 		}
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 
