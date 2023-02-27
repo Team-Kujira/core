@@ -442,7 +442,7 @@ func New(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	app.UpgradeKeeper.SetUpgradeHandler("v0.8.0",
+	app.UpgradeKeeper.SetUpgradeHandler("v0.8.1",
 		func(
 			ctx sdk.Context,
 			plan upgradetypes.Plan,
@@ -456,12 +456,18 @@ func New(
 				return nil, err
 			}
 
-			toVM, err := app.mm.RunMigrations(ctx, cfg, fromVM)
-			genesis := alliancemodule.DefaultGenesisState()
-			genesis.Params.LastTakeRateClaimTime = time.Unix(1676497078, 0)
-			app.AllianceKeeper.InitGenesis(ctx, genesis)
-			return toVM, err
-		})
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("Failed to read upgrade info from disk: %w", err))
+	}
+
+	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := &storetypes.StoreUpgrades{
+			Added: []string{alliancemoduletypes.StoreKey},
+		}
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
+
+	}
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
