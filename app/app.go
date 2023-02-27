@@ -143,6 +143,7 @@ import (
 const (
 	AccountAddressPrefix = "kujira"
 	Name                 = "kujira"
+	alliancestorekey     = "alliance2"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -357,7 +358,7 @@ func New(
 		intertxtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
-		alliancemoduletypes.StoreKey,
+		alliancestorekey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
@@ -411,7 +412,7 @@ func New(
 
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
-		keys[alliancemoduletypes.StoreKey],
+		keys[alliancestorekey],
 		app.GetSubspace(alliancemoduletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -463,7 +464,7 @@ func New(
 
 	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := &storetypes.StoreUpgrades{
-			Added: []string{alliancemoduletypes.StoreKey},
+			Added: []string{alliancestorekey},
 		}
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 
