@@ -148,7 +148,8 @@ const (
 	// This puts the module storage under a new key, meaning we can bypass the faulty removal
 	// of the old module store
 	// N.B don't use the original!
-	AllianceStoreKey = "alliance2"
+	AllianceModuleName = "alliance2"
+	AllianceStoreKey   = AllianceModuleName
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -229,7 +230,7 @@ var (
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
-		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		AllianceModuleName:                  {authtypes.Minter, authtypes.Burner},
 		alliancemoduletypes.RewardsPoolName: nil,
 
 		// this line is used by starport scaffolding # stargate/app/maccPerms
@@ -418,7 +419,7 @@ func New(
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
 		keys[AllianceStoreKey],
-		app.GetSubspace(alliancemoduletypes.ModuleName),
+		app.GetSubspace(AllianceModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		&app.StakingKeeper,
@@ -714,7 +715,7 @@ func New(
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
+		AllianceModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
@@ -744,7 +745,7 @@ func New(
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
+		AllianceModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
@@ -779,7 +780,7 @@ func New(
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
+		AllianceModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -1017,7 +1018,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
-	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+	paramsKeeper.Subspace(AllianceModuleName)
 
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
