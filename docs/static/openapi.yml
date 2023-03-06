@@ -56,6 +56,21 @@ paths:
                     last_reward_change_time:
                       type: string
                       format: date-time
+                    reward_weight_range:
+                      description: >-
+                        set a bound of weight range to limit how much reward
+                        weights can scale.
+                      type: object
+                      properties:
+                        min:
+                          type: string
+                        max:
+                          type: string
+                    is_initialized:
+                      type: boolean
+                      title: >-
+                        flag to check if an asset has completed the
+                        initialization process after the reward delay
                   title: 'key: denom value: AllianceAsset'
               pagination:
                 type: object
@@ -63,10 +78,9 @@ paths:
                   next_key:
                     type: string
                     format: byte
-                    description: |-
+                    title: |-
                       next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
+                      query the next page most efficiently
                   total:
                     type: string
                     format: uint64
@@ -147,16 +161,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -235,10 +239,9 @@ paths:
                   next_key:
                     type: string
                     format: byte
-                    description: |-
+                    title: |-
                       next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
+                      query the next page most efficiently
                   total:
                     type: string
                     format: uint64
@@ -322,16 +325,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /terra/alliances/delegations/{delegator_addr}:
@@ -407,10 +400,9 @@ paths:
                   next_key:
                     type: string
                     format: byte
-                    description: |-
+                    title: |-
                       next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
+                      query the next page most efficiently
                   total:
                     type: string
                     format: uint64
@@ -498,16 +490,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /terra/alliances/delegations/{delegator_addr}/{validator_addr}:
@@ -585,10 +567,9 @@ paths:
                   next_key:
                     type: string
                     format: byte
-                    description: |-
+                    title: |-
                       next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
+                      query the next page most efficiently
                   total:
                     type: string
                     format: uint64
@@ -677,16 +658,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -836,16 +807,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /terra/alliances/delegations/{delegator_addr}/{validator_addr}/{denom}:
@@ -992,16 +953,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /terra/alliances/ibc/{hash}:
@@ -1053,6 +1004,21 @@ paths:
                   last_reward_change_time:
                     type: string
                     format: date-time
+                  reward_weight_range:
+                    description: >-
+                      set a bound of weight range to limit how much reward
+                      weights can scale.
+                    type: object
+                    properties:
+                      min:
+                        type: string
+                      max:
+                        type: string
+                  is_initialized:
+                    type: boolean
+                    title: >-
+                      flag to check if an asset has completed the initialization
+                      process after the reward delay
                 title: 'key: denom value: AllianceAsset'
         default:
           description: An unexpected error response.
@@ -1226,16 +1192,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /terra/alliances/rewards/{delegator_addr}/{validator_addr}/{denom}:
@@ -1342,16 +1298,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /terra/alliances/validators:
@@ -1431,10 +1377,9 @@ paths:
                   next_key:
                     type: string
                     format: byte
-                    description: |-
+                    title: |-
                       next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
+                      query the next page most efficiently
                   total:
                     type: string
                     format: uint64
@@ -1515,16 +1460,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -1670,6 +1605,21 @@ paths:
                   last_reward_change_time:
                     type: string
                     format: date-time
+                  reward_weight_range:
+                    description: >-
+                      set a bound of weight range to limit how much reward
+                      weights can scale.
+                    type: object
+                    properties:
+                      min:
+                        type: string
+                      max:
+                        type: string
+                  is_initialized:
+                    type: boolean
+                    title: >-
+                      flag to check if an asset has completed the initialization
+                      process after the reward delay
                 title: 'key: denom value: AllianceAsset'
         default:
           description: An unexpected error response.
@@ -42916,6 +42866,21 @@ definitions:
       last_reward_change_time:
         type: string
         format: date-time
+      reward_weight_range:
+        description: >-
+          set a bound of weight range to limit how much reward weights can
+          scale.
+        type: object
+        properties:
+          min:
+            type: string
+          max:
+            type: string
+      is_initialized:
+        type: boolean
+        title: >-
+          flag to check if an asset has completed the initialization process
+          after the reward delay
     title: 'key: denom value: AllianceAsset'
   alliance.alliance.Delegation:
     type: object
@@ -43125,6 +43090,21 @@ definitions:
           last_reward_change_time:
             type: string
             format: date-time
+          reward_weight_range:
+            description: >-
+              set a bound of weight range to limit how much reward weights can
+              scale.
+            type: object
+            properties:
+              min:
+                type: string
+              max:
+                type: string
+          is_initialized:
+            type: boolean
+            title: >-
+              flag to check if an asset has completed the initialization process
+              after the reward delay
         title: 'key: denom value: AllianceAsset'
   alliance.alliance.QueryAllianceValidatorResponse:
     type: object
@@ -43243,10 +43223,9 @@ definitions:
           next_key:
             type: string
             format: byte
-            description: |-
+            title: |-
               next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
+              query the next page most efficiently
           total:
             type: string
             format: uint64
@@ -43329,10 +43308,9 @@ definitions:
           next_key:
             type: string
             format: byte
-            description: |-
+            title: |-
               next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
+              query the next page most efficiently
           total:
             type: string
             format: uint64
@@ -43392,6 +43370,21 @@ definitions:
             last_reward_change_time:
               type: string
               format: date-time
+            reward_weight_range:
+              description: >-
+                set a bound of weight range to limit how much reward weights can
+                scale.
+              type: object
+              properties:
+                min:
+                  type: string
+                max:
+                  type: string
+            is_initialized:
+              type: boolean
+              title: >-
+                flag to check if an asset has completed the initialization
+                process after the reward delay
           title: 'key: denom value: AllianceAsset'
       pagination:
         type: object
@@ -43399,10 +43392,9 @@ definitions:
           next_key:
             type: string
             format: byte
-            description: |-
+            title: |-
               next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
+              query the next page most efficiently
           total:
             type: string
             format: uint64
@@ -43440,6 +43432,13 @@ definitions:
       denom:
         type: string
       index:
+        type: string
+  alliance.alliance.RewardWeightRange:
+    type: object
+    properties:
+      min:
+        type: string
+      max:
         type: string
   cosmos.base.query.v1beta1.PageRequest:
     type: object
@@ -43500,6 +43499,9 @@ definitions:
       next_key:
         type: string
         format: byte
+        title: |-
+          next_key is the key to be passed to PageRequest.key to
+          query the next page most efficiently
         description: |-
           next_key is the key to be passed to PageRequest.key to
           query the next page most efficiently. It will be empty if
