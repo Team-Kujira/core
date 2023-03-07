@@ -102,7 +102,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
 
-	v6 "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/controller/migrations/v6"
 	intertx "github.com/cosmos/interchain-accounts/x/inter-tx"
 	intertxkeeper "github.com/cosmos/interchain-accounts/x/inter-tx/keeper"
 	intertxtypes "github.com/cosmos/interchain-accounts/x/inter-tx/types"
@@ -448,19 +447,15 @@ func New(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	app.UpgradeKeeper.SetUpgradeHandler("v0.8.2",
+	app.UpgradeKeeper.SetUpgradeHandler("v0.8.3",
 		func(
 			ctx sdk.Context,
 			plan upgradetypes.Plan,
 			fromVM module.VersionMap,
 		) (module.VersionMap, error) {
-			if err := v6.MigrateICS27ChannelCapability(ctx, app.appCodec,
-				app.keys[capabilitytypes.ModuleName],
-				app.CapabilityKeeper,
-				intertxtypes.ModuleName,
-			); err != nil {
-				return nil, err
-			}
+			// We're moving the alliance module storage to a new key,
+			// so the version stored under alliancemoduletypes.ModuleName is incorrect
+			delete(fromVM, alliancemoduletypes.ModuleName)
 			return app.mm.RunMigrations(ctx, cfg, fromVM)
 		})
 
