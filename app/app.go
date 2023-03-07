@@ -455,7 +455,10 @@ func New(
 		) (module.VersionMap, error) {
 			// We're moving the alliance module storage to a new key,
 			// so the version stored under alliancemoduletypes.ModuleName is incorrect
-			delete(fromVM, alliancemoduletypes.ModuleName)
+			if _, ok := fromVM[alliancemoduletypes.ModuleName]; ok {
+				delete(fromVM, alliancemoduletypes.ModuleName)
+			}
+
 			return app.mm.RunMigrations(ctx, cfg, fromVM)
 		})
 
