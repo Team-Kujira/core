@@ -447,33 +447,14 @@ func New(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	app.UpgradeKeeper.SetUpgradeHandler("v0.8.3",
+	app.UpgradeKeeper.SetUpgradeHandler("v0.8.4",
 		func(
 			ctx sdk.Context,
 			plan upgradetypes.Plan,
 			fromVM module.VersionMap,
 		) (module.VersionMap, error) {
-			// We're moving the alliance module storage to a new key,
-			// so the version stored under alliancemoduletypes.ModuleName is incorrect
-			if _, ok := fromVM[alliancemoduletypes.ModuleName]; ok {
-				delete(fromVM, alliancemoduletypes.ModuleName)
-			}
-
 			return app.mm.RunMigrations(ctx, cfg, fromVM)
 		})
-
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(fmt.Errorf("Failed to read upgrade info from disk: %w", err))
-	}
-
-	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := &storetypes.StoreUpgrades{
-			Added: []string{AllianceStoreKey},
-		}
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
-
-	}
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
