@@ -407,6 +407,8 @@ func New(
 
 	blockedAddrs := app.ModuleAccountAddrs()
 	blockedAddrs[authtypes.NewModuleAddress(authtypes.FeeCollectorName).String()] = false
+	delete(blockedAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
+
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), blockedAddrs,
 	)
