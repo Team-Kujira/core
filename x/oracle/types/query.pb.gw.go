@@ -874,25 +874,25 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_ExchangeRate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "denoms", "denom", "exchange_rate"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ExchangeRate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "denoms", "denom", "exchange_rate"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ExchangeRates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "denoms", "exchange_rates"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ExchangeRates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "denoms", "exchange_rates"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Actives_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "denoms", "actives"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Actives_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "denoms", "actives"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_FeederDelegation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "validators", "validator_addr", "feeder"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_FeederDelegation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "validators", "validator_addr", "feeder"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_MissCounter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "validators", "validator_addr", "miss"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MissCounter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "validators", "validator_addr", "miss"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_AggregatePrevote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "validators", "validator_addr", "aggregate_prevote"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AggregatePrevote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "validators", "validator_addr", "aggregate_prevote"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_AggregatePrevotes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "validators", "aggregate_prevotes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AggregatePrevotes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "validators", "aggregate_prevotes"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_AggregateVote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "valdiators", "validator_addr", "aggregate_vote"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AggregateVote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"oracle", "valdiators", "validator_addr", "aggregate_vote"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_AggregateVotes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "validators", "aggregate_votes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AggregateVotes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"oracle", "validators", "aggregate_votes"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"oracle", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"oracle", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
