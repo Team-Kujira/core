@@ -25,7 +25,7 @@ func NewQuerier(keeper Keeper) types.QueryServer {
 var _ types.QueryServer = querier{}
 
 // Params queries params of distribution module
-func (q querier) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (q querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	var params types.Params
 	q.paramSpace.GetParamSet(ctx, &params)
@@ -53,7 +53,7 @@ func (q querier) ExchangeRate(c context.Context, req *types.QueryExchangeRateReq
 }
 
 // ExchangeRates queries exchange rates of all denoms
-func (q querier) ExchangeRates(c context.Context, req *types.QueryExchangeRatesRequest) (*types.QueryExchangeRatesResponse, error) {
+func (q querier) ExchangeRates(c context.Context, _ *types.QueryExchangeRatesRequest) (*types.QueryExchangeRatesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	var exchangeRates sdk.DecCoins
@@ -66,7 +66,7 @@ func (q querier) ExchangeRates(c context.Context, req *types.QueryExchangeRatesR
 }
 
 // Actives queries all denoms for which exchange rates exist
-func (q querier) Actives(c context.Context, req *types.QueryActivesRequest) (*types.QueryActivesResponse, error) {
+func (q querier) Actives(c context.Context, _ *types.QueryActivesRequest) (*types.QueryActivesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	denoms := []string{}
@@ -135,7 +135,7 @@ func (q querier) AggregatePrevote(c context.Context, req *types.QueryAggregatePr
 }
 
 // AggregatePrevotes queries aggregate prevotes of all validators
-func (q querier) AggregatePrevotes(c context.Context, req *types.QueryAggregatePrevotesRequest) (*types.QueryAggregatePrevotesResponse, error) {
+func (q querier) AggregatePrevotes(c context.Context, _ *types.QueryAggregatePrevotesRequest) (*types.QueryAggregatePrevotesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	var prevotes []types.AggregateExchangeRatePrevote
@@ -172,7 +172,7 @@ func (q querier) AggregateVote(c context.Context, req *types.QueryAggregateVoteR
 }
 
 // AggregateVotes queries aggregate votes of all validators
-func (q querier) AggregateVotes(c context.Context, req *types.QueryAggregateVotesRequest) (*types.QueryAggregateVotesResponse, error) {
+func (q querier) AggregateVotes(c context.Context, _ *types.QueryAggregateVotesRequest) (*types.QueryAggregateVotesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	var votes []types.AggregateExchangeRateVote

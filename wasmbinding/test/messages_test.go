@@ -69,7 +69,7 @@ func TestCreateDenom(t *testing.T) {
 	for name, spec := range specs {
 		t.Run(name, func(t *testing.T) {
 			// when
-			gotErr := wasm.PerformCreate(*app.DenomKeeper, app.BankKeeper, ctx, actor, spec.createDenom)
+			gotErr := wasm.PerformCreate(*app.DenomKeeper, ctx, actor, spec.createDenom)
 			// then
 			if spec.expErr {
 				require.Error(t, gotErr)
@@ -168,7 +168,7 @@ func TestChangeAdmin(t *testing.T) {
 			actorAmount := sdk.NewCoins(sdk.NewCoin(types.DefaultParams().CreationFee[0].Denom, types.DefaultParams().CreationFee[0].Amount.MulRaw(100)))
 			fundAccount(t, ctx, app, tokenCreator, actorAmount)
 
-			err := wasm.PerformCreate(*app.DenomKeeper, app.BankKeeper, ctx, tokenCreator, &wasm.Create{
+			err := wasm.PerformCreate(*app.DenomKeeper, ctx, tokenCreator, &wasm.Create{
 				Subdenom: validDenom,
 			})
 			require.NoError(t, err)
@@ -198,13 +198,13 @@ func TestMint(t *testing.T) {
 	validDenom := wasm.Create{
 		Subdenom: "MOON",
 	}
-	err := wasm.PerformCreate(*app.DenomKeeper, app.BankKeeper, ctx, creator, &validDenom)
+	err := wasm.PerformCreate(*app.DenomKeeper, ctx, creator, &validDenom)
 	require.NoError(t, err)
 
 	emptyDenom := wasm.Create{
 		Subdenom: "",
 	}
-	err = wasm.PerformCreate(*app.DenomKeeper, app.BankKeeper, ctx, creator, &emptyDenom)
+	err = wasm.PerformCreate(*app.DenomKeeper, ctx, creator, &emptyDenom)
 	require.NoError(t, err)
 
 	validDenomStr := fmt.Sprintf("factory/%s/%s", creator.String(), validDenom.Subdenom)
@@ -294,7 +294,7 @@ func TestMint(t *testing.T) {
 	for name, spec := range specs {
 		t.Run(name, func(t *testing.T) {
 			// when
-			gotErr := wasm.PerformMint(*app.DenomKeeper, app.BankKeeper, ctx, creator, spec.mint)
+			gotErr := wasm.PerformMint(*app.DenomKeeper, ctx, creator, spec.mint)
 			// then
 			if spec.expErr {
 				require.Error(t, gotErr)
@@ -318,13 +318,13 @@ func TestBurn(t *testing.T) {
 	validDenom := wasm.Create{
 		Subdenom: "MOON",
 	}
-	err := wasm.PerformCreate(*app.DenomKeeper, app.BankKeeper, ctx, creator, &validDenom)
+	err := wasm.PerformCreate(*app.DenomKeeper, ctx, creator, &validDenom)
 	require.NoError(t, err)
 
 	emptyDenom := wasm.Create{
 		Subdenom: "",
 	}
-	err = wasm.PerformCreate(*app.DenomKeeper, app.BankKeeper, ctx, creator, &emptyDenom)
+	err = wasm.PerformCreate(*app.DenomKeeper, ctx, creator, &emptyDenom)
 	require.NoError(t, err)
 
 	lucky := RandomAccountAddress()
@@ -417,7 +417,7 @@ func TestBurn(t *testing.T) {
 				Amount:    mintAmount,
 				Recipient: creator.String(),
 			}
-			err := wasm.PerformMint(*app.DenomKeeper, app.BankKeeper, ctx, creator, mintBinding)
+			err := wasm.PerformMint(*app.DenomKeeper, ctx, creator, mintBinding)
 			require.NoError(t, err)
 
 			emptyDenomMintBinding := &wasm.Mint{
@@ -425,7 +425,7 @@ func TestBurn(t *testing.T) {
 				Amount:    mintAmount,
 				Recipient: creator.String(),
 			}
-			err = wasm.PerformMint(*app.DenomKeeper, app.BankKeeper, ctx, creator, emptyDenomMintBinding)
+			err = wasm.PerformMint(*app.DenomKeeper, ctx, creator, emptyDenomMintBinding)
 			require.NoError(t, err)
 
 			// when

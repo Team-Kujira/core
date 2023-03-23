@@ -165,10 +165,8 @@ func (p DeleteHookProposal) ProposalType() string { return string(ProposalTypeDe
 
 // ValidateBasic validates the proposal
 func (p DeleteHookProposal) ValidateBasic() error {
-	if err := validateProposalCommons(p.Title, p.Description); err != nil {
-		return err
-	}
-	return nil
+	err := validateProposalCommons(p.Title, p.Description)
+	return err
 }
 
 // String implements the Stringer interface.

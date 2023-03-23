@@ -59,7 +59,7 @@ func (m *CustomMessenger) DispatchMsg(
 		}
 
 		if contractMsg.Denom != nil {
-			return denom.HandleMsg(m.denom, m.bank, contractAddr, ctx, contractMsg.Denom)
+			return denom.HandleMsg(m.denom, contractAddr, ctx, contractMsg.Denom)
 		} else if contractMsg.Auth != nil {
 			handler := bindings.AuthHandler{AccountKeeper: m.auth, BankKeeper: m.bank}
 			cva := contractMsg.Auth.CreateVestingAccount
