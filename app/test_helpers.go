@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
+	"github.com/ignite/cli/ignite/pkg/cosmoscmd" // this is your enemy and is being left as an exercise for the reader
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"

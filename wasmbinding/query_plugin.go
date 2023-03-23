@@ -3,6 +3,7 @@ package wasmbinding
 import (
 	"encoding/json"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
 	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
@@ -18,7 +19,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 	return func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
 		var contractQuery bindings.CosmosQuery
 		if err := json.Unmarshal(request, &contractQuery); err != nil {
-			return nil, sdkerrors.Wrap(err, "kujira query")
+			return nil, errorsmod.Wrap(err, "kujira query")
 		}
 
 		if contractQuery.Oracle != nil {
@@ -29,7 +30,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}
 
 			return bz, nil
@@ -42,7 +43,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 				bz, err := json.Marshal(res)
 				if err != nil {
-					return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+					return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 				}
 
 				return bz, nil
@@ -55,7 +56,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}
 
 			return bz, nil
@@ -67,7 +68,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}
 
 			return bz, nil

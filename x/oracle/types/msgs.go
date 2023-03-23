@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -58,7 +59,7 @@ func (msg MsgAggregateExchangeRatePrevote) GetSigners() []sdk.AccAddress {
 func (msg MsgAggregateExchangeRatePrevote) ValidateBasic() error {
 	_, err := AggregateVoteHashFromHexString(msg.Hash)
 	if err != nil {
-		return sdkerrors.Wrapf(ErrInvalidHash, "Invalid vote hash (%s)", err)
+		return errorsmod.Wrapf(ErrInvalidHash, "Invalid vote hash (%s)", err)
 	}
 
 	// HEX encoding doubles the hash length
@@ -68,12 +69,12 @@ func (msg MsgAggregateExchangeRatePrevote) ValidateBasic() error {
 
 	_, err = sdk.AccAddressFromBech32(msg.Feeder)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid feeder address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid feeder address (%s)", err)
 	}
 
 	_, err = sdk.ValAddressFromBech32(msg.Validator)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid operator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid operator address (%s)", err)
 	}
 
 	return nil
@@ -114,29 +115,29 @@ func (msg MsgAggregateExchangeRateVote) GetSigners() []sdk.AccAddress {
 func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Feeder)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid feeder address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid feeder address (%s)", err)
 	}
 
 	_, err = sdk.ValAddressFromBech32(msg.Validator)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid operator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid operator address (%s)", err)
 	}
 
 	if l := len(msg.ExchangeRates); l == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "must provide at least one oracle exchange rate")
+		return errorsmod.Wrap(sdkerrors.ErrUnknownRequest, "must provide at least one oracle exchange rate")
 	} else if l > 4096 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "exchange rates string can not exceed 4096 characters")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "exchange rates string can not exceed 4096 characters")
 	}
 
 	exchangeRates, err := ParseExchangeRateTuples(msg.ExchangeRates)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "failed to parse exchange rates string cause: "+err.Error())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, "failed to parse exchange rates string cause: "+err.Error())
 	}
 
 	for _, exchangeRate := range exchangeRates {
 		// Check overflow bit length
 		if exchangeRate.ExchangeRate.BigInt().BitLen() > 255+sdk.DecimalPrecisionBits {
-			return sdkerrors.Wrap(ErrInvalidExchangeRate, "overflow")
+			return errorsmod.Wrap(ErrInvalidExchangeRate, "overflow")
 		}
 	}
 
@@ -145,7 +146,7 @@ func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
 	}
 	_, err = AggregateVoteHashFromHexString(msg.Salt)
 	if err != nil {
-		return sdkerrors.Wrap(ErrInvalidSaltFormat, "salt must be a valid hex string")
+		return errorsmod.Wrap(ErrInvalidSaltFormat, "salt must be a valid hex string")
 	}
 
 	return nil
@@ -184,12 +185,12 @@ func (msg MsgDelegateFeedConsent) GetSigners() []sdk.AccAddress {
 func (msg MsgDelegateFeedConsent) ValidateBasic() error {
 	_, err := sdk.ValAddressFromBech32(msg.Operator)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid operator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid operator address (%s)", err)
 	}
 
 	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid delegate address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid delegate address (%s)", err)
 	}
 
 	return nil

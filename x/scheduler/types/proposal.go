@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -42,16 +43,16 @@ func (p CreateHookProposal) ValidateBasic() error {
 		return err
 	}
 	if _, err := sdk.AccAddressFromBech32(p.Contract); err != nil {
-		return sdkerrors.Wrap(err, "contract")
+		return errorsmod.Wrap(err, "contract")
 	}
 	if _, err := sdk.AccAddressFromBech32(p.Executor); err != nil {
-		return sdkerrors.Wrap(err, "executor")
+		return errorsmod.Wrap(err, "executor")
 	}
 	if !p.Funds.IsValid() {
 		return sdkerrors.ErrInvalidCoins
 	}
 	if err := p.Msg.ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "payload msg")
+		return errorsmod.Wrap(err, "payload msg")
 	}
 	return nil
 }
@@ -102,20 +103,20 @@ func (p UpdateHookProposal) ValidateBasic() error {
 	}
 
 	if p.Id == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "ID is required")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "ID is required")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(p.Contract); err != nil {
-		return sdkerrors.Wrap(err, "contract")
+		return errorsmod.Wrap(err, "contract")
 	}
 	if _, err := sdk.AccAddressFromBech32(p.Executor); err != nil {
-		return sdkerrors.Wrap(err, "executor")
+		return errorsmod.Wrap(err, "executor")
 	}
 	if !p.Funds.IsValid() {
 		return sdkerrors.ErrInvalidCoins
 	}
 	if err := p.Msg.ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "payload msg")
+		return errorsmod.Wrap(err, "payload msg")
 	}
 	return nil
 }
@@ -194,22 +195,22 @@ func (p DeleteHookProposal) MarshalYAML() (interface{}, error) {
 
 func validateProposalCommons(title, description string) error {
 	if strings.TrimSpace(title) != title {
-		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal title must not start/end with white spaces")
+		return errorsmod.Wrap(govtypes.ErrInvalidProposalContent, "proposal title must not start/end with white spaces")
 	}
 	if len(title) == 0 {
-		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal title cannot be blank")
+		return errorsmod.Wrap(govtypes.ErrInvalidProposalContent, "proposal title cannot be blank")
 	}
 	if len(title) > govtypesv1beta.MaxTitleLength {
-		return sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "proposal title is longer than max length of %d", govtypesv1beta.MaxTitleLength)
+		return errorsmod.Wrapf(govtypes.ErrInvalidProposalContent, "proposal title is longer than max length of %d", govtypesv1beta.MaxTitleLength)
 	}
 	if strings.TrimSpace(description) != description {
-		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal description must not start/end with white spaces")
+		return errorsmod.Wrap(govtypes.ErrInvalidProposalContent, "proposal description must not start/end with white spaces")
 	}
 	if len(description) == 0 {
-		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "proposal description cannot be blank")
+		return errorsmod.Wrap(govtypes.ErrInvalidProposalContent, "proposal description cannot be blank")
 	}
 	if len(description) > govtypesv1beta.MaxDescriptionLength {
-		return sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "proposal description is longer than max length of %d", govtypesv1beta.MaxDescriptionLength)
+		return errorsmod.Wrapf(govtypes.ErrInvalidProposalContent, "proposal description is longer than max length of %d", govtypesv1beta.MaxDescriptionLength)
 	}
 	return nil
 }

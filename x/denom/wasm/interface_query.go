@@ -3,9 +3,9 @@ package wasm
 import (
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
@@ -59,7 +59,7 @@ func GetFullDenom(contract string, subDenom string) (string, error) {
 	}
 	fullDenom, err := denomtypes.GetTokenDenom(contract, subDenom)
 	if err != nil {
-		return "", sdkerrors.Wrap(err, "validate sub-denom")
+		return "", errorsmod.Wrap(err, "validate sub-denom")
 	}
 
 	return fullDenom, nil
@@ -69,11 +69,11 @@ func GetFullDenom(contract string, subDenom string) (string, error) {
 func parseAddress(addr string) (sdk.AccAddress, error) {
 	parsed, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "address from bech32")
+		return nil, errorsmod.Wrap(err, "address from bech32")
 	}
 	err = sdk.VerifyAddressFormat(parsed)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "verify address format")
+		return nil, errorsmod.Wrap(err, "verify address format")
 	}
 	return parsed, nil
 }
