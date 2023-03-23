@@ -320,12 +320,13 @@ func NewIgniteApp(
 	invCheckPeriod uint,
 	encodingConfig cosmoscmd.EncodingConfig,
 	appOpts servertypes.AppOptions,
+	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) cosmoscmd.App {
 	return New(logger,
 		db, traceStore, loadLatest,
 		skipUpgradeHeights, homePath, invCheckPeriod,
-		encodingConfig, appOpts, baseAppOptions...,
+		encodingConfig, appOpts, wasmOpts, baseAppOptions...,
 	)
 }
 
@@ -340,7 +341,7 @@ func New(
 	invCheckPeriod uint,
 	encodingConfig cosmoscmd.EncodingConfig,
 	appOpts servertypes.AppOptions,
-	// wasmOpts []wasm.Option,
+	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 	appCodec := encodingConfig.Marshaler
@@ -461,7 +462,7 @@ func New(
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
-		panic(fmt.Errorf("Failed to read upgrade info from disk: %w", err))
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
 	}
 
 	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
@@ -469,7 +470,6 @@ func New(
 			Added: []string{AllianceStoreKey},
 		}
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
-
 	}
 
 	// register the staking hooks
@@ -577,7 +577,8 @@ func New(
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := "iterator,staking,stargate,oracle"
+	availableCapabilities := "iterator,staking,stargate,oracle,cosmwasm_1_1,cosmwasm_1_2"
+	wasmOpts = append(wasmbinding.RegisterCustomPlugins(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, app.AccountKeeper), wasmOpts...)
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -591,11 +592,10 @@ func New(
 		scopedWasmKeeper,
 		app.TransferKeeper,
 		app.MsgServiceRouter(),
-		app.GRPCQueryRouter(),
 		wasmDir,
 		wasmConfig,
-		supportedFeatures,
-		wasmbinding.RegisterCustomPlugins(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, app.AccountKeeper)...,
+		availableCapabilities,
+		wasmOpts...,
 	)
 
 	// register the proposal types

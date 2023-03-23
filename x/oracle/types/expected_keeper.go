@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -16,10 +17,10 @@ type SlashingKeeper interface {
 // StakingKeeper is expected keeper for staking module
 type StakingKeeper interface {
 	Validator(ctx sdk.Context, address sdk.ValAddress) stakingtypes.ValidatorI // get validator by operator address; nil when validator not found
-	TotalBondedTokens(sdk.Context) sdk.Int                                     // total bonded tokens within the validator set
+	TotalBondedTokens(sdk.Context) math.Int                                    // total bonded tokens within the validator set
 	ValidatorsPowerStoreIterator(ctx sdk.Context) sdk.Iterator                 // an iterator for the current validator power store
 	MaxValidators(sdk.Context) uint32                                          // MaxValidators returns the maximum amount of bonded validators
-	PowerReduction(ctx sdk.Context) (res sdk.Int)
+	PowerReduction(ctx sdk.Context) (res math.Int)
 }
 
 // DistributionKeeper is expected keeper for distribution module

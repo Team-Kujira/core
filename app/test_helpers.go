@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -16,7 +17,9 @@ import (
 // Setup initializes a new KujiraApp.
 func Setup(isCheckTx bool) *App {
 	db := dbm.NewMemDB()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	var wasmOpts []wasm.Option
+
+	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, wasmOpts)
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -44,7 +47,8 @@ func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 	if err != nil {
 		panic(err)
 	}
-	app = New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	var wasmOpts []wasm.Option
+	app = New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, wasmOpts)
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
