@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -102,11 +103,11 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
 
+	appparams "github.com/Team-Kujira/core/app/params"
 	intertx "github.com/cosmos/interchain-accounts/x/inter-tx"
 	intertxkeeper "github.com/cosmos/interchain-accounts/x/inter-tx/keeper"
 	intertxtypes "github.com/cosmos/interchain-accounts/x/inter-tx/types"
 
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd" // this is your enemy
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -139,8 +140,11 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "kujira"
-	Name                 = "kujira"
+	AccountAddressPrefix    = "kujira"
+	Name                    = "kujira"
+	ProposalsEnabled        = "false"
+	EnableSpecificProposals = ""
+
 	// Either the SDK or some combination of the creation of the alliance module
 	// in 0.8.0 means that deleting the module leaves remenants at the original store key,
 	// preventing a re-add at the same key.
@@ -149,6 +153,23 @@ const (
 	// N.B don't use the original!
 	AllianceStoreKey = "alliance2"
 )
+
+// GetEnabledProposals parses the ProposalsEnabled / EnableSpecificProposals values to
+// produce a list of enabled proposals to pass into wasmd app.
+func GetEnabledProposals() []wasm.ProposalType {
+	if EnableSpecificProposals == "" {
+		if ProposalsEnabled == "true" {
+			return wasm.EnableAllProposals
+		}
+		return wasm.DisableAllProposals
+	}
+	chunks := strings.Split(EnableSpecificProposals, ",")
+	proposals, err := wasm.ConvertToProposals(chunks)
+	if err != nil {
+		panic(err)
+	}
+	return proposals
+}
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
 
@@ -236,7 +257,6 @@ var (
 )
 
 var (
-	_ cosmoscmd.App           = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 )
@@ -310,26 +330,6 @@ type App struct {
 	sm *module.SimulationManager
 }
 
-func NewIgniteApp(
-	logger log.Logger,
-	db dbm.DB,
-	traceStore io.Writer,
-	loadLatest bool,
-	skipUpgradeHeights map[int64]bool,
-	homePath string,
-	invCheckPeriod uint,
-	encodingConfig cosmoscmd.EncodingConfig,
-	appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option,
-	baseAppOptions ...func(*baseapp.BaseApp),
-) cosmoscmd.App {
-	return New(logger,
-		db, traceStore, loadLatest,
-		skipUpgradeHeights, homePath, invCheckPeriod,
-		encodingConfig, appOpts, wasmOpts, baseAppOptions...,
-	)
-}
-
 // New returns a reference to an initialized blockchain app
 func New(
 	logger log.Logger,
@@ -339,12 +339,12 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig cosmoscmd.EncodingConfig,
+	encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-	appCodec := encodingConfig.Marshaler
+	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 

@@ -8,6 +8,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/Team-Kujira/core/app"
 
+	appparams "github.com/Team-Kujira/core/app/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -74,7 +75,7 @@ func BenchmarkSimulation(b *testing.B) {
 		require.NoError(b, err)
 	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	encoding := appparams.MakeEncodingConfig()
 
 	var wasmOpts []wasm.Option
 

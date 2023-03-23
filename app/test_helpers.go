@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd" // this is your enemy and is being left as an exercise for the reader
+	"github.com/CosmWasm/wasmd/x/wasm" // this is your enemy and is being left as an exercise for the reader
+	appparams "github.com/Team-Kujira/core/app/params"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Setup initializes a new KujiraApp.
@@ -19,7 +18,7 @@ func Setup(isCheckTx bool) *App {
 	db := dbm.NewMemDB()
 	var wasmOpts []wasm.Option
 
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, wasmOpts)
+	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, appparams.MakeEncodingConfig(), simapp.EmptyAppOptions{}, wasmOpts)
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -43,12 +42,12 @@ func Setup(isCheckTx bool) *App {
 // with LevelDB as a db.
 func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 	dir := "kujira_testing"
-	db, err := sdk.NewLevelDB("kujira_leveldb_testing", dir)
+	db, err := dbm.NewDB("kujira_leveldb_testing", "goleveldb", dir)
 	if err != nil {
 		panic(err)
 	}
 	var wasmOpts []wasm.Option
-	app = New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, wasmOpts)
+	app = New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, appparams.MakeEncodingConfig(), simapp.EmptyAppOptions{}, wasmOpts)
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
