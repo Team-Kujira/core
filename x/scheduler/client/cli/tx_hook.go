@@ -13,7 +13,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func CreateHookProposalCmd() *cobra.Command {
@@ -70,7 +70,7 @@ func CreateHookProposalCmd() *cobra.Command {
 				Msg:         wasmtypes.RawContractMessage(argMsg),
 			}
 
-			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
+			msg, err := govv1beta1.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}
@@ -147,7 +147,7 @@ func UpdateHookProposalCmd() *cobra.Command {
 				Msg:         wasmtypes.RawContractMessage(argMsg),
 			}
 
-			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
+			msg, err := govv1beta1.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}
@@ -203,7 +203,7 @@ func DeleteHookProposalCmd() *cobra.Command {
 				Id:          id,
 			}
 
-			msg, err := govtypes.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
+			msg, err := govv1beta1.NewMsgSubmitProposal(&content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}

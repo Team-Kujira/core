@@ -10,8 +10,8 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	"github.com/Team-Kujira/core/app"
 )
@@ -23,7 +23,7 @@ func CreateTestInput() (*app.App, sdk.Context) {
 }
 
 func FundAccount(t *testing.T, ctx sdk.Context, app *app.App, acct sdk.AccAddress) {
-	err := simapp.FundAccount(app.BankKeeper, ctx, acct, sdk.NewCoins(
+	err := testutil.FundAccount(app.BankKeeper, ctx, acct, sdk.NewCoins(
 		sdk.NewCoin("uosmo", sdk.NewInt(10000000000)),
 	))
 	require.NoError(t, err)

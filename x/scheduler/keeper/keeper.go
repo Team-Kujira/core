@@ -8,6 +8,7 @@ import (
 	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -15,14 +16,14 @@ import (
 type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
+		storeKey   storetypes.StoreKey
 		paramstore paramtypes.Subspace
 	}
 )
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 ) Keeper {
 	// set KeyTable if it has not already been set
