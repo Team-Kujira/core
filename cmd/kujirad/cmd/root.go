@@ -176,7 +176,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
 		config.Cmd(),
 		pruning.PruningCmd(a.newApp),
@@ -303,7 +302,6 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		a.encCfg,
 		appOpts,
 		wasmOpts,
-		app.GetEnabledProposals(),
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
@@ -317,12 +315,12 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	)
 }
 
-// appExport creates a new migalooApp (optionally at a given height)
+// appExport creates a new kujiraApp (optionally at a given height)
 // and exports state.
 func (a appCreator) appExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string, appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
-	var migalooApp *app.App
+	var kujiraApp *app.App
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
@@ -330,7 +328,7 @@ func (a appCreator) appExport(
 
 	loadLatest := height == -1
 	var emptyWasmOpts []wasm.Option
-	migalooApp = app.New(
+	kujiraApp = app.New(
 		logger,
 		db,
 		traceStore,
@@ -341,14 +339,13 @@ func (a appCreator) appExport(
 		a.encCfg,
 		appOpts,
 		emptyWasmOpts,
-		app.GetEnabledProposals(),
 	)
 
 	if height != -1 {
-		if err := migalooApp.LoadHeight(height); err != nil {
+		if err := kujiraApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	}
 
-	return migalooApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return kujiraApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }

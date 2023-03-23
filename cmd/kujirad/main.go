@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/Team-Kujira/core/app"
-	"github.com/Team-Kujira/core/cmd/migalood/cmd"
+	"github.com/Team-Kujira/core/cmd/kujirad/cmd"
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )
