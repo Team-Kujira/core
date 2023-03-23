@@ -16,7 +16,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set hook count
 	k.SetHookCount(ctx, genState.HookCount)
-	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
 
@@ -27,7 +26,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.HookList = k.GetAllHook(ctx)
 	genesis.HookCount = k.GetHookCount(ctx)
-	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
 }

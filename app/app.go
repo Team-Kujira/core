@@ -136,7 +136,6 @@ import (
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
 const (
@@ -171,10 +170,7 @@ func GetEnabledProposals() []wasm.ProposalType {
 	return proposals
 }
 
-// this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
-
 func getGovProposalHandlers() []govclient.ProposalHandler {
-	// this line is used by starport scaffolding # stargate/app/govProposalHandlers
 
 	govProposalHandlers := append(wasmclient.ProposalHandlers,
 		schedulerclient.CreateHookProposalHandler,
@@ -191,8 +187,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 
 		alliancemoduleclient.UpdateAllianceProposalHandler,
 		alliancemoduleclient.DeleteAllianceProposalHandler,
-
-		// this line is used by starport scaffolding # stargate/app/govProposalHandler
 	)
 
 	return govProposalHandlers
@@ -231,8 +225,6 @@ var (
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
-
-		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
 	// module account permissions
@@ -251,8 +243,6 @@ var (
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		alliancemoduletypes.RewardsPoolName: nil,
-
-		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
 
@@ -321,8 +311,6 @@ type App struct {
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
-	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
-
 	// mm is the module manager
 	mm *module.Manager
 
@@ -364,7 +352,6 @@ func New(
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
 		AllianceStoreKey,
-		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -394,7 +381,6 @@ func New(
 	// grant capabilities for the ibc and ibc-transfer modules
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-	// this line is used by starport scaffolding # stargate/app/scopedKeeper
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -621,8 +607,6 @@ func New(
 		&stakingKeeper, govRouter, app.MsgServiceRouter(), govtypes.DefaultConfig(),
 	)
 
-	// this line is used by starport scaffolding # stargate/app/keeperDefinition
-
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
@@ -635,7 +619,6 @@ func New(
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(intertxtypes.ModuleName, icaControllerIBCModule)
-	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	/****  Module Options ****/
@@ -676,8 +659,6 @@ func New(
 		scheduler.NewAppModule(appCodec, app.SchedulerKeeper, app.AccountKeeper, app.BankKeeper, wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)),
 		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-
-		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -710,8 +691,6 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-
-		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -740,8 +719,6 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-
-		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -775,8 +752,6 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-
-		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -802,8 +777,6 @@ func New(
 		denom.NewAppModule(appCodec, *app.DenomKeeper, app.AccountKeeper, app.BankKeeper),
 		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-
-		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -859,8 +832,6 @@ func New(
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
 	app.ScopedInterTxKeeper = scopedInterTxKeeper
-
-	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
 }
@@ -1013,8 +984,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
-
-	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
 }

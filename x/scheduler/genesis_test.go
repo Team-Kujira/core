@@ -27,7 +27,6 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		HookCount: 2,
-		// this line is used by starport scaffolding # genesis/test/state
 	}
 
 	k, ctx := keepertest.SchedulerKeeper(t)
@@ -40,6 +39,5 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.HookList, got.HookList)
 	require.Equal(t, genesisState.HookCount, got.HookCount)
-	// this line is used by starport scaffolding # genesis/test/assert
 }
 */

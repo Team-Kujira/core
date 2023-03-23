@@ -10,7 +10,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&CreateHookProposal{}, "scheduler/CreateHookProposal", nil)
 	cdc.RegisterConcrete(&UpdateHookProposal{}, "scheduler/UpdateHookProposal", nil)
 	cdc.RegisterConcrete(&DeleteHookProposal{}, "scheduler/DeleteHookProposal", nil)
-	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -19,7 +18,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&UpdateHookProposal{},
 		&DeleteHookProposal{},
 	)
-	// this line is used by starport scaffolding # 3
 }
 
 var (
