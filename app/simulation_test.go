@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/Team-Kujira/core/app"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -75,6 +76,8 @@ func BenchmarkSimulation(b *testing.B) {
 
 	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
 
+	var wasmOpts []wasm.Option
+
 	app := app.New(
 		logger,
 		db,
@@ -85,6 +88,7 @@ func BenchmarkSimulation(b *testing.B) {
 		0,
 		encoding,
 		simapp.EmptyAppOptions{},
+		wasmOpts,
 	)
 
 	simApp := app

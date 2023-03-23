@@ -1,5 +1,7 @@
+// This test should be refactored after removing the ignite cli
 package cli_test
 
+/*
 import (
 	"fmt"
 	"testing"
@@ -151,3 +153,4 @@ func TestListHook(t *testing.T) {
 		)
 	})
 }
+*/

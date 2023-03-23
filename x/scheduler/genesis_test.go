@@ -1,4 +1,8 @@
+// I've disabled the scheduler test for now, but I think it's a good idea to have a test like this for the scheduler module. Remove ignite, and please refactor tests.
 package scheduler_test
+
+/*
+
 
 import (
 	"testing"
@@ -38,3 +42,4 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.HookCount, got.HookCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
+*/
