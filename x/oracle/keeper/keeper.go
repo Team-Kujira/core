@@ -7,14 +7,13 @@ import (
 
 	gogotypes "github.com/cosmos/gogoproto/types"
 
+	"cosmossdk.io/errors"
+	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // Keeper of the oracle store
@@ -76,7 +75,7 @@ func (k Keeper) GetExchangeRate(ctx sdk.Context, denom string) (sdk.Dec, error) 
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetExchangeRateKey(denom))
 	if b == nil {
-		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrUnknownDenom, denom)
+		return sdk.ZeroDec(), errors.Wrap(types.ErrUnknownDenom, denom)
 	}
 
 	dp := sdk.DecProto{}
@@ -218,7 +217,7 @@ func (k Keeper) GetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAd
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetAggregateExchangeRatePrevoteKey(voter))
 	if b == nil {
-		err = sdkerrors.Wrap(types.ErrNoAggregatePrevote, voter.String())
+		err = errors.Wrap(types.ErrNoAggregatePrevote, voter.String())
 		return
 	}
 	k.cdc.MustUnmarshal(b, &aggregatePrevote)
@@ -263,7 +262,7 @@ func (k Keeper) GetAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddre
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.GetAggregateExchangeRateVoteKey(voter))
 	if b == nil {
-		err = sdkerrors.Wrap(types.ErrNoAggregateVote, voter.String())
+		err = errors.Wrap(types.ErrNoAggregateVote, voter.String())
 		return
 	}
 	k.cdc.MustUnmarshal(b, &aggregateVote)
@@ -304,13 +303,13 @@ func (k Keeper) ValidateFeeder(ctx sdk.Context, feederAddr sdk.AccAddress, valid
 	if !feederAddr.Equals(validatorAddr) {
 		delegate := k.GetFeederDelegation(ctx, validatorAddr)
 		if !delegate.Equals(feederAddr) {
-			return sdkerrors.Wrap(types.ErrNoVotingPermission, feederAddr.String())
+			return errors.Wrap(types.ErrNoVotingPermission, feederAddr.String())
 		}
 	}
 
 	// Check that the given validator exists
 	if val := k.StakingKeeper.Validator(ctx, validatorAddr); val == nil || !val.IsBonded() {
-		return sdkerrors.Wrapf(stakingtypes.ErrNoValidatorFound, "validator %s is not active set", validatorAddr.String())
+		return errors.Wrapf(stakingtypes.ErrNoValidatorFound, "validator %s is not active set", validatorAddr.String())
 	}
 
 	return nil
