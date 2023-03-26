@@ -187,7 +187,6 @@ var (
 		auth.AppModuleBasic{},
 		genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
 		authzmodule.AppModuleBasic{},
-		genutil.AppModuleBasic{},
 		bank.AppModule{},
 		capability.AppModuleBasic{},
 		staking.AppModuleBasic{},
@@ -334,22 +333,23 @@ func New(
 
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey,
-		authz.ModuleName,
 		banktypes.StoreKey,
 		stakingtypes.StoreKey,
+		crisistypes.StoreKey,
 		minttypes.StoreKey,
 		distrtypes.StoreKey,
 		slashingtypes.StoreKey,
 		govtypes.StoreKey,
 		paramstypes.StoreKey,
-		ibcexported.StoreKey,
+		consensusparamtypes.StoreKey,
 		upgradetypes.StoreKey,
-		feegrant.StoreKey,
 		evidencetypes.StoreKey,
+		capabilitytypes.StoreKey,
+		authzkeeper.StoreKey,
+		feegrant.StoreKey,
+		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
-		capabilitytypes.StoreKey,
-		consensusparamtypes.StoreKey,
 		wasm.StoreKey,
 		denomtypes.StoreKey,
 		icahosttypes.StoreKey,
@@ -910,6 +910,7 @@ func New(
 		paramstypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -938,6 +939,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -947,9 +949,12 @@ func New(
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
+	// NOTE: The genutils module must also occur after auth so that it can access the params from auth.
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
+	// NOTE: wasm module should be at the end as it can call other module functionality direct or via message dispatching during
+	// genesis phase. For example bank transfer, auth account check, staking, ...
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -971,11 +976,12 @@ func New(
 		ibctransfertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
-		wasm.ModuleName,
+		ibcfeetypes.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		wasm.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
@@ -1035,18 +1041,6 @@ func New(
 		}
 	}
 
-	if loadLatest {
-		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(err.Error())
-		}
-	}
-
-	app.ScopedIBCKeeper = scopedIBCKeeper
-	app.ScopedTransferKeeper = scopedTransferKeeper
-	app.ScopedWasmKeeper = scopedWasmKeeper
-	app.ScopedICAHostKeeper = scopedICAHostKeeper
-	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
-
 	// In v0.46, the SDK introduces _postHandlers_. PostHandlers are like
 	// antehandlers, but are run _after_ the `runMsgs` execution. They are also
 	// defined as a chain, and have the same signature as antehandlers.
@@ -1066,6 +1060,18 @@ func New(
 	// likely to be a state-machine breaking change, which needs a coordinated
 	// upgrade.
 	app.setPostHandler()
+
+	if loadLatest {
+		if err := app.LoadLatestVersion(); err != nil {
+			tmos.Exit(err.Error())
+		}
+	}
+
+	app.ScopedIBCKeeper = scopedIBCKeeper
+	app.ScopedTransferKeeper = scopedTransferKeeper
+	app.ScopedWasmKeeper = scopedWasmKeeper
+	app.ScopedICAHostKeeper = scopedICAHostKeeper
+	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
 
 	return app
 }
