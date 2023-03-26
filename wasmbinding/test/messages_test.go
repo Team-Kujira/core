@@ -17,7 +17,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
-	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
 func fundAccount(t *testing.T, ctx sdk.Context, app *app.App, addr sdk.AccAddress, coins sdk.Coins) {

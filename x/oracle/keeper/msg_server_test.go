@@ -155,7 +155,7 @@ func setup(t *testing.T) (TestInput, types.MsgServer) {
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	msgServer := NewMsgServerImpl(input.OracleKeeper)
 
-	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 
 	// Validator created
 	_, err := sh.CreateValidator(input.Ctx, NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], stakingAmt))
@@ -164,7 +164,7 @@ func setup(t *testing.T) (TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, input.StakingKeeper)
+	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
 
 	return input, msgServer
 }

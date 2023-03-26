@@ -16,8 +16,8 @@ import (
 	"github.com/Team-Kujira/core/wasmbinding"
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestQueryExchangeRates(t *testing.T) {

@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package keeper
 
 import (
@@ -7,6 +7,7 @@ import (
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	auth "github.com/cosmos/cosmos-sdk/x/auth"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
@@ -14,17 +15,16 @@ import (
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/secp256k1"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
+	simparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	simparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -37,6 +37,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
@@ -85,7 +86,7 @@ func MakeEncodingConfig(_ *testing.T) simparams.EncodingConfig {
 
 // Test addresses
 var (
-	ValPubKeys = simapp.CreateTestPubKeys(5)
+	ValPubKeys = simtestutil.CreateTestPubKeys(5)
 
 	pubKeys = []crypto.PubKey{
 		secp256k1.GenPrivKey().PubKey(),
@@ -141,6 +142,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	keySlashing := sdk.NewKVStoreKey(slashingtypes.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
 	keyDistr := sdk.NewKVStoreKey(distrtypes.StoreKey)
+	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
@@ -177,8 +179,21 @@ func CreateTestInput(t *testing.T) TestInput {
 	}
 
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, keyParams, tKeyParams)
-	accountKeeper := authkeeper.NewAccountKeeper(appCodec, keyAcc, paramsKeeper.Subspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms, AccountAddressPrefix)
-	bankKeeper := bankkeeper.NewBaseKeeper(appCodec, keyBank, accountKeeper, paramsKeeper.Subspace(banktypes.ModuleName), blackListAddrs)
+	accountKeeper := authkeeper.NewAccountKeeper(
+		appCodec,
+		keyAcc,
+		authtypes.ProtoBaseAccount,
+		maccPerms,
+		AccountAddressPrefix,
+		authority,
+	)
+	bankKeeper := bankkeeper.NewBaseKeeper(
+		appCodec,
+		keyBank,
+		accountKeeper,
+		blackListAddrs,
+		authority,
+	)
 
 	totalSupply := sdk.NewCoins(sdk.NewCoin(testdenom, InitTokens.MulRaw(int64(len(Addrs)*10))))
 	bankKeeper.MintCoins(ctx, faucetAccountName, totalSupply)
@@ -188,20 +203,30 @@ func CreateTestInput(t *testing.T) TestInput {
 		keyStaking,
 		accountKeeper,
 		bankKeeper,
-		paramsKeeper.Subspace(stakingtypes.ModuleName),
+		authority,
 	)
 
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = testdenom
 	stakingKeeper.SetParams(ctx, stakingParams)
 
-	slashingKeeper := slashingkeeper.NewKeeper(appCodec, keySlashing, &stakingKeeper, paramsKeeper.Subspace(slashingtypes.ModuleName))
+	slashingKeeper := slashingkeeper.NewKeeper(
+		appCodec,
+		legacyAmino,
+		keySlashing,
+		stakingKeeper,
+		authority,
+	)
 
 	distrKeeper := distrkeeper.NewKeeper(
 		appCodec,
-		keyDistr, paramsKeeper.Subspace(distrtypes.ModuleName),
-		accountKeeper, bankKeeper, stakingKeeper,
-		authtypes.FeeCollectorName)
+		keyDistr,
+		accountKeeper,
+		bankKeeper,
+		stakingKeeper,
+		authtypes.FeeCollectorName,
+		authority,
+	)
 
 	distrKeeper.SetFeePool(ctx, distrtypes.InitialFeePool())
 	distrParams := distrtypes.DefaultParams()
@@ -246,7 +271,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	defaults := types.DefaultParams()
 	keeper.SetParams(ctx, defaults)
 
-	return TestInput{ctx, legacyAmino, accountKeeper, bankKeeper, keeper, stakingKeeper, distrKeeper}
+	return TestInput{ctx, legacyAmino, accountKeeper, bankKeeper, keeper, *stakingKeeper, distrKeeper}
 }
 
 // NewTestMsgCreateValidator test msg creator

@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
@@ -27,7 +26,6 @@ func CustomMessageDecorator(
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped: old,
-			auth:    auth,
 			bank:    bank,
 			denom:   denom,
 		}
@@ -36,7 +34,6 @@ func CustomMessageDecorator(
 
 type CustomMessenger struct {
 	wrapped wasmkeeper.Messenger
-	auth    authkeeper.AccountKeeper
 	bank    bankkeeper.Keeper
 	denom   denomkeeper.Keeper
 }
@@ -60,17 +57,6 @@ func (m *CustomMessenger) DispatchMsg(
 
 		if contractMsg.Denom != nil {
 			return denom.HandleMsg(m.denom, m.bank, contractAddr, ctx, contractMsg.Denom)
-		} else if contractMsg.Auth != nil {
-			handler := bindings.AuthHandler{AccountKeeper: m.auth, BankKeeper: m.bank}
-			cva := contractMsg.Auth.CreateVestingAccount
-			return handler.CreateVestingAccount(ctx, &types.MsgCreateVestingAccount{
-				FromAddress: contractAddr.String(),
-				ToAddress:   cva.ToAddress,
-				Amount:      cva.Amount,
-				// Timestamp is picoseconds. MsgCreateVestingAccount expects seconds
-				EndTime: int64(cva.EndTime.Uint64() / 1000000000),
-				Delayed: cva.Delayed,
-			})
 		} else {
 			return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 		}

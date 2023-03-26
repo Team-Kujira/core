@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package types
 
 import (
@@ -10,11 +10,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	tmprotocrypto "github.com/tendermint/tendermint/proto/tendermint/crypto"
+	"github.com/cometbft/cometbft/crypto/secp256k1"
+	tmprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
 )
 
-//nolint
+// nolint
 const (
 	TestDenomA = "ukuji"
 	TestDenomB = "denomB"

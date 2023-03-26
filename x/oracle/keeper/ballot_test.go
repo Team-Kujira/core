@@ -18,7 +18,7 @@ func TestOrganizeAggregate(t *testing.T) {
 
 	power := int64(100)
 	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
-	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 	ctx := input.Ctx
 
 	// Validator created
@@ -28,7 +28,7 @@ func TestOrganizeAggregate(t *testing.T) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
 	require.NoError(t, err)
-	staking.EndBlocker(ctx, input.StakingKeeper)
+	staking.EndBlocker(ctx, &input.StakingKeeper)
 
 	sdrBallot := types.ExchangeRateBallot{
 		types.NewVoteForTally(sdk.NewDec(17), types.TestDenomD, ValAddrs[0], power),
@@ -83,7 +83,7 @@ func TestClearBallots(t *testing.T) {
 
 	power := int64(100)
 	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
-	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 	ctx := input.Ctx
 
 	// Validator created
@@ -93,7 +93,7 @@ func TestClearBallots(t *testing.T) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
 	require.NoError(t, err)
-	staking.EndBlocker(ctx, input.StakingKeeper)
+	staking.EndBlocker(ctx, &input.StakingKeeper)
 
 	sdrBallot := types.ExchangeRateBallot{
 		types.NewVoteForTally(sdk.NewDec(17), types.TestDenomD, ValAddrs[0], power),

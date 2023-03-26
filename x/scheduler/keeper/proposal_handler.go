@@ -5,6 +5,7 @@ import (
 
 	"github.com/Team-Kujira/core/x/scheduler/types"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -42,7 +43,7 @@ func NewSchedulerProposalHandler(k Keeper) govtypes.Handler {
 			// Checks that the element exists
 			_, found := k.GetHook(ctx, c.Id)
 			if !found {
-				return sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", c.Id))
+				return errorsmod.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", c.Id))
 			}
 
 			k.SetHook(ctx, hook)
@@ -54,14 +55,14 @@ func NewSchedulerProposalHandler(k Keeper) govtypes.Handler {
 			// Checks that the element exists
 			_, found := k.GetHook(ctx, c.Id)
 			if !found {
-				return sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", c.Id))
+				return errorsmod.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", c.Id))
 			}
 
 			k.RemoveHook(ctx, c.Id)
 
 			return nil
 		default:
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized scheduler proposal content type: %T", c)
+			return errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized scheduler proposal content type: %T", c)
 		}
 	}
 }

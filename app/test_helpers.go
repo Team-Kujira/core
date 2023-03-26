@@ -4,19 +4,30 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/CosmWasm/wasmd/x/wasm" // this is your enemy and is being left as an exercise for the reader
+	appparams "github.com/Team-Kujira/core/app/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 )
 
 // Setup initializes a new KujiraApp.
 func Setup(isCheckTx bool) *App {
 	db := dbm.NewMemDB()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	var wasmOpts []wasm.Option
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+
+	app := New(
+		log.NewNopLogger(),
+		db,
+		nil,
+		true,
+		appparams.MakeEncodingConfig(),
+		appOptions,
+		wasmOpts,
+	)
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -27,7 +38,7 @@ func Setup(isCheckTx bool) *App {
 		app.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
-				ConsensusParams: simapp.DefaultConsensusParams,
+				ConsensusParams: simtestutil.DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
 			},
 		)
@@ -40,11 +51,22 @@ func Setup(isCheckTx bool) *App {
 // with LevelDB as a db.
 func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 	dir := "kujira_testing"
-	db, err := sdk.NewLevelDB("kujira_leveldb_testing", dir)
+	db, err := dbm.NewDB("kujira_leveldb_testing", "goleveldb", dir)
 	if err != nil {
 		panic(err)
 	}
-	app = New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	var wasmOpts []wasm.Option
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+
+	app = New(
+		log.NewNopLogger(),
+		db,
+		nil,
+		true,
+		appparams.MakeEncodingConfig(),
+		appOptions,
+		wasmOpts,
+	)
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -55,7 +77,7 @@ func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 		app.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
-				ConsensusParams: simapp.DefaultConsensusParams,
+				ConsensusParams: simtestutil.DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
 			},
 		)

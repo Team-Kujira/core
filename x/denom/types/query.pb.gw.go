@@ -339,11 +339,11 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"kujira", "denoms", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"kujira", "denoms", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_DenomAuthorityMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"kujira", "denoms", "denom", "authority_metadata"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_DenomAuthorityMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"kujira", "denoms", "denom", "authority_metadata"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_DenomsFromCreator_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"kujira", "denoms", "by_creator", "creator"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_DenomsFromCreator_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"kujira", "denoms", "by_creator", "creator"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

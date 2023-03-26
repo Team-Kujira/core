@@ -30,7 +30,7 @@ func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, types.MsgServer)
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
-	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 	_, err := sh.CreateValidator(input.Ctx,
 		keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0],
 			keeper.ValPubKeys[0],
@@ -39,7 +39,7 @@ func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, types.MsgServer)
 
 	require.NoError(t, err)
 
-	staking.EndBlocker(input.Ctx, input.StakingKeeper)
+	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
 
 	return input, h
 }
@@ -54,7 +54,7 @@ func setup(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
-	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 
 	// Validator created
 	_, err := sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.ValPubKeys[0], stakingAmt))
@@ -63,7 +63,7 @@ func setup(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[2], keeper.ValPubKeys[2], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, input.StakingKeeper)
+	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
 
 	return input, h
 }
@@ -77,7 +77,7 @@ func setupVal5(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
-	sh := stakingkeeper.NewMsgServerImpl(input.StakingKeeper)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 
 	// Validator created
 	_, err := sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.ValPubKeys[0], stakingAmt))
@@ -90,7 +90,7 @@ func setupVal5(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[4], keeper.ValPubKeys[4], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, input.StakingKeeper)
+	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
 
 	return input, h
 }
