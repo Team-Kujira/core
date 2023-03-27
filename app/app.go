@@ -219,6 +219,7 @@ var (
 		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:                 {authtypes.Burner},
 		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		ibcfeetypes.ModuleName:              nil,
 		icatypes.ModuleName:                 nil,
 		wasm.ModuleName:                     {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
@@ -339,17 +340,17 @@ func New(
 		paramstypes.StoreKey,
 		consensusparamtypes.StoreKey,
 		upgradetypes.StoreKey,
+		feegrant.StoreKey,
 		evidencetypes.StoreKey,
 		capabilitytypes.StoreKey,
 		authzkeeper.StoreKey,
-		feegrant.StoreKey,
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
 		wasm.StoreKey,
-		denomtypes.StoreKey,
 		icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey,
+		denomtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
 		AllianceStoreKey,
@@ -404,7 +405,7 @@ func New(
 	)
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(
-		keys[authz.ModuleName],
+		keys[authzkeeper.StoreKey],
 		appCodec,
 		app.MsgServiceRouter(),
 		app.AccountKeeper,
@@ -498,14 +499,14 @@ func New(
 		authority,
 	)
 
-	app.UpgradeKeeper.SetUpgradeHandler("v0.9.0",
-		func(
-			ctx sdk.Context,
-			plan upgradetypes.Plan,
-			fromVM module.VersionMap,
-		) (module.VersionMap, error) {
-			return app.mm.RunMigrations(ctx, cfg, fromVM)
-		})
+	// app.UpgradeKeeper.SetUpgradeHandler("v0.9.0",
+	// 	func(
+	// 		ctx sdk.Context,
+	// 		plan upgradetypes.Plan,
+	// 		fromVM module.VersionMap,
+	// 	) (module.VersionMap, error) {
+	// 		return app.mm.RunMigrations(ctx, cfg, fromVM)
+	// 	})
 
 	// register the staking hooks
 	app.StakingKeeper.SetHooks(
@@ -530,7 +531,7 @@ func New(
 	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
 		appCodec,
 		keys[ibcfeetypes.StoreKey],
-		app.IBCKeeper.ChannelKeeper, // may be replaced with IBC middleware
+		app.IBCFeeKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -557,7 +558,7 @@ func New(
 		appCodec,
 		keys[icacontrollertypes.StoreKey],
 		app.GetSubspace(icacontrollertypes.SubModuleName),
-		app.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 fee
+		app.IBCFeeKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedICAControllerKeeper,
