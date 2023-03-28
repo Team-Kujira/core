@@ -129,9 +129,9 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
-	distrib "github.com/Team-Kujira/core/x/distrib"
-	distribkeeper "github.com/Team-Kujira/core/x/distrib/keeper"
-	distribtypes "github.com/Team-Kujira/core/x/distrib/types"
+	"github.com/Team-Kujira/core/x/batch"
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
+	batchtypes "github.com/Team-Kujira/core/x/batch/types"
 
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
@@ -209,7 +209,7 @@ var (
 		ica.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		denom.AppModuleBasic{},
-		distrib.AppModuleBasic{},
+		batch.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
@@ -228,7 +228,7 @@ var (
 		icatypes.ModuleName:                 nil,
 		wasm.ModuleName:                     {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
-		distribtypes.ModuleName:			 nil,
+		batchtypes.ModuleName:             nil,
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
@@ -289,7 +289,7 @@ type App struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	WasmKeeper            wasm.Keeper
 	DenomKeeper           *denomkeeper.Keeper
-	DistribKeeper         distribkeeper.Keeper
+	BatchKeeper         batchkeeper.Keeper
 	SchedulerKeeper       schedulerkeeper.Keeper
 	OracleKeeper          oraclekeeper.Keeper
 	AllianceKeeper        alliancemodulekeeper.Keeper
@@ -617,9 +617,9 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
-	app.DistribKeeper = distribkeeper.NewKeeper(
+	app.BatchKeeper = batchkeeper.NewKeeper(
 		appCodec,
-		app.keys[distribtypes.StoreKey],
+		app.keys[batchtypes.StoreKey],
 		app.BankKeeper,
 		app.DistrKeeper,
 		app.StakingKeeper,
@@ -863,9 +863,9 @@ func New(
 			app.BankKeeper,
 		),
 
-		distrib.NewAppModule(
+		batch.NewAppModule(
 			appCodec,
-			app.DistribKeeper,
+			app.BatchKeeper,
 			app.AccountKeeper,
 			app.BankKeeper,
 		),
@@ -931,7 +931,7 @@ func New(
 		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
-		distribtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -961,7 +961,7 @@ func New(
 		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
-		distribtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -998,7 +998,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		denomtypes.ModuleName,
-		distribtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,

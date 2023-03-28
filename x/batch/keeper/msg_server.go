@@ -7,8 +7,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	
-	"github.com/Team-Kujira/core/x/distrib/types"
+
+	"github.com/Team-Kujira/core/x/batch/types"
 )
 
 type msgServer struct {
@@ -17,7 +17,7 @@ type msgServer struct {
 
 var _ types.MsgServer = msgServer{}
 
-// NewMsgServerImpl returns an implementation of the distrib MsgServer interface
+// NewMsgServerImpl returns an implementation of the batch MsgServer interface
 // for the provided Keeper.
 func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}

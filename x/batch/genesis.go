@@ -1,8 +1,8 @@
-package distrib
+package batch
 
 import (
-	"github.com/Team-Kujira/core/x/distrib/keeper"
-	"github.com/Team-Kujira/core/x/distrib/types"
+	"github.com/Team-Kujira/core/x/batch/keeper"
+	"github.com/Team-Kujira/core/x/batch/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

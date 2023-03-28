@@ -2,16 +2,16 @@ package cli
 
 import (
 	"fmt"
-	"time"
 	"strings"
+	"time"
 
-	"github.com/spf13/cobra"
+	"github.com/Team-Kujira/core/x/batch/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/Team-Kujira/core/x/distrib/types"
+	"github.com/spf13/cobra"
 )
 
 var DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
@@ -76,4 +76,3 @@ $ %[1]s tx distribution withdraw-all-rewards --from mykey
 
 	return cmd
 }
-

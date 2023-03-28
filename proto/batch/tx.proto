@@ -1,14 +1,14 @@
 syntax = "proto3";
-package distrib;
+package batch;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/msg/v1/msg.proto";
 
-option go_package = "github.com/Team-Kujira/core/x/distrib/types";
+option go_package = "github.com/Team-Kujira/core/x/batch/types";
 
-// Msg defines the distrib Msg service.
+// Msg defines the batch Msg service.
 service Msg {
    // WithdrawAllDelegatorRewards defines a method to withdraw rewards of delegator
   // from all staked validators.

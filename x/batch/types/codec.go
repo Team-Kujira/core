@@ -8,13 +8,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-// RegisterLegacyAminoCodec registers the necessary x/distrib interfaces and concrete types
+// RegisterLegacyAminoCodec registers the necessary x/batch interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgWithdrawAllDelegatorRewards{}, "distrib/MsgWithdrawAllDelegatorRewards", nil)
+	cdc.RegisterConcrete(&MsgWithdrawAllDelegatorRewards{}, "batch/MsgWithdrawAllDelegatorRewards", nil)
 }
 
-// RegisterInterfaces registers the x/distrib interfaces types with the interface registry
+// RegisterInterfaces registers the x/batch interfaces types with the interface registry
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgWithdrawAllDelegatorRewards{},
@@ -26,7 +26,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 var (
 	amino = codec.NewLegacyAmino()
 
-	// ModuleCdc references the global x/distrib module codec. Note, the codec should
+	// ModuleCdc references the global x/batch module codec. Note, the codec should
 	// ONLY be used in certain instances of tests and for JSON encoding as Amino is
 	// still used for that purpose.
 	//

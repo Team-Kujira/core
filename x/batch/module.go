@@ -1,4 +1,4 @@
-package distrib
+package batch
 
 import (
 	"encoding/json"
@@ -10,9 +10,9 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/Team-Kujira/core/x/distrib/client/cli"
-	"github.com/Team-Kujira/core/x/distrib/keeper"
-	"github.com/Team-Kujira/core/x/distrib/types"
+	"github.com/Team-Kujira/core/x/batch/client/cli"
+	"github.com/Team-Kujira/core/x/batch/keeper"
+	"github.com/Team-Kujira/core/x/batch/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -2,7 +2,7 @@ package types
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "distrib"
+	ModuleName = "batch"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
@@ -14,7 +14,7 @@ const (
 	QuerierRoute = ModuleName
 
 	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_distrib"
+	MemStoreKey = "mem_batch"
 )
 
 func KeyPrefix(p string) []byte {

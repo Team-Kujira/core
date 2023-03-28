@@ -5,12 +5,12 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
-	"github.com/Team-Kujira/core/x/distrib/types"
+	"github.com/Team-Kujira/core/x/batch/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	
+
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -18,10 +18,10 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		bankKeeper bankkeeper.Keeper
-		distrKeeper distrkeeper.Keeper
+		cdc           codec.BinaryCodec
+		storeKey      storetypes.StoreKey
+		bankKeeper    bankkeeper.Keeper
+		distrKeeper   distrkeeper.Keeper
 		stakingKeeper *stakingkeeper.Keeper
 	}
 )
@@ -34,10 +34,10 @@ func NewKeeper(
 	stakingKeeper *stakingkeeper.Keeper,
 ) Keeper {
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		bankKeeper: bankKeeper,
-		distrKeeper: distrKeeper,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		bankKeeper:    bankKeeper,
+		distrKeeper:   distrKeeper,
 		stakingKeeper: stakingKeeper,
 	}
 }
