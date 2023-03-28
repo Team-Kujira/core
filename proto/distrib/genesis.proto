@@ -1,0 +1,13 @@
+syntax = "proto3";
+package distrib;
+
+import "gogoproto/gogo.proto";
+import "distrib/params.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/distrib/types";
+
+// GenesisState defines the distrib module's genesis state.
+message GenesisState {
+  // params defines the paramaters of the module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}

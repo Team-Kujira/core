@@ -129,6 +129,10 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
+	distrib "github.com/Team-Kujira/core/x/distrib"
+	distribkeeper "github.com/Team-Kujira/core/x/distrib/keeper"
+	distribtypes "github.com/Team-Kujira/core/x/distrib/types"
+
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
 	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
@@ -205,6 +209,7 @@ var (
 		ica.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		denom.AppModuleBasic{},
+		distrib.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
@@ -223,6 +228,7 @@ var (
 		icatypes.ModuleName:                 nil,
 		wasm.ModuleName:                     {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		distribtypes.ModuleName:			 nil,
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
@@ -283,6 +289,7 @@ type App struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	WasmKeeper            wasm.Keeper
 	DenomKeeper           *denomkeeper.Keeper
+	DistribKeeper         distribkeeper.Keeper
 	SchedulerKeeper       schedulerkeeper.Keeper
 	OracleKeeper          oraclekeeper.Keeper
 	AllianceKeeper        alliancemodulekeeper.Keeper
@@ -610,6 +617,14 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
+	app.DistribKeeper = distribkeeper.NewKeeper(
+		appCodec,
+		app.keys[distribtypes.StoreKey],
+		app.BankKeeper,
+		app.DistrKeeper,
+		app.StakingKeeper,
+	)
+
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -848,6 +863,13 @@ func New(
 			app.BankKeeper,
 		),
 
+		distrib.NewAppModule(
+			appCodec,
+			app.DistribKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+		),
+
 		icaModule,
 
 		scheduler.NewAppModule(
@@ -909,6 +931,7 @@ func New(
 		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
+		distribtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -938,6 +961,7 @@ func New(
 		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		denomtypes.ModuleName,
+		distribtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -974,6 +998,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		denomtypes.ModuleName,
+		distribtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,

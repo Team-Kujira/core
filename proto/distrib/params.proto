@@ -1,0 +1,7 @@
+syntax = "proto3";
+package distrib;
+
+option go_package = "github.com/Team-Kujira/core/x/distrib/types";
+
+// Params holds parameters for the distrib module
+message Params {}
