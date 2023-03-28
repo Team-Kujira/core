@@ -17,6 +17,20 @@ func (k Keeper) incrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress,
 	k.distrKeeper.SetValidatorHistoricalRewards(ctx, valAddr, period, historical)
 }
 
+// decrement the reference count for a historical rewards value, and delete if zero references remain
+func (k Keeper) decrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress, period uint64) {
+	historical := k.distrKeeper.GetValidatorHistoricalRewards(ctx, valAddr, period)
+	if historical.ReferenceCount == 0 {
+		panic("cannot set negative reference count")
+	}
+	historical.ReferenceCount--
+	if historical.ReferenceCount == 0 {
+		k.distrKeeper.DeleteValidatorHistoricalReward(ctx, valAddr, period)
+	} else {
+		k.distrKeeper.SetValidatorHistoricalRewards(ctx, valAddr, period, historical)
+	}
+}
+
 // initialize starting info for a new delegation
 func (k Keeper) initializeDelegation(ctx sdk.Context, val sdk.ValAddress, del sdk.AccAddress) {
 	// period has already been incremented - we want to store the period ended by this delegation action
@@ -63,6 +77,10 @@ func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAdd
 		feePool := k.distrKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(remainder...)
 		k.distrKeeper.SetFeePool(ctx, feePool)
+		// decrement reference count of starting period
+		startingInfo := k.distrKeeper.GetDelegatorStartingInfo(ctx, del.GetValidatorAddr(), del.GetDelegatorAddr())
+		startingPeriod := startingInfo.PreviousPeriod
+		k.decrementReferenceCount(ctx, del.GetValidatorAddr(), startingPeriod)
 		k.initializeDelegation(ctx, valAddr, delAddr)
 		rewardsTotal = rewardsTotal.Add(finalRewards...)
 		ctx.EventManager().EmitEvent(
