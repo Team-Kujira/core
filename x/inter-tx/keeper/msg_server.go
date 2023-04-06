@@ -1,5 +1,7 @@
 package keeper
 
+/*
+
 import (
 	"context"
 	"time"
@@ -26,7 +28,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 // RegisterAccount implements the Msg/RegisterAccount interface
-func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgSubmitTx) (*types.MsgRegisterAccountResponse, error) {
+func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAccount) (*types.MsgRegisterAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	owner := msg.Sender + "-" + msg.AccountId
 	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(msg.ConnectionId, owner, msg.Version)
@@ -49,6 +51,7 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgSubmitTx
 	return &types.MsgRegisterAccountResponse{}, nil
 }
 
+//FIXME: Migrate to new message-based handling.
 func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.MsgSubmitTxResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -77,3 +80,4 @@ func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*typ
 
 	return &types.MsgSubmitTxResponse{}, nil
 }
+*/

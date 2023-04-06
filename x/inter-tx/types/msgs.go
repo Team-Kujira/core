@@ -34,6 +34,10 @@ func (msg MsgRegisterAccount) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "missing sender address")
 	}
 
+	if strings.TrimSpace(msg.AccountId) == "" {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "missing account id")
+	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "failed to parse address: %s", msg.Sender)
 	}

@@ -17,6 +17,9 @@ var (
 	// TestOwnerAddress defines a reusable bech32 address for testing purposes
 	TestOwnerAddress = "cosmos17dtl0mjt3t77kpuhg2edqzjpszulwhgzuj9ljs"
 
+	// TestAccountId defines a reusable interchainaccounts account id for testing purposes
+	TestAccountId = "1"
+
 	// TestVersion defines a reusable interchainaccounts version string for testing purposes
 	TestVersion = string(icatypes.ModuleCdc.MustMarshalJSON(&icatypes.Metadata{
 		Version:                icatypes.Version,
@@ -40,9 +43,10 @@ func TestMsgRegisterAccountValidateBasic(t *testing.T) {
 		msg     *types.MsgRegisterAccount
 		expPass bool
 	}{
-		{"success", types.NewMsgRegisterAccount(TestOwnerAddress, ibctesting.FirstConnectionID, TestVersion), true},
-		{"owner address is empty", types.NewMsgRegisterAccount("", ibctesting.FirstConnectionID, TestVersion), false},
-		{"owner address is invalid", types.NewMsgRegisterAccount("invalid_address", ibctesting.FirstConnectionID, TestVersion), false},
+		{"success", types.NewMsgRegisterAccount(TestOwnerAddress, ibctesting.FirstConnectionID, TestAccountId, TestVersion), true},
+		{"account id is empty", types.NewMsgRegisterAccount(TestOwnerAddress, ibctesting.FirstConnectionID, "", TestVersion), false},
+		{"owner address is empty", types.NewMsgRegisterAccount("", ibctesting.FirstConnectionID, TestAccountId, TestVersion), false},
+		{"owner address is invalid", types.NewMsgRegisterAccount("invalid_address", ibctesting.FirstConnectionID, TestAccountId, TestVersion), false},
 	}
 
 	for i, tc := range testCases {
@@ -60,7 +64,7 @@ func TestMsgRegisterAccountGetSigners(t *testing.T) {
 	expSigner, err := sdk.AccAddressFromBech32(TestOwnerAddress)
 	require.NoError(t, err)
 
-	msg := types.NewMsgRegisterAccount(TestOwnerAddress, ibctesting.FirstConnectionID, TestVersion)
+	msg := types.NewMsgRegisterAccount(TestOwnerAddress, ibctesting.FirstConnectionID, TestAccountId, TestVersion)
 
 	require.Equal(t, []sdk.AccAddress{expSigner}, msg.GetSigners())
 }
@@ -82,14 +86,14 @@ func TestMsgSubmitTxValidateBasic(t *testing.T) {
 		{
 			"owner address is invalid",
 			func() {
-				msg.Owner = "invalid_address"
+				msg.Sender = "invalid_address"
 			},
 			false,
 		},
 	}
 
 	for i, tc := range testCases {
-		msg, _ = types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestOwnerAddress)
+		msg, _ = types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestAccountId, TestOwnerAddress, 1)
 
 		tc.malleate()
 
@@ -107,7 +111,7 @@ func TestMsgSubmitTxGetSigners(t *testing.T) {
 	expSigner, err := sdk.AccAddressFromBech32(TestOwnerAddress)
 	require.NoError(t, err)
 
-	msg, err := types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestOwnerAddress)
+	msg, err := types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestAccountId, TestOwnerAddress, 1)
 	require.NoError(t, err)
 
 	require.Equal(t, []sdk.AccAddress{expSigner}, msg.GetSigners())

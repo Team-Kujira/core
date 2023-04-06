@@ -19,6 +19,9 @@ var (
 	// TestOwnerAddress defines a reusable bech32 address for testing purposes
 	TestOwnerAddress = "cosmos17dtl0mjt3t77kpuhg2edqzjpszulwhgzuj9ljs"
 
+	// TestAccountId defines a reusable interchainaccounts account id for testing purposes
+	TestAccountId = "1"
+
 	// TestPortID defines a reusable port identifier for testing purposes
 	TestPortID, _ = icatypes.NewControllerPortID(TestOwnerAddress)
 
