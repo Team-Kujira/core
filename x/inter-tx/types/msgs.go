@@ -19,22 +19,23 @@ var (
 )
 
 // NewMsgRegisterAccount creates a new MsgRegisterAccount instance
-func NewMsgRegisterAccount(owner, connectionID, version string) *MsgRegisterAccount {
+func NewMsgRegisterAccount(sender, connectionID, accountID, version string) *MsgRegisterAccount {
 	return &MsgRegisterAccount{
-		Owner:        owner,
+		Sender:       sender,
 		ConnectionId: connectionID,
+		AccountId:    accountID,
 		Version:      version,
 	}
 }
 
 // ValidateBasic implements sdk.Msg
 func (msg MsgRegisterAccount) ValidateBasic() error {
-	if strings.TrimSpace(msg.Owner) == "" {
+	if strings.TrimSpace(msg.Sender) == "" {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "missing sender address")
 	}
 
-	if _, err := sdk.AccAddressFromBech32(msg.Owner); err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "failed to parse address: %s", msg.Owner)
+	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "failed to parse address: %s", msg.Sender)
 	}
 
 	return nil
@@ -42,7 +43,7 @@ func (msg MsgRegisterAccount) ValidateBasic() error {
 
 // GetSigners implements sdk.Msg
 func (msg MsgRegisterAccount) GetSigners() []sdk.AccAddress {
-	accAddr, err := sdk.AccAddressFromBech32(msg.Owner)
+	accAddr, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
@@ -51,16 +52,18 @@ func (msg MsgRegisterAccount) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgSubmitTx creates and returns a new MsgSubmitTx instance
-func NewMsgSubmitTx(sdkMsg sdk.Msg, connectionID, owner string) (*MsgSubmitTx, error) {
+func NewMsgSubmitTx(sdkMsg sdk.Msg, connectionID, accountID, sender string, timeout uint64) (*MsgSubmitTx, error) {
 	protoAny, err := PackTxMsgAny(sdkMsg)
 	if err != nil {
 		return nil, err
 	}
 
 	return &MsgSubmitTx{
+		Sender:       sender,
 		ConnectionId: connectionID,
-		Owner:        owner,
-		Msg:          protoAny,
+		AccountId:    accountID,
+		Timeout:      timeout,
+		Tx:           protoAny,
 	}, nil
 }
 
@@ -83,12 +86,12 @@ func PackTxMsgAny(sdkMsg sdk.Msg) (*codectypes.Any, error) {
 func (msg MsgSubmitTx) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var sdkMsg sdk.Msg
 
-	return unpacker.UnpackAny(msg.Msg, &sdkMsg)
+	return unpacker.UnpackAny(msg.Tx, &sdkMsg)
 }
 
 // GetTxMsg fetches the cached any message
 func (msg *MsgSubmitTx) GetTxMsg() sdk.Msg {
-	sdkMsg, ok := msg.Msg.GetCachedValue().(sdk.Msg)
+	sdkMsg, ok := msg.Tx.GetCachedValue().(sdk.Msg)
 	if !ok {
 		return nil
 	}
@@ -98,7 +101,7 @@ func (msg *MsgSubmitTx) GetTxMsg() sdk.Msg {
 
 // GetSigners implements sdk.Msg
 func (msg MsgSubmitTx) GetSigners() []sdk.AccAddress {
-	accAddr, err := sdk.AccAddressFromBech32(msg.Owner)
+	accAddr, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +111,7 @@ func (msg MsgSubmitTx) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements sdk.Msg
 func (msg MsgSubmitTx) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	_, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "invalid owner address")
 	}

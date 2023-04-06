@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package intertx;
+package kujira.intertx;
 
 option go_package = "github.com/Team-Kujira/core/x/inter-tx/types";
 

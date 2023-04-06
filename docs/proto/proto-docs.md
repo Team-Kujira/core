@@ -4,240 +4,57 @@
 
  ## Table of Contents
  
- - [denom/authorityMetadata.proto](#denom/authorityMetadata.proto)
-     - [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata)
+ - [kujira/intertx/query.proto](#kujira/intertx/query.proto)
+     - [QueryInterchainAccountRequest](#kujira.intertx.QueryInterchainAccountRequest)
+     - [QueryInterchainAccountResponse](#kujira.intertx.QueryInterchainAccountResponse)
    
- - [denom/params.proto](#denom/params.proto)
-     - [Params](#kujira.denom.Params)
+     - [Query](#kujira.intertx.Query)
    
- - [denom/genesis.proto](#denom/genesis.proto)
-     - [GenesisDenom](#kujira.denom.GenesisDenom)
-     - [GenesisState](#kujira.denom.GenesisState)
+ - [kujira/intertx/tx.proto](#kujira/intertx/tx.proto)
+     - [MsgRegisterAccount](#kujira.intertx.MsgRegisterAccount)
+     - [MsgRegisterAccountResponse](#kujira.intertx.MsgRegisterAccountResponse)
+     - [MsgSubmitTx](#kujira.intertx.MsgSubmitTx)
+     - [MsgSubmitTxResponse](#kujira.intertx.MsgSubmitTxResponse)
    
- - [denom/query.proto](#denom/query.proto)
-     - [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest)
-     - [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse)
-     - [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest)
-     - [QueryDenomsFromCreatorResponse](#kujira.denom.QueryDenomsFromCreatorResponse)
-     - [QueryParamsRequest](#kujira.denom.QueryParamsRequest)
-     - [QueryParamsResponse](#kujira.denom.QueryParamsResponse)
-   
-     - [Query](#kujira.denom.Query)
-   
- - [denom/tx.proto](#denom/tx.proto)
-     - [MsgBurn](#kujira.denom.MsgBurn)
-     - [MsgBurnResponse](#kujira.denom.MsgBurnResponse)
-     - [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin)
-     - [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse)
-     - [MsgCreateDenom](#kujira.denom.MsgCreateDenom)
-     - [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse)
-     - [MsgMint](#kujira.denom.MsgMint)
-     - [MsgMintResponse](#kujira.denom.MsgMintResponse)
-   
-     - [Msg](#kujira.denom.Msg)
+     - [Msg](#kujira.intertx.Msg)
    
  - [Scalar Value Types](#scalar-value-types)
 
  
  
- <a name="denom/authorityMetadata.proto"></a>
+ <a name="kujira/intertx/query.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/authorityMetadata.proto
+ ## kujira/intertx/query.proto
  
 
  
- <a name="kujira.denom.DenomAuthorityMetadata"></a>
+ <a name="kujira.intertx.QueryInterchainAccountRequest"></a>
 
- ### DenomAuthorityMetadata
- DenomAuthorityMetadata specifies metadata for addresses that have specific
-capabilities over a token factory denom. Right now there is only one Admin
-permission, but is planned to be extended to the future.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `Admin` | [string](#string) |  | Can be empty for no admin, or a valid kujira address |
- 
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="denom/params.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## denom/params.proto
- 
-
- 
- <a name="kujira.denom.Params"></a>
-
- ### Params
- Params holds parameters for the denom module
+ ### QueryInterchainAccountRequest
+ QueryInterchainAccountRequest is the request type for the Query/InterchainAccountAddress RPC
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `creation_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+ | `owner` | [string](#string) |  |  |
+ | `connection_id` | [string](#string) |  |  |
+ | `account_id` | [string](#string) |  |  |
  
  
 
  
 
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
  
- 
- <a name="denom/genesis.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
+ <a name="kujira.intertx.QueryInterchainAccountResponse"></a>
 
- ## denom/genesis.proto
- 
-
- 
- <a name="kujira.denom.GenesisDenom"></a>
-
- ### GenesisDenom
- 
+ ### QueryInterchainAccountResponse
+ QueryInterchainAccountResponse the response type for the Query/InterchainAccountAddress RPC
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `denom` | [string](#string) |  |  |
- | `authority_metadata` | [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.GenesisState"></a>
-
- ### GenesisState
- GenesisState defines the denom module's genesis state.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.denom.Params) |  | params defines the paramaters of the module. |
- | `factory_denoms` | [GenesisDenom](#kujira.denom.GenesisDenom) | repeated |  |
- 
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="denom/query.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## denom/query.proto
- 
-
- 
- <a name="kujira.denom.QueryDenomAuthorityMetadataRequest"></a>
-
- ### QueryDenomAuthorityMetadataRequest
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `denom` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.QueryDenomAuthorityMetadataResponse"></a>
-
- ### QueryDenomAuthorityMetadataResponse
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `authority_metadata` | [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.QueryDenomsFromCreatorRequest"></a>
-
- ### QueryDenomsFromCreatorRequest
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `creator` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.QueryDenomsFromCreatorResponse"></a>
-
- ### QueryDenomsFromCreatorResponse
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `denoms` | [string](#string) | repeated |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.QueryParamsRequest"></a>
-
- ### QueryParamsRequest
- QueryParamsRequest is the request type for the Query/Params RPC method.
-
- 
-
- 
-
- 
- <a name="kujira.denom.QueryParamsResponse"></a>
-
- ### QueryParamsResponse
- QueryParamsResponse is the response type for the Query/Params RPC method.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.denom.Params) |  | params defines the parameters of the module. |
+ | `interchain_account_address` | [string](#string) |  |  |
  
  
 
@@ -250,139 +67,77 @@ permission, but is planned to be extended to the future.
   <!-- end HasExtensions -->
 
  
- <a name="kujira.denom.Query"></a>
+ <a name="kujira.intertx.Query"></a>
 
  ### Query
  Query defines the gRPC querier service.
 
  | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
  | ----------- | ------------ | ------------- | ------------| ------- | -------- |
- | `Params` | [QueryParamsRequest](#kujira.denom.QueryParamsRequest) | [QueryParamsResponse](#kujira.denom.QueryParamsResponse) | Params returns the total set of minting parameters. | GET|/kujira/denoms/params|
- | `DenomAuthorityMetadata` | [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest) | [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse) |  | GET|/kujira/denoms/{denom}/authority_metadata|
- | `DenomsFromCreator` | [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest) | [QueryDenomsFromCreatorResponse](#kujira.denom.QueryDenomsFromCreatorResponse) |  | GET|/kujira/denoms/by_creator/{creator}|
+ | `InterchainAccount` | [QueryInterchainAccountRequest](#kujira.intertx.QueryInterchainAccountRequest) | [QueryInterchainAccountResponse](#kujira.intertx.QueryInterchainAccountResponse) | QueryInterchainAccount returns the interchain account for given owner address on a given connection pair | GET|/inter-tx/interchain_account/owner/{owner}/connection/{connection_id}|
  
   <!-- end services -->
 
  
  
- <a name="denom/tx.proto"></a>
+ <a name="kujira/intertx/tx.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/tx.proto
+ ## kujira/intertx/tx.proto
  
 
  
- <a name="kujira.denom.MsgBurn"></a>
+ <a name="kujira.intertx.MsgRegisterAccount"></a>
 
- ### MsgBurn
- MsgBurn is the sdk.Msg type for allowing an admin account to burn
-a token.  For now, we only support burning from the sender account.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.MsgBurnResponse"></a>
-
- ### MsgBurnResponse
- 
-
- 
-
- 
-
- 
- <a name="kujira.denom.MsgChangeAdmin"></a>
-
- ### MsgChangeAdmin
- MsgChangeAdmin is the sdk.Msg type for allowing an admin account to reassign
-adminship of a denom to a new account
+ ### MsgRegisterAccount
+ MsgRegisterAccount defines the payload for Msg/RegisterAccount
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `denom` | [string](#string) |  |  |
- | `newAdmin` | [string](#string) |  |  |
+ | `sender` | [string](#string) |  | Sender is the actor that sends the message |
+ | `connection_id` | [string](#string) |  |  |
+ | `account_id` | [string](#string) |  |  |
+ | `version` | [string](#string) |  |  |
  
  
 
  
 
  
- <a name="kujira.denom.MsgChangeAdminResponse"></a>
+ <a name="kujira.intertx.MsgRegisterAccountResponse"></a>
 
- ### MsgChangeAdminResponse
- 
+ ### MsgRegisterAccountResponse
+ MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
 
- 
-
- 
-
- 
- <a name="kujira.denom.MsgCreateDenom"></a>
-
- ### MsgCreateDenom
- MsgCreateDenom is the sdk.Msg type for allowing an account to create
-a new denom.  It requires a sender address and a unique nonce
-(to allow accounts to create multiple denoms)
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `nonce` | [string](#string) |  |  |
- 
  
 
  
 
  
- <a name="kujira.denom.MsgCreateDenomResponse"></a>
+ <a name="kujira.intertx.MsgSubmitTx"></a>
 
- ### MsgCreateDenomResponse
- MsgCreateDenomResponse is the return value of MsgCreateDenom
-It returns the full string of the newly created denom
+ ### MsgSubmitTx
+ MsgSubmitTx defines the payload for Msg/SubmitTx
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `new_token_denom` | [string](#string) |  |  |
+ | `sender` | [string](#string) |  | Sender is the actor that sends the message |
+ | `connection_id` | [string](#string) |  | Owner is the "admin" of the interchain account |
+ | `account_id` | [string](#string) |  |  |
+ | `timeout` | [uint64](#uint64) |  |  |
+ | `tx` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
  
  
 
  
 
  
- <a name="kujira.denom.MsgMint"></a>
+ <a name="kujira.intertx.MsgSubmitTxResponse"></a>
 
- ### MsgMint
- MsgMint is the sdk.Msg type for allowing an admin account to mint
-more of a token.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
- | `recipient` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.MsgMintResponse"></a>
-
- ### MsgMintResponse
- 
+ ### MsgSubmitTxResponse
+ MsgSubmitTxResponse defines the response for Msg/SubmitTx
 
  
 
@@ -395,17 +150,15 @@ more of a token.
   <!-- end HasExtensions -->
 
  
- <a name="kujira.denom.Msg"></a>
+ <a name="kujira.intertx.Msg"></a>
 
  ### Msg
- Msg defines the Msg service.
+ Msg defines the intertx Msg service.
 
  | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
  | ----------- | ------------ | ------------- | ------------| ------- | -------- |
- | `CreateDenom` | [MsgCreateDenom](#kujira.denom.MsgCreateDenom) | [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse) |  | |
- | `Mint` | [MsgMint](#kujira.denom.MsgMint) | [MsgMintResponse](#kujira.denom.MsgMintResponse) |  | |
- | `Burn` | [MsgBurn](#kujira.denom.MsgBurn) | [MsgBurnResponse](#kujira.denom.MsgBurnResponse) |  | |
- | `ChangeAdmin` | [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin) | [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse) | ForceTransfer is deactivated for now because we need to think through edge cases rpc ForceTransfer(MsgForceTransfer) returns (MsgForceTransferResponse); | |
+ | `RegisterAccount` | [MsgRegisterAccount](#kujira.intertx.MsgRegisterAccount) | [MsgRegisterAccountResponse](#kujira.intertx.MsgRegisterAccountResponse) | Register defines a rpc handler for MsgRegisterAccount | |
+ | `SubmitTx` | [MsgSubmitTx](#kujira.intertx.MsgSubmitTx) | [MsgSubmitTxResponse](#kujira.intertx.MsgSubmitTxResponse) | SubmitTx defines a rpc handler for MsgSubmitTx | |
  
   <!-- end services -->
 

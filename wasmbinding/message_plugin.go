@@ -14,18 +14,27 @@ import (
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
 
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
+
+	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
+	intertx "github.com/Team-Kujira/core/x/inter-tx/wasm"
+
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages
 func CustomMessageDecorator(
 	bank bankkeeper.Keeper,
 	denom denomkeeper.Keeper,
+	intertx intertxkeeper.Keeper,
+	ica icacontrollerkeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped: old,
 			bank:    bank,
 			denom:   denom,
+			intertx: intertx,
+			ica:     ica,
 		}
 	}
 }
@@ -34,6 +43,8 @@ type CustomMessenger struct {
 	wrapped wasmkeeper.Messenger
 	bank    bankkeeper.Keeper
 	denom   denomkeeper.Keeper
+	intertx intertxkeeper.Keeper
+	ica     icacontrollerkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -55,6 +66,10 @@ func (m *CustomMessenger) DispatchMsg(
 
 		if contractMsg.Denom != nil {
 			return denom.HandleMsg(m.denom, m.bank, contractAddr, ctx, contractMsg.Denom)
+		}
+
+		if contractMsg.InterTx != nil {
+			return intertx.HandleMsg(ctx, m.intertx, m.ica, contractAddr, contractMsg.InterTx)
 		}
 
 		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}

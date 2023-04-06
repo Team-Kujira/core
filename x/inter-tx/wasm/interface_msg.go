@@ -7,6 +7,8 @@ import (
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+
+	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object
@@ -42,7 +44,6 @@ type SubmitTx struct {
 	ChannelId string                               `json:"channel"`
 	AccountId string                               `json:"id"`
 	Tx        icatypes.InterchainAccountPacketData `json:"tx"`
-	Memo      string                               `json:"memo"`
 	Timeout   uint64                               `json:"timeout"`
 }
 
@@ -94,17 +95,27 @@ func submitTxs(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *SubmitTx,
 }
 
 // PerformSubmitTxs is used with submitTxs to validate the submitTxs message and submit the txs.
-func PerformSubmitTx(f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTxs *SubmitTx) (*icacontrollertypes.MsgSendTxResponse, error) {
-	if submitTxs == nil {
+func PerformSubmitTx(f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *SubmitTx) (*icacontrollertypes.MsgSendTxResponse, error) {
+	if submitTx == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "submit txs null message"}
 	}
 
 	msgServer := icacontrollerkeeper.NewMsgServerImpl(&f)
 
-	owner := contractAddr.String() + "-" + submitTxs.AccountId
-	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTxs.ChannelId, submitTxs.Timeout, submitTx.Tx))
+	owner := contractAddr.String() + "-" + submitTx.AccountId
+	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ChannelId, submitTx.Timeout, submitTx.Tx))
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}
 	return res, nil
+}
+
+func HandleMsg(ctx sdk.Context, itxk intertxkeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
+	if msg.RegisterICA != nil {
+		return register(ctx, contractAddr, msg.RegisterICA, icak)
+	}
+	if msg.SubmitTxs != nil {
+		return submitTxs(ctx, contractAddr, msg.SubmitTxs, icak)
+	}
+	return nil, nil, wasmvmtypes.InvalidRequest{Err: "unknown Custom variant"}
 }
