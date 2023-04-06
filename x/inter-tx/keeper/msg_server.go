@@ -4,8 +4,11 @@ import (
 	"context"
 	"time"
 
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
 	"github.com/Team-Kujira/core/x/inter-tx/types"
@@ -23,17 +26,29 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 // RegisterAccount implements the Msg/RegisterAccount interface
-func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAccount) (*types.MsgRegisterAccountResponse, error) {
+func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgSubmitTx) (*types.MsgRegisterAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	owner := msg.Sender + "-" + msg.AccountId
+	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(msg.ConnectionId, owner, msg.Version)
 
-	if err := k.icaControllerKeeper.RegisterInterchainAccount(ctx, msg.ConnectionId, msg.Owner, msg.Version); err != nil {
-		return nil, err
+	if err := msgRegister.ValidateBasic(); err != nil {
+		return nil, errors.Wrap(err, "failed validating MsgRegisterInterchainAccount")
 	}
 
+	icaMsgServer := icacontrollerkeeper.NewMsgServerImpl(&k.Keeper.icaControllerKeeper)
+
+	_, err := icaMsgServer.RegisterInterchainAccount(
+		sdk.WrapSDKContext(ctx),
+		msgRegister,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	//TODO: Maybe we want to return the icacontrollertypes.MsgRegisterInterchainAccountResponse instead our own,
 	return &types.MsgRegisterAccountResponse{}, nil
 }
 
-// SubmitTx implements the Msg/SubmitTx interface
 func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.MsgSubmitTxResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

@@ -33,18 +33,19 @@ type ICAMsg struct {
 // / The account is registered using (port, channel, sender, id)
 // / as the unique identifier.
 type RegisterICA struct {
-	ChannelId string `json:"channel"`
-	AccountId string `json:"id"`
-	Version   string `json:"version"`
+	ConnectionId string `json:"channel"`
+	AccountId    string `json:"id"`
+	Version      string `json:"version"`
 }
 
 // / SubmitTx submits transactions to the ICA
 // / associated with the given address.
 type SubmitTx struct {
-	ChannelId string                               `json:"channel"`
-	AccountId string                               `json:"id"`
-	Tx        icatypes.InterchainAccountPacketData `json:"tx"`
-	Timeout   uint64                               `json:"timeout"`
+	ConnectionId string `json:"channel"`
+	AccountId    string `json:"id"`
+	//TODO: Use ProtobufAny and serialize into Cosmos Tx like in msg_server.go
+	Tx      icatypes.InterchainAccountPacketData `json:"tx"`
+	Timeout uint64                               `json:"timeout"`
 }
 
 func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *RegisterICA, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
@@ -69,7 +70,7 @@ func PerformRegisterICA(f icacontrollerkeeper.Keeper, ctx sdk.Context, contractA
 
 	// format "{owner}-{id}"
 	owner := contractAddr.String() + "-" + register.AccountId
-	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(register.ChannelId, owner, register.Version)
+	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(register.ConnectionId, owner, register.Version)
 
 	if err := msgRegister.ValidateBasic(); err != nil {
 		return nil, errors.Wrap(err, "failed validating MsgRegisterInterchainAccount")
@@ -103,7 +104,7 @@ func PerformSubmitTx(f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr
 	msgServer := icacontrollerkeeper.NewMsgServerImpl(&f)
 
 	owner := contractAddr.String() + "-" + submitTx.AccountId
-	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ChannelId, submitTx.Timeout, submitTx.Tx))
+	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionId, submitTx.Timeout, submitTx.Tx))
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}
