@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package intertx;
+
+option go_package = "github.com/Team-Kujira/core/x/inter-tx/types";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+// Msg defines the intertx Msg service.
+service Msg {
+  // Register defines a rpc handler for MsgRegisterAccount
+  rpc RegisterAccount(MsgRegisterAccount) returns (MsgRegisterAccountResponse);
+  // SubmitTx defines a rpc handler for MsgSubmitTx
+  rpc SubmitTx(MsgSubmitTx) returns (MsgSubmitTxResponse);
+}
+
+// MsgRegisterAccount defines the payload for Msg/RegisterAccount
+message MsgRegisterAccount {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Sender is the actor that sends the message
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+  string account_id = 3 [(gogoproto.moretags) = "yaml:\"account_id\""];
+  string version       = 4;
+}
+
+// MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
+message MsgRegisterAccountResponse {}
+
+// MsgSubmitTx defines the payload for Msg/SubmitTx
+message MsgSubmitTx {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false; 
+
+  // Sender is the actor that sends the message
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  // Owner is the "admin" of the interchain account
+  string              connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+  string              account_id    = 3 [(gogoproto.moretags) = "yaml:\"account_id\""];
+  uint64              timeout       = 4 [(gogoproto.moretags) = "yaml:\"timeout\""];
+  google.protobuf.Any tx            = 5;
+}
+
+// MsgSubmitTxResponse defines the response for Msg/SubmitTx
+message MsgSubmitTxResponse {}
