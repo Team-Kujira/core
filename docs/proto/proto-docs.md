@@ -4,17 +4,17 @@
 
  ## Table of Contents
  
- - [denom/authorityMetadata.proto](#denom/authorityMetadata.proto)
+ - [kujira/denom/authorityMetadata.proto](#kujira/denom/authorityMetadata.proto)
      - [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata)
    
- - [denom/params.proto](#denom/params.proto)
+ - [kujira/denom/params.proto](#kujira/denom/params.proto)
      - [Params](#kujira.denom.Params)
    
- - [denom/genesis.proto](#denom/genesis.proto)
+ - [kujira/denom/genesis.proto](#kujira/denom/genesis.proto)
      - [GenesisDenom](#kujira.denom.GenesisDenom)
      - [GenesisState](#kujira.denom.GenesisState)
    
- - [denom/query.proto](#denom/query.proto)
+ - [kujira/denom/query.proto](#kujira/denom/query.proto)
      - [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest)
      - [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse)
      - [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest)
@@ -24,7 +24,7 @@
    
      - [Query](#kujira.denom.Query)
    
- - [denom/tx.proto](#denom/tx.proto)
+ - [kujira/denom/tx.proto](#kujira/denom/tx.proto)
      - [MsgBurn](#kujira.denom.MsgBurn)
      - [MsgBurnResponse](#kujira.denom.MsgBurnResponse)
      - [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin)
@@ -40,10 +40,10 @@
 
  
  
- <a name="denom/authorityMetadata.proto"></a>
+ <a name="kujira/denom/authorityMetadata.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/authorityMetadata.proto
+ ## kujira/denom/authorityMetadata.proto
  
 
  
@@ -73,10 +73,10 @@ permission, but is planned to be extended to the future.
 
  
  
- <a name="denom/params.proto"></a>
+ <a name="kujira/denom/params.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/params.proto
+ ## kujira/denom/params.proto
  
 
  
@@ -104,10 +104,10 @@ permission, but is planned to be extended to the future.
 
  
  
- <a name="denom/genesis.proto"></a>
+ <a name="kujira/denom/genesis.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/genesis.proto
+ ## kujira/denom/genesis.proto
  
 
  
@@ -152,10 +152,10 @@ permission, but is planned to be extended to the future.
 
  
  
- <a name="denom/query.proto"></a>
+ <a name="kujira/denom/query.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/query.proto
+ ## kujira/denom/query.proto
  
 
  
@@ -265,10 +265,10 @@ permission, but is planned to be extended to the future.
 
  
  
- <a name="denom/tx.proto"></a>
+ <a name="kujira/denom/tx.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## denom/tx.proto
+ ## kujira/denom/tx.proto
  
 
  

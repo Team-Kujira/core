@@ -4,8 +4,8 @@ package kujira.scheduler;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "scheduler/params.proto";
-import "scheduler/hook.proto";
+import "kujira/scheduler/params.proto";
+import "kujira/scheduler/hook.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/scheduler/types";
 

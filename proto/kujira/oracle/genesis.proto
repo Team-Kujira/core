@@ -2,7 +2,7 @@ syntax = "proto3";
 package kujira.oracle;
 
 import "gogoproto/gogo.proto";
-import "oracle/oracle.proto";
+import "kujira/oracle/oracle.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/oracle/types";
