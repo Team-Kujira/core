@@ -64,6 +64,9 @@ check-go-version:
 		exit 1; \
 	fi
 
+proto: 
+    docker run --volume "$(pwd)\:/workspace" --workdir /workspace ghcr.io/cosmos/proto-builder:0.12.1 sh ./scripts/protocgen.sh
+
 all: lint install
 
 install: check-go-version go.sum
