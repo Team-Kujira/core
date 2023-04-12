@@ -175,11 +175,11 @@ replace (
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
+	github.com/cosmos/ibc-go/v7 => github.com/Team-Kujira/ibc-go/v7 v7.0.0-beta2.0.20230412085627-88633c65e305
+
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
-
-	// github.com/cosmos/ibc-go/v6 => github.com/Team-Kujira/ibc-go/v6 v6.1.0-factory
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/10409
