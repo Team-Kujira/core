@@ -140,6 +140,10 @@ import (
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
+	intertx "github.com/Team-Kujira/core/x/inter-tx"
+	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
+	intertxtypes "github.com/Team-Kujira/core/x/inter-tx/types"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
@@ -210,6 +214,7 @@ var (
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
+		intertx.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -229,6 +234,7 @@ var (
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		alliancemoduletypes.RewardsPoolName: nil,
+		intertxtypes.ModuleName:             nil,
 	}
 )
 
@@ -288,6 +294,7 @@ type App struct {
 	SchedulerKeeper       schedulerkeeper.Keeper
 	OracleKeeper          oraclekeeper.Keeper
 	AllianceKeeper        alliancemodulekeeper.Keeper
+	InterTxKeeper         intertxkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -296,6 +303,7 @@ type App struct {
 	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
 	// mm is the module manager
 	mm *module.Manager
@@ -356,6 +364,7 @@ func New(
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
 		AllianceStoreKey,
+		intertxtypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -568,6 +577,16 @@ func New(
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
+	// Create InterTx Keeper
+	scopedInterTxKeeper := app.CapabilityKeeper.ScopeToModule(intertxtypes.ModuleName)
+	app.InterTxKeeper = intertxkeeper.NewKeeper(
+		appCodec,
+		keys[intertxtypes.StoreKey],
+		app.ICAControllerKeeper,
+		scopedInterTxKeeper,
+		app.WasmKeeper,
+	)
+
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
@@ -626,6 +645,8 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		app.InterTxKeeper,
+		app.ICAControllerKeeper,
 	), wasmOpts...)
 
 	app.WasmKeeper = wasm.NewKeeper(
@@ -876,6 +897,8 @@ func New(
 			app.interfaceRegistry,
 		),
 
+		intertx.NewAppModule(appCodec, app.InterTxKeeper),
+
 		crisis.NewAppModule(
 			app.CrisisKeeper,
 			skipGenesisInvariants,
@@ -1070,6 +1093,7 @@ func New(
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
+	app.ScopedInterTxKeeper = scopedInterTxKeeper
 
 	return app
 }
