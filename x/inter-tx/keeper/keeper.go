@@ -16,7 +16,7 @@ import (
 )
 
 type Keeper struct {
-	cdc codec.Codec
+	Codec codec.Codec
 
 	storeKey storetypes.StoreKey
 
@@ -27,7 +27,7 @@ type Keeper struct {
 
 func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, iaKeeper icacontrollerkeeper.Keeper, scopedKeeper capabilitykeeper.ScopedKeeper, wasmKeeper wasmkeeper.Keeper) Keeper {
 	return Keeper{
-		cdc:      cdc,
+		Codec:    cdc,
 		storeKey: storeKey,
 
 		scopedKeeper:        scopedKeeper,

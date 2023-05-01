@@ -20,6 +20,9 @@ var (
 	// TestAccountId defines a reusable interchainaccounts account id for testing purposes
 	TestAccountId = "1"
 
+	// TestMemo defines a reusable interchainaccounts memo for testing purposes
+	TestMemo = "test memo"
+
 	// TestVersion defines a reusable interchainaccounts version string for testing purposes
 	TestVersion = string(icatypes.ModuleCdc.MustMarshalJSON(&icatypes.Metadata{
 		Version:                icatypes.Version,
@@ -93,7 +96,7 @@ func TestMsgSubmitTxValidateBasic(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		msg, _ = types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestAccountId, TestOwnerAddress, 1)
+		msg, _ = types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestAccountId, TestOwnerAddress, TestMemo, 1)
 
 		tc.malleate()
 
@@ -111,7 +114,7 @@ func TestMsgSubmitTxGetSigners(t *testing.T) {
 	expSigner, err := sdk.AccAddressFromBech32(TestOwnerAddress)
 	require.NoError(t, err)
 
-	msg, err := types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestAccountId, TestOwnerAddress, 1)
+	msg, err := types.NewMsgSubmitTx(TestMessage, ibctesting.FirstConnectionID, TestAccountId, TestOwnerAddress, TestMemo, 1)
 	require.NoError(t, err)
 
 	require.Equal(t, []sdk.AccAddress{expSigner}, msg.GetSigners())

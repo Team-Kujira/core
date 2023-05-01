@@ -7,5 +7,5 @@ import (
 
 type CosmosMsg struct {
 	Denom   *denom.DenomMsg
-	InterTx *intertx.ICAMsg
+	Intertx *intertx.ICAMsg
 }

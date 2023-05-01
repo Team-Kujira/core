@@ -16,7 +16,9 @@ import (
 func (k Keeper) InterchainAccount(goCtx context.Context, req *types.QueryInterchainAccountRequest) (*types.QueryInterchainAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	portID, err := icatypes.NewControllerPortID(req.Owner)
+	owner := req.Owner + "-" + req.AccountId
+
+	portID, err := icatypes.NewControllerPortID(owner)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "could not find account: %s", err)
 	}

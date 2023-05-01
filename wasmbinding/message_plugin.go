@@ -68,11 +68,11 @@ func (m *CustomMessenger) DispatchMsg(
 			return denom.HandleMsg(m.denom, m.bank, contractAddr, ctx, contractMsg.Denom)
 		}
 
-		if contractMsg.InterTx != nil {
-			return intertx.HandleMsg(ctx, m.intertx, m.ica, contractAddr, contractMsg.InterTx)
+		if contractMsg.Intertx != nil {
+			return intertx.HandleMsg(ctx, m.intertx, m.ica, contractAddr, contractMsg.Intertx)
 		}
 
-		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
+		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom WASM variant"}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }

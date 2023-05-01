@@ -937,6 +937,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		intertxtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -966,6 +967,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		intertxtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1003,6 +1005,7 @@ func New(
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 		wasm.ModuleName,
+		intertxtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)

@@ -56,7 +56,7 @@ func (msg MsgRegisterAccount) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgSubmitTx creates and returns a new MsgSubmitTx instance
-func NewMsgSubmitTx(sdkMsg sdk.Msg, connectionID, accountID, sender string, timeout uint64) (*MsgSubmitTx, error) {
+func NewMsgSubmitTx(sdkMsg sdk.Msg, connectionID, accountID, sender, memo string, timeout uint64) (*MsgSubmitTx, error) {
 	protoAny, err := PackTxMsgAny(sdkMsg)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,8 @@ func NewMsgSubmitTx(sdkMsg sdk.Msg, connectionID, accountID, sender string, time
 		ConnectionId: connectionID,
 		AccountId:    accountID,
 		Timeout:      timeout,
-		Tx:           protoAny,
+		Memo:         memo,
+		Msgs:         []*codectypes.Any{protoAny},
 	}, nil
 }
 
@@ -88,19 +89,34 @@ func PackTxMsgAny(sdkMsg sdk.Msg) (*codectypes.Any, error) {
 
 // UnpackInterfaces implements codectypes.UnpackInterfacesMessage
 func (msg MsgSubmitTx) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	var sdkMsg sdk.Msg
+	var sdkMsg []sdk.Msg
+	for _, any := range msg.Msgs {
+		var msg sdk.Msg
+		err := unpacker.UnpackAny(any, &msg)
+		if err != nil {
+			return err
+		}
 
-	return unpacker.UnpackAny(msg.Tx, &sdkMsg)
+		sdkMsg = append(sdkMsg, msg)
+	}
+
+	return nil
 }
 
 // GetTxMsg fetches the cached any message
-func (msg *MsgSubmitTx) GetTxMsg() sdk.Msg {
-	sdkMsg, ok := msg.Tx.GetCachedValue().(sdk.Msg)
-	if !ok {
-		return nil
+func (msg *MsgSubmitTx) GetTxMsgs() []sdk.Msg {
+	var sdkMsgs []sdk.Msg
+	for _, any := range msg.Msgs {
+		sdkMsg, ok := any.GetCachedValue().(sdk.Msg)
+		if sdkMsg != nil {
+			sdkMsgs = append(sdkMsgs, sdkMsg)
+		}
+		if !ok {
+			return nil
+		}
 	}
 
-	return sdkMsg
+	return sdkMsgs
 }
 
 // GetSigners implements sdk.Msg

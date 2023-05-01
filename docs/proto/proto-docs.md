@@ -4,292 +4,57 @@
 
  ## Table of Contents
  
- - [kujira/scheduler/params.proto](#kujira/scheduler/params.proto)
-     - [Params](#kujira.scheduler.Params)
+ - [kujira/intertx/query.proto](#kujira/intertx/query.proto)
+     - [QueryInterchainAccountRequest](#kujira.intertx.QueryInterchainAccountRequest)
+     - [QueryInterchainAccountResponse](#kujira.intertx.QueryInterchainAccountResponse)
    
- - [kujira/scheduler/hook.proto](#kujira/scheduler/hook.proto)
-     - [Hook](#kujira.scheduler.Hook)
+     - [Query](#kujira.intertx.Query)
    
- - [kujira/scheduler/genesis.proto](#kujira/scheduler/genesis.proto)
-     - [GenesisState](#kujira.scheduler.GenesisState)
+ - [kujira/intertx/tx.proto](#kujira/intertx/tx.proto)
+     - [MsgRegisterAccount](#kujira.intertx.MsgRegisterAccount)
+     - [MsgRegisterAccountResponse](#kujira.intertx.MsgRegisterAccountResponse)
+     - [MsgSubmitTx](#kujira.intertx.MsgSubmitTx)
+     - [MsgSubmitTxResponse](#kujira.intertx.MsgSubmitTxResponse)
    
- - [kujira/scheduler/proposal.proto](#kujira/scheduler/proposal.proto)
-     - [CreateHookProposal](#kujira.scheduler.CreateHookProposal)
-     - [DeleteHookProposal](#kujira.scheduler.DeleteHookProposal)
-     - [UpdateHookProposal](#kujira.scheduler.UpdateHookProposal)
-   
- - [kujira/scheduler/query.proto](#kujira/scheduler/query.proto)
-     - [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest)
-     - [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse)
-     - [QueryGetHookRequest](#kujira.scheduler.QueryGetHookRequest)
-     - [QueryGetHookResponse](#kujira.scheduler.QueryGetHookResponse)
-     - [QueryParamsRequest](#kujira.scheduler.QueryParamsRequest)
-     - [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse)
-   
-     - [Query](#kujira.scheduler.Query)
+     - [Msg](#kujira.intertx.Msg)
    
  - [Scalar Value Types](#scalar-value-types)
 
  
  
- <a name="kujira/scheduler/params.proto"></a>
+ <a name="kujira/intertx/query.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/scheduler/params.proto
+ ## kujira/intertx/query.proto
  
 
  
- <a name="kujira.scheduler.Params"></a>
+ <a name="kujira.intertx.QueryInterchainAccountRequest"></a>
 
- ### Params
- Params defines the parameters for the module.
-
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="kujira/scheduler/hook.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## kujira/scheduler/hook.proto
- 
-
- 
- <a name="kujira.scheduler.Hook"></a>
-
- ### Hook
- 
+ ### QueryInterchainAccountRequest
+ QueryInterchainAccountRequest is the request type for the Query/InterchainAccountAddress RPC
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `id` | [uint64](#uint64) |  |  |
- | `executor` | [string](#string) |  |  |
- | `contract` | [string](#string) |  |  |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+ | `owner` | [string](#string) |  |  |
+ | `connection_id` | [string](#string) |  |  |
+ | `account_id` | [string](#string) |  |  |
  
  
 
  
 
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
  
- 
- <a name="kujira/scheduler/genesis.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
+ <a name="kujira.intertx.QueryInterchainAccountResponse"></a>
 
- ## kujira/scheduler/genesis.proto
- 
-
- 
- <a name="kujira.scheduler.GenesisState"></a>
-
- ### GenesisState
- GenesisState defines the scheduler module's genesis state.
+ ### QueryInterchainAccountResponse
+ QueryInterchainAccountResponse the response type for the Query/InterchainAccountAddress RPC
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.scheduler.Params) |  |  |
- | `hookList` | [Hook](#kujira.scheduler.Hook) | repeated |  |
- | `hookCount` | [uint64](#uint64) |  |  |
- 
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="kujira/scheduler/proposal.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## kujira/scheduler/proposal.proto
- 
-
- 
- <a name="kujira.scheduler.CreateHookProposal"></a>
-
- ### CreateHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `executor` | [string](#string) |  | The account that will execute the msg on the schedule |
- | `contract` | [string](#string) |  | The contract that the msg is called on |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.DeleteHookProposal"></a>
-
- ### DeleteHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `id` | [uint64](#uint64) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.UpdateHookProposal"></a>
-
- ### UpdateHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `id` | [uint64](#uint64) |  |  |
- | `executor` | [string](#string) |  |  |
- | `contract` | [string](#string) |  |  |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
- 
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="kujira/scheduler/query.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## kujira/scheduler/query.proto
- 
-
- 
- <a name="kujira.scheduler.QueryAllHookRequest"></a>
-
- ### QueryAllHookRequest
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.QueryAllHookResponse"></a>
-
- ### QueryAllHookResponse
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `Hook` | [Hook](#kujira.scheduler.Hook) | repeated |  |
- | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.QueryGetHookRequest"></a>
-
- ### QueryGetHookRequest
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `id` | [uint64](#uint64) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.QueryGetHookResponse"></a>
-
- ### QueryGetHookResponse
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `Hook` | [Hook](#kujira.scheduler.Hook) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.QueryParamsRequest"></a>
-
- ### QueryParamsRequest
- QueryParamsRequest is request type for the Query/Params RPC method.
-
- 
-
- 
-
- 
- <a name="kujira.scheduler.QueryParamsResponse"></a>
-
- ### QueryParamsResponse
- QueryParamsResponse is response type for the Query/Params RPC method.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.scheduler.Params) |  | params holds all the parameters of this module. |
+ | `interchain_account_address` | [string](#string) |  |  |
  
  
 
@@ -302,16 +67,100 @@
   <!-- end HasExtensions -->
 
  
- <a name="kujira.scheduler.Query"></a>
+ <a name="kujira.intertx.Query"></a>
 
  ### Query
  Query defines the gRPC querier service.
 
  | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
  | ----------- | ------------ | ------------- | ------------| ------- | -------- |
- | `Params` | [QueryParamsRequest](#kujira.scheduler.QueryParamsRequest) | [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse) | Parameters queries the parameters of the module. | GET|/kujira/scheduler/params|
- | `Hook` | [QueryGetHookRequest](#kujira.scheduler.QueryGetHookRequest) | [QueryGetHookResponse](#kujira.scheduler.QueryGetHookResponse) | Queries a Hook by id. | GET|/kujira/scheduler/hook/{id}|
- | `HookAll` | [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest) | [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse) | Queries a list of Hook items. | GET|/kujira/scheduler/hook|
+ | `InterchainAccount` | [QueryInterchainAccountRequest](#kujira.intertx.QueryInterchainAccountRequest) | [QueryInterchainAccountResponse](#kujira.intertx.QueryInterchainAccountResponse) | QueryInterchainAccount returns the interchain account for given owner address on a given connection pair | GET|/inter-tx/interchain_account/owner/{owner}/connection/{connection_id}|
+ 
+  <!-- end services -->
+
+ 
+ 
+ <a name="kujira/intertx/tx.proto"></a>
+ <p align="right"><a href="#top">Top</a></p>
+
+ ## kujira/intertx/tx.proto
+ 
+
+ 
+ <a name="kujira.intertx.MsgRegisterAccount"></a>
+
+ ### MsgRegisterAccount
+ MsgRegisterAccount defines the payload for Msg/RegisterAccount
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `sender` | [string](#string) |  | Sender is the actor that sends the message |
+ | `connection_id` | [string](#string) |  |  |
+ | `account_id` | [string](#string) |  |  |
+ | `version` | [string](#string) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.intertx.MsgRegisterAccountResponse"></a>
+
+ ### MsgRegisterAccountResponse
+ MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
+
+ 
+
+ 
+
+ 
+ <a name="kujira.intertx.MsgSubmitTx"></a>
+
+ ### MsgSubmitTx
+ MsgSubmitTx defines the payload for Msg/SubmitTx
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `sender` | [string](#string) |  | Sender is the actor that sends the message |
+ | `connection_id` | [string](#string) |  |  |
+ | `account_id` | [string](#string) |  |  |
+ | `version` | [string](#string) |  |  |
+ | `memo` | [string](#string) |  |  |
+ | `timeout` | [uint64](#uint64) |  |  |
+ | `msgs` | [google.protobuf.Any](#google.protobuf.Any) | repeated |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.intertx.MsgSubmitTxResponse"></a>
+
+ ### MsgSubmitTxResponse
+ MsgSubmitTxResponse defines the response for Msg/SubmitTx
+
+ 
+
+ 
+
+  <!-- end messages -->
+
+  <!-- end enums -->
+
+  <!-- end HasExtensions -->
+
+ 
+ <a name="kujira.intertx.Msg"></a>
+
+ ### Msg
+ Msg defines the intertx Msg service.
+
+ | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+ | ----------- | ------------ | ------------- | ------------| ------- | -------- |
+ | `RegisterAccount` | [MsgRegisterAccount](#kujira.intertx.MsgRegisterAccount) | [MsgRegisterAccountResponse](#kujira.intertx.MsgRegisterAccountResponse) | Register defines a rpc handler for MsgRegisterAccount | |
+ | `SubmitTx` | [MsgSubmitTx](#kujira.intertx.MsgSubmitTx) | [MsgSubmitTxResponse](#kujira.intertx.MsgSubmitTxResponse) | SubmitTx defines a rpc handler for MsgSubmitTx | |
  
   <!-- end services -->
 

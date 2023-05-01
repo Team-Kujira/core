@@ -36,13 +36,13 @@ message MsgSubmitTx {
   option (gogoproto.goproto_getters) = false; 
 
   // Sender is the actor that sends the message
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  // Owner is the "admin" of the interchain account
-  string              connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
-  string              account_id    = 3 [(gogoproto.moretags) = "yaml:\"account_id\""];
-  string              version       = 4 [(gogoproto.moretags) = "yaml:\"version\""];
-  uint64              timeout       = 5 [(gogoproto.moretags) = "yaml:\"timeout\""];
-  google.protobuf.Any tx            = 6;
+  string                       sender        = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string                       connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+  string                       account_id    = 3 [(gogoproto.moretags) = "yaml:\"account_id\""];
+  string                       version       = 4 [(gogoproto.moretags) = "yaml:\"version\""];
+  string                       memo          = 5 [(gogoproto.moretags) = "yaml:\"memo\""];
+  uint64                       timeout       = 6 [(gogoproto.moretags) = "yaml:\"timeout\""];
+  repeated google.protobuf.Any msgs          = 7;
 }
 
 // MsgSubmitTxResponse defines the response for Msg/SubmitTx
