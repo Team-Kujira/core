@@ -519,8 +519,7 @@ func New(
 			Added: []string{
 				crisistypes.StoreKey,
 				consensusparamtypes.StoreKey,
-				ibcexported.StoreKey,
-				ibctransfertypes.StoreKey,
+				feegrant.StoreKey,
 				ibcfeetypes.StoreKey,
 			},
 		}
