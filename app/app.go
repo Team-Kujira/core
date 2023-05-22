@@ -119,7 +119,6 @@ import (
 	"github.com/spf13/cast"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
@@ -156,7 +155,9 @@ const (
 )
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
-	govProposalHandlers := append(wasmclient.ProposalHandlers,
+	var govProposalHandlers []govclient.ProposalHandler
+
+	govProposalHandlers = append(govProposalHandlers,
 		schedulerclient.CreateHookProposalHandler,
 		schedulerclient.UpdateHookProposalHandler,
 		schedulerclient.DeleteHookProposalHandler,
@@ -167,7 +168,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 		ibcclientclient.UpgradeProposalHandler,
 
 		alliancemoduleclient.CreateAllianceProposalHandler,
-
 		alliancemoduleclient.UpdateAllianceProposalHandler,
 		alliancemoduleclient.DeleteAllianceProposalHandler,
 	)
@@ -417,7 +417,6 @@ func New(
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
-		app.GetSubspace(banktypes.ModuleName),
 		BlockedAddresses(),
 		authority,
 	)
@@ -635,6 +634,7 @@ func New(
 		app.BankKeeper,
 		app.StakingKeeper,
 		distrkeeper.NewQuerier(app.DistrKeeper),
+		app.IBCFeeKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedWasmKeeper,
