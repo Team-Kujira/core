@@ -500,14 +500,33 @@ func New(
 		authority,
 	)
 
-	// app.UpgradeKeeper.SetUpgradeHandler("v0.9.0",
-	// 	func(
-	// 		ctx sdk.Context,
-	// 		plan upgradetypes.Plan,
-	// 		fromVM module.VersionMap,
-	// 	) (module.VersionMap, error) {
-	// 		return app.mm.RunMigrations(ctx, cfg, fromVM)
-	// 	})
+	app.UpgradeKeeper.SetUpgradeHandler("v0.9.0",
+		func(
+			ctx sdk.Context,
+			plan upgradetypes.Plan,
+			fromVM module.VersionMap,
+		) (module.VersionMap, error) {
+			return app.mm.RunMigrations(ctx, cfg, fromVM)
+		})
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := &storetypes.StoreUpgrades{
+			Added: []string{
+				crisistypes.StoreKey,
+				consensusparamtypes.StoreKey,
+				ibcexported.StoreKey,
+				ibctransfertypes.StoreKey,
+				ibcfeetypes.StoreKey,
+			},
+		}
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
+
+	}
 
 	// register the staking hooks
 	app.StakingKeeper.SetHooks(
