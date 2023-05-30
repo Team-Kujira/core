@@ -1,14 +1,12 @@
 package keeper
 
-/*
-
 import (
 	"context"
-	"time"
 
 	"cosmossdk.io/errors"
+	"github.com/cosmos/cosmos-sdk/codec"
+	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gogoproto/proto"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
@@ -45,22 +43,15 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegister
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "registering ICA")
 	}
-	//TODO: Maybe we want to return the icacontrollertypes.MsgRegisterInterchainAccountResponse instead our own,
 	return &types.MsgRegisterAccountResponse{}, nil
 }
 
-//FIXME: Migrate to new message-based handling.
 func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.MsgSubmitTxResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	portID, err := icatypes.NewControllerPortID(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := icatypes.SerializeCosmosTx(k.cdc, []proto.Message{msg.GetTxMsg()})
+	data, err := SerializeCosmosTx(k.Keeper.Codec, msg.Msgs)
 	if err != nil {
 		return nil, err
 	}
@@ -68,16 +59,36 @@ func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*typ
 	packetData := icatypes.InterchainAccountPacketData{
 		Type: icatypes.EXECUTE_TX,
 		Data: data,
+		Memo: msg.Memo,
 	}
 
-	// timeoutTimestamp set to max value with the unsigned bit shifted to sastisfy hermes timestamp conversion
-	// it is the responsibility of the auth module developer to ensure an appropriate timeout timestamp
-	timeoutTimestamp := ctx.BlockTime().Add(time.Minute).UnixNano()
-	_, err = k.icaControllerKeeper.SendTx(ctx, nil, msg.ConnectionId, portID, packetData, uint64(timeoutTimestamp)) //nolint:staticcheck //
+	msgServer := icacontrollerkeeper.NewMsgServerImpl(&k.Keeper.icaControllerKeeper)
+
+	owner := msg.Sender + "-" + msg.AccountId
+	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, msg.ConnectionId, msg.Timeout, packetData))
+
+	if err != nil {
+		return nil, errors.Wrap(err, "submitting txs")
+	}
+
+	return &types.MsgSubmitTxResponse{Sequence: res.Sequence}, nil
+}
+
+// From neutron inter-tx
+func SerializeCosmosTx(cdc codec.BinaryCodec, msgs []*cosmostypes.Any) (bz []byte, err error) {
+	// only ProtoCodec is supported
+	if _, ok := cdc.(*codec.ProtoCodec); !ok {
+		return nil, errors.Wrap(err, "only ProtoCodec is supported on host chain")
+	}
+
+	cosmosTx := &icatypes.CosmosTx{
+		Messages: msgs,
+	}
+
+	bz, err = cdc.Marshal(cosmosTx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.MsgSubmitTxResponse{}, nil
+	return bz, nil
 }
-*/
