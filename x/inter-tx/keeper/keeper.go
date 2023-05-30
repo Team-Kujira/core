@@ -45,3 +45,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k *Keeper) ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error {
 	return k.scopedKeeper.ClaimCapability(ctx, cap, name)
 }
+
+func (k Keeper) IcaControllerKeeper() icacontrollerkeeper.Keeper {
+	return k.icaControllerKeeper
+}

@@ -20,7 +20,7 @@ func RegisterCustomPlugins(
 	intertx intertxkeeper.Keeper,
 	ica icacontrollerkeeper.Keeper,
 ) []wasmkeeper.Option {
-	wasmQueryPlugin := NewQueryPlugin(bank, oracle, denom)
+	wasmQueryPlugin := NewQueryPlugin(bank, oracle, denom, intertx)
 
 	queryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Custom: CustomQuerier(wasmQueryPlugin),

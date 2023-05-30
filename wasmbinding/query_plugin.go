@@ -5,6 +5,7 @@ import (
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
+	intertx "github.com/Team-Kujira/core/x/inter-tx/wasm"
 	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
 
 	"cosmossdk.io/errors"
@@ -63,6 +64,18 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			return bz, nil
 		} else if contractQuery.Denom != nil {
 			res, err := denom.HandleQuery(qp.denomKeeper, ctx, contractQuery.Denom)
+			if err != nil {
+				return nil, err
+			}
+
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+			}
+
+			return bz, nil
+		} else if contractQuery.Intertx != nil {
+			res, err := intertx.HandleQuery(qp.intertxkeeper, ctx, contractQuery.Intertx)
 			if err != nil {
 				return nil, err
 			}
