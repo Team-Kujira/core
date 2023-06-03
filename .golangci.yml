@@ -9,10 +9,10 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard
     - errcheck
     - forcetypeassert
     - gofumpt
+    - gocritic
     - gomodguard
     - goprintffuncname
     - gosec
