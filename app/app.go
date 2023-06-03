@@ -171,7 +171,7 @@ func GetEnabledProposals() []wasm.ProposalType {
 }
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
-	govProposalHandlers := append(wasmclient.ProposalHandlers,
+	govProposalHandlers := append(wasmclient.ProposalHandlers, //nolint:gocritic // we're gathering up all of the proposal handlers here, nothing's wrong.
 		schedulerclient.CreateHookProposalHandler,
 		schedulerclient.UpdateHookProposalHandler,
 		schedulerclient.DeleteHookProposalHandler,

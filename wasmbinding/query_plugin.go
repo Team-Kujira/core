@@ -22,7 +22,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			return nil, errorsmod.Wrap(err, "kujira query")
 		}
 
-		if contractQuery.Oracle != nil {
+		switch {
+		case contractQuery.Oracle != nil:
 			res, err := oracle.Handle(qp.oraclekeeper, ctx, contractQuery.Oracle)
 			if err != nil {
 				return nil, err
@@ -34,7 +35,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.Bank != nil {
+
+		case contractQuery.Bank != nil:
 			if contractQuery.Bank.DenomMetadata != nil {
 				metadata, _ := qp.bankkeeper.GetDenomMetaData(ctx, contractQuery.Bank.DenomMetadata.Denom)
 				res := banktypes.QueryDenomMetadataResponse{
@@ -60,7 +62,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.Denom != nil {
+
+		case contractQuery.Denom != nil:
 			res, err := denom.HandleQuery(qp.denomKeeper, ctx, contractQuery.Denom)
 			if err != nil {
 				return nil, err
@@ -72,7 +75,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else {
+
+		default:
 			return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 		}
 	}

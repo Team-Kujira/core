@@ -58,9 +58,10 @@ func (m *CustomMessenger) DispatchMsg(
 			return nil, nil, errorsmod.Wrap(err, "kujira msg")
 		}
 
-		if contractMsg.Denom != nil {
+		switch {
+		case contractMsg.Denom != nil:
 			return denom.HandleMsg(m.denom, contractAddr, ctx, contractMsg.Denom)
-		} else if contractMsg.Auth != nil {
+		case contractMsg.Auth != nil:
 			handler := bindings.AuthHandler{AccountKeeper: m.auth, BankKeeper: m.bank}
 			cva := contractMsg.Auth.CreateVestingAccount
 			return handler.CreateVestingAccount(ctx, &types.MsgCreateVestingAccount{
@@ -71,7 +72,7 @@ func (m *CustomMessenger) DispatchMsg(
 				EndTime: int64(cva.EndTime.Uint64() / 1000000000),
 				Delayed: cva.Delayed,
 			})
-		} else {
+		default:
 			return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 		}
 	}
