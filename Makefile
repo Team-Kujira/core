@@ -138,9 +138,15 @@ proto-update-deps:
 
 #### Command List ####
 
+check-go-version:
+	@if ! go version | grep -Eq "go1.19.[3-7]"; then \
+		echo "\033[0;31mERROR:\033[0m Go version 1.19.3 through 1.19.7 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
+		exit 1; \
+	fi
+
 all: lint install
 
-install: go.sum
+install: check-go-version go.sum
 		go install $(BUILD_FLAGS) ./cmd/kujirad
 
 go.sum: go.mod
@@ -150,5 +156,5 @@ go.sum: go.mod
 lint:
 	golangci-lint run --out-format=tab
 
-build:
+build: check-go-version
 	go build $(BUILD_FLAGS) -o ./build/kujirad ./cmd/kujirad
