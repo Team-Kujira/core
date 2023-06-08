@@ -64,7 +64,7 @@ func create(ctx sdk.Context, contractAddr sdk.AccAddress, create *Create, dk den
 }
 
 // PerformCreate is used with create to create a token denom; validates the msgCreate.
-func PerformCreate(f denomkeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, create *Create) error {
+func PerformCreate(f denomkeeper.Keeper, _ bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, create *Create) error {
 	if create == nil {
 		return wasmvmtypes.InvalidRequest{Err: "create denom null create denom"}
 	}
@@ -98,7 +98,7 @@ func mint(ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint, dk denomkeep
 }
 
 // PerformMint used with mint to validate the mint message and mint through token factory.
-func PerformMint(f denomkeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint) error {
+func PerformMint(f denomkeeper.Keeper, _ bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, mint *Mint) error {
 	if mint == nil {
 		return wasmvmtypes.InvalidRequest{Err: "mint token null mint"}
 	}
