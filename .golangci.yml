@@ -23,6 +23,7 @@ linters:
     - revive
     - nakedret
     - nolintlint
+    - thelper
     - staticcheck
     - stylecheck
     - testpackage
