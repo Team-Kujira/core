@@ -40,12 +40,12 @@ func CreateHookProposalCmd() *cobra.Command {
 				return err
 			}
 
-			proposalTitle, err := cmd.Flags().GetString(cli.FlagTitle)
+			proposalTitle, err := cmd.Flags().GetString(cli.FlagTitle) //nolint:staticcheck // we need to use this because we are using gov v1beta1
 			if err != nil {
 				return fmt.Errorf("proposal title: %s", err)
 			}
 
-			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription)
+			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription) //nolint:staticcheck // we need to use this because we are using gov v1beta1
 			if err != nil {
 				return fmt.Errorf("proposal description: %s", err)
 			}
@@ -77,10 +77,10 @@ func CreateHookProposalCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
+	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")             //nolint:staticcheck // we need to use this because we are using gov v1beta1
+	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal") //nolint:staticcheck // we need to use this because we are using gov v1beta1
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
-	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)") //nolint:staticcheck // we need to use this because we are using gov v1beta1
 	return cmd
 }
 
@@ -116,12 +116,12 @@ func UpdateHookProposalCmd() *cobra.Command {
 				return err
 			}
 
-			proposalTitle, err := cmd.Flags().GetString(cli.FlagTitle)
+			proposalTitle, err := cmd.Flags().GetString(cli.FlagTitle) //nolint:staticcheck // we need to use this because we are using gov v1beta1
 			if err != nil {
 				return fmt.Errorf("proposal title: %s", err)
 			}
 
-			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription)
+			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription) //nolint:staticcheck // we need to use this because we are using gov v1beta1
 			if err != nil {
 				return fmt.Errorf("proposal description: %s", err)
 			}
@@ -154,10 +154,10 @@ func UpdateHookProposalCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
+	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")             //nolint:staticcheck // we need to use this because we are using gov v1beta1
+	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal") //nolint:staticcheck // we need to use this because we are using gov v1beta1
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
-	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)") //nolint:staticcheck // we need to use this because we are using gov v1beta1
 	return cmd
 }
 
@@ -177,12 +177,12 @@ func DeleteHookProposalCmd() *cobra.Command {
 				return err
 			}
 
-			proposalTitle, err := cmd.Flags().GetString(cli.FlagTitle)
+			proposalTitle, err := cmd.Flags().GetString(cli.FlagTitle) //nolint:staticcheck // we need to use this because we are using gov v1beta1
 			if err != nil {
 				return fmt.Errorf("proposal title: %s", err)
 			}
 
-			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription)
+			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription) //nolint:staticcheck // we need to use this because we are using gov v1beta1
 			if err != nil {
 				return fmt.Errorf("proposal description: %s", err)
 			}
@@ -210,9 +210,9 @@ func DeleteHookProposalCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
+	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")             //nolint:staticcheck // we need to use this because we are using gov v1beta1
+	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal") //nolint:staticcheck // we need to use this because we are using gov v1beta1
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
-	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)") //nolint:staticcheck // we need to use this because we are using gov v1beta1
 	return cmd
 }

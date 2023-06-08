@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/Team-Kujira/core/x/oracle/types"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -126,7 +125,7 @@ $ kujirad tx oracle aggregate-prevote 1234 0.1ATOM,1.001USDT kujiravaloper1...
 			if len(args) == 3 {
 				parsedVal, err := sdk.ValAddressFromBech32(args[2])
 				if err != nil {
-					return errors.Wrap(err, "validator address is invalid")
+					return errorsmod.Wrap(err, "validator address is invalid")
 				}
 				validator = parsedVal
 			}
@@ -189,7 +188,7 @@ $ kujirad tx oracle aggregate-vote 1234 0.1ATOM,1.001USDT kujiravaloper1....
 			if len(args) == 3 {
 				parsedVal, err := sdk.ValAddressFromBech32(args[2])
 				if err != nil {
-					return errors.Wrap(err, "validator address is invalid")
+					return errorsmod.Wrap(err, "validator address is invalid")
 				}
 				validator = parsedVal
 			}

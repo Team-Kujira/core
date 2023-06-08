@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -36,7 +37,7 @@ func NewLegacyQuerier(keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Qu
 		case types.QueryAggregateVotes:
 			return queryAggregateVotes(ctx, keeper, legacyQuerierCdc)
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown %s query endpoint: %s", types.ModuleName, path[0])
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "unknown %s query endpoint: %s", types.ModuleName, path[0])
 		}
 	}
 }
@@ -45,17 +46,17 @@ func queryExchangeRate(ctx sdk.Context, req abci.RequestQuery, keeper Keeper, le
 	var params types.QueryExchangeRateParams
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	rate, err := keeper.GetExchangeRate(ctx, params.Denom)
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrUnknownDenom, params.Denom)
+		return nil, errorsmod.Wrap(types.ErrUnknownDenom, params.Denom)
 	}
 
 	bz, err2 := codec.MarshalJSONIndent(legacyQuerierCdc, rate)
 	if err2 != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return bz, nil
@@ -71,7 +72,7 @@ func queryExchangeRates(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *codec.
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, rates)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return bz, nil
@@ -87,7 +88,7 @@ func queryActives(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *codec.Legacy
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, denoms)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return bz, nil
@@ -96,7 +97,7 @@ func queryActives(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *codec.Legacy
 func queryParameters(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, keeper.GetParams(ctx))
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }
@@ -105,13 +106,13 @@ func queryFeederDelegation(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 	var params types.QueryFeederDelegationParams
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	delegate := keeper.GetFeederDelegation(ctx, params.Validator)
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, delegate)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }
@@ -120,13 +121,13 @@ func queryMissCounter(ctx sdk.Context, req abci.RequestQuery, keeper Keeper, leg
 	var params types.QueryMissCounterParams
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	missCounter := keeper.GetMissCounter(ctx, params.Validator)
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, missCounter)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }
@@ -135,7 +136,7 @@ func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 	var params types.QueryAggregatePrevoteParams
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	aggregateExchangeRatePrevote, err := keeper.GetAggregateExchangeRatePrevote(ctx, params.Validator)
@@ -145,7 +146,7 @@ func queryAggregatePrevote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, aggregateExchangeRatePrevote)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }
@@ -159,7 +160,7 @@ func queryAggregatePrevotes(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *co
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, aggregatePrevotes)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }
@@ -168,7 +169,7 @@ func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper, l
 	var params types.QueryAggregateVoteParams
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	aggregateExchangeRateVote, err := keeper.GetAggregateExchangeRateVote(ctx, params.Validator)
@@ -178,7 +179,7 @@ func queryAggregateVote(ctx sdk.Context, req abci.RequestQuery, keeper Keeper, l
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, aggregateExchangeRateVote)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }
@@ -192,7 +193,7 @@ func queryAggregateVotes(ctx sdk.Context, keeper Keeper, legacyQuerierCdc *codec
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, aggregateVotes)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, errorsmod.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return bz, nil
 }

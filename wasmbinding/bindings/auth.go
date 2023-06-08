@@ -1,6 +1,7 @@
 package bindings
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -44,11 +45,11 @@ func (s AuthHandler) CreateVestingAccount(ctx sdk.Context, msg *types.MsgCreateV
 	}
 
 	if bk.BlockedAddr(to) {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.ToAddress)
+		return nil, nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.ToAddress)
 	}
 
 	if acc := ak.GetAccount(ctx, to); acc != nil {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", msg.ToAddress)
+		return nil, nil, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", msg.ToAddress)
 	}
 
 	baseAccount := authtypes.NewBaseAccountWithAddress(to)

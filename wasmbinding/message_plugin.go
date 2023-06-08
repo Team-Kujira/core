@@ -6,13 +6,12 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
-
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
 
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
@@ -55,7 +54,7 @@ func (m *CustomMessenger) DispatchMsg(
 		// leave everything else for the wrapped version
 		var contractMsg bindings.CosmosMsg
 		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
-			return nil, nil, sdkerrors.Wrap(err, "kujira msg")
+			return nil, nil, errorsmod.Wrap(err, "kujira msg")
 		}
 
 		if contractMsg.Denom != nil {

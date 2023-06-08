@@ -40,7 +40,7 @@ func Setup(isCheckTx bool) *App {
 // with LevelDB as a db.
 func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 	dir := "kujira_testing"
-	db, err := sdk.NewLevelDB("kujira_leveldb_testing", dir)
+	db, err := sdk.NewLevelDB("kujira_leveldb_testing", dir) //nolint:staticcheck // no functional difference using this deprecated call for now
 	if err != nil {
 		panic(err)
 	}
