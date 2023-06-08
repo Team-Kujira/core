@@ -519,9 +519,9 @@ func New(
 			Added: []string{
 				crisistypes.StoreKey,
 				consensusparamtypes.StoreKey,
-				feegrant.StoreKey,
 				ibcfeetypes.StoreKey,
 			},
+			Deleted: []string{"intertx"},
 		}
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 
