@@ -222,8 +222,8 @@ github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAE
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
-github.com/Team-Kujira/ibc-go/v6 v6.1.0-factory h1:xMpvh/VcAGnDrFPaBEIehjfKZPQ+4NXH5/Nz7CHyocw=
-github.com/Team-Kujira/ibc-go/v6 v6.1.0-factory/go.mod h1:CY3zh2HLfetRiW8LY6kVHMATe90Wj/UOoY8T6cuB0is=
+github.com/Team-Kujira/ibc-go/v6 v6.1.1-factory h1:ugiICaR1bqntuJEhtd4M7rJiuoESwqgVHwMCxzxVhU4=
+github.com/Team-Kujira/ibc-go/v6 v6.1.1-factory/go.mod h1:NL17FpFAaWjRFVb1T7LUKuOoMSsATPpu+Icc4zL5/Ik=
 github.com/VictoriaMetrics/fastcache v1.6.0/go.mod h1:0qHz5QP0GMX4pfmMA/zt5RgfNuXJrTP0zS7DqpHGGTw=
 github.com/VividCortex/gohistogram v1.0.0 h1:6+hBz+qvs0JOrrNhhmR7lFxo5sINxBCGXrdtl/UvroE=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
