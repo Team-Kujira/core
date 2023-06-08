@@ -500,33 +500,6 @@ func New(
 		authority,
 	)
 
-	app.UpgradeKeeper.SetUpgradeHandler("v0.9.0",
-		func(
-			ctx sdk.Context,
-			plan upgradetypes.Plan,
-			fromVM module.VersionMap,
-		) (module.VersionMap, error) {
-			return app.mm.RunMigrations(ctx, cfg, fromVM)
-		})
-
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
-	}
-
-	if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := &storetypes.StoreUpgrades{
-			Added: []string{
-				crisistypes.StoreKey,
-				consensusparamtypes.StoreKey,
-				ibcfeetypes.StoreKey,
-			},
-			Deleted: []string{"intertx"},
-		}
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
-
-	}
-
 	// register the staking hooks
 	app.StakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(),
@@ -1004,6 +977,10 @@ func New(
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	app.mm.RegisterServices(cfg)
+
+	// RegisterUpgradeHandlers is used for registering any on-chain upgrades.
+	// Make sure it's called after `app.ModuleManager` and `app.configurator` are set.
+	app.RegisterUpgradeHandlers()
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	overrideModules := map[string]module.AppModuleSimulation{
