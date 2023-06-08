@@ -2,6 +2,7 @@ package bindings
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,7 +19,7 @@ type AuthMsg struct {
 type CreateVestingAccount struct {
 	ToAddress string    `json:"to_address"`
 	Amount    sdk.Coins `json:"amount"`
-	EndTime   sdk.Int   `json:"end_time"`
+	EndTime   math.Int  `json:"end_time"`
 	Delayed   bool      `json:"delayed,omitempty"`
 }
 

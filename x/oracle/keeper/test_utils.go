@@ -1,10 +1,10 @@
-//nolint
 package keeper
 
 import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/types"
 
 	auth "github.com/cosmos/cosmos-sdk/x/auth"
@@ -181,7 +181,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	bankKeeper := bankkeeper.NewBaseKeeper(appCodec, keyBank, accountKeeper, paramsKeeper.Subspace(banktypes.ModuleName), blackListAddrs)
 
 	totalSupply := sdk.NewCoins(sdk.NewCoin(testdenom, InitTokens.MulRaw(int64(len(Addrs)*10))))
-	bankKeeper.MintCoins(ctx, faucetAccountName, totalSupply)
+	bankKeeper.MintCoins(ctx, faucetAccountName, totalSupply) //nolint:errcheck // ignore error - TODO: check error
 
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec,
@@ -217,7 +217,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	distrAcc := authtypes.NewEmptyModuleAccount(distrtypes.ModuleName)
 	oracleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter)
 
-	bankKeeper.SendCoinsFromModuleToModule(ctx, faucetAccountName, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(testdenom, InitTokens.MulRaw(int64(len(Addrs))))))
+	bankKeeper.SendCoinsFromModuleToModule(ctx, faucetAccountName, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(testdenom, InitTokens.MulRaw(int64(len(Addrs)))))) //nolint:errcheck // ignore error
 
 	accountKeeper.SetModuleAccount(ctx, feeCollectorAcc)
 	accountKeeper.SetModuleAccount(ctx, bondPool)
@@ -250,7 +250,7 @@ func CreateTestInput(t *testing.T) TestInput {
 }
 
 // NewTestMsgCreateValidator test msg creator
-func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey cryptotypes.PubKey, amt sdk.Int) *stakingtypes.MsgCreateValidator {
+func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey cryptotypes.PubKey, amt math.Int) *stakingtypes.MsgCreateValidator {
 	commission := stakingtypes.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 	msg, _ := stakingtypes.NewMsgCreateValidator(
 		address, pubKey, sdk.NewCoin(testdenom, amt),

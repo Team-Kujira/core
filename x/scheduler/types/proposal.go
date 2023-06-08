@@ -164,6 +164,8 @@ func (p DeleteHookProposal) ProposalRoute() string { return RouterKey }
 func (p DeleteHookProposal) ProposalType() string { return string(ProposalTypeDeleteHook) }
 
 // ValidateBasic validates the proposal
+//
+//nolint:revive // should likely just return error here
 func (p DeleteHookProposal) ValidateBasic() error {
 	if err := validateProposalCommons(p.Title, p.Description); err != nil {
 		return err

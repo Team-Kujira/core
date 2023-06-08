@@ -31,8 +31,10 @@ func DefaultParams() Params {
 }
 
 // validate params.
+//
+//nolint:revive // should likely just return error here
 func (p Params) Validate() error {
-	if err := validateCreationFee(p.CreationFee); err != nil { 
+	if err := validateCreationFee(p.CreationFee); err != nil {
 		return err
 	}
 

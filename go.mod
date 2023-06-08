@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	cosmossdk.io/errors v1.0.0-beta.7
+	cosmossdk.io/math v1.0.0-rc.0
 	github.com/CosmWasm/wasmd v0.30.0
 	github.com/CosmWasm/wasmvm v1.2.0
 	github.com/armon/go-metrics v0.4.1
@@ -34,7 +35,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v0.12.0 // indirect
 	cloud.google.com/go/storage v1.28.1 // indirect
-	cosmossdk.io/math v1.0.0-rc.0 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
 	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect

@@ -1,4 +1,3 @@
-// nolint
 package types
 
 import (
@@ -15,7 +14,6 @@ import (
 	tmprotocrypto "github.com/tendermint/tendermint/proto/tendermint/crypto"
 )
 
-// nolint
 const (
 	TestDenomA = "ukuji"
 	TestDenomB = "denomB"
@@ -40,16 +38,16 @@ func GenerateRandomTestCase() (rates []float64, valValAddrs []sdk.ValAddress, st
 	base := math.Pow10(OracleDecPrecision)
 
 	rand.Seed(int64(time.Now().Nanosecond()))
-	numInputs := 10 + (rand.Int() % 100)
+	numInputs := 10 + (rand.Int() % 100) //nolint:gosec // this is for testing only
 	for i := 0; i < numInputs; i++ {
-		rate := float64(int64(rand.Float64()*base)) / base
+		rate := float64(int64(rand.Float64()*base)) / base //nolint:gosec // this is for testing only
 		rates = append(rates, rate)
 
 		pubKey := secp256k1.GenPrivKey().PubKey()
 		valValAddr := sdk.ValAddress(pubKey.Address())
 		valValAddrs = append(valValAddrs, valValAddr)
 
-		power := rand.Int63()%1000 + 1
+		power := rand.Int63()%1000 + 1 //nolint:gosec // this is for testing only
 		mockValidator := NewMockValidator(valValAddr, power)
 		mockValidators = append(mockValidators, mockValidator)
 	}
@@ -73,13 +71,13 @@ func NewDummyStakingKeeper(validators []MockValidator) DummyStakingKeeper {
 	}
 }
 
-// Validators nolint
+// Validators
 func (sk DummyStakingKeeper) Validators() []MockValidator {
 	return sk.validators
 }
 
-// Validator nolint
-func (sk DummyStakingKeeper) Validator(ctx sdk.Context, address sdk.ValAddress) stakingtypes.ValidatorI {
+// Validator
+func (sk DummyStakingKeeper) Validator(_ sdk.Context, address sdk.ValAddress) stakingtypes.ValidatorI {
 	for _, validator := range sk.validators {
 		if validator.GetOperator().Equals(address) {
 			return validator
@@ -89,7 +87,7 @@ func (sk DummyStakingKeeper) Validator(ctx sdk.Context, address sdk.ValAddress) 
 	return nil
 }
 
-// TotalBondedTokens nolint
+// TotalBondedTokens
 func (DummyStakingKeeper) TotalBondedTokens(_ sdk.Context) sdkmath.Int {
 	return sdk.ZeroInt()
 }
@@ -98,7 +96,7 @@ func (DummyStakingKeeper) TotalBondedTokens(_ sdk.Context) sdkmath.Int {
 func (DummyStakingKeeper) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) {}
 
 // ValidatorsPowerStoreIterator nolint
-func (DummyStakingKeeper) ValidatorsPowerStoreIterator(ctx sdk.Context) sdk.Iterator {
+func (DummyStakingKeeper) ValidatorsPowerStoreIterator(_ sdk.Context) sdk.Iterator {
 	return sdk.KVStoreReversePrefixIterator(nil, nil)
 }
 
@@ -117,7 +115,7 @@ func (DummyStakingKeeper) MaxValidators(sdk.Context) uint32 {
 }
 
 // PowerReduction - is the amount of staking tokens required for 1 unit of consensus-engine power
-func (DummyStakingKeeper) PowerReduction(ctx sdk.Context) (res sdkmath.Int) {
+func (DummyStakingKeeper) PowerReduction(_ sdk.Context) (res sdkmath.Int) {
 	res = sdk.DefaultPowerReduction
 	return
 }
@@ -149,16 +147,16 @@ func (v MockValidator) GetTokens() sdkmath.Int {
 func (v MockValidator) GetBondedTokens() sdkmath.Int {
 	return sdk.TokensFromConsensusPower(v.power, sdk.DefaultPowerReduction)
 }
-func (v MockValidator) GetConsensusPower(powerReduction sdkmath.Int) int64 { return v.power }
-func (v *MockValidator) SetConsensusPower(power int64)                     { v.power = power }
-func (v MockValidator) GetCommission() sdk.Dec                             { return sdk.ZeroDec() }
-func (v MockValidator) GetMinSelfDelegation() sdkmath.Int                  { return sdk.OneInt() }
-func (v MockValidator) GetDelegatorShares() sdk.Dec                        { return sdk.NewDec(v.power) }
-func (v MockValidator) TokensFromShares(sdk.Dec) sdk.Dec                   { return sdk.ZeroDec() }
-func (v MockValidator) TokensFromSharesTruncated(sdk.Dec) sdk.Dec          { return sdk.ZeroDec() }
-func (v MockValidator) TokensFromSharesRoundUp(sdk.Dec) sdk.Dec            { return sdk.ZeroDec() }
-func (v MockValidator) SharesFromTokens(amt sdkmath.Int) (sdk.Dec, error)  { return sdk.ZeroDec(), nil }
-func (v MockValidator) SharesFromTokensTruncated(amt sdkmath.Int) (sdk.Dec, error) {
+func (v MockValidator) GetConsensusPower(_ sdkmath.Int) int64           { return v.power }
+func (v *MockValidator) SetConsensusPower(power int64)                  { v.power = power }
+func (v MockValidator) GetCommission() sdk.Dec                          { return sdk.ZeroDec() }
+func (v MockValidator) GetMinSelfDelegation() sdkmath.Int               { return sdk.OneInt() }
+func (v MockValidator) GetDelegatorShares() sdk.Dec                     { return sdk.NewDec(v.power) }
+func (v MockValidator) TokensFromShares(sdk.Dec) sdk.Dec                { return sdk.ZeroDec() }
+func (v MockValidator) TokensFromSharesTruncated(sdk.Dec) sdk.Dec       { return sdk.ZeroDec() }
+func (v MockValidator) TokensFromSharesRoundUp(sdk.Dec) sdk.Dec         { return sdk.ZeroDec() }
+func (v MockValidator) SharesFromTokens(_ sdkmath.Int) (sdk.Dec, error) { return sdk.ZeroDec(), nil }
+func (v MockValidator) SharesFromTokensTruncated(_ sdkmath.Int) (sdk.Dec, error) {
 	return sdk.ZeroDec(), nil
 }
 

@@ -4,6 +4,7 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
@@ -44,14 +45,14 @@ type ChangeAdmin struct {
 }
 
 type Mint struct {
-	Denom     string  `json:"denom"`
-	Amount    sdk.Int `json:"amount"`
-	Recipient string  `json:"recipient"`
+	Denom     string   `json:"denom"`
+	Amount    math.Int `json:"amount"`
+	Recipient string   `json:"recipient"`
 }
 
 type Burn struct {
-	Denom  string  `json:"denom"`
-	Amount sdk.Int `json:"amount"`
+	Denom  string   `json:"denom"`
+	Amount math.Int `json:"amount"`
 }
 
 // create creates a new token denom
