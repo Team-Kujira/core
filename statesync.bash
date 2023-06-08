@@ -19,11 +19,12 @@ export GOPATH=~/go
 export PATH=$PATH:~/go/bin
 
 # Install with pebbledb 
-go mod edit -replace github.com/tendermint/tm-db=github.com/baabeetaa/tm-db@pebble
-go mod tidy
-go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
+#go mod edit -replace github.com/tendermint/tm-db=github.com/baabeetaa/tm-db@pebble
+#go mod tidy
+#go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
 
-# go install ./...
+# install with defaults
+go install ./...
 
 # NOTE: ABOVE YOU CAN USE ALTERNATIVE DATABASES, HERE ARE THE EXACT COMMANDS
 # go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb' -tags rocksdb ./...
@@ -49,7 +50,7 @@ echo "trust_hash: $TRUST_HASH"
 
 # Export state sync variables.
 export KUJIRAD_STATESYNC_ENABLE=true
-export KUJIRAD_P2P_MAX_NUM_OUTBOUND_PEERS=200
+export KUJIRAD_P2P_MAX_NUM_OUTBOUND_PEERS=500
 export KUJIRAD_STATESYNC_RPC_SERVERS="https://kujira-rpc.polkachu.com:443,https://kujira-rpc.polkachu.com:443"
 export KUJIRAD_STATESYNC_TRUST_HEIGHT=$BLOCK_HEIGHT
 export KUJIRAD_STATESYNC_TRUST_HASH=$TRUST_HASH
@@ -58,4 +59,4 @@ export KUJIRAD_STATESYNC_TRUST_HASH=$TRUST_HASH
 export KUJIRAD_P2P_SEEDS=$(curl -s https://raw.githubusercontent.com/cosmos/chain-registry/master/kujira/chain.json | jq -r '[foreach .peers.seeds[] as $item (""; "\($item.id)@\($item.address)")] | join(",")')
 
 # Start chain.
-kujirad start --x-crisis-skip-assert-invariants --db_backend pebbledb
+kujirad start --x-crisis-skip-assert-invariants 
