@@ -21,32 +21,32 @@ func TestDecomposeDenoms(t *testing.T) {
 		},
 		{
 			desc:  "normal",
-			denom: "factory/addr1t7egva48prqmzl59x5ngv4zx0dtrwewc9m7z44/bitcoin",
+			denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/bitcoin",
 			valid: true,
 		},
 		{
 			desc:  "multiple slashes in nonce",
-			denom: "factory/addr1t7egva48prqmzl59x5ngv4zx0dtrwewc9m7z44/bitcoin/1",
+			denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/bitcoin/1",
 			valid: true,
 		},
 		{
 			desc:  "no nonce",
-			denom: "factory/addr1t7egva48prqmzl59x5ngv4zx0dtrwewc9m7z44/",
+			denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/",
 			valid: true,
 		},
 		{
 			desc:  "incorrect prefix",
-			denom: "ibc/addr1t7egva48prqmzl59x5ngv4zx0dtrwewc9m7z44/bitcoin",
+			denom: "ibc/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/bitcoin",
 			valid: false,
 		},
 		{
 			desc:  "nonce of only slashes",
-			denom: "factory/addr1t7egva48prqmzl59x5ngv4zx0dtrwewc9m7z44/////",
+			denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/////",
 			valid: true,
 		},
 		{
 			desc:  "too long name",
-			denom: "factory/addr1t7egva48prqmzl59x5ngv4zx0dtrwewc9m7z44/adsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsf",
+			denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/adsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsf",
 			valid: false,
 		},
 	} {
