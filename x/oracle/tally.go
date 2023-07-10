@@ -13,6 +13,7 @@ func Tally(_ sdk.Context,
 	pb types.ExchangeRateBallot,
 	rewardBand sdk.Dec,
 	validatorClaimMap map[string]types.Claim,
+	missMap map[string]sdk.ValAddress,
 ) (sdk.Dec, error) {
 	weightedMedian, err := pb.WeightedMedian()
 	if err != nil {
@@ -28,15 +29,18 @@ func Tally(_ sdk.Context,
 	rewardSpread = sdk.MaxDec(rewardSpread, standardDeviation)
 
 	for _, vote := range pb {
+		key := vote.Voter.String()
+		claim := validatorClaimMap[key]
 		// Filter ballot winners & abstain voters
 		if (vote.ExchangeRate.GTE(weightedMedian.Sub(rewardSpread)) &&
 			vote.ExchangeRate.LTE(weightedMedian.Add(rewardSpread))) ||
 			!vote.ExchangeRate.IsPositive() {
-			key := vote.Voter.String()
 			claim := validatorClaimMap[key]
 			claim.Weight += vote.Power
 			claim.WinCount++
 			validatorClaimMap[key] = claim
+		} else {
+			missMap[claim.Recipient.String()] = claim.Recipient
 		}
 	}
 
