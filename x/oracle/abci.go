@@ -91,7 +91,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		// Check if each validator is missing a required denom price
 		for _, claim := range validatorClaimMap {
-
 			missing := false
 			for _, denom := range voteTargets {
 				_, ok := denomMap[denom][claim.Recipient.String()]

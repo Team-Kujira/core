@@ -60,6 +60,9 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	if !isCheckTx {
 		genesisState := NewDefaultGenesisState(app.AppCodec())
 		genesisState, err = GenesisStateWithValSet(app.AppCodec(), genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+		if err != nil {
+			panic(err)
+		}
 
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 		if err != nil {
