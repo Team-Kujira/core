@@ -110,7 +110,7 @@ func TestParams(t *testing.T) {
 
 	// Test custom params setting
 	votePeriod := uint64(10)
-	voteThreshold := sdk.NewDecWithPrec(33, 2)
+	voteThreshold := sdk.NewDecWithPrec(70, 2)
 	oracleRewardBand := sdk.NewDecWithPrec(1, 2)
 	rewardDistributionWindow := uint64(10000000000000)
 	slashFraction := sdk.NewDecWithPrec(1, 2)
@@ -132,8 +132,8 @@ func TestParams(t *testing.T) {
 		SlashWindow:              slashWindow,
 		MinValidPerWindow:        minValidPerWindow,
 	}
-	input.OracleKeeper.SetParams(input.Ctx, newParams)
-
+	err := input.OracleKeeper.SetParams(input.Ctx, newParams)
+	require.NoError(t, err)
 	storedParams := input.OracleKeeper.GetParams(input.Ctx)
 	require.NotNil(t, storedParams)
 	require.Equal(t, storedParams, newParams)
