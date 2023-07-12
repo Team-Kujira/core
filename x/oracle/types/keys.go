@@ -5,6 +5,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/address"
 )
 
+var ()
+
 const (
 	// ModuleName is the name of the oracle module
 	ModuleName = "oracle"
@@ -40,6 +42,8 @@ var (
 	MissCounterKey                  = []byte{0x03} // prefix for each key to a miss counter
 	AggregateExchangeRatePrevoteKey = []byte{0x04} // prefix for each key to a aggregate prevote
 	AggregateExchangeRateVoteKey    = []byte{0x05} // prefix for each key to a aggregate vote
+	ParamsKey                       = []byte{0x06}
+	WhitelistKey                    = []byte{0x07}
 )
 
 // GetExchangeRateKey - stored by *denom*

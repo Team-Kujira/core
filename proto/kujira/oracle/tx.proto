@@ -2,6 +2,8 @@ syntax = "proto3";
 package kujira.oracle;
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
+import "kujira/oracle/oracle.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/oracle/types";
 
@@ -17,6 +19,17 @@ service Msg {
 
   // DelegateFeedConsent defines a method for setting the feeder delegation
   rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
+
+  // AddPrice adds a new price to the required list of prices
+  rpc AddPrice(MsgAddPrice) returns (MsgAddPriceResponse);
+
+  // RemovePrice removes a price from the required list of prices
+  rpc RemovePrice(MsgRemovePrice) returns (MsgRemovePriceResponse);
+
+    // UpdateParams sets new module params
+    rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  
 }
 
 // MsgAggregateExchangeRatePrevote represents a message to submit
@@ -60,3 +73,34 @@ message MsgDelegateFeedConsent {
 
 // MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent response type.
 message MsgDelegateFeedConsentResponse {}
+
+
+message MsgAddPrice {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
+}
+
+// MsgAddPriceResponse defines the Msg/AddPrice response type.
+message MsgAddPriceResponse {}
+
+message MsgRemovePrice {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
+}
+
+// MsgRemovePriceResponse defines the Msg/RemovePrice response type.
+message MsgRemovePriceResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  Params params = 2 [(gogoproto.moretags) = "yaml:\"params\""];
+}
+
+// MsgUpdateParamsResponse defines the Msg/UpdateParams response type.
+message MsgUpdateParamsResponse {}

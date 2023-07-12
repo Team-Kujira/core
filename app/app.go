@@ -601,6 +601,7 @@ func New(
 		app.SlashingKeeper,
 		app.StakingKeeper,
 		distrtypes.ModuleName,
+		authority
 	)
 
 	denomKeeper := denomkeeper.NewKeeper(

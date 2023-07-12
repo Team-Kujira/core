@@ -4,46 +4,92 @@
 
  ## Table of Contents
  
- - [kujira/scheduler/params.proto](#kujira/scheduler/params.proto)
-     - [Params](#kujira.scheduler.Params)
+ - [kujira/denom/authorityMetadata.proto](#kujira/denom/authorityMetadata.proto)
+     - [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata)
    
- - [kujira/scheduler/hook.proto](#kujira/scheduler/hook.proto)
-     - [Hook](#kujira.scheduler.Hook)
+ - [kujira/denom/params.proto](#kujira/denom/params.proto)
+     - [Params](#kujira.denom.Params)
    
- - [kujira/scheduler/genesis.proto](#kujira/scheduler/genesis.proto)
-     - [GenesisState](#kujira.scheduler.GenesisState)
+ - [kujira/denom/genesis.proto](#kujira/denom/genesis.proto)
+     - [GenesisDenom](#kujira.denom.GenesisDenom)
+     - [GenesisState](#kujira.denom.GenesisState)
    
- - [kujira/scheduler/proposal.proto](#kujira/scheduler/proposal.proto)
-     - [CreateHookProposal](#kujira.scheduler.CreateHookProposal)
-     - [DeleteHookProposal](#kujira.scheduler.DeleteHookProposal)
-     - [UpdateHookProposal](#kujira.scheduler.UpdateHookProposal)
+ - [kujira/denom/query.proto](#kujira/denom/query.proto)
+     - [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest)
+     - [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse)
+     - [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest)
+     - [QueryDenomsFromCreatorResponse](#kujira.denom.QueryDenomsFromCreatorResponse)
+     - [QueryParamsRequest](#kujira.denom.QueryParamsRequest)
+     - [QueryParamsResponse](#kujira.denom.QueryParamsResponse)
    
- - [kujira/scheduler/query.proto](#kujira/scheduler/query.proto)
-     - [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest)
-     - [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse)
-     - [QueryGetHookRequest](#kujira.scheduler.QueryGetHookRequest)
-     - [QueryGetHookResponse](#kujira.scheduler.QueryGetHookResponse)
-     - [QueryParamsRequest](#kujira.scheduler.QueryParamsRequest)
-     - [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse)
+     - [Query](#kujira.denom.Query)
    
-     - [Query](#kujira.scheduler.Query)
+ - [kujira/denom/tx.proto](#kujira/denom/tx.proto)
+     - [MsgBurn](#kujira.denom.MsgBurn)
+     - [MsgBurnResponse](#kujira.denom.MsgBurnResponse)
+     - [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin)
+     - [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse)
+     - [MsgCreateDenom](#kujira.denom.MsgCreateDenom)
+     - [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse)
+     - [MsgMint](#kujira.denom.MsgMint)
+     - [MsgMintResponse](#kujira.denom.MsgMintResponse)
+   
+     - [Msg](#kujira.denom.Msg)
    
  - [Scalar Value Types](#scalar-value-types)
 
  
  
- <a name="kujira/scheduler/params.proto"></a>
+ <a name="kujira/denom/authorityMetadata.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/scheduler/params.proto
+ ## kujira/denom/authorityMetadata.proto
  
 
  
- <a name="kujira.scheduler.Params"></a>
+ <a name="kujira.denom.DenomAuthorityMetadata"></a>
+
+ ### DenomAuthorityMetadata
+ DenomAuthorityMetadata specifies metadata for addresses that have specific
+capabilities over a token factory denom. Right now there is only one Admin
+permission, but is planned to be extended to the future.
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `Admin` | [string](#string) |  | Can be empty for no admin, or a valid kujira address |
+ 
+ 
+
+ 
+
+  <!-- end messages -->
+
+  <!-- end enums -->
+
+  <!-- end HasExtensions -->
+
+  <!-- end services -->
+
+ 
+ 
+ <a name="kujira/denom/params.proto"></a>
+ <p align="right"><a href="#top">Top</a></p>
+
+ ## kujira/denom/params.proto
+ 
+
+ 
+ <a name="kujira.denom.Params"></a>
 
  ### Params
- Params defines the parameters for the module.
+ Params holds parameters for the denom module
 
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `creation_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+ 
  
 
  
@@ -58,60 +104,39 @@
 
  
  
- <a name="kujira/scheduler/hook.proto"></a>
+ <a name="kujira/denom/genesis.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/scheduler/hook.proto
+ ## kujira/denom/genesis.proto
  
 
  
- <a name="kujira.scheduler.Hook"></a>
+ <a name="kujira.denom.GenesisDenom"></a>
 
- ### Hook
+ ### GenesisDenom
  
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `id` | [uint64](#uint64) |  |  |
- | `executor` | [string](#string) |  |  |
- | `contract` | [string](#string) |  |  |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+ | `denom` | [string](#string) |  |  |
+ | `authority_metadata` | [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata) |  |  |
  
  
 
  
 
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
  
- 
- <a name="kujira/scheduler/genesis.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## kujira/scheduler/genesis.proto
- 
-
- 
- <a name="kujira.scheduler.GenesisState"></a>
+ <a name="kujira.denom.GenesisState"></a>
 
  ### GenesisState
- GenesisState defines the scheduler module's genesis state.
+ GenesisState defines the denom module's genesis state.
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.scheduler.Params) |  |  |
- | `hookList` | [Hook](#kujira.scheduler.Hook) | repeated |  |
- | `hookCount` | [uint64](#uint64) |  |  |
+ | `params` | [Params](#kujira.denom.Params) |  | params defines the paramaters of the module. |
+ | `factory_denoms` | [GenesisDenom](#kujira.denom.GenesisDenom) | repeated |  |
  
  
 
@@ -127,169 +152,92 @@
 
  
  
- <a name="kujira/scheduler/proposal.proto"></a>
+ <a name="kujira/denom/query.proto"></a>
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/scheduler/proposal.proto
+ ## kujira/denom/query.proto
  
 
  
- <a name="kujira.scheduler.CreateHookProposal"></a>
+ <a name="kujira.denom.QueryDenomAuthorityMetadataRequest"></a>
 
- ### CreateHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `executor` | [string](#string) |  | The account that will execute the msg on the schedule |
- | `contract` | [string](#string) |  | The contract that the msg is called on |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.DeleteHookProposal"></a>
-
- ### DeleteHookProposal
+ ### QueryDenomAuthorityMetadataRequest
  
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `id` | [uint64](#uint64) |  |  |
+ | `denom` | [string](#string) |  |  |
  
  
 
  
 
  
- <a name="kujira.scheduler.UpdateHookProposal"></a>
+ <a name="kujira.denom.QueryDenomAuthorityMetadataResponse"></a>
 
- ### UpdateHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `id` | [uint64](#uint64) |  |  |
- | `executor` | [string](#string) |  |  |
- | `contract` | [string](#string) |  |  |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
- 
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="kujira/scheduler/query.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## kujira/scheduler/query.proto
- 
-
- 
- <a name="kujira.scheduler.QueryAllHookRequest"></a>
-
- ### QueryAllHookRequest
+ ### QueryDenomAuthorityMetadataResponse
  
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  |  |
+ | `authority_metadata` | [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata) |  |  |
  
  
 
  
 
  
- <a name="kujira.scheduler.QueryAllHookResponse"></a>
+ <a name="kujira.denom.QueryDenomsFromCreatorRequest"></a>
 
- ### QueryAllHookResponse
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `Hook` | [Hook](#kujira.scheduler.Hook) | repeated |  |
- | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.QueryGetHookRequest"></a>
-
- ### QueryGetHookRequest
+ ### QueryDenomsFromCreatorRequest
  
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `id` | [uint64](#uint64) |  |  |
+ | `creator` | [string](#string) |  |  |
  
  
 
  
 
  
- <a name="kujira.scheduler.QueryGetHookResponse"></a>
+ <a name="kujira.denom.QueryDenomsFromCreatorResponse"></a>
 
- ### QueryGetHookResponse
+ ### QueryDenomsFromCreatorResponse
  
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `Hook` | [Hook](#kujira.scheduler.Hook) |  |  |
+ | `denoms` | [string](#string) | repeated |  |
  
  
 
  
 
  
- <a name="kujira.scheduler.QueryParamsRequest"></a>
+ <a name="kujira.denom.QueryParamsRequest"></a>
 
  ### QueryParamsRequest
- QueryParamsRequest is request type for the Query/Params RPC method.
+ QueryParamsRequest is the request type for the Query/Params RPC method.
 
  
 
  
 
  
- <a name="kujira.scheduler.QueryParamsResponse"></a>
+ <a name="kujira.denom.QueryParamsResponse"></a>
 
  ### QueryParamsResponse
- QueryParamsResponse is response type for the Query/Params RPC method.
+ QueryParamsResponse is the response type for the Query/Params RPC method.
 
  
  | Field | Type | Label | Description |
  | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.scheduler.Params) |  | params holds all the parameters of this module. |
+ | `params` | [Params](#kujira.denom.Params) |  | params defines the parameters of the module. |
  
  
 
@@ -302,16 +250,162 @@
   <!-- end HasExtensions -->
 
  
- <a name="kujira.scheduler.Query"></a>
+ <a name="kujira.denom.Query"></a>
 
  ### Query
  Query defines the gRPC querier service.
 
  | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
  | ----------- | ------------ | ------------- | ------------| ------- | -------- |
- | `Params` | [QueryParamsRequest](#kujira.scheduler.QueryParamsRequest) | [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse) | Parameters queries the parameters of the module. | GET|/kujira/scheduler/params|
- | `Hook` | [QueryGetHookRequest](#kujira.scheduler.QueryGetHookRequest) | [QueryGetHookResponse](#kujira.scheduler.QueryGetHookResponse) | Queries a Hook by id. | GET|/kujira/scheduler/hook/{id}|
- | `HookAll` | [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest) | [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse) | Queries a list of Hook items. | GET|/kujira/scheduler/hook|
+ | `Params` | [QueryParamsRequest](#kujira.denom.QueryParamsRequest) | [QueryParamsResponse](#kujira.denom.QueryParamsResponse) | Params returns the total set of minting parameters. | GET|/kujira/denoms/params|
+ | `DenomAuthorityMetadata` | [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest) | [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse) |  | GET|/kujira/denoms/{denom}/authority_metadata|
+ | `DenomsFromCreator` | [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest) | [QueryDenomsFromCreatorResponse](#kujira.denom.QueryDenomsFromCreatorResponse) |  | GET|/kujira/denoms/by_creator/{creator}|
+ 
+  <!-- end services -->
+
+ 
+ 
+ <a name="kujira/denom/tx.proto"></a>
+ <p align="right"><a href="#top">Top</a></p>
+
+ ## kujira/denom/tx.proto
+ 
+
+ 
+ <a name="kujira.denom.MsgBurn"></a>
+
+ ### MsgBurn
+ MsgBurn is the sdk.Msg type for allowing an admin account to burn
+a token.  For now, we only support burning from the sender account.
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `sender` | [string](#string) |  |  |
+ | `amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgBurnResponse"></a>
+
+ ### MsgBurnResponse
+ 
+
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgChangeAdmin"></a>
+
+ ### MsgChangeAdmin
+ MsgChangeAdmin is the sdk.Msg type for allowing an admin account to reassign
+adminship of a denom to a new account
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `sender` | [string](#string) |  |  |
+ | `denom` | [string](#string) |  |  |
+ | `newAdmin` | [string](#string) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgChangeAdminResponse"></a>
+
+ ### MsgChangeAdminResponse
+ 
+
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgCreateDenom"></a>
+
+ ### MsgCreateDenom
+ MsgCreateDenom is the sdk.Msg type for allowing an account to create
+a new denom.  It requires a sender address and a unique nonce
+(to allow accounts to create multiple denoms)
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `sender` | [string](#string) |  |  |
+ | `nonce` | [string](#string) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgCreateDenomResponse"></a>
+
+ ### MsgCreateDenomResponse
+ MsgCreateDenomResponse is the return value of MsgCreateDenom
+It returns the full string of the newly created denom
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `new_token_denom` | [string](#string) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgMint"></a>
+
+ ### MsgMint
+ MsgMint is the sdk.Msg type for allowing an admin account to mint
+more of a token.
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `sender` | [string](#string) |  |  |
+ | `amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+ | `recipient` | [string](#string) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgMintResponse"></a>
+
+ ### MsgMintResponse
+ 
+
+ 
+
+ 
+
+  <!-- end messages -->
+
+  <!-- end enums -->
+
+  <!-- end HasExtensions -->
+
+ 
+ <a name="kujira.denom.Msg"></a>
+
+ ### Msg
+ Msg defines the Msg service.
+
+ | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+ | ----------- | ------------ | ------------- | ------------| ------- | -------- |
+ | `CreateDenom` | [MsgCreateDenom](#kujira.denom.MsgCreateDenom) | [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse) |  | |
+ | `Mint` | [MsgMint](#kujira.denom.MsgMint) | [MsgMintResponse](#kujira.denom.MsgMintResponse) |  | |
+ | `Burn` | [MsgBurn](#kujira.denom.MsgBurn) | [MsgBurnResponse](#kujira.denom.MsgBurnResponse) |  | |
+ | `ChangeAdmin` | [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin) | [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse) | ForceTransfer is deactivated for now because we need to think through edge cases rpc ForceTransfer(MsgForceTransfer) returns (MsgForceTransferResponse); | |
  
   <!-- end services -->
 

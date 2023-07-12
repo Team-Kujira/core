@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package keeper
 
 import (
@@ -266,6 +266,7 @@ func CreateTestInput(t *testing.T) TestInput {
 		slashingKeeper,
 		stakingKeeper,
 		distrtypes.ModuleName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	defaults := types.DefaultParams()
