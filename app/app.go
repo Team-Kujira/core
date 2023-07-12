@@ -582,7 +582,9 @@ func New(
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
+		appCodec,
 		app.keys[ibchookstypes.StoreKey],
+		authority,
 	)
 
 	app.SchedulerKeeper = schedulerkeeper.NewKeeper(

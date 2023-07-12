@@ -158,7 +158,7 @@ require (
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/oauth2 v0.7.0 // indirect
+	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/term v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
@@ -176,6 +176,9 @@ require (
 replace (
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+
+	// Adds Axelar sender support
+	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 => github.com/Team-Kujira/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230712132030-1d715c14f19b
 
 	github.com/cosmos/ibc-go/v7 => github.com/Team-Kujira/ibc-go/v7 v7.2.0-factory
 
