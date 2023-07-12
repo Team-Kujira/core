@@ -17,8 +17,8 @@ message Params {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
-  string reward_band = 3 [
-    (gogoproto.moretags)   = "yaml:\"reward_band\"",
+  string max_deviation = 3 [
+    (gogoproto.moretags)   = "yaml:\"max_deviation\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];

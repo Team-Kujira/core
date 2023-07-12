@@ -171,7 +171,7 @@ func TestOracleTally(t *testing.T) {
 	sort.Sort(ballot)
 	weightedMedian, _ := ballot.WeightedMedian()
 	standardDeviation, _ := ballot.StandardDeviation()
-	maxSpread := weightedMedian.Mul(input.OracleKeeper.RewardBand(input.Ctx).QuoInt64(2))
+	maxSpread := weightedMedian.Mul(input.OracleKeeper.MaxDeviation(input.Ctx))
 
 	if standardDeviation.GT(maxSpread) {
 		maxSpread = standardDeviation
@@ -201,7 +201,7 @@ func TestOracleTally(t *testing.T) {
 
 	missMap := map[string]sdk.ValAddress{}
 
-	tallyMedian, _ := oracle.Tally(input.Ctx, ballot, input.OracleKeeper.RewardBand(input.Ctx), validatorClaimMap, missMap)
+	tallyMedian, _ := oracle.Tally(input.Ctx, ballot, input.OracleKeeper.MaxDeviation(input.Ctx), validatorClaimMap, missMap)
 
 	require.Equal(t, validatorClaimMap, expectedValidatorClaimMap)
 	require.Equal(t, tallyMedian.MulInt64(100).TruncateInt(), weightedMedian.MulInt64(100).TruncateInt())
@@ -237,7 +237,7 @@ func TestOracleRewardBand(t *testing.T) {
 	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
-	rewardSpread := randomExchangeRate.Mul(input.OracleKeeper.RewardBand(input.Ctx).QuoInt64(2))
+	rewardSpread := randomExchangeRate.Mul(input.OracleKeeper.MaxDeviation(input.Ctx))
 
 	// no one will miss the vote
 	// Account 1, DenomC

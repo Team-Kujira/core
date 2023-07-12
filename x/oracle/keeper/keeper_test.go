@@ -111,7 +111,7 @@ func TestParams(t *testing.T) {
 	// Test custom params setting
 	votePeriod := uint64(10)
 	voteThreshold := sdk.NewDecWithPrec(70, 2)
-	oracleRewardBand := sdk.NewDecWithPrec(1, 2)
+	maxDeviation := sdk.NewDecWithPrec(1, 1)
 	slashFraction := sdk.NewDecWithPrec(1, 2)
 	slashWindow := uint64(1000)
 	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
@@ -122,13 +122,13 @@ func TestParams(t *testing.T) {
 
 	// Should really test validateParams, but skipping because obvious
 	newParams := types.Params{
-		VotePeriod:               votePeriod,
-		VoteThreshold:            voteThreshold,
-		RewardBand:               oracleRewardBand,
-		RequiredDenoms:                requiredDenoms,
-		SlashFraction:            slashFraction,
-		SlashWindow:              slashWindow,
-		MinValidPerWindow:        minValidPerWindow,
+		VotePeriod:			votePeriod,
+		VoteThreshold:      voteThreshold,
+		MaxDeviation:       maxDeviation,
+		RequiredDenoms:     requiredDenoms,
+		SlashFraction:      slashFraction,
+		SlashWindow:        slashWindow,
+		MinValidPerWindow:  minValidPerWindow,
 	}
 	err := input.OracleKeeper.SetParams(input.Ctx, newParams)
 	require.NoError(t, err)

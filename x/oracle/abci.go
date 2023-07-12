@@ -63,7 +63,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 			if !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes) {
 				exchangeRate, err := Tally(
-					ctx, ballot, params.RewardBand, validatorClaimMap, missMap,
+					ctx, ballot, params.MaxDeviation, validatorClaimMap, missMap,
 				)
 				if err != nil {
 					return err

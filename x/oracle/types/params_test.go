@@ -29,7 +29,7 @@ func TestParamsEqual(t *testing.T) {
 
 	// negative reward band
 	p3 := types.DefaultParams()
-	p3.RewardBand = sdk.NewDecWithPrec(-1, 2)
+	p3.MaxDeviation = sdk.NewDecWithPrec(-1, 1)
 	err = p3.Validate()
 	require.Error(t, err)
 
@@ -62,7 +62,6 @@ func TestValidate(t *testing.T) {
 	for _, pair := range pairs {
 		switch {
 		case bytes.Equal(types.KeyVotePeriod, pair.Key) ||
-			bytes.Equal(types.KeyRewardDistributionWindow, pair.Key) ||
 			bytes.Equal(types.KeySlashWindow, pair.Key):
 			require.NoError(t, pair.ValidatorFn(uint64(1)))
 			require.Error(t, pair.ValidatorFn("invalid"))
@@ -72,14 +71,14 @@ func TestValidate(t *testing.T) {
 			require.Error(t, pair.ValidatorFn("invalid"))
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(32, 2)))
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(101, 2)))
-		case bytes.Equal(types.KeyRewardBand, pair.Key) ||
+		case bytes.Equal(types.KeyMaxDeviation, pair.Key) ||
 			bytes.Equal(types.KeySlashFraction, pair.Key) ||
 			bytes.Equal(types.KeyMinValidPerWindow, pair.Key):
 			require.NoError(t, pair.ValidatorFn(sdk.NewDecWithPrec(7, 2)))
 			require.Error(t, pair.ValidatorFn("invalid"))
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(-1, 2)))
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(101, 2)))
-		case bytes.Equal(types.KeyWhitelist, pair.Key):
+		case bytes.Equal(types.KeyRequiredDenoms, pair.Key):
 			require.NoError(t, pair.ValidatorFn(types.DenomList{}))
 			require.Error(t, pair.ValidatorFn("invalid"))
 			require.Error(t, pair.ValidatorFn(types.DenomList{

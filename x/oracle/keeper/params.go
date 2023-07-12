@@ -17,9 +17,9 @@ func (k Keeper) VoteThreshold(ctx sdk.Context) (res sdk.Dec) {
 
 }
 
-// RewardBand returns the ratio of allowable exchange rate error that a validator can be rewared
-func (k Keeper) RewardBand(ctx sdk.Context) (res sdk.Dec) {
-	return k.GetParams(ctx).RewardBand
+// MaxDeviation returns the ratio of allowable exchange rate error that a validator can be rewared
+func (k Keeper) MaxDeviation(ctx sdk.Context) (res sdk.Dec) {
+	return k.GetParams(ctx).MaxDeviation
 }
 
 
