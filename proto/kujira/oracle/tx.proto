@@ -20,11 +20,11 @@ service Msg {
   // DelegateFeedConsent defines a method for setting the feeder delegation
   rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
 
-  // AddPrice adds a new price to the required list of prices
-  rpc AddPrice(MsgAddPrice) returns (MsgAddPriceResponse);
+  // AddRequiredSymbol adds a new price to the required list of prices
+  rpc AddRequiredSymbol(MsgAddRequiredSymbol) returns (MsgAddRequiredSymbolResponse);
 
-  // RemovePrice removes a price from the required list of prices
-  rpc RemovePrice(MsgRemovePrice) returns (MsgRemovePriceResponse);
+  // RemoveRequiredSymbol removes a price from the required list of prices
+  rpc RemoveRequiredSymbol(MsgRemoveRequiredSymbol) returns (MsgRemoveRequiredSymbolResponse);
 
   // UpdateParams sets new module params
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
@@ -72,26 +72,27 @@ message MsgDelegateFeedConsent {
 // MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent response type.
 message MsgDelegateFeedConsentResponse {}
 
-
-message MsgAddPrice {
+// MsgAddRequiredSymbol represents a message to add a denom to the whitelist
+message MsgAddRequiredSymbol {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
   string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
 }
 
-// MsgAddPriceResponse defines the Msg/AddPrice response type.
-message MsgAddPriceResponse {}
+// MsgAddRequiredSymbolResponse defines the Msg/AddRequiredSymbol response type.
+message MsgAddRequiredSymbolResponse {}
 
-message MsgRemovePrice {
+// MsgRemoveRequiredSymbol represents a message to remove a denom from the whitelist
+message MsgRemoveRequiredSymbol {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
   string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
 }
 
-// MsgRemovePriceResponse defines the Msg/RemovePrice response type.
-message MsgRemovePriceResponse {}
+// MsgRemoveRequiredSymbolResponse defines the Msg/RemoveRequiredSymbol response type.
+message MsgRemoveRequiredSymbolResponse {}
 
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";

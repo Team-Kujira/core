@@ -265,23 +265,24 @@ func (m *MsgDelegateFeedConsentResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDelegateFeedConsentResponse proto.InternalMessageInfo
 
-type MsgAddPrice struct {
+// MsgAddRequiredSymbol represents a message to add a denom to the whitelist
+type MsgAddRequiredSymbol struct {
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
 	Symbol    string `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty" yaml:"symbol"`
 }
 
-func (m *MsgAddPrice) Reset()         { *m = MsgAddPrice{} }
-func (m *MsgAddPrice) String() string { return proto.CompactTextString(m) }
-func (*MsgAddPrice) ProtoMessage()    {}
-func (*MsgAddPrice) Descriptor() ([]byte, []int) {
+func (m *MsgAddRequiredSymbol) Reset()         { *m = MsgAddRequiredSymbol{} }
+func (m *MsgAddRequiredSymbol) String() string { return proto.CompactTextString(m) }
+func (*MsgAddRequiredSymbol) ProtoMessage()    {}
+func (*MsgAddRequiredSymbol) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{6}
 }
-func (m *MsgAddPrice) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddRequiredSymbol) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddPrice) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddRequiredSymbol) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddPrice.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddRequiredSymbol.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -291,48 +292,48 @@ func (m *MsgAddPrice) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *MsgAddPrice) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddPrice.Merge(m, src)
+func (m *MsgAddRequiredSymbol) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddRequiredSymbol.Merge(m, src)
 }
-func (m *MsgAddPrice) XXX_Size() int {
+func (m *MsgAddRequiredSymbol) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddPrice) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddPrice.DiscardUnknown(m)
+func (m *MsgAddRequiredSymbol) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddRequiredSymbol.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddPrice proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddRequiredSymbol proto.InternalMessageInfo
 
-func (m *MsgAddPrice) GetAuthority() string {
+func (m *MsgAddRequiredSymbol) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgAddPrice) GetSymbol() string {
+func (m *MsgAddRequiredSymbol) GetSymbol() string {
 	if m != nil {
 		return m.Symbol
 	}
 	return ""
 }
 
-// MsgAddPriceResponse defines the Msg/AddPrice response type.
-type MsgAddPriceResponse struct {
+// MsgAddRequiredSymbolResponse defines the Msg/AddRequiredSymbol response type.
+type MsgAddRequiredSymbolResponse struct {
 }
 
-func (m *MsgAddPriceResponse) Reset()         { *m = MsgAddPriceResponse{} }
-func (m *MsgAddPriceResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddPriceResponse) ProtoMessage()    {}
-func (*MsgAddPriceResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAddRequiredSymbolResponse) Reset()         { *m = MsgAddRequiredSymbolResponse{} }
+func (m *MsgAddRequiredSymbolResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddRequiredSymbolResponse) ProtoMessage()    {}
+func (*MsgAddRequiredSymbolResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{7}
 }
-func (m *MsgAddPriceResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddRequiredSymbolResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddPriceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddRequiredSymbolResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddPriceResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddRequiredSymbolResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -342,35 +343,36 @@ func (m *MsgAddPriceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgAddPriceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddPriceResponse.Merge(m, src)
+func (m *MsgAddRequiredSymbolResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddRequiredSymbolResponse.Merge(m, src)
 }
-func (m *MsgAddPriceResponse) XXX_Size() int {
+func (m *MsgAddRequiredSymbolResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddPriceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddPriceResponse.DiscardUnknown(m)
+func (m *MsgAddRequiredSymbolResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddRequiredSymbolResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddPriceResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddRequiredSymbolResponse proto.InternalMessageInfo
 
-type MsgRemovePrice struct {
+// MsgRemoveRequiredSymbol represents a message to remove a denom from the whitelist
+type MsgRemoveRequiredSymbol struct {
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
 	Symbol    string `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty" yaml:"symbol"`
 }
 
-func (m *MsgRemovePrice) Reset()         { *m = MsgRemovePrice{} }
-func (m *MsgRemovePrice) String() string { return proto.CompactTextString(m) }
-func (*MsgRemovePrice) ProtoMessage()    {}
-func (*MsgRemovePrice) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveRequiredSymbol) Reset()         { *m = MsgRemoveRequiredSymbol{} }
+func (m *MsgRemoveRequiredSymbol) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveRequiredSymbol) ProtoMessage()    {}
+func (*MsgRemoveRequiredSymbol) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{8}
 }
-func (m *MsgRemovePrice) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveRequiredSymbol) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemovePrice) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveRequiredSymbol) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemovePrice.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveRequiredSymbol.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -380,48 +382,48 @@ func (m *MsgRemovePrice) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *MsgRemovePrice) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemovePrice.Merge(m, src)
+func (m *MsgRemoveRequiredSymbol) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveRequiredSymbol.Merge(m, src)
 }
-func (m *MsgRemovePrice) XXX_Size() int {
+func (m *MsgRemoveRequiredSymbol) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemovePrice) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemovePrice.DiscardUnknown(m)
+func (m *MsgRemoveRequiredSymbol) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveRequiredSymbol.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemovePrice proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveRequiredSymbol proto.InternalMessageInfo
 
-func (m *MsgRemovePrice) GetAuthority() string {
+func (m *MsgRemoveRequiredSymbol) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgRemovePrice) GetSymbol() string {
+func (m *MsgRemoveRequiredSymbol) GetSymbol() string {
 	if m != nil {
 		return m.Symbol
 	}
 	return ""
 }
 
-// MsgRemovePriceResponse defines the Msg/RemovePrice response type.
-type MsgRemovePriceResponse struct {
+// MsgRemoveRequiredSymbolResponse defines the Msg/RemoveRequiredSymbol response type.
+type MsgRemoveRequiredSymbolResponse struct {
 }
 
-func (m *MsgRemovePriceResponse) Reset()         { *m = MsgRemovePriceResponse{} }
-func (m *MsgRemovePriceResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRemovePriceResponse) ProtoMessage()    {}
-func (*MsgRemovePriceResponse) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveRequiredSymbolResponse) Reset()         { *m = MsgRemoveRequiredSymbolResponse{} }
+func (m *MsgRemoveRequiredSymbolResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveRequiredSymbolResponse) ProtoMessage()    {}
+func (*MsgRemoveRequiredSymbolResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{9}
 }
-func (m *MsgRemovePriceResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveRequiredSymbolResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemovePriceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveRequiredSymbolResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemovePriceResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveRequiredSymbolResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -431,17 +433,17 @@ func (m *MsgRemovePriceResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgRemovePriceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemovePriceResponse.Merge(m, src)
+func (m *MsgRemoveRequiredSymbolResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveRequiredSymbolResponse.Merge(m, src)
 }
-func (m *MsgRemovePriceResponse) XXX_Size() int {
+func (m *MsgRemoveRequiredSymbolResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemovePriceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemovePriceResponse.DiscardUnknown(m)
+func (m *MsgRemoveRequiredSymbolResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveRequiredSymbolResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemovePriceResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveRequiredSymbolResponse proto.InternalMessageInfo
 
 type MsgUpdateParams struct {
 	Authority string  `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
@@ -539,10 +541,10 @@ func init() {
 	proto.RegisterType((*MsgAggregateExchangeRateVoteResponse)(nil), "kujira.oracle.MsgAggregateExchangeRateVoteResponse")
 	proto.RegisterType((*MsgDelegateFeedConsent)(nil), "kujira.oracle.MsgDelegateFeedConsent")
 	proto.RegisterType((*MsgDelegateFeedConsentResponse)(nil), "kujira.oracle.MsgDelegateFeedConsentResponse")
-	proto.RegisterType((*MsgAddPrice)(nil), "kujira.oracle.MsgAddPrice")
-	proto.RegisterType((*MsgAddPriceResponse)(nil), "kujira.oracle.MsgAddPriceResponse")
-	proto.RegisterType((*MsgRemovePrice)(nil), "kujira.oracle.MsgRemovePrice")
-	proto.RegisterType((*MsgRemovePriceResponse)(nil), "kujira.oracle.MsgRemovePriceResponse")
+	proto.RegisterType((*MsgAddRequiredSymbol)(nil), "kujira.oracle.MsgAddRequiredSymbol")
+	proto.RegisterType((*MsgAddRequiredSymbolResponse)(nil), "kujira.oracle.MsgAddRequiredSymbolResponse")
+	proto.RegisterType((*MsgRemoveRequiredSymbol)(nil), "kujira.oracle.MsgRemoveRequiredSymbol")
+	proto.RegisterType((*MsgRemoveRequiredSymbolResponse)(nil), "kujira.oracle.MsgRemoveRequiredSymbolResponse")
 	proto.RegisterType((*MsgUpdateParams)(nil), "kujira.oracle.MsgUpdateParams")
 	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "kujira.oracle.MsgUpdateParamsResponse")
 }
@@ -550,51 +552,51 @@ func init() {
 func init() { proto.RegisterFile("kujira/oracle/tx.proto", fileDescriptor_15c3977432059018) }
 
 var fileDescriptor_15c3977432059018 = []byte{
-	// 689 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x95, 0xcf, 0x4f, 0x13, 0x41,
-	0x14, 0xc7, 0xbb, 0x42, 0x08, 0x4c, 0x05, 0x74, 0xf9, 0x55, 0x36, 0xb8, 0x4b, 0x46, 0x41, 0xc1,
-	0xd0, 0x8d, 0x90, 0x78, 0xe0, 0x84, 0x88, 0x1e, 0x34, 0x4d, 0xc8, 0xa8, 0x1c, 0xbc, 0x98, 0xa1,
-	0xfb, 0x9c, 0x56, 0xba, 0x4c, 0x33, 0xb3, 0x34, 0x34, 0xd1, 0x98, 0x18, 0x63, 0x3c, 0x7a, 0xf3,
-	0xca, 0x7f, 0xa0, 0x7f, 0x86, 0x47, 0x8e, 0x9e, 0x1a, 0x03, 0x07, 0x3d, 0x79, 0xa8, 0xff, 0x80,
-	0xd9, 0x9d, 0xed, 0xb0, 0x65, 0x4b, 0xa1, 0x5e, 0x3c, 0x6d, 0xf3, 0xbe, 0x9f, 0xf7, 0xde, 0xf7,
-	0xbd, 0xee, 0xcc, 0xa2, 0xc9, 0x9d, 0xbd, 0x57, 0x65, 0x41, 0x5d, 0x2e, 0x68, 0xb1, 0x02, 0x6e,
-	0xb0, 0x9f, 0xaf, 0x0a, 0x1e, 0x70, 0x73, 0x58, 0xc5, 0xf3, 0x2a, 0x6e, 0x8d, 0x33, 0xce, 0x78,
-	0xa4, 0xb8, 0xe1, 0x2f, 0x05, 0x59, 0x53, 0x45, 0x2e, 0x7d, 0x2e, 0x5d, 0x5f, 0x32, 0xb7, 0x76,
-	0x27, 0x7c, 0xc4, 0x82, 0xd5, 0x5e, 0x55, 0x3d, 0x94, 0x86, 0xbf, 0x18, 0xc8, 0x29, 0x48, 0x76,
-	0x8f, 0x31, 0x01, 0x8c, 0x06, 0xf0, 0x60, 0xbf, 0x58, 0xa2, 0xbb, 0x0c, 0x08, 0x0d, 0x60, 0x53,
-	0x40, 0x8d, 0x07, 0x60, 0x5e, 0x47, 0xfd, 0x25, 0x2a, 0x4b, 0x39, 0x63, 0xd6, 0xb8, 0x35, 0xb4,
-	0x3e, 0xda, 0x6c, 0x38, 0xd9, 0x3a, 0xf5, 0x2b, 0xab, 0x38, 0x8c, 0x62, 0x12, 0x89, 0xe6, 0x02,
-	0x1a, 0x78, 0x09, 0xe0, 0x81, 0xc8, 0x5d, 0x8a, 0xb0, 0xab, 0xcd, 0x86, 0x33, 0xac, 0x30, 0x15,
-	0xc7, 0x24, 0x06, 0xcc, 0x65, 0x34, 0x54, 0xa3, 0x95, 0xb2, 0x47, 0x03, 0x2e, 0x72, 0x7d, 0x11,
-	0x3d, 0xde, 0x6c, 0x38, 0x57, 0x14, 0xad, 0x25, 0x4c, 0x4e, 0xb0, 0xd5, 0xc1, 0x8f, 0x07, 0x4e,
-	0xe6, 0xd7, 0x81, 0x93, 0xc1, 0x0b, 0xe8, 0xe6, 0x39, 0x86, 0x09, 0xc8, 0x2a, 0xdf, 0x95, 0x80,
-	0x7f, 0x1b, 0x68, 0xe6, 0x2c, 0x76, 0x2b, 0x9e, 0x4c, 0xd2, 0x4a, 0x90, 0x9e, 0x2c, 0x8c, 0x62,
-	0x12, 0x89, 0xe6, 0x1a, 0x1a, 0x81, 0x38, 0xf1, 0x85, 0xa0, 0x01, 0xc8, 0x78, 0xc2, 0xe9, 0x66,
-	0xc3, 0x99, 0x50, 0x78, 0xbb, 0x8e, 0xc9, 0x30, 0x24, 0x3a, 0xc9, 0xc4, 0x6e, 0xfa, 0x7a, 0xda,
-	0x4d, 0x7f, 0xaf, 0xbb, 0x99, 0x47, 0x37, 0xba, 0xcd, 0xab, 0x17, 0xf3, 0xde, 0x40, 0x93, 0x05,
-	0xc9, 0x36, 0xa0, 0x12, 0x71, 0x0f, 0x01, 0xbc, 0xfb, 0xa1, 0xb0, 0x1b, 0x98, 0x2e, 0x1a, 0xe4,
-	0x55, 0x10, 0x51, 0x7f, 0xb5, 0x96, 0xb1, 0x66, 0xc3, 0x19, 0x55, 0xfd, 0x5b, 0x0a, 0x26, 0x1a,
-	0x0a, 0x13, 0xbc, 0xb8, 0x4e, 0xbc, 0x98, 0x44, 0x42, 0x4b, 0xc1, 0x44, 0x43, 0x09, 0xbb, 0xb3,
-	0xc8, 0xee, 0xec, 0x42, 0x1b, 0x7d, 0x8d, 0xb2, 0xe1, 0x40, 0x9e, 0xb7, 0x29, 0xca, 0x45, 0x08,
-	0xb7, 0x43, 0xf7, 0x82, 0x12, 0x17, 0xe5, 0xa0, 0x1e, 0xbb, 0x4b, 0x6c, 0x47, 0x4b, 0x98, 0x9c,
-	0x60, 0xe1, 0xf2, 0x65, 0xdd, 0xdf, 0xe6, 0x95, 0xf4, 0x8b, 0xa9, 0xe2, 0x98, 0xc4, 0xc0, 0xea,
-	0xc8, 0xbb, 0x9f, 0x5f, 0x17, 0x4f, 0x52, 0xf1, 0x04, 0x1a, 0x4b, 0x74, 0xd7, 0xa6, 0xde, 0xa2,
-	0x91, 0x82, 0x64, 0x04, 0x7c, 0x5e, 0x83, 0xff, 0xe2, 0x2b, 0x17, 0xfd, 0x7b, 0x09, 0x03, 0xda,
-	0xda, 0x67, 0x03, 0x8d, 0x16, 0x24, 0x7b, 0x56, 0xf5, 0xc2, 0xe3, 0x40, 0x05, 0xf5, 0xe5, 0x3f,
-	0x99, 0x5b, 0x43, 0x03, 0xd5, 0x28, 0x3b, 0x32, 0x97, 0x5d, 0x9e, 0xc8, 0xb7, 0xdd, 0x40, 0x79,
-	0x55, 0x3a, 0xe9, 0x59, 0xe1, 0x98, 0xc4, 0x79, 0x29, 0xcf, 0xd3, 0x68, 0xea, 0x94, 0xb1, 0x96,
-	0xe9, 0xe5, 0x3f, 0xfd, 0xa8, 0xaf, 0x20, 0x99, 0xf9, 0xc1, 0x40, 0x33, 0x5d, 0x2f, 0xa2, 0xfc,
-	0x29, 0x17, 0xe7, 0xdc, 0x03, 0xd6, 0xdd, 0xde, 0xf8, 0x96, 0x21, 0xf3, 0x0d, 0x9a, 0x3e, 0xfb,
-	0xce, 0xb8, 0x7d, 0xc1, 0xa2, 0x21, 0x6c, 0xad, 0xf4, 0x00, 0xeb, 0xf6, 0x3b, 0x68, 0xac, 0xd3,
-	0xc9, 0x9c, 0x4b, 0xd7, 0xea, 0x80, 0x59, 0x4b, 0x17, 0xc2, 0x74, 0xb3, 0x47, 0x68, 0x50, 0x1f,
-	0x2f, 0xab, 0x83, 0xdb, 0x58, 0xb3, 0xf0, 0xd9, 0x9a, 0xae, 0xf5, 0x04, 0x65, 0x93, 0xa7, 0xe2,
-	0x5a, 0x3a, 0x25, 0x21, 0x5b, 0x73, 0x5d, 0x65, 0x5d, 0x74, 0x0b, 0x5d, 0x6e, 0x7b, 0x9d, 0xed,
-	0x74, 0x5a, 0x52, 0xb7, 0xe6, 0xbb, 0xeb, 0xad, 0xba, 0xeb, 0x1b, 0xdf, 0x8e, 0x6c, 0xe3, 0xf0,
-	0xc8, 0x36, 0x7e, 0x1c, 0xd9, 0xc6, 0xa7, 0x63, 0x3b, 0x73, 0x78, 0x6c, 0x67, 0xbe, 0x1f, 0xdb,
-	0x99, 0xe7, 0x8b, 0xac, 0x1c, 0x94, 0xf6, 0xb6, 0xf3, 0x45, 0xee, 0xbb, 0x4f, 0x81, 0xfa, 0x4b,
-	0x8f, 0xd5, 0xf7, 0xb3, 0xc8, 0x05, 0xb8, 0xfb, 0xfa, 0xe3, 0x5c, 0xaf, 0x82, 0xdc, 0x1e, 0x88,
-	0x3e, 0xa3, 0x2b, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x76, 0xa2, 0x37, 0x57, 0xba, 0x07, 0x00,
-	0x00,
+	// 697 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x95, 0xbf, 0x53, 0x13, 0x41,
+	0x14, 0xc7, 0x73, 0x82, 0x0c, 0x2c, 0x02, 0x72, 0x84, 0x5f, 0x37, 0xcc, 0x1d, 0x2e, 0x8a, 0x02,
+	0x43, 0x6e, 0x84, 0x19, 0x0b, 0x2a, 0x44, 0xb4, 0x71, 0x32, 0xe3, 0xac, 0x4a, 0x61, 0xe3, 0x2c,
+	0xb9, 0xe7, 0x25, 0x92, 0xcb, 0xc6, 0xdb, 0x4b, 0x86, 0x14, 0x36, 0x8e, 0x3a, 0x94, 0x76, 0xb6,
+	0xb4, 0x56, 0xfa, 0x67, 0x58, 0x52, 0x5a, 0x65, 0x1c, 0x28, 0xb4, 0xb2, 0xc8, 0x5f, 0xe0, 0xdc,
+	0xee, 0x65, 0xb9, 0x70, 0x07, 0x24, 0x36, 0x56, 0x97, 0x79, 0xdf, 0xcf, 0x7b, 0xef, 0xbb, 0x2f,
+	0xf7, 0xf6, 0xd0, 0xd4, 0x5e, 0xed, 0x75, 0xc9, 0xa7, 0x36, 0xf3, 0x69, 0xa1, 0x0c, 0x76, 0xb0,
+	0x9f, 0xab, 0xfa, 0x2c, 0x60, 0xfa, 0x88, 0x8c, 0xe7, 0x64, 0xdc, 0xc8, 0xba, 0xcc, 0x65, 0x42,
+	0xb1, 0xc3, 0x5f, 0x12, 0x32, 0xa6, 0x0b, 0x8c, 0x7b, 0x8c, 0xdb, 0x1e, 0x77, 0xed, 0xfa, 0xdd,
+	0xf0, 0x11, 0x09, 0x46, 0x67, 0x55, 0xf9, 0x90, 0x1a, 0xfe, 0xaa, 0x21, 0x2b, 0xcf, 0xdd, 0xfb,
+	0xae, 0xeb, 0x83, 0x4b, 0x03, 0x78, 0xb8, 0x5f, 0x28, 0xd2, 0x8a, 0x0b, 0x84, 0x06, 0xf0, 0xc4,
+	0x87, 0x3a, 0x0b, 0x40, 0x5f, 0x40, 0xfd, 0x45, 0xca, 0x8b, 0x33, 0xda, 0xbc, 0x76, 0x67, 0x68,
+	0x6b, 0xac, 0xd5, 0xb4, 0x86, 0x1b, 0xd4, 0x2b, 0x6f, 0xe0, 0x30, 0x8a, 0x89, 0x10, 0xf5, 0x25,
+	0x34, 0xf0, 0x0a, 0xc0, 0x01, 0x7f, 0xe6, 0x8a, 0xc0, 0xc6, 0x5b, 0x4d, 0x6b, 0x44, 0x62, 0x32,
+	0x8e, 0x49, 0x04, 0xe8, 0x6b, 0x68, 0xa8, 0x4e, 0xcb, 0x25, 0x87, 0x06, 0xcc, 0x9f, 0xe9, 0x13,
+	0x74, 0xb6, 0xd5, 0xb4, 0xae, 0x4b, 0x5a, 0x49, 0x98, 0x9c, 0x62, 0x1b, 0x83, 0x07, 0x87, 0x56,
+	0xe6, 0xf7, 0xa1, 0x95, 0xc1, 0x4b, 0xe8, 0xf6, 0x25, 0x86, 0x09, 0xf0, 0x2a, 0xab, 0x70, 0xc0,
+	0x7f, 0x34, 0x34, 0x77, 0x1e, 0xbb, 0x13, 0x9d, 0x8c, 0xd3, 0x72, 0x90, 0x3c, 0x59, 0x18, 0xc5,
+	0x44, 0x88, 0xfa, 0x26, 0x1a, 0x85, 0x28, 0xf1, 0xa5, 0x4f, 0x03, 0xe0, 0xd1, 0x09, 0x67, 0x5b,
+	0x4d, 0x6b, 0x52, 0xe2, 0x9d, 0x3a, 0x26, 0x23, 0x10, 0xeb, 0xc4, 0x63, 0xb3, 0xe9, 0xeb, 0x69,
+	0x36, 0xfd, 0xbd, 0xce, 0x66, 0x11, 0xdd, 0xbc, 0xe8, 0xbc, 0x6a, 0x30, 0xef, 0x35, 0x34, 0x95,
+	0xe7, 0xee, 0x36, 0x94, 0x05, 0xf7, 0x08, 0xc0, 0x79, 0x10, 0x0a, 0x95, 0x40, 0xb7, 0xd1, 0x20,
+	0xab, 0x82, 0x2f, 0xfa, 0xcb, 0xb1, 0x4c, 0xb4, 0x9a, 0xd6, 0x98, 0xec, 0xdf, 0x56, 0x30, 0x51,
+	0x50, 0x98, 0xe0, 0x44, 0x75, 0xa2, 0xc1, 0xc4, 0x12, 0xda, 0x0a, 0x26, 0x0a, 0x8a, 0xd9, 0x9d,
+	0x47, 0x66, 0xba, 0x0b, 0x65, 0xf4, 0x83, 0x86, 0xb2, 0xe1, 0x89, 0x1c, 0x87, 0xc0, 0x9b, 0x5a,
+	0xc9, 0x07, 0xe7, 0x69, 0xc3, 0xdb, 0x65, 0xe5, 0x70, 0x4e, 0xb4, 0x16, 0x14, 0x99, 0x5f, 0x0a,
+	0x1a, 0x91, 0xcf, 0xd8, 0x9c, 0x94, 0x84, 0xc9, 0x29, 0x16, 0xfe, 0x0d, 0x5c, 0x64, 0x27, 0x5f,
+	0x51, 0x19, 0xc7, 0x24, 0x02, 0x36, 0x46, 0xdf, 0xfd, 0xfa, 0xb6, 0x7c, 0x9a, 0x8a, 0x4d, 0xf9,
+	0x22, 0x9d, 0xb5, 0xa1, 0x7c, 0x1e, 0x68, 0x68, 0x3a, 0xcf, 0x5d, 0x02, 0x1e, 0xab, 0xc3, 0xff,
+	0xb5, 0x7a, 0x43, 0x2c, 0x74, 0x9a, 0x13, 0xe5, 0xf6, 0xb3, 0x86, 0xc6, 0xf2, 0xdc, 0x7d, 0x5e,
+	0x75, 0xc2, 0xa5, 0xa1, 0x3e, 0xf5, 0xf8, 0x3f, 0xb9, 0xdc, 0x44, 0x03, 0x55, 0x91, 0x2d, 0x5c,
+	0x0e, 0xaf, 0x4d, 0xe6, 0x3a, 0xee, 0xa9, 0x9c, 0x2c, 0x1d, 0x37, 0x2f, 0x71, 0x4c, 0xa2, 0xbc,
+	0x84, 0xf9, 0x59, 0x31, 0xc6, 0xb8, 0xb1, 0xb6, 0xe9, 0xb5, 0x2f, 0x57, 0x51, 0x5f, 0x9e, 0xbb,
+	0xfa, 0x47, 0x0d, 0xcd, 0x5d, 0x78, 0x5d, 0xe5, 0xce, 0xb8, 0xb8, 0xe4, 0xb6, 0x30, 0xee, 0xf5,
+	0xc6, 0xb7, 0x0d, 0xe9, 0x6f, 0xd1, 0xec, 0xf9, 0x37, 0xcb, 0x4a, 0x97, 0x45, 0x43, 0xd8, 0x58,
+	0xef, 0x01, 0x56, 0xed, 0xf7, 0xd0, 0x44, 0xda, 0xfe, 0xde, 0x4a, 0xd6, 0x4a, 0xc1, 0x8c, 0xd5,
+	0xae, 0x30, 0xd5, 0x0c, 0xd0, 0x78, 0x72, 0x07, 0x17, 0x52, 0x6c, 0x9f, 0x85, 0x8c, 0x95, 0x2e,
+	0x20, 0xd5, 0xa6, 0x82, 0xb2, 0xa9, 0x2b, 0xb4, 0x98, 0x2c, 0x92, 0xc6, 0x19, 0xb9, 0xee, 0x38,
+	0xd5, 0x6f, 0x07, 0x5d, 0xeb, 0x58, 0x02, 0x33, 0x99, 0x1f, 0xd7, 0x8d, 0xc5, 0x8b, 0xf5, 0x76,
+	0xdd, 0xad, 0xed, 0xef, 0xc7, 0xa6, 0x76, 0x74, 0x6c, 0x6a, 0x3f, 0x8f, 0x4d, 0xed, 0xd3, 0x89,
+	0x99, 0x39, 0x3a, 0x31, 0x33, 0x3f, 0x4e, 0xcc, 0xcc, 0x8b, 0x65, 0xb7, 0x14, 0x14, 0x6b, 0xbb,
+	0xb9, 0x02, 0xf3, 0xec, 0x67, 0x40, 0xbd, 0xd5, 0xc7, 0xf2, 0xdb, 0x5c, 0x60, 0x3e, 0xd8, 0xfb,
+	0xea, 0xc3, 0xdf, 0xa8, 0x02, 0xdf, 0x1d, 0x10, 0x9f, 0xe8, 0xf5, 0xbf, 0x01, 0x00, 0x00, 0xff,
+	0xff, 0x6c, 0x59, 0xe7, 0xca, 0x16, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -617,10 +619,10 @@ type MsgClient interface {
 	AggregateExchangeRateVote(ctx context.Context, in *MsgAggregateExchangeRateVote, opts ...grpc.CallOption) (*MsgAggregateExchangeRateVoteResponse, error)
 	// DelegateFeedConsent defines a method for setting the feeder delegation
 	DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeedConsent, opts ...grpc.CallOption) (*MsgDelegateFeedConsentResponse, error)
-	// AddPrice adds a new price to the required list of prices
-	AddPrice(ctx context.Context, in *MsgAddPrice, opts ...grpc.CallOption) (*MsgAddPriceResponse, error)
-	// RemovePrice removes a price from the required list of prices
-	RemovePrice(ctx context.Context, in *MsgRemovePrice, opts ...grpc.CallOption) (*MsgRemovePriceResponse, error)
+	// AddRequiredSymbol adds a new price to the required list of prices
+	AddRequiredSymbol(ctx context.Context, in *MsgAddRequiredSymbol, opts ...grpc.CallOption) (*MsgAddRequiredSymbolResponse, error)
+	// RemoveRequiredSymbol removes a price from the required list of prices
+	RemoveRequiredSymbol(ctx context.Context, in *MsgRemoveRequiredSymbol, opts ...grpc.CallOption) (*MsgRemoveRequiredSymbolResponse, error)
 	// UpdateParams sets new module params
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 }
@@ -660,18 +662,18 @@ func (c *msgClient) DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeed
 	return out, nil
 }
 
-func (c *msgClient) AddPrice(ctx context.Context, in *MsgAddPrice, opts ...grpc.CallOption) (*MsgAddPriceResponse, error) {
-	out := new(MsgAddPriceResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AddPrice", in, out, opts...)
+func (c *msgClient) AddRequiredSymbol(ctx context.Context, in *MsgAddRequiredSymbol, opts ...grpc.CallOption) (*MsgAddRequiredSymbolResponse, error) {
+	out := new(MsgAddRequiredSymbolResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AddRequiredSymbol", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) RemovePrice(ctx context.Context, in *MsgRemovePrice, opts ...grpc.CallOption) (*MsgRemovePriceResponse, error) {
-	out := new(MsgRemovePriceResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/RemovePrice", in, out, opts...)
+func (c *msgClient) RemoveRequiredSymbol(ctx context.Context, in *MsgRemoveRequiredSymbol, opts ...grpc.CallOption) (*MsgRemoveRequiredSymbolResponse, error) {
+	out := new(MsgRemoveRequiredSymbolResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/RemoveRequiredSymbol", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -697,10 +699,10 @@ type MsgServer interface {
 	AggregateExchangeRateVote(context.Context, *MsgAggregateExchangeRateVote) (*MsgAggregateExchangeRateVoteResponse, error)
 	// DelegateFeedConsent defines a method for setting the feeder delegation
 	DelegateFeedConsent(context.Context, *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error)
-	// AddPrice adds a new price to the required list of prices
-	AddPrice(context.Context, *MsgAddPrice) (*MsgAddPriceResponse, error)
-	// RemovePrice removes a price from the required list of prices
-	RemovePrice(context.Context, *MsgRemovePrice) (*MsgRemovePriceResponse, error)
+	// AddRequiredSymbol adds a new price to the required list of prices
+	AddRequiredSymbol(context.Context, *MsgAddRequiredSymbol) (*MsgAddRequiredSymbolResponse, error)
+	// RemoveRequiredSymbol removes a price from the required list of prices
+	RemoveRequiredSymbol(context.Context, *MsgRemoveRequiredSymbol) (*MsgRemoveRequiredSymbolResponse, error)
 	// UpdateParams sets new module params
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 }
@@ -718,11 +720,11 @@ func (*UnimplementedMsgServer) AggregateExchangeRateVote(ctx context.Context, re
 func (*UnimplementedMsgServer) DelegateFeedConsent(ctx context.Context, req *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegateFeedConsent not implemented")
 }
-func (*UnimplementedMsgServer) AddPrice(ctx context.Context, req *MsgAddPrice) (*MsgAddPriceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddPrice not implemented")
+func (*UnimplementedMsgServer) AddRequiredSymbol(ctx context.Context, req *MsgAddRequiredSymbol) (*MsgAddRequiredSymbolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddRequiredSymbol not implemented")
 }
-func (*UnimplementedMsgServer) RemovePrice(ctx context.Context, req *MsgRemovePrice) (*MsgRemovePriceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemovePrice not implemented")
+func (*UnimplementedMsgServer) RemoveRequiredSymbol(ctx context.Context, req *MsgRemoveRequiredSymbol) (*MsgRemoveRequiredSymbolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveRequiredSymbol not implemented")
 }
 func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
@@ -786,38 +788,38 @@ func _Msg_DelegateFeedConsent_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_AddPrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddPrice)
+func _Msg_AddRequiredSymbol_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddRequiredSymbol)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AddPrice(ctx, in)
+		return srv.(MsgServer).AddRequiredSymbol(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/AddPrice",
+		FullMethod: "/kujira.oracle.Msg/AddRequiredSymbol",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddPrice(ctx, req.(*MsgAddPrice))
+		return srv.(MsgServer).AddRequiredSymbol(ctx, req.(*MsgAddRequiredSymbol))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_RemovePrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemovePrice)
+func _Msg_RemoveRequiredSymbol_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveRequiredSymbol)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RemovePrice(ctx, in)
+		return srv.(MsgServer).RemoveRequiredSymbol(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/RemovePrice",
+		FullMethod: "/kujira.oracle.Msg/RemoveRequiredSymbol",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemovePrice(ctx, req.(*MsgRemovePrice))
+		return srv.(MsgServer).RemoveRequiredSymbol(ctx, req.(*MsgRemoveRequiredSymbol))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -857,12 +859,12 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_DelegateFeedConsent_Handler,
 		},
 		{
-			MethodName: "AddPrice",
-			Handler:    _Msg_AddPrice_Handler,
+			MethodName: "AddRequiredSymbol",
+			Handler:    _Msg_AddRequiredSymbol_Handler,
 		},
 		{
-			MethodName: "RemovePrice",
-			Handler:    _Msg_RemovePrice_Handler,
+			MethodName: "RemoveRequiredSymbol",
+			Handler:    _Msg_RemoveRequiredSymbol_Handler,
 		},
 		{
 			MethodName: "UpdateParams",
@@ -1074,7 +1076,7 @@ func (m *MsgDelegateFeedConsentResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddPrice) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddRequiredSymbol) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1084,12 +1086,12 @@ func (m *MsgAddPrice) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddPrice) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbol) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddPrice) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbol) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1111,7 +1113,7 @@ func (m *MsgAddPrice) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddPriceResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddRequiredSymbolResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1121,12 +1123,12 @@ func (m *MsgAddPriceResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddPriceResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbolResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddPriceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbolResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1134,7 +1136,7 @@ func (m *MsgAddPriceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemovePrice) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveRequiredSymbol) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1144,12 +1146,12 @@ func (m *MsgRemovePrice) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemovePrice) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbol) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemovePrice) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbol) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1171,7 +1173,7 @@ func (m *MsgRemovePrice) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemovePriceResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveRequiredSymbolResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1181,12 +1183,12 @@ func (m *MsgRemovePriceResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemovePriceResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbolResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemovePriceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbolResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1360,7 +1362,7 @@ func (m *MsgDelegateFeedConsentResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddPrice) Size() (n int) {
+func (m *MsgAddRequiredSymbol) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1377,7 +1379,7 @@ func (m *MsgAddPrice) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddPriceResponse) Size() (n int) {
+func (m *MsgAddRequiredSymbolResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1386,7 +1388,7 @@ func (m *MsgAddPriceResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemovePrice) Size() (n int) {
+func (m *MsgRemoveRequiredSymbol) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1403,7 +1405,7 @@ func (m *MsgRemovePrice) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemovePriceResponse) Size() (n int) {
+func (m *MsgRemoveRequiredSymbolResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2032,7 +2034,7 @@ func (m *MsgDelegateFeedConsentResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddPrice) Unmarshal(dAtA []byte) error {
+func (m *MsgAddRequiredSymbol) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2055,10 +2057,10 @@ func (m *MsgAddPrice) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddPrice: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddRequiredSymbol: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddPrice: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddRequiredSymbol: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2146,7 +2148,7 @@ func (m *MsgAddPrice) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddPriceResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddRequiredSymbolResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2169,10 +2171,10 @@ func (m *MsgAddPriceResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddPriceResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddRequiredSymbolResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddPriceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddRequiredSymbolResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2196,7 +2198,7 @@ func (m *MsgAddPriceResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemovePrice) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveRequiredSymbol) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2219,10 +2221,10 @@ func (m *MsgRemovePrice) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemovePrice: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbol: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemovePrice: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbol: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2310,7 +2312,7 @@ func (m *MsgRemovePrice) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemovePriceResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveRequiredSymbolResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2333,10 +2335,10 @@ func (m *MsgRemovePriceResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemovePriceResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbolResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemovePriceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbolResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

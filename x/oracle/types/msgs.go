@@ -13,8 +13,8 @@ var (
 	_ sdk.Msg = &MsgDelegateFeedConsent{}
 	_ sdk.Msg = &MsgAggregateExchangeRatePrevote{}
 	_ sdk.Msg = &MsgAggregateExchangeRateVote{}
-	_ sdk.Msg = &MsgAddPrice{}
-	_ sdk.Msg = &MsgRemovePrice{}
+	_ sdk.Msg = &MsgAddRequiredSymbol{}
+	_ sdk.Msg = &MsgRemoveRequiredSymbol{}
 	_ sdk.Msg = &MsgUpdateParams{}
 )
 
@@ -23,8 +23,8 @@ const (
 	TypeMsgDelegateFeedConsent          = "delegate_feeder"
 	TypeMsgAggregateExchangeRatePrevote = "aggregate_exchange_rate_prevote"
 	TypeMsgAggregateExchangeRateVote    = "aggregate_exchange_rate_vote"
-	TypeMsgAddPrice                     = "add_price"
-	TypeMsgRemovePrice                  = "remove_price"
+	TypeMsgAddRequiredSymbol                     = "add_price"
+	TypeMsgRemoveRequiredSymbol                  = "remove_price"
 	TypeMsgUpdateParams                 = "update_params"
 )
 
@@ -202,26 +202,26 @@ func (msg MsgDelegateFeedConsent) ValidateBasic() error {
 	return nil
 }
 
-// NewMsgAddPrice creates a MsgAddPrice instance
-func NewMsgAddPrice(symbol string) *MsgAddPrice {
-	return &MsgAddPrice{
+// NewMsgAddRequiredSymbol creates a MsgAddRequiredSymbol instance
+func NewMsgAddRequiredSymbol(symbol string) *MsgAddRequiredSymbol {
+	return &MsgAddRequiredSymbol{
 		Symbol: symbol,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgAddPrice) Route() string { return RouterKey }
+func (msg MsgAddRequiredSymbol) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgAddPrice) Type() string { return TypeMsgAddPrice }
+func (msg MsgAddRequiredSymbol) Type() string { return TypeMsgAddRequiredSymbol }
 
 // GetSignBytes implements sdk.Msg
-func (msg MsgAddPrice) GetSignBytes() []byte {
+func (msg MsgAddRequiredSymbol) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgAddPrice) GetSigners() []sdk.AccAddress {
+func (msg MsgAddRequiredSymbol) GetSigners() []sdk.AccAddress {
 	operator, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -231,7 +231,7 @@ func (msg MsgAddPrice) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgAddPrice) ValidateBasic() error {
+func (msg MsgAddRequiredSymbol) ValidateBasic() error {
 	_, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
@@ -240,26 +240,26 @@ func (msg MsgAddPrice) ValidateBasic() error {
 	return nil
 }
 
-// NewMsgRemovePrice creates a MsgRemovePrice instance
-func NewMsgRemovePrice(symbol string) *MsgRemovePrice {
-	return &MsgRemovePrice{
+// NewMsgRemoveRequiredSymbol creates a MsgRemoveRequiredSymbol instance
+func NewMsgRemoveRequiredSymbol(symbol string) *MsgRemoveRequiredSymbol {
+	return &MsgRemoveRequiredSymbol{
 		Symbol: symbol,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgRemovePrice) Route() string { return RouterKey }
+func (msg MsgRemoveRequiredSymbol) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgRemovePrice) Type() string { return TypeMsgRemovePrice }
+func (msg MsgRemoveRequiredSymbol) Type() string { return TypeMsgRemoveRequiredSymbol }
 
 // GetSignBytes implements sdk.Msg
-func (msg MsgRemovePrice) GetSignBytes() []byte {
+func (msg MsgRemoveRequiredSymbol) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgRemovePrice) GetSigners() []sdk.AccAddress {
+func (msg MsgRemoveRequiredSymbol) GetSigners() []sdk.AccAddress {
 	operator, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -269,7 +269,7 @@ func (msg MsgRemovePrice) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgRemovePrice) ValidateBasic() error {
+func (msg MsgRemoveRequiredSymbol) ValidateBasic() error {
 	_, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)

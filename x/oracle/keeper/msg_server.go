@@ -167,22 +167,22 @@ func (ms msgServer) DelegateFeedConsent(goCtx context.Context, msg *types.MsgDel
 	return &types.MsgDelegateFeedConsentResponse{}, nil
 }
 
-func (ms msgServer) AddPrice(goCtx context.Context, msg *types.MsgAddPrice) (*types.MsgAddPriceResponse, error) {
+func (ms msgServer) AddRequiredSymbol(goCtx context.Context, msg *types.MsgAddRequiredSymbol) (*types.MsgAddRequiredSymbolResponse, error) {
 
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
 
-	return &types.MsgAddPriceResponse{}, nil
+	return &types.MsgAddRequiredSymbolResponse{}, nil
 }
 
-func (ms msgServer) RemovePrice(goCtx context.Context, msg *types.MsgRemovePrice) (*types.MsgRemovePriceResponse, error) {
+func (ms msgServer) RemoveRequiredSymbol(goCtx context.Context, msg *types.MsgRemoveRequiredSymbol) (*types.MsgRemoveRequiredSymbolResponse, error) {
 
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
 
-	return &types.MsgRemovePriceResponse{}, nil
+	return &types.MsgRemoveRequiredSymbolResponse{}, nil
 }
 
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
