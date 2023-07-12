@@ -11,13 +11,13 @@ import (
 
 // Parameter keys
 var (
-	KeyVotePeriod               = []byte("VotePeriod")
-	KeyVoteThreshold            = []byte("VoteThreshold")
-	KeyMaxDeviation               = []byte("MaxDeviation")
-	KeyRequiredDenoms                = []byte("RequiredDenoms")
-	KeySlashFraction            = []byte("SlashFraction")
-	KeySlashWindow              = []byte("SlashWindow")
-	KeyMinValidPerWindow        = []byte("MinValidPerWindow")
+	KeyVotePeriod        = []byte("VotePeriod")
+	KeyVoteThreshold     = []byte("VoteThreshold")
+	KeyMaxDeviation      = []byte("MaxDeviation")
+	KeyRequiredDenoms    = []byte("RequiredDenoms")
+	KeySlashFraction     = []byte("SlashFraction")
+	KeySlashWindow       = []byte("SlashWindow")
+	KeyMinValidPerWindow = []byte("MinValidPerWindow")
 )
 
 // Default parameter values
@@ -29,11 +29,11 @@ const (
 
 // Default parameter values
 var (
-	DefaultVoteThreshold 		= sdk.NewDecWithPrec(50, 2) // 50%
-	DefaultMaxDeviation 		= sdk.NewDecWithPrec(2, 1)  // 2% (-1, 1)
-	DefaultRequiredDenoms    	= DenomList{}
-	DefaultSlashFraction     	= sdk.NewDecWithPrec(1, 4) // 0.01%
-	DefaultMinValidPerWindow 	= sdk.NewDecWithPrec(5, 2) // 5%
+	DefaultVoteThreshold     = sdk.NewDecWithPrec(50, 2) // 50%
+	DefaultMaxDeviation      = sdk.NewDecWithPrec(2, 1)  // 2% (-1, 1)
+	DefaultRequiredDenoms    = []string{}
+	DefaultSlashFraction     = sdk.NewDecWithPrec(1, 4) // 0.01%
+	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
 )
 
 var _ paramstypes.ParamSet = &Params{}
@@ -41,13 +41,13 @@ var _ paramstypes.ParamSet = &Params{}
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
 	return Params{
-		VotePeriod:               DefaultVotePeriod,
-		VoteThreshold:            DefaultVoteThreshold,
-		MaxDeviation:             DefaultMaxDeviation,
-		RequiredDenoms:           DefaultRequiredDenoms,
-		SlashFraction:            DefaultSlashFraction,
-		SlashWindow:              DefaultSlashWindow,
-		MinValidPerWindow:        DefaultMinValidPerWindow,
+		VotePeriod:        DefaultVotePeriod,
+		VoteThreshold:     DefaultVoteThreshold,
+		MaxDeviation:      DefaultMaxDeviation,
+		RequiredDenoms:    DefaultRequiredDenoms,
+		SlashFraction:     DefaultSlashFraction,
+		SlashWindow:       DefaultSlashWindow,
+		MinValidPerWindow: DefaultMinValidPerWindow,
 	}
 }
 
@@ -102,8 +102,8 @@ func (p Params) Validate() error {
 	}
 
 	for _, denom := range p.RequiredDenoms {
-		if len(denom.Name) == 0 {
-			return fmt.Errorf("oracle parameter RequiredDenomKeyRequiredDenoms Denom must have name")
+		if len(denom) == 0 {
+			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
 		}
 	}
 	return nil
@@ -157,14 +157,14 @@ func validateMaxDeviation(i interface{}) error {
 }
 
 func validateRequiredDenoms(i interface{}) error {
-	v, ok := i.(DenomList)
+	v, ok := i.([]string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	for _, d := range v {
-		if len(d.Name) == 0 {
-			return fmt.Errorf("oracle parameter RequiredDenoms Denom must have name")
+		if len(d) == 0 {
+			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
 		}
 	}
 

@@ -102,7 +102,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			VotePeriod:               votePeriod,
 			VoteThreshold:            voteThreshold,
 			MaxDeviation:               maxDeviation,
-			RequiredDenoms:                types.DenomList{},
+			RequiredDenoms:                []string{},
 			SlashFraction:            slashFraction,
 			SlashWindow:              slashWindow,
 			MinValidPerWindow:        minValidPerWindow,

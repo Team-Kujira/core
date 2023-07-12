@@ -115,9 +115,9 @@ func TestParams(t *testing.T) {
 	slashFraction := sdk.NewDecWithPrec(1, 2)
 	slashWindow := uint64(1000)
 	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
-	requiredDenoms := types.DenomList{
-		{Name: types.TestDenomD},
-		{Name: types.TestDenomC},
+	requiredDenoms := []string{
+		types.TestDenomD,
+		types.TestDenomC,
 	}
 
 	// Should really test validateParams, but skipping because obvious

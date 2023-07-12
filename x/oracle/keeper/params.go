@@ -24,13 +24,13 @@ func (k Keeper) MaxDeviation(ctx sdk.Context) (res sdk.Dec) {
 
 
 // RequiredDenoms returns the denom list that can be activated
-func (k Keeper) RequiredDenoms(ctx sdk.Context) (res types.DenomList) {
+func (k Keeper) RequiredDenoms(ctx sdk.Context) (res []string) {
 	return k.GetParams(ctx).RequiredDenoms
 }
 
 // SetRequiredDenoms store new required denoms to param store
 // this function is only for test purpose
-func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms types.DenomList) {
+func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms []string) {
 	params := k.GetParams(ctx)
 	params.RequiredDenoms = denoms
 	k.SetParams(ctx, params)

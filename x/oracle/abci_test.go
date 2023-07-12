@@ -234,7 +234,7 @@ func TestOracleTallyTiming(t *testing.T) {
 func TestOracleRewardBand(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}}
+	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	rewardSpread := randomExchangeRate.Mul(input.OracleKeeper.MaxDeviation(input.Ctx))
@@ -344,7 +344,7 @@ func TestOracleEnsureSorted(t *testing.T) {
 func TestInvalidVotesSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}}
+	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
@@ -424,7 +424,7 @@ func TestRequiredDenomsSlashing(t *testing.T) {
 func TestNotPassedBallotSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}}
+	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	input.Ctx = input.Ctx.WithBlockHeight(input.Ctx.BlockHeight() + 1)
@@ -442,7 +442,7 @@ func TestNotPassedBallotSlashing(t *testing.T) {
 func TestAbstainSlashing(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}}
+	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
@@ -471,7 +471,7 @@ func TestAbstainSlashing(t *testing.T) {
 func TestVoteTargets(t *testing.T) {
 	input, h := setup(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}, {Name: types.TestDenomD}}
+	params.RequiredDenoms = []string{types.TestDenomC, types.TestDenomD}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// DenomC
@@ -487,7 +487,7 @@ func TestVoteTargets(t *testing.T) {
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[2]))
 
 	// delete DenomD
-	params.RequiredDenoms = types.DenomList{{Name: types.TestDenomC}}
+	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	// DenomC, missing

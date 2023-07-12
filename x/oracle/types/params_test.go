@@ -79,11 +79,9 @@ func TestValidate(t *testing.T) {
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(-1, 2)))
 			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(101, 2)))
 		case bytes.Equal(types.KeyRequiredDenoms, pair.Key):
-			require.NoError(t, pair.ValidatorFn(types.DenomList{}))
+			require.NoError(t, pair.ValidatorFn([]string{}))
 			require.Error(t, pair.ValidatorFn("invalid"))
-			require.Error(t, pair.ValidatorFn(types.DenomList{
-				{Name: ""},
-			}))
+			require.Error(t, pair.ValidatorFn([]string{""}))
 		}
 	}
 }
