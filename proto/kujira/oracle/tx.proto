@@ -26,10 +26,8 @@ service Msg {
   // RemovePrice removes a price from the required list of prices
   rpc RemovePrice(MsgRemovePrice) returns (MsgRemovePriceResponse);
 
-    // UpdateParams sets new module params
-    rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
-
-  
+  // UpdateParams sets new module params
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgAggregateExchangeRatePrevote represents a message to submit

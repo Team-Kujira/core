@@ -13,6 +13,9 @@ var (
 	_ sdk.Msg = &MsgDelegateFeedConsent{}
 	_ sdk.Msg = &MsgAggregateExchangeRatePrevote{}
 	_ sdk.Msg = &MsgAggregateExchangeRateVote{}
+	_ sdk.Msg = &MsgAddPrice{}
+	_ sdk.Msg = &MsgRemovePrice{}
+	_ sdk.Msg = &MsgUpdateParams{}
 )
 
 // oracle message types
@@ -20,6 +23,9 @@ const (
 	TypeMsgDelegateFeedConsent          = "delegate_feeder"
 	TypeMsgAggregateExchangeRatePrevote = "aggregate_exchange_rate_prevote"
 	TypeMsgAggregateExchangeRateVote    = "aggregate_exchange_rate_vote"
+	TypeMsgAddPrice                     = "add_price"
+	TypeMsgRemovePrice                  = "remove_price"
+	TypeMsgUpdateParams                 = "update_params"
 )
 
 //-------------------------------------------------
@@ -191,6 +197,120 @@ func (msg MsgDelegateFeedConsent) ValidateBasic() error {
 	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid delegate address (%s)", err)
+	}
+
+	return nil
+}
+
+// NewMsgAddPrice creates a MsgAddPrice instance
+func NewMsgAddPrice(symbol string) *MsgAddPrice {
+	return &MsgAddPrice{
+		Symbol: symbol,
+	}
+}
+
+// Route implements sdk.Msg
+func (msg MsgAddPrice) Route() string { return RouterKey }
+
+// Type implements sdk.Msg
+func (msg MsgAddPrice) Type() string { return TypeMsgAddPrice }
+
+// GetSignBytes implements sdk.Msg
+func (msg MsgAddPrice) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners implements sdk.Msg
+func (msg MsgAddPrice) GetSigners() []sdk.AccAddress {
+	operator, err := sdk.ValAddressFromBech32(msg.Authority)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{sdk.AccAddress(operator)}
+}
+
+// ValidateBasic implements sdk.Msg
+func (msg MsgAddPrice) ValidateBasic() error {
+	_, err := sdk.ValAddressFromBech32(msg.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
+	}
+
+	return nil
+}
+
+// NewMsgRemovePrice creates a MsgRemovePrice instance
+func NewMsgRemovePrice(symbol string) *MsgRemovePrice {
+	return &MsgRemovePrice{
+		Symbol: symbol,
+	}
+}
+
+// Route implements sdk.Msg
+func (msg MsgRemovePrice) Route() string { return RouterKey }
+
+// Type implements sdk.Msg
+func (msg MsgRemovePrice) Type() string { return TypeMsgRemovePrice }
+
+// GetSignBytes implements sdk.Msg
+func (msg MsgRemovePrice) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners implements sdk.Msg
+func (msg MsgRemovePrice) GetSigners() []sdk.AccAddress {
+	operator, err := sdk.ValAddressFromBech32(msg.Authority)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{sdk.AccAddress(operator)}
+}
+
+// ValidateBasic implements sdk.Msg
+func (msg MsgRemovePrice) ValidateBasic() error {
+	_, err := sdk.ValAddressFromBech32(msg.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
+	}
+
+	return nil
+}
+
+// NewMsgUpdateParams creates a MsgUpdateParams instance
+func NewMsgUpdateParams(params *Params) *MsgUpdateParams {
+	return &MsgUpdateParams{
+		Params: params,
+	}
+}
+
+// Route implements sdk.Msg
+func (msg MsgUpdateParams) Route() string { return RouterKey }
+
+// Type implements sdk.Msg
+func (msg MsgUpdateParams) Type() string { return TypeMsgUpdateParams }
+
+// GetSignBytes implements sdk.Msg
+func (msg MsgUpdateParams) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners implements sdk.Msg
+func (msg MsgUpdateParams) GetSigners() []sdk.AccAddress {
+	operator, err := sdk.ValAddressFromBech32(msg.Authority)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{sdk.AccAddress(operator)}
+}
+
+// ValidateBasic implements sdk.Msg
+func (msg MsgUpdateParams) ValidateBasic() error {
+	_, err := sdk.ValAddressFromBech32(msg.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
 	}
 
 	return nil
