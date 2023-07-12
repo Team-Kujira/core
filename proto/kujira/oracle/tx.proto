@@ -20,11 +20,11 @@ service Msg {
   // DelegateFeedConsent defines a method for setting the feeder delegation
   rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
 
-  // AddRequiredSymbol adds a new price to the required list of prices
-  rpc AddRequiredSymbol(MsgAddRequiredSymbol) returns (MsgAddRequiredSymbolResponse);
+  // AddRequiredDenom adds a new price to the required list of prices
+  rpc AddRequiredDenom(MsgAddRequiredDenom) returns (MsgAddRequiredDenomResponse);
 
-  // RemoveRequiredSymbol removes a price from the required list of prices
-  rpc RemoveRequiredSymbol(MsgRemoveRequiredSymbol) returns (MsgRemoveRequiredSymbolResponse);
+  // RemoveRequiredDenom removes a price from the required list of prices
+  rpc RemoveRequiredDenom(MsgRemoveRequiredDenom) returns (MsgRemoveRequiredDenomResponse);
 
   // UpdateParams sets new module params
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
@@ -72,27 +72,27 @@ message MsgDelegateFeedConsent {
 // MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent response type.
 message MsgDelegateFeedConsentResponse {}
 
-// MsgAddRequiredSymbol represents a message to add a denom to the whitelist
-message MsgAddRequiredSymbol {
+// MsgAddRequiredDenom represents a message to add a denom to the whitelist
+message MsgAddRequiredDenom {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
   string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
 }
 
-// MsgAddRequiredSymbolResponse defines the Msg/AddRequiredSymbol response type.
-message MsgAddRequiredSymbolResponse {}
+// MsgAddRequiredDenomResponse defines the Msg/AddRequiredDenom response type.
+message MsgAddRequiredDenomResponse {}
 
-// MsgRemoveRequiredSymbol represents a message to remove a denom from the whitelist
-message MsgRemoveRequiredSymbol {
+// MsgRemoveRequiredDenom represents a message to remove a denom from the whitelist
+message MsgRemoveRequiredDenom {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
   string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
 }
 
-// MsgRemoveRequiredSymbolResponse defines the Msg/RemoveRequiredSymbol response type.
-message MsgRemoveRequiredSymbolResponse {}
+// MsgRemoveRequiredDenomResponse defines the Msg/RemoveRequiredDenom response type.
+message MsgRemoveRequiredDenomResponse {}
 
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";

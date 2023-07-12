@@ -32,7 +32,7 @@ const (
 var (
 	DefaultVoteThreshold     = sdk.NewDecWithPrec(50, 2) // 50%
 	DefaultRewardBand        = sdk.NewDecWithPrec(2, 2)  // 2% (-1, 1)
-	DefaultWhitelist         = DenomList{}
+	DefaultRequiredDenoms         = DenomList{}
 	DefaultSlashFraction     = sdk.NewDecWithPrec(1, 4) // 0.01%
 	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
 )
@@ -45,8 +45,7 @@ func DefaultParams() Params {
 		VotePeriod:               DefaultVotePeriod,
 		VoteThreshold:            DefaultVoteThreshold,
 		RewardBand:               DefaultRewardBand,
-		RewardDistributionWindow: DefaultRewardDistributionWindow,
-		Whitelist:                DefaultWhitelist,
+		RequiredDenoms:                DefaultRequiredDenoms,
 		SlashFraction:            DefaultSlashFraction,
 		SlashWindow:              DefaultSlashWindow,
 		MinValidPerWindow:        DefaultMinValidPerWindow,
@@ -65,8 +64,7 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramstypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
 		paramstypes.NewParamSetPair(KeyRewardBand, &p.RewardBand, validateRewardBand),
-		paramstypes.NewParamSetPair(KeyRewardDistributionWindow, &p.RewardDistributionWindow, validateRewardDistributionWindow),
-		paramstypes.NewParamSetPair(KeyWhitelist, &p.Whitelist, validateWhitelist),
+		paramstypes.NewParamSetPair(KeyWhitelist, &p.RequiredDenoms, validateRequiredDenoms),
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
 		paramstypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramstypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
@@ -92,10 +90,6 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter RewardBand must be between [0, 1]")
 	}
 
-	if p.RewardDistributionWindow < p.VotePeriod {
-		return fmt.Errorf("oracle parameter RewardDistributionWindow must be greater than or equal with VotePeriod")
-	}
-
 	if p.SlashFraction.GT(sdk.OneDec()) || p.SlashFraction.IsNegative() {
 		return fmt.Errorf("oracle parameter SlashFraction must be between [0, 1]")
 	}
@@ -108,7 +102,7 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter MinValidPerWindow must be between [0, 1]")
 	}
 
-	for _, denom := range p.Whitelist {
+	for _, denom := range p.RequiredDenoms {
 		if len(denom.Name) == 0 {
 			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
 		}
@@ -163,20 +157,7 @@ func validateRewardBand(i interface{}) error {
 	return nil
 }
 
-func validateRewardDistributionWindow(i interface{}) error {
-	v, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v == 0 {
-		return fmt.Errorf("reward distribution window must be positive: %d", v)
-	}
-
-	return nil
-}
-
-func validateWhitelist(i interface{}) error {
+func validateRequiredDenoms(i interface{}) error {
 	v, ok := i.(DenomList)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
@@ -184,7 +165,7 @@ func validateWhitelist(i interface{}) error {
 
 	for _, d := range v {
 		if len(d.Name) == 0 {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
+			return fmt.Errorf("oracle parameter RequiredDenoms Denom must have name")
 		}
 	}
 

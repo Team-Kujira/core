@@ -20,26 +20,19 @@ func (k Keeper) VoteThreshold(ctx sdk.Context) (res sdk.Dec) {
 // RewardBand returns the ratio of allowable exchange rate error that a validator can be rewared
 func (k Keeper) RewardBand(ctx sdk.Context) (res sdk.Dec) {
 	return k.GetParams(ctx).RewardBand
-
 }
 
-// RewardDistributionWindow returns the number of vote periods during which seigiornage reward comes in and then is distributed.
-func (k Keeper) RewardDistributionWindow(ctx sdk.Context) (res uint64) {
-	return k.GetParams(ctx).RewardDistributionWindow
 
+// RequiredDenoms returns the denom list that can be activated
+func (k Keeper) RequiredDenoms(ctx sdk.Context) (res types.DenomList) {
+	return k.GetParams(ctx).RequiredDenoms
 }
 
-// Whitelist returns the denom list that can be activated
-func (k Keeper) Whitelist(ctx sdk.Context) (res types.DenomList) {
-	return k.GetParams(ctx).Whitelist
-
-}
-
-// SetWhitelist store new whitelist to param store
+// SetRequiredDenoms store new required denoms to param store
 // this function is only for test purpose
-func (k Keeper) SetWhitelist(ctx sdk.Context, whitelist types.DenomList) {
+func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms types.DenomList) {
 	params := k.GetParams(ctx)
-	params.Whitelist = whitelist
+	params.RequiredDenoms = denoms
 	k.SetParams(ctx, params)
 }
 

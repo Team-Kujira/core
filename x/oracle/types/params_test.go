@@ -51,12 +51,6 @@ func TestParamsEqual(t *testing.T) {
 	err = p6.Validate()
 	require.Error(t, err)
 
-	// small distribution window
-	p7 := types.DefaultParams()
-	p7.RewardDistributionWindow = 0
-	err = p7.Validate()
-	require.Error(t, err)
-
 	p11 := types.DefaultParams()
 	require.NotNil(t, p11.ParamSetPairs())
 	require.NotNil(t, p11.String())

@@ -13,8 +13,8 @@ var (
 	_ sdk.Msg = &MsgDelegateFeedConsent{}
 	_ sdk.Msg = &MsgAggregateExchangeRatePrevote{}
 	_ sdk.Msg = &MsgAggregateExchangeRateVote{}
-	_ sdk.Msg = &MsgAddRequiredSymbol{}
-	_ sdk.Msg = &MsgRemoveRequiredSymbol{}
+	_ sdk.Msg = &MsgAddRequiredDenom{}
+	_ sdk.Msg = &MsgRemoveRequiredDenom{}
 	_ sdk.Msg = &MsgUpdateParams{}
 )
 
@@ -23,8 +23,8 @@ const (
 	TypeMsgDelegateFeedConsent          = "delegate_feeder"
 	TypeMsgAggregateExchangeRatePrevote = "aggregate_exchange_rate_prevote"
 	TypeMsgAggregateExchangeRateVote    = "aggregate_exchange_rate_vote"
-	TypeMsgAddRequiredSymbol                     = "add_price"
-	TypeMsgRemoveRequiredSymbol                  = "remove_price"
+	TypeMsgAddRequiredDenom                     = "add_price"
+	TypeMsgRemoveRequiredDenom                  = "remove_price"
 	TypeMsgUpdateParams                 = "update_params"
 )
 
@@ -202,26 +202,26 @@ func (msg MsgDelegateFeedConsent) ValidateBasic() error {
 	return nil
 }
 
-// NewMsgAddRequiredSymbol creates a MsgAddRequiredSymbol instance
-func NewMsgAddRequiredSymbol(symbol string) *MsgAddRequiredSymbol {
-	return &MsgAddRequiredSymbol{
+// NewMsgAddRequiredDenom creates a MsgAddRequiredDenom instance
+func NewMsgAddRequiredDenom(symbol string) *MsgAddRequiredDenom {
+	return &MsgAddRequiredDenom{
 		Symbol: symbol,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgAddRequiredSymbol) Route() string { return RouterKey }
+func (msg MsgAddRequiredDenom) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgAddRequiredSymbol) Type() string { return TypeMsgAddRequiredSymbol }
+func (msg MsgAddRequiredDenom) Type() string { return TypeMsgAddRequiredDenom }
 
 // GetSignBytes implements sdk.Msg
-func (msg MsgAddRequiredSymbol) GetSignBytes() []byte {
+func (msg MsgAddRequiredDenom) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgAddRequiredSymbol) GetSigners() []sdk.AccAddress {
+func (msg MsgAddRequiredDenom) GetSigners() []sdk.AccAddress {
 	operator, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -231,7 +231,7 @@ func (msg MsgAddRequiredSymbol) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgAddRequiredSymbol) ValidateBasic() error {
+func (msg MsgAddRequiredDenom) ValidateBasic() error {
 	_, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
@@ -240,26 +240,26 @@ func (msg MsgAddRequiredSymbol) ValidateBasic() error {
 	return nil
 }
 
-// NewMsgRemoveRequiredSymbol creates a MsgRemoveRequiredSymbol instance
-func NewMsgRemoveRequiredSymbol(symbol string) *MsgRemoveRequiredSymbol {
-	return &MsgRemoveRequiredSymbol{
+// NewMsgRemoveRequiredDenom creates a MsgRemoveRequiredDenom instance
+func NewMsgRemoveRequiredDenom(symbol string) *MsgRemoveRequiredDenom {
+	return &MsgRemoveRequiredDenom{
 		Symbol: symbol,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgRemoveRequiredSymbol) Route() string { return RouterKey }
+func (msg MsgRemoveRequiredDenom) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgRemoveRequiredSymbol) Type() string { return TypeMsgRemoveRequiredSymbol }
+func (msg MsgRemoveRequiredDenom) Type() string { return TypeMsgRemoveRequiredDenom }
 
 // GetSignBytes implements sdk.Msg
-func (msg MsgRemoveRequiredSymbol) GetSignBytes() []byte {
+func (msg MsgRemoveRequiredDenom) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgRemoveRequiredSymbol) GetSigners() []sdk.AccAddress {
+func (msg MsgRemoveRequiredDenom) GetSigners() []sdk.AccAddress {
 	operator, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -269,7 +269,7 @@ func (msg MsgRemoveRequiredSymbol) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgRemoveRequiredSymbol) ValidateBasic() error {
+func (msg MsgRemoveRequiredDenom) ValidateBasic() error {
 	_, err := sdk.ValAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)

@@ -112,11 +112,10 @@ func TestParams(t *testing.T) {
 	votePeriod := uint64(10)
 	voteThreshold := sdk.NewDecWithPrec(70, 2)
 	oracleRewardBand := sdk.NewDecWithPrec(1, 2)
-	rewardDistributionWindow := uint64(10000000000000)
 	slashFraction := sdk.NewDecWithPrec(1, 2)
 	slashWindow := uint64(1000)
 	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
-	whitelist := types.DenomList{
+	requiredDenoms := types.DenomList{
 		{Name: types.TestDenomD},
 		{Name: types.TestDenomC},
 	}
@@ -126,8 +125,7 @@ func TestParams(t *testing.T) {
 		VotePeriod:               votePeriod,
 		VoteThreshold:            voteThreshold,
 		RewardBand:               oracleRewardBand,
-		RewardDistributionWindow: rewardDistributionWindow,
-		Whitelist:                whitelist,
+		RequiredDenoms:                requiredDenoms,
 		SlashFraction:            slashFraction,
 		SlashWindow:              slashWindow,
 		MinValidPerWindow:        minValidPerWindow,

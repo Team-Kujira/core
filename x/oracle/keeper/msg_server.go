@@ -167,22 +167,22 @@ func (ms msgServer) DelegateFeedConsent(goCtx context.Context, msg *types.MsgDel
 	return &types.MsgDelegateFeedConsentResponse{}, nil
 }
 
-func (ms msgServer) AddRequiredSymbol(goCtx context.Context, msg *types.MsgAddRequiredSymbol) (*types.MsgAddRequiredSymbolResponse, error) {
+func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddRequiredDenom) (*types.MsgAddRequiredDenomResponse, error) {
 
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
 
-	return &types.MsgAddRequiredSymbolResponse{}, nil
+	return &types.MsgAddRequiredDenomResponse{}, nil
 }
 
-func (ms msgServer) RemoveRequiredSymbol(goCtx context.Context, msg *types.MsgRemoveRequiredSymbol) (*types.MsgRemoveRequiredSymbolResponse, error) {
+func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRemoveRequiredDenom) (*types.MsgRemoveRequiredDenomResponse, error) {
 
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
 
-	return &types.MsgRemoveRequiredSymbolResponse{}, nil
+	return &types.MsgRemoveRequiredDenomResponse{}, nil
 }
 
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {

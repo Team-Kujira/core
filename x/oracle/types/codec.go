@@ -14,8 +14,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAggregateExchangeRatePrevote{}, "oracle/MsgAggregateExchangeRatePrevote", nil)
 	cdc.RegisterConcrete(&MsgAggregateExchangeRateVote{}, "oracle/MsgAggregateExchangeRateVote", nil)
 	cdc.RegisterConcrete(&MsgDelegateFeedConsent{}, "oracle/MsgDelegateFeedConsent", nil)
-	cdc.RegisterConcrete(&MsgAddRequiredSymbol{}, "oracle/MsgAddRequiredSymbol", nil)
-	cdc.RegisterConcrete(&MsgRemoveRequiredSymbol{}, "oracle/MsgRemoveRequiredSymbol", nil)
+	cdc.RegisterConcrete(&MsgAddRequiredDenom{}, "oracle/MsgAddRequiredDenom", nil)
+	cdc.RegisterConcrete(&MsgRemoveRequiredDenom{}, "oracle/MsgRemoveRequiredDenom", nil)
 	cdc.RegisterConcrete(&MsgUpdateParams{}, "oracle/MsgUpdateParams", nil)
 }
 
@@ -25,8 +25,8 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgDelegateFeedConsent{},
 		&MsgAggregateExchangeRatePrevote{},
 		&MsgAggregateExchangeRateVote{},
-		&MsgAddRequiredSymbol{},
-		&MsgRemoveRequiredSymbol{},
+		&MsgAddRequiredDenom{},
+		&MsgRemoveRequiredDenom{},
 		&MsgUpdateParams{},
 	)
 
