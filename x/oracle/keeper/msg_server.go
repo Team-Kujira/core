@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -173,6 +174,20 @@ func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddReq
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
 
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := ms.GetParams(ctx)
+
+	denoms := params.RequiredDenoms
+	for _, denom := range denoms {
+		if denom == msg.Symbol {
+			return nil, fmt.Errorf("symbol '%s' already set as required denoms", msg.Symbol)
+		}
+	}
+
+	denoms = append(denoms, msg.Symbol)
+	params.RequiredDenoms = denoms
+	ms.SetParams(ctx, params)
+
 	return &types.MsgAddRequiredDenomResponse{}, nil
 }
 
@@ -181,6 +196,26 @@ func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRem
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := ms.GetParams(ctx)
+
+	denoms := params.RequiredDenoms
+	index := -1
+	for i, denom := range denoms {
+		if denom == msg.Symbol {
+			index = i
+			break
+		}
+	}
+
+	if index < 0 {
+		return nil, fmt.Errorf("symbol '%s' not found in required denoms", msg.Symbol)
+	}
+
+	denoms = append(denoms[:index], denoms[index+1:]...)
+	params.RequiredDenoms = denoms
+	ms.SetParams(ctx, params)
 
 	return &types.MsgRemoveRequiredDenomResponse{}, nil
 }
