@@ -23,8 +23,8 @@ const (
 	TypeMsgDelegateFeedConsent          = "delegate_feeder"
 	TypeMsgAggregateExchangeRatePrevote = "aggregate_exchange_rate_prevote"
 	TypeMsgAggregateExchangeRateVote    = "aggregate_exchange_rate_vote"
-	TypeMsgAddRequiredDenom                     = "add_price"
-	TypeMsgRemoveRequiredDenom                  = "remove_price"
+	TypeMsgAddRequiredDenom             = "add_price"
+	TypeMsgRemoveRequiredDenom          = "remove_price"
 	TypeMsgUpdateParams                 = "update_params"
 )
 
@@ -222,17 +222,13 @@ func (msg MsgAddRequiredDenom) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (msg MsgAddRequiredDenom) GetSigners() []sdk.AccAddress {
-	operator, err := sdk.ValAddressFromBech32(msg.Authority)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{sdk.AccAddress(operator)}
+	addr, _ := sdk.AccAddressFromBech32(msg.Authority)
+	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic implements sdk.Msg
 func (msg MsgAddRequiredDenom) ValidateBasic() error {
-	_, err := sdk.ValAddressFromBech32(msg.Authority)
+	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
 	}
@@ -260,17 +256,13 @@ func (msg MsgRemoveRequiredDenom) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (msg MsgRemoveRequiredDenom) GetSigners() []sdk.AccAddress {
-	operator, err := sdk.ValAddressFromBech32(msg.Authority)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{sdk.AccAddress(operator)}
+	addr, _ := sdk.AccAddressFromBech32(msg.Authority)
+	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic implements sdk.Msg
 func (msg MsgRemoveRequiredDenom) ValidateBasic() error {
-	_, err := sdk.ValAddressFromBech32(msg.Authority)
+	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
 	}
@@ -298,17 +290,13 @@ func (msg MsgUpdateParams) GetSignBytes() []byte {
 
 // GetSigners implements sdk.Msg
 func (msg MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	operator, err := sdk.ValAddressFromBech32(msg.Authority)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{sdk.AccAddress(operator)}
+	addr, _ := sdk.AccAddressFromBech32(msg.Authority)
+	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic implements sdk.Msg
 func (msg MsgUpdateParams) ValidateBasic() error {
-	_, err := sdk.ValAddressFromBech32(msg.Authority)
+	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
 	}
