@@ -23,6 +23,8 @@ import (
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
+	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
+
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
@@ -67,6 +69,10 @@ func (app App) RegisterUpgradeHandlers() {
 			// wasm
 		case wasmtypes.ModuleName:
 			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
+
+		case oracletypes.ModuleName:
+			keyTable = oracletypes.ParamKeyTable()
+
 		default:
 			continue
 		}
@@ -83,6 +89,49 @@ func (app App) RegisterUpgradeHandlers() {
 		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
 			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
+
+			oracleSubspace := app.ParamsKeeper.Subspace(oracletypes.StoreKey)
+
+			type Denom struct {
+				Name string
+			}
+
+			type DenomList []Denom
+
+			var (
+				votePeriod        uint64
+				voteThreshold     sdk.Dec
+				rewardBand        sdk.Dec
+				whitelist         DenomList
+				slashFraction     sdk.Dec
+				slashWindow       uint64
+				minValidPerWindow sdk.Dec
+			)
+
+			oracleSubspace.Get(ctx, []byte("VotePeriod"), &votePeriod)
+			oracleSubspace.Get(ctx, []byte("VoteThreshold"), &voteThreshold)
+			oracleSubspace.Get(ctx, []byte("RewardBand"), &rewardBand)
+			oracleSubspace.Get(ctx, []byte("Whitelist"), &whitelist)
+			oracleSubspace.Get(ctx, []byte("SlashFraction"), &slashFraction)
+			oracleSubspace.Get(ctx, []byte("SlashWindow"), &slashWindow)
+			oracleSubspace.Get(ctx, []byte("MinValidPerWindow"), &minValidPerWindow)
+
+			denoms := []string{}
+			for _, denom := range whitelist {
+				denoms = append(denoms, denom.Name)
+			}
+
+			oracleParams := oracletypes.Params{
+				VotePeriod:        votePeriod,
+				VoteThreshold:     voteThreshold,
+				MaxDeviation:      rewardBand,
+				RequiredDenoms:    denoms,
+				SlashFraction:     slashFraction,
+				SlashWindow:       slashWindow,
+				MinValidPerWindow: minValidPerWindow,
+			}
+
+			app.OracleKeeper.SetParams(ctx, oracleParams)
 
 			// Note: this migration is optional,
 			// You can include x/gov proposal migration documented in [UPGRADING.md](https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md)
