@@ -23,6 +23,7 @@ import (
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
+	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -72,6 +73,8 @@ func (app App) RegisterUpgradeHandlers() {
 
 		case oracletypes.ModuleName:
 			keyTable = oracletypes.ParamKeyTable()
+		case denomtypes.ModuleName:
+			keyTable = denomtypes.ParamKeyTable()
 
 		default:
 			continue
@@ -89,6 +92,9 @@ func (app App) RegisterUpgradeHandlers() {
 		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
 			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
+
+			// x/oracle
+			// ---------------------------------------------------------------
 
 			oracleSubspace, ok := app.ParamsKeeper.GetSubspace(oracletypes.StoreKey)
 			if !ok {
@@ -129,6 +135,23 @@ func (app App) RegisterUpgradeHandlers() {
 			}
 
 			app.OracleKeeper.SetParams(ctx, oracleParams)
+
+			// x/denom
+			// ---------------------------------------------------------------
+
+			denomSubspace, ok := app.ParamsKeeper.GetSubspace(denomtypes.StoreKey)
+			if !ok {
+				panic("denom subspace not found")
+			}
+
+			var creationFee sdk.Coins
+			denomSubspace.Get(ctx, denomtypes.KeyCreationFee, &creationFee)
+
+			denomParams := denomtypes.Params{
+				CreationFee: creationFee,
+			}
+
+			app.DenomKeeper.SetParams(ctx, denomParams)
 
 			// Note: this migration is optional,
 			// You can include x/gov proposal migration documented in [UPGRADING.md](https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md)

@@ -33,6 +33,8 @@
      - [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse)
      - [MsgMint](#kujira.denom.MsgMint)
      - [MsgMintResponse](#kujira.denom.MsgMintResponse)
+     - [MsgUpdateParams](#kujira.denom.MsgUpdateParams)
+     - [MsgUpdateParamsResponse](#kujira.denom.MsgUpdateParamsResponse)
    
      - [Msg](#kujira.denom.Msg)
    
@@ -388,6 +390,32 @@ more of a token.
 
  
 
+ 
+ <a name="kujira.denom.MsgUpdateParams"></a>
+
+ ### MsgUpdateParams
+ 
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `authority` | [string](#string) |  |  |
+ | `params` | [Params](#kujira.denom.Params) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.denom.MsgUpdateParamsResponse"></a>
+
+ ### MsgUpdateParamsResponse
+ MsgUpdateParamsResponse defines the Msg/UpdateParams response type.
+
+ 
+
+ 
+
   <!-- end messages -->
 
   <!-- end enums -->
@@ -406,6 +434,7 @@ more of a token.
  | `Mint` | [MsgMint](#kujira.denom.MsgMint) | [MsgMintResponse](#kujira.denom.MsgMintResponse) |  | |
  | `Burn` | [MsgBurn](#kujira.denom.MsgBurn) | [MsgBurnResponse](#kujira.denom.MsgBurnResponse) |  | |
  | `ChangeAdmin` | [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin) | [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse) | ForceTransfer is deactivated for now because we need to think through edge cases rpc ForceTransfer(MsgForceTransfer) returns (MsgForceTransferResponse); | |
+ | `UpdateParams` | [MsgUpdateParams](#kujira.denom.MsgUpdateParams) | [MsgUpdateParamsResponse](#kujira.denom.MsgUpdateParamsResponse) | UpdateParams sets new module params | |
  
   <!-- end services -->
 
