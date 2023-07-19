@@ -36,8 +36,27 @@ message Params {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
+  // Deprecated
+  string reward_band = 8 [
+    (gogoproto.moretags)   = "yaml:\"reward_band\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+  repeated Denom whitelist   = 9 [
+    (gogoproto.moretags)     = "yaml:\"whitelist\"",
+    (gogoproto.castrepeated) = "DenomList",
+    (gogoproto.nullable)     = false
+  ];
 }
 
+// Denom - the object to hold configurations of each denom
+message Denom {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.goproto_stringer) = false;
+
+  string name      = 1 [(gogoproto.moretags) = "yaml:\"name\""];
+}
 
 // struct for aggregate prevoting on the ExchangeRateVote.
 // The purpose of aggregate prevote is to hide vote exchange rates with hash

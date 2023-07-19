@@ -18,6 +18,9 @@ var (
 	KeySlashFraction     = []byte("SlashFraction")
 	KeySlashWindow       = []byte("SlashWindow")
 	KeyMinValidPerWindow = []byte("MinValidPerWindow")
+	// Deprecated
+	KeyRewardBand = []byte("RewardBand")
+	KeyWhitelist  = []byte("Whitelist")
 )
 
 // Default parameter values
@@ -67,6 +70,8 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
 		paramstypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramstypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
+		paramstypes.NewParamSetPair(KeyRewardBand, &p.RewardBand, func(i interface{}) error { return nil }),
+		paramstypes.NewParamSetPair(KeyWhitelist, &p.Whitelist, func(i interface{}) error { return nil }),
 	}
 }
 

@@ -90,19 +90,16 @@ func (app App) RegisterUpgradeHandlers() {
 			// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
 			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
 
-			oracleSubspace := app.ParamsKeeper.Subspace(oracletypes.StoreKey)
-
-			type Denom struct {
-				Name string
+			oracleSubspace, ok := app.ParamsKeeper.GetSubspace(oracletypes.StoreKey)
+			if !ok {
+				panic("oracle subspace not found")
 			}
-
-			type DenomList []Denom
 
 			var (
 				votePeriod        uint64
 				voteThreshold     sdk.Dec
 				rewardBand        sdk.Dec
-				whitelist         DenomList
+				whitelist         oracletypes.DenomList
 				slashFraction     sdk.Dec
 				slashWindow       uint64
 				minValidPerWindow sdk.Dec
