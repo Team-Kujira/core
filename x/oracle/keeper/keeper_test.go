@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
@@ -122,13 +123,15 @@ func TestParams(t *testing.T) {
 
 	// Should really test validateParams, but skipping because obvious
 	newParams := types.Params{
-		VotePeriod:			votePeriod,
-		VoteThreshold:      voteThreshold,
-		MaxDeviation:       maxDeviation,
-		RequiredDenoms:     requiredDenoms,
-		SlashFraction:      slashFraction,
-		SlashWindow:        slashWindow,
-		MinValidPerWindow:  minValidPerWindow,
+		VotePeriod:        votePeriod,
+		VoteThreshold:     voteThreshold,
+		MaxDeviation:      maxDeviation,
+		RequiredDenoms:    requiredDenoms,
+		SlashFraction:     slashFraction,
+		SlashWindow:       slashWindow,
+		MinValidPerWindow: minValidPerWindow,
+		Whitelist:         nil,
+		RewardBand:        math.LegacyZeroDec(),
 	}
 	err := input.OracleKeeper.SetParams(input.Ctx, newParams)
 	require.NoError(t, err)
