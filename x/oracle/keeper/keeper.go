@@ -316,3 +316,7 @@ func (k Keeper) ValidateFeeder(ctx sdk.Context, feederAddr sdk.AccAddress, valid
 
 	return nil
 }
+
+func (k Keeper) GetSubspace() paramstypes.Subspace {
+	return k.paramSpace
+}

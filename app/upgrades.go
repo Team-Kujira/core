@@ -96,46 +96,6 @@ func (app App) RegisterUpgradeHandlers() {
 			// x/oracle
 			// ---------------------------------------------------------------
 
-			oracleSubspace, ok := app.ParamsKeeper.GetSubspace(oracletypes.StoreKey)
-			if !ok {
-				panic("oracle subspace not found")
-			}
-
-			var (
-				votePeriod        uint64
-				voteThreshold     sdk.Dec
-				rewardBand        sdk.Dec
-				whitelist         oracletypes.DenomList
-				slashFraction     sdk.Dec
-				slashWindow       uint64
-				minValidPerWindow sdk.Dec
-			)
-
-			oracleSubspace.Get(ctx, []byte("VotePeriod"), &votePeriod)
-			oracleSubspace.Get(ctx, []byte("VoteThreshold"), &voteThreshold)
-			oracleSubspace.Get(ctx, []byte("RewardBand"), &rewardBand)
-			oracleSubspace.Get(ctx, []byte("Whitelist"), &whitelist)
-			oracleSubspace.Get(ctx, []byte("SlashFraction"), &slashFraction)
-			oracleSubspace.Get(ctx, []byte("SlashWindow"), &slashWindow)
-			oracleSubspace.Get(ctx, []byte("MinValidPerWindow"), &minValidPerWindow)
-
-			denoms := []string{}
-			for _, denom := range whitelist {
-				denoms = append(denoms, denom.Name)
-			}
-
-			oracleParams := oracletypes.Params{
-				VotePeriod:        votePeriod,
-				VoteThreshold:     voteThreshold,
-				MaxDeviation:      rewardBand,
-				RequiredDenoms:    denoms,
-				SlashFraction:     slashFraction,
-				SlashWindow:       slashWindow,
-				MinValidPerWindow: minValidPerWindow,
-			}
-
-			app.OracleKeeper.SetParams(ctx, oracleParams)
-
 			// x/denom
 			// ---------------------------------------------------------------
 
