@@ -18,6 +18,7 @@ type (
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		paramstore paramtypes.Subspace
+		authority  string
 	}
 )
 
@@ -25,6 +26,7 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
+	authority string,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -35,6 +37,7 @@ func NewKeeper(
 		cdc:        cdc,
 		storeKey:   storeKey,
 		paramstore: ps,
+		authority:  authority,
 	}
 }
 

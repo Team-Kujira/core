@@ -589,6 +589,7 @@ func New(
 		appCodec,
 		keys[denomtypes.StoreKey],
 		app.GetSubspace(schedulertypes.ModuleName),
+		authority,
 	)
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(
