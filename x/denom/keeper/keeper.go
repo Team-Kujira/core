@@ -13,6 +13,7 @@ import (
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -88,4 +89,8 @@ func (k Keeper) GetCreatorsPrefixStore(ctx sdk.Context) sdk.KVStore {
 func (k Keeper) CreateModuleAccount(ctx sdk.Context) {
 	moduleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter, authtypes.Burner)
 	k.accountKeeper.SetModuleAccount(ctx, moduleAcc)
+}
+
+func (k Keeper) GetSubspace() paramstypes.Subspace {
+	return k.paramSpace
 }
