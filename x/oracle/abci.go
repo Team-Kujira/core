@@ -38,9 +38,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		// voteTargets defines the symbol (ticker) denoms that we require votes on
 		var voteTargets []string
-		for _, denom := range params.RequiredDenoms {
-			voteTargets = append(voteTargets, denom)
-		}
+		voteTargets = append(voteTargets, params.RequiredDenoms...)
 
 		// Clear all exchange rates
 		k.IterateExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {

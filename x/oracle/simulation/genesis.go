@@ -99,13 +99,13 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	oracleGenesis := types.NewGenesisState(
 		types.Params{
-			VotePeriod:               votePeriod,
-			VoteThreshold:            voteThreshold,
-			MaxDeviation:               maxDeviation,
-			RequiredDenoms:                []string{},
-			SlashFraction:            slashFraction,
-			SlashWindow:              slashWindow,
-			MinValidPerWindow:        minValidPerWindow,
+			VotePeriod:        votePeriod,
+			VoteThreshold:     voteThreshold,
+			MaxDeviation:      maxDeviation,
+			RequiredDenoms:    []string{},
+			SlashFraction:     slashFraction,
+			SlashWindow:       slashWindow,
+			MinValidPerWindow: minValidPerWindow,
 		},
 		[]types.ExchangeRateTuple{},
 		[]types.FeederDelegation{},
