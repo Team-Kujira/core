@@ -14,7 +14,6 @@ func (k Keeper) VotePeriod(ctx sdk.Context) (res uint64) {
 // VoteThreshold returns the minimum percentage of votes that must be received for a ballot to pass.
 func (k Keeper) VoteThreshold(ctx sdk.Context) (res sdk.Dec) {
 	return k.GetParams(ctx).VoteThreshold
-
 }
 
 // MaxDeviation returns the ratio of allowable exchange rate error that a validator can be rewared
@@ -22,36 +21,35 @@ func (k Keeper) MaxDeviation(ctx sdk.Context) (res sdk.Dec) {
 	return k.GetParams(ctx).MaxDeviation
 }
 
-
 // RequiredDenoms returns the denom list that can be activated
 func (k Keeper) RequiredDenoms(ctx sdk.Context) (res []string) {
 	return k.GetParams(ctx).RequiredDenoms
 }
 
-// SetRequiredDenoms store new required denoms to param store
-// this function is only for test purpose
-func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms []string) {
-	params := k.GetParams(ctx)
-	params.RequiredDenoms = denoms
-	k.SetParams(ctx, params)
-}
+// // SetRequiredDenoms store new required denoms to param store
+// // this function is only for test purpose
+// func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms []string) {
+// 	params := k.GetParams(ctx)
+// 	params.RequiredDenoms = denoms
+// 	err := k.SetParams(ctx, params)
+// 	if err != nil {
+// 		return
+// 	}
+// }
 
 // SlashFraction returns oracle voting penalty rate
 func (k Keeper) SlashFraction(ctx sdk.Context) (res sdk.Dec) {
 	return k.GetParams(ctx).SlashFraction
-
 }
 
 // SlashWindow returns # of vote period for oracle slashing
 func (k Keeper) SlashWindow(ctx sdk.Context) (res uint64) {
 	return k.GetParams(ctx).SlashWindow
-
 }
 
 // MinValidPerWindow returns oracle slashing threshold
 func (k Keeper) MinValidPerWindow(ctx sdk.Context) (res sdk.Dec) {
 	return k.GetParams(ctx).MinValidPerWindow
-
 }
 
 // GetParams returns the total set of oracle parameters.
