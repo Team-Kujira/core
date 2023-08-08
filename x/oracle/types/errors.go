@@ -24,4 +24,5 @@ var (
 	ErrNoAggregateVote       = errors.Register(ModuleName, 12, "no aggregate vote")
 	ErrUnknownDenom          = errors.Register(ModuleName, 13, "unknown denom")
 	ErrBallotNotSorted       = errors.Register(ModuleName, 14, "ballot not sorted")
+	ErrSetParams             = errors.Register(ModuleName, 15, "could not set params")
 )

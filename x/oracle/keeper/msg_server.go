@@ -169,7 +169,6 @@ func (ms msgServer) DelegateFeedConsent(goCtx context.Context, msg *types.MsgDel
 }
 
 func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddRequiredDenom) (*types.MsgAddRequiredDenomResponse, error) {
-
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
@@ -186,13 +185,15 @@ func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddReq
 
 	denoms = append(denoms, msg.Symbol)
 	params.RequiredDenoms = denoms
-	ms.SetParams(ctx, params)
+	err := ms.SetParams(ctx, params)
+	if err != nil {
+		return nil, types.ErrSetParams
+	}
 
 	return &types.MsgAddRequiredDenomResponse{}, nil
 }
 
 func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRemoveRequiredDenom) (*types.MsgRemoveRequiredDenomResponse, error) {
-
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
@@ -215,13 +216,15 @@ func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRem
 
 	denoms = append(denoms[:index], denoms[index+1:]...)
 	params.RequiredDenoms = denoms
-	ms.SetParams(ctx, params)
+	err := ms.SetParams(ctx, params)
+	if err != nil {
+		return nil, types.ErrSetParams
+	}
 
 	return &types.MsgRemoveRequiredDenomResponse{}, nil
 }
 
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
-
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}

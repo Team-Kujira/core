@@ -15,7 +15,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Params.CreationFee == nil {
 		genState.Params.CreationFee = sdk.NewCoins()
 	}
-	k.SetParams(ctx, genState.Params)
+	err := k.SetParams(ctx, genState.Params)
+	if err != nil {
+		panic(err)
+	}
 
 	for _, genDenom := range genState.GetFactoryDenoms() {
 		creator, nonce, err := types.DeconstructDenom(genDenom.GetDenom())

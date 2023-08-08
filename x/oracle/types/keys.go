@@ -5,8 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/address"
 )
 
-var ()
-
 const (
 	// ModuleName is the name of the oracle module
 	ModuleName = "oracle"

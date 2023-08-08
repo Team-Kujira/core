@@ -155,14 +155,13 @@ func (server msgServer) ChangeAdmin(goCtx context.Context, msg *types.MsgChangeA
 	return &types.MsgChangeAdminResponse{}, nil
 }
 
-func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
-
-	if ms.authority != msg.Authority {
-		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
+func (server msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if server.authority != msg.Authority {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", server.authority, msg.Authority)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := ms.SetParams(ctx, *msg.Params); err != nil {
+	if err := server.SetParams(ctx, *msg.Params); err != nil {
 		return nil, err
 	}
 
