@@ -133,7 +133,6 @@ import (
 
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
-	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
 	schedulerkeeper "github.com/Team-Kujira/core/x/scheduler/keeper"
 	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
 
@@ -160,9 +159,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 	var govProposalHandlers []govclient.ProposalHandler
 
 	govProposalHandlers = append(govProposalHandlers,
-		schedulerclient.CreateHookProposalHandler,
-		schedulerclient.UpdateHookProposalHandler,
-		schedulerclient.DeleteHookProposalHandler,
 		paramsclient.ProposalHandler,
 		upgradeclient.LegacyProposalHandler,
 		upgradeclient.LegacyCancelProposalHandler,
