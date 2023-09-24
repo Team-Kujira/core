@@ -14,7 +14,6 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.47.3
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230629164013-34f5e666f806
 	github.com/cosmos/ibc-go/v7 v7.2.0
 	github.com/golang/protobuf v1.5.3
 	github.com/google/gofuzz v1.2.0

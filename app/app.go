@@ -87,9 +87,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	ibchooks "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7"
-	ibchookskeeper "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/keeper"
-	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
@@ -201,7 +198,6 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
-		ibchooks.AppModuleBasic{},
 
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -284,17 +280,15 @@ type App struct {
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
-	IBCHooksKeeper        ibchookskeeper.Keeper
-	Ics20WasmHooks        ibchooks.WasmHooks
-	HooksICS4Wrapper      ibchooks.ICS4Middleware
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        ibctransferkeeper.Keeper
-	FeeGrantKeeper        feegrantkeeper.Keeper
-	WasmKeeper            wasm.Keeper
-	DenomKeeper           *denomkeeper.Keeper
-	SchedulerKeeper       schedulerkeeper.Keeper
-	OracleKeeper          oraclekeeper.Keeper
-	AllianceKeeper        alliancemodulekeeper.Keeper
+
+	EvidenceKeeper  evidencekeeper.Keeper
+	TransferKeeper  ibctransferkeeper.Keeper
+	FeeGrantKeeper  feegrantkeeper.Keeper
+	WasmKeeper      wasm.Keeper
+	DenomKeeper     *denomkeeper.Keeper
+	SchedulerKeeper schedulerkeeper.Keeper
+	OracleKeeper    oraclekeeper.Keeper
+	AllianceKeeper  alliancemodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -356,7 +350,7 @@ func New(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
-		ibchookstypes.StoreKey,
+
 		wasm.StoreKey,
 		icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey,
@@ -581,12 +575,6 @@ func New(
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
-	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
-		appCodec,
-		app.keys[ibchookstypes.StoreKey],
-		authority,
-	)
-
 	app.SchedulerKeeper = schedulerkeeper.NewKeeper(
 		appCodec,
 		keys[denomtypes.StoreKey],
@@ -692,22 +680,10 @@ func New(
 		),
 	)
 
-	prefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
-	app.Ics20WasmHooks = ibchooks.NewWasmHooks(
-		&app.IBCHooksKeeper,
-		&app.WasmKeeper,
-		prefix,
-	)
-	app.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
-		app.IBCKeeper.ChannelKeeper,
-		app.Ics20WasmHooks,
-	)
-
 	// Create Transfer Stack
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
-	transferStack = ibchooks.NewIBCMiddleware(transferStack, &app.HooksICS4Wrapper)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -925,7 +901,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		ibchookstypes.ModuleName,
+
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -955,7 +931,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		ibchookstypes.ModuleName,
+
 		wasm.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -993,7 +969,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		ibchookstypes.ModuleName,
+
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
