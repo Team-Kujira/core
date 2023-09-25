@@ -185,10 +185,7 @@ replace (
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// Adds Axelar sender support
-	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 => github.com/Team-Kujira/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230712132030-1d715c14f19b
-
-	github.com/cosmos/ibc-go/v7 => github.com/Team-Kujira/ibc-go/v7 v7.2.0-factory
+	github.com/cosmos/ibc-go/v7 => github.com/Team-Kujira/ibc-go/v7 v7.3.0-factory
 
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/13134
