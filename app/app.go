@@ -618,6 +618,8 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		*app.IBCKeeper,
+		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(

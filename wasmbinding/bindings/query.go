@@ -13,9 +13,15 @@ type CosmosQuery struct {
 	Denom  *denom.DenomQuery
 	Bank   *BankQuery
 	Oracle *oracle.OracleQuery
+	IBC    *IBCQuery
 }
 
 type BankQuery struct {
 	DenomMetadata *banktypes.QueryDenomMetadataRequest `json:"denom_metadata,omitempty"`
 	Supply        *banktypes.QuerySupplyOfRequest      `json:"supply,omitempty"`
+}
+
+type IBCQuery struct {
+	VerifyMemberShip    *VerifyMemberShipQuery
+	VerifyNonMemberShip *VerifyNonMemberShipQuery
 }
