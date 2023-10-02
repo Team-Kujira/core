@@ -45,7 +45,6 @@ func CreateHookProposalCmd() *cobra.Command {
 				return fmt.Errorf("proposal title: %s", err)
 			}
 
-			//lint:ignore SA1019 TODO: migrate away from govRouter
 			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription)
 			if err != nil {
 				return fmt.Errorf("proposal description: %s", err)
@@ -79,10 +78,10 @@ func CreateHookProposalCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
-	//lint:ignore SA1019 TODO: migrate away from govRouter
+
 	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
-	//lint:ignore SA1019 TODO: migrate away from govRouter
+
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	return cmd
 }
@@ -124,7 +123,6 @@ func UpdateHookProposalCmd() *cobra.Command {
 				return fmt.Errorf("proposal title: %s", err)
 			}
 
-			//lint:ignore SA1019 TODO: migrate away from govRouter
 			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription)
 			if err != nil {
 				return fmt.Errorf("proposal description: %s", err)
@@ -159,10 +157,10 @@ func UpdateHookProposalCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
-	//lint:ignore SA1019 TODO: migrate away from govRouter
+
 	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
-	//lint:ignore SA1019 TODO: migrate away from govRouter
+
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	return cmd
 }
@@ -188,7 +186,6 @@ func DeleteHookProposalCmd() *cobra.Command {
 				return fmt.Errorf("proposal title: %s", err)
 			}
 
-			//lint:ignore SA1019 TODO: migrate away from govRouter
 			proposalDescr, err := cmd.Flags().GetString(cli.FlagDescription)
 			if err != nil {
 				return fmt.Errorf("proposal description: %s", err)
@@ -218,10 +215,10 @@ func DeleteHookProposalCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
-	//lint:ignore SA1019 TODO: migrate away from govRouter
+
 	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
-	//lint:ignore SA1019 TODO: migrate away from govRouter
+
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	return cmd
 }
