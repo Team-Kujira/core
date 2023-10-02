@@ -5,7 +5,6 @@ import (
 
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 )
@@ -25,7 +24,7 @@ func RegisterCustomPlugins(
 		CustomMessageDecorator(bank, denom),
 	)
 
-	return []wasm.Option{
+	return []wasmkeeper.Option{
 		queryPluginOpt,
 		messengerDecoratorOpt,
 	}
