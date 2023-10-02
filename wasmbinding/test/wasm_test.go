@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/Team-Kujira/core/x/oracle/wasm"
@@ -32,7 +33,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomB, ExchangeRateB)
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomD, ExchangeRateD)
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibchost.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 	var err error
 
@@ -96,7 +97,7 @@ func TestSupply(t *testing.T) {
 	app := app.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibchost.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 
 	var err error
@@ -120,4 +121,30 @@ func TestSupply(t *testing.T) {
 
 	err = json.Unmarshal(res, &x)
 	require.NoError(t, err)
+}
+
+func TestVerifyMemberShip(t *testing.T) {
+	app := app.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibchost.StoreKey))
+	querier := wasmbinding.CustomQuerier(plugin)
+
+	var err error
+
+	queryParams := bindings.VerifyMemberShipQuery{
+		Connection:     "connection-0",
+		RevisionNumber: 0,
+		RevisionHeight: 0,
+		Proof:          []byte{},
+		Value:          []byte{},
+	}
+	bz, err := json.Marshal(bindings.CosmosQuery{
+		IBC: &bindings.IBCQuery{
+			VerifyMemberShip: &queryParams,
+		},
+	})
+
+	_, err = querier(ctx, bz)
+	require.Error(t, err)
 }
