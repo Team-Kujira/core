@@ -17,7 +17,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
-	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
 func fundAccount(t *testing.T, ctx sdk.Context, app *app.App, addr sdk.AccAddress, coins sdk.Coins) {
@@ -32,10 +32,10 @@ func fundAccount(t *testing.T, ctx sdk.Context, app *app.App, addr sdk.AccAddres
 
 func TestCreateDenom(t *testing.T) {
 	actor := RandomAccountAddress()
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	// Fund actor with 100 base denom creation fees
+	// Fund actor with 100 base denom creation feesme
 	actorAmount := sdk.NewCoins(sdk.NewCoin(types.DefaultParams().CreationFee[0].Denom, types.DefaultParams().CreationFee[0].Amount.MulRaw(100)))
 
 	fundAccount(t, ctx, app, actor, actorAmount)
@@ -57,7 +57,7 @@ func TestCreateDenom(t *testing.T) {
 		},
 		"invalid sub-denom": {
 			createDenom: &wasm.Create{
-				Subdenom: "sub-denom_2",
+				Subdenom: "adsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsf",
 			},
 			expErr: true,
 		},
@@ -161,7 +161,7 @@ func TestChangeAdmin(t *testing.T) {
 	for name, spec := range specs {
 		t.Run(name, func(t *testing.T) {
 			// Setup
-			app := app.Setup(false)
+			app := app.Setup(t, false)
 			ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 			// Fund actor with 100 base denom creation fees
@@ -187,7 +187,7 @@ func TestChangeAdmin(t *testing.T) {
 
 func TestMint(t *testing.T) {
 	creator := RandomAccountAddress()
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	// Fund actor with 100 base denom creation fees
@@ -307,7 +307,7 @@ func TestMint(t *testing.T) {
 
 func TestBurn(t *testing.T) {
 	creator := RandomAccountAddress()
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	// Fund actor with 100 base denom creation fees

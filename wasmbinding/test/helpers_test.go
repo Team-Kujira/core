@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
@@ -16,8 +16,8 @@ import (
 	"github.com/Team-Kujira/core/app"
 )
 
-func CreateTestInput() (*app.App, sdk.Context) {
-	app := app.Setup(false)
+func CreateTestInput(t *testing.T) (*app.App, sdk.Context) {
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 	return app, ctx
 }

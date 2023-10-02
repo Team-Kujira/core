@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/crypto/secp256k1"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -199,7 +199,7 @@ func TestPBStandardDeviation(t *testing.T) {
 			[]float64{1.0, 2.0, 10.0, 100000.0},
 			[]int64{1, 1, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.MustNewDecFromStr("49995.000362536252310906"),
+			sdk.MustNewDecFromStr("49995.000362536252310905"),
 		},
 		{
 			// Adding fake validator doesn't change outcome

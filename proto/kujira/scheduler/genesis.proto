@@ -2,9 +2,8 @@ syntax = "proto3";
 package kujira.scheduler;
 
 import "gogoproto/gogo.proto";
-import "scheduler/params.proto";
-import "scheduler/hook.proto";
-// this line is used by starport scaffolding # genesis/proto/import
+import "kujira/scheduler/params.proto";
+import "kujira/scheduler/hook.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/scheduler/types";
 
@@ -13,5 +12,4 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated Hook hookList = 2 [(gogoproto.nullable) = false];
   uint64 hookCount = 3;
-  // this line is used by starport scaffolding # genesis/proto/state
 }

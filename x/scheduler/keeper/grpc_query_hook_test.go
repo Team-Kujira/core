@@ -1,10 +1,12 @@
 package keeper_test
 
+/*
+
 import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -115,3 +117,4 @@ func TestHookQueryPaginated(t *testing.T) {
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }
+*/

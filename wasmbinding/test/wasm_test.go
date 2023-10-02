@@ -16,12 +16,12 @@ import (
 	"github.com/Team-Kujira/core/wasmbinding"
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestQueryExchangeRates(t *testing.T) {
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	ExchangeRateC := sdk.NewDec(1700)
@@ -93,7 +93,7 @@ func TestQueryExchangeRates(t *testing.T) {
 }
 
 func TestSupply(t *testing.T) {
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper)

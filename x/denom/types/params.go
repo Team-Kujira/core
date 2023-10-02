@@ -32,11 +32,7 @@ func DefaultParams() Params {
 
 // validate params.
 func (p Params) Validate() error {
-	if err := validateCreationFee(p.CreationFee); err != nil {
-		return err
-	}
-
-	return nil
+	return validateCreationFee(p.CreationFee)
 }
 
 // Implements params.ParamSet.

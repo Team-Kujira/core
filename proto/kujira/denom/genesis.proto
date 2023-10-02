@@ -2,8 +2,8 @@ syntax = "proto3";
 package kujira.denom;
 
 import "gogoproto/gogo.proto";
-import "denom/authorityMetadata.proto";
-import "denom/params.proto";
+import "kujira/denom/authorityMetadata.proto";
+import "kujira/denom/params.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/denom/types";
 

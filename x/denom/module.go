@@ -4,13 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -62,7 +61,7 @@ func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 }
 
 // ValidateGenesis performs genesis state validation for the capability module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var genState types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &genState); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
@@ -71,7 +70,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 }
 
 // RegisterRESTRoutes registers the capability module's REST service handlers.
-func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
@@ -117,18 +116,8 @@ func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }
 
-// Route returns the capability module's message routing key.
-func (am AppModule) Route() sdk.Route {
-	return sdk.Route{}
-}
-
 // QuerierRoute returns the capability module's query routing key.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
-
-// LegacyQuerierHandler returns the capability module's Querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
@@ -179,20 +168,15 @@ func (am AppModule) GenerateGenesisState(simState *module.SimulationState) {
 }
 
 // ProposalContents doesn't return any content functions for governance proposals.
-func (am AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams creates randomized txfees param changes for the simulator.
-func (am AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+func (am AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalMsg {
 	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for denom module's types
-func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 }
 
 // WeightedOperations returns simulator module operations with their respective weights.
-func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	return nil // TODO
 }

@@ -5,6 +5,5 @@ import (
 )
 
 type CosmosMsg struct {
-	Auth  *AuthMsg
 	Denom *denom.DenomMsg
 }

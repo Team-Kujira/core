@@ -4,9 +4,8 @@ package kujira.scheduler;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "scheduler/params.proto";
-import "scheduler/hook.proto";
-// this line is used by starport scaffolding # 1
+import "kujira/scheduler/params.proto";
+import "kujira/scheduler/hook.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/scheduler/types";
 
@@ -25,8 +24,6 @@ service Query {
 	rpc HookAll(QueryAllHookRequest) returns (QueryAllHookResponse) {
 		option (google.api.http).get = "/kujira/scheduler/hook";
 	}
-
-// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -54,5 +51,3 @@ message QueryAllHookResponse {
 	repeated Hook Hook = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-
-// this line is used by starport scaffolding # 3

@@ -6,16 +6,15 @@ import (
 	"math/rand"
 	"strings"
 
+	simappparams "cosmossdk.io/simapp/params"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-
-	"github.com/Team-Kujira/core/x/oracle/keeper"
-	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
 // Simulation operation weights constants
@@ -30,8 +29,10 @@ const (
 )
 
 var (
-	whitelist   = []string{types.TestDenomA, types.TestDenomB, types.TestDenomC}
-	voteHashMap = make(map[string]string)
+	whitelist                          = []string{types.TestDenomA, types.TestDenomB, types.TestDenomC}
+	voteHashMap                        = make(map[string]string)
+	DefaultWeightMsgSend               = 100
+	DefaultWeightMsgSetWithdrawAddress = 50
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -49,19 +50,19 @@ func WeightedOperations(
 	)
 	appParams.GetOrGenerate(cdc, OpWeightMsgAggregateExchangeRatePrevote, &weightMsgAggregateExchangeRatePrevote, nil,
 		func(_ *rand.Rand) {
-			weightMsgAggregateExchangeRatePrevote = simappparams.DefaultWeightMsgSend * 2
+			weightMsgAggregateExchangeRatePrevote = DefaultWeightMsgSend * 2
 		},
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgAggregateExchangeRateVote, &weightMsgAggregateExchangeRateVote, nil,
 		func(_ *rand.Rand) {
-			weightMsgAggregateExchangeRateVote = simappparams.DefaultWeightMsgSend * 2
+			weightMsgAggregateExchangeRateVote = DefaultWeightMsgSend * 2
 		},
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgDelegateFeedConsent, &weightMsgDelegateFeedConsent, nil,
 		func(_ *rand.Rand) {
-			weightMsgDelegateFeedConsent = simappparams.DefaultWeightMsgSetWithdrawAddress
+			weightMsgDelegateFeedConsent = DefaultWeightMsgSetWithdrawAddress
 		},
 	)
 
@@ -118,12 +119,12 @@ func SimulateMsgAggregateExchangeRatePrevote(ak types.AccountKeeper, bk types.Ba
 		msg := types.NewMsgAggregateExchangeRatePrevote(voteHash, feederAddr, address)
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{feederAccount.GetAccountNumber()},
 			[]uint64{feederAccount.GetSequence()},
@@ -188,12 +189,12 @@ func SimulateMsgAggregateExchangeRateVote(ak types.AccountKeeper, bk types.BankK
 		msg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRatesStr, feederAddr, address)
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{feederAccount.GetAccountNumber()},
 			[]uint64{feederAccount.GetSequence()},
@@ -244,12 +245,12 @@ func SimulateMsgDelegateFeedConsent(ak types.AccountKeeper, bk types.BankKeeper,
 		msg := types.NewMsgDelegateFeedConsent(valAddress, delegateAccount.Address)
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},

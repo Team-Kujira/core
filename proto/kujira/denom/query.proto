@@ -4,8 +4,8 @@ package kujira.denom;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "denom/authorityMetadata.proto";
-import "denom/params.proto";
+import "kujira/denom/authorityMetadata.proto";
+import "kujira/denom/params.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/denom/types";
 

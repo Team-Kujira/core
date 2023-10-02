@@ -50,6 +50,10 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		// Organize votes to ballot by denom
 		voteMap := k.OrganizeBallotByDenom(ctx, validatorClaimMap)
+
+		// Keep track, if a voter submitted a price deviating too much
+		missMap := map[string]sdk.ValAddress{}
+
 		// Iterate through ballots and update exchange rates; drop if not enough votes have been achieved.
 		for denom, ballot := range voteMap {
 			totalBondedPower := sdk.TokensToConsensusPower(k.StakingKeeper.TotalBondedTokens(ctx), k.StakingKeeper.PowerReduction(ctx))
@@ -58,7 +62,9 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 			ballotPower := sdk.NewInt(ballot.Power())
 
 			if !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes) {
-				exchangeRate, err := Tally(ctx, ballot, params.RewardBand, validatorClaimMap)
+				exchangeRate, err := Tally(
+					ctx, ballot, params.RewardBand, validatorClaimMap, missMap,
+				)
 				if err != nil {
 					return err
 				}
@@ -70,26 +76,47 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		//---------------------------
 		// Do miss counting & slashing
-		voteTargetsLen := len(voteTargets)
+		denomMap := map[string]map[string]struct{}{}
 
-		for _, claim := range validatorClaimMap {
-			// Skip abstain & valid voters
-			if int(claim.WinCount) >= voteTargetsLen {
-				continue
-			}
-
-			// Increase miss counter
-			k.SetMissCounter(ctx, claim.Recipient, k.GetMissCounter(ctx, claim.Recipient)+1)
+		for _, denom := range voteTargets {
+			denomMap[denom] = map[string]struct{}{}
 		}
 
-		// Distribute rewards to ballot winners
-		k.RewardBallotWinners(
-			ctx,
-			(int64)(params.VotePeriod),
-			(int64)(params.RewardDistributionWindow),
-			voteTargets,
-			validatorClaimMap,
-		)
+		for denom, votes := range voteMap {
+			for _, vote := range votes {
+				// ignore denoms, not requested in voteTargets
+				_, ok := denomMap[denom]
+				if !ok {
+					continue
+				}
+
+				denomMap[denom][vote.Voter.String()] = struct{}{}
+			}
+		}
+
+		// Check if each validator is missing a required denom price
+		for _, claim := range validatorClaimMap {
+			for _, denom := range voteTargets {
+				_, ok := denomMap[denom][claim.Recipient.String()]
+				if !ok {
+					missMap[claim.Recipient.String()] = claim.Recipient
+					break
+				}
+			}
+		}
+
+		for _, valAddr := range missMap {
+			k.SetMissCounter(ctx, valAddr, k.GetMissCounter(ctx, valAddr)+1)
+		}
+
+		// // Distribute rewards to ballot winners
+		// k.RewardBallotWinners(
+		// 	ctx,
+		// 	(int64)(params.VotePeriod),
+		// 	(int64)(params.RewardDistributionWindow),
+		// 	voteTargets,
+		// 	validatorClaimMap,
+		// )
 
 		// Clear the ballot
 		k.ClearBallots(ctx, params.VotePeriod)

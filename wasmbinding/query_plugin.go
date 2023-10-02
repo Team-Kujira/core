@@ -7,9 +7,11 @@ import (
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
 	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
 
+	"cosmossdk.io/errors"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
@@ -18,7 +20,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 	return func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
 		var contractQuery bindings.CosmosQuery
 		if err := json.Unmarshal(request, &contractQuery); err != nil {
-			return nil, sdkerrors.Wrap(err, "kujira query")
+			return nil, errors.Wrap(err, "kujira query")
 		}
 
 		if contractQuery.Oracle != nil {
@@ -29,7 +31,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}
 
 			return bz, nil
@@ -42,7 +44,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 				bz, err := json.Marshal(res)
 				if err != nil {
-					return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+					return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 				}
 
 				return bz, nil
@@ -55,7 +57,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}
 
 			return bz, nil
@@ -67,7 +69,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}
 
 			return bz, nil

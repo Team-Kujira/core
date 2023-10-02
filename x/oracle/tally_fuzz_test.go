@@ -66,7 +66,9 @@ func TestFuzz_Tally(t *testing.T) {
 	var rewardBand sdk.Dec
 	f.Fuzz(&rewardBand)
 
+	missMap := map[string]sdk.ValAddress{}
+
 	require.NotPanics(t, func() {
-		oracle.Tally(input.Ctx, ballot, rewardBand, claimMap)
+		oracle.Tally(input.Ctx, ballot, rewardBand, claimMap, missMap)
 	})
 }
