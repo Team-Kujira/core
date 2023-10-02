@@ -4,16 +4,16 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
-	"github.com/cosmos/ibc-go/v6/modules/core/03-connection/types"
-	commitmenttypes "github.com/cosmos/ibc-go/v6/modules/core/23-commitment/types"
-	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
-	"github.com/cosmos/ibc-go/v6/modules/core/exported"
-	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
-	ibctmtypes "github.com/cosmos/ibc-go/v6/modules/light-clients/07-tendermint/types"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	"github.com/cosmos/ibc-go/v7/modules/core/03-connection/types"
+	commitmenttypes "github.com/cosmos/ibc-go/v7/modules/core/23-commitment/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	"github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibctmtypes "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 )
 
-type VerifyMemberShipQuery struct {
+type VerifyMembershipQuery struct {
 	Connection     string `json:"connection"`
 	RevisionNumber uint64 `json:"revision_number"`
 	RevisionHeight uint64 `json:"revision_height"`
@@ -21,7 +21,7 @@ type VerifyMemberShipQuery struct {
 	Value          []byte `json:"value"`
 }
 
-type VerifyNonMemberShipQuery struct {
+type VerifyNonMembershipQuery struct {
 	Connection     string `json:"connection"`
 	RevisionNumber uint64 `json:"revision_number"`
 	RevisionHeight uint64 `json:"revision_height"`
@@ -89,8 +89,8 @@ func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.Cli
 		return nil, nil, err
 	}
 
-	consensusState, err := ibctmtypes.GetConsensusState(clientStore, keeper.Codec(), height)
-	if err != nil {
+	consensusState, found := ibctmtypes.GetConsensusState(clientStore, keeper.Codec(), height)
+	if !found {
 		return nil, nil, sdkerrors.Wrap(clienttypes.ErrConsensusStateNotFound, "please ensure the proof was constructed against a height that exists on the client")
 	}
 
@@ -99,8 +99,8 @@ func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.Cli
 
 func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *storetypes.KVStoreKey, q *IBCQuery) error {
 	switch {
-	case q.VerifyMemberShip != nil:
-		connectionID := q.VerifyMemberShip.Connection
+	case q.VerifyMembership != nil:
+		connectionID := q.VerifyMembership.Connection
 		connection, found := keeper.ConnectionKeeper.GetConnection(ctx, connectionID)
 		if !found {
 			return sdkerrors.Wrap(types.ErrConnectionNotFound, connectionID)
@@ -112,24 +112,24 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 		}
 
 		var merkleProof commitmenttypes.MerkleProof
-		if err := keeper.Codec().Unmarshal(q.VerifyMemberShip.Proof, &merkleProof); err != nil {
+		if err := keeper.Codec().Unmarshal(q.VerifyMembership.Proof, &merkleProof); err != nil {
 			return sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "failed to unmarshal proof into ICS 23 commitment merkle proof")
 		}
 
-		height := clienttypes.NewHeight(q.VerifyMemberShip.RevisionNumber, q.VerifyMemberShip.RevisionHeight)
+		height := clienttypes.NewHeight(q.VerifyMembership.RevisionNumber, q.VerifyMembership.RevisionHeight)
 		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, connection, height)
 		if err != nil {
 			return err
 		}
 
-		if err := merkleProof.VerifyMembership(clientState.(*ibctmtypes.ClientState).ProofSpecs, consState.GetRoot(), merklePath, q.VerifyMemberShip.Value); err != nil { //nolint
+		if err := merkleProof.VerifyMembership(clientState.(*ibctmtypes.ClientState).ProofSpecs, consState.GetRoot(), merklePath, q.VerifyMembership.Value); err != nil { //nolint
 			return err
 		}
 
 		return nil
 
-	case q.VerifyNonMemberShip != nil:
-		connectionID := q.VerifyNonMemberShip.Connection
+	case q.VerifyNonMembership != nil:
+		connectionID := q.VerifyNonMembership.Connection
 		connection, found := keeper.ConnectionKeeper.GetConnection(ctx, connectionID)
 		if !found {
 			return sdkerrors.Wrap(types.ErrConnectionNotFound, connectionID)
@@ -141,11 +141,11 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 		}
 
 		var merkleProof commitmenttypes.MerkleProof
-		if err := keeper.Codec().Unmarshal(q.VerifyNonMemberShip.Proof, &merkleProof); err != nil {
+		if err := keeper.Codec().Unmarshal(q.VerifyNonMembership.Proof, &merkleProof); err != nil {
 			return sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "failed to unmarshal proof into ICS 23 commitment merkle proof")
 		}
 
-		height := clienttypes.NewHeight(q.VerifyNonMemberShip.RevisionNumber, q.VerifyNonMemberShip.RevisionHeight)
+		height := clienttypes.NewHeight(q.VerifyNonMembership.RevisionNumber, q.VerifyNonMembership.RevisionHeight)
 		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, connection, height)
 		if err != nil {
 			return err

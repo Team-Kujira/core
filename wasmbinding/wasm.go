@@ -4,7 +4,7 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"

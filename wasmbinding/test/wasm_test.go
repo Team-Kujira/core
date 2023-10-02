@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/Team-Kujira/core/x/oracle/wasm"
@@ -33,7 +33,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomB, ExchangeRateB)
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomD, ExchangeRateD)
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibchost.StoreKey))
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 	var err error
 
@@ -97,7 +97,7 @@ func TestSupply(t *testing.T) {
 	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibchost.StoreKey))
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 
 	var err error
@@ -123,16 +123,16 @@ func TestSupply(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestVerifyMemberShip(t *testing.T) {
-	app := app.Setup(false)
+func TestVerifyMembership(t *testing.T) {
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibchost.StoreKey))
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 
 	var err error
 
-	queryParams := bindings.VerifyMemberShipQuery{
+	queryParams := bindings.VerifyMembershipQuery{
 		Connection:     "connection-0",
 		RevisionNumber: 0,
 		RevisionHeight: 0,
@@ -141,7 +141,7 @@ func TestVerifyMemberShip(t *testing.T) {
 	}
 	bz, err := json.Marshal(bindings.CosmosQuery{
 		IBC: &bindings.IBCQuery{
-			VerifyMemberShip: &queryParams,
+			VerifyMembership: &queryParams,
 		},
 	})
 

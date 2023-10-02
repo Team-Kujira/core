@@ -5,7 +5,7 @@ import (
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 )
 
 type QueryPlugin struct {

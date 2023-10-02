@@ -22,6 +22,6 @@ type BankQuery struct {
 }
 
 type IBCQuery struct {
-	VerifyMemberShip    *VerifyMemberShipQuery
-	VerifyNonMemberShip *VerifyNonMemberShipQuery
+	VerifyMembership    *VerifyMembershipQuery
+	VerifyNonMembership *VerifyNonMembershipQuery
 }
