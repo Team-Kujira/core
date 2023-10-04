@@ -21,6 +21,7 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
@@ -66,6 +67,9 @@ func (app App) RegisterUpgradeHandlers() {
 			// wasm
 		case wasmtypes.ModuleName:
 			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
+
+		case alliancemoduletypes.ModuleName:
+			keyTable = alliancemoduletypes.ParamKeyTable() //nolint:staticcheck
 		default:
 			continue
 		}

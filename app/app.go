@@ -454,11 +454,12 @@ func New(
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
 		keys[AllianceStoreKey],
-		app.GetSubspace(alliancemoduletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
+		authtypes.FeeCollectorName,
+		authority,
 	)
 
 	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
@@ -866,6 +867,7 @@ func New(
 			app.AccountKeeper,
 			app.BankKeeper,
 			app.interfaceRegistry,
+			app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
 		crisis.NewAppModule(
