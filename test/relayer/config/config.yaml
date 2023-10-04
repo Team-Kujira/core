@@ -1,0 +1,69 @@
+global:
+    api-listen-addr: :5183
+    timeout: 10s
+    memo: ""
+    light-cache-size: 20
+chains:
+    kujira:
+        type: cosmos
+        value:
+            key-directory: test/relayer/keys/kujira
+            key: rly1
+            chain-id: kujira
+            rpc-addr: http://127.0.0.1:26657
+            account-prefix: kujira
+            keyring-backend: test
+            gas-adjustment: 1.3
+            gas-prices: 0.02ukuji
+            min-gas-amount: 0
+            max-gas-amount: 0
+            debug: false
+            timeout: 20s
+            block-timeout: ""
+            output-format: json
+            sign-mode: direct
+            extra-codecs: []
+            coin-type: null
+            signing-algorithm: ""
+            broadcast-mode: batch
+            min-loop-duration: 0s
+            extension-options: []
+            feegrants: null
+    terra:
+        type: cosmos
+        value:
+            key-directory: test/relayer/keys/terra
+            key: rly3
+            chain-id: terra
+            rpc-addr: http://127.0.0.1:26658
+            account-prefix: terra
+            keyring-backend: test
+            gas-adjustment: 1.3
+            gas-prices: 0.02uluna
+            min-gas-amount: 0
+            max-gas-amount: 0
+            debug: false
+            timeout: 20s
+            block-timeout: ""
+            output-format: json
+            sign-mode: direct
+            extra-codecs: []
+            coin-type: null
+            signing-algorithm: ""
+            broadcast-mode: batch
+            min-loop-duration: 0s
+            extension-options: []
+            feegrants: null
+paths:
+    kujira-terra:
+        src:
+            chain-id: kujira
+            client-id: 07-tendermint-0
+            connection-id: connection-0
+        dst:
+            chain-id: terra
+            client-id: 07-tendermint-0
+            connection-id: connection-0
+        src-channel-filter:
+            rule: ""
+            channel-list: []

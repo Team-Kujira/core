@@ -6,3 +6,5 @@ release/
 .vscode/
 .DS_Store
 build/
+logs
+keys
