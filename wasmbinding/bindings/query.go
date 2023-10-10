@@ -13,7 +13,7 @@ type CosmosQuery struct {
 	Denom  *denom.DenomQuery
 	Bank   *BankQuery
 	Oracle *oracle.OracleQuery
-	IBC    *IBCQuery
+	Ibc    *IbcQuery
 }
 
 type BankQuery struct {
@@ -21,7 +21,7 @@ type BankQuery struct {
 	Supply        *banktypes.QuerySupplyOfRequest      `json:"supply,omitempty"`
 }
 
-type IBCQuery struct {
-	VerifyMembership    *VerifyMembershipQuery
-	VerifyNonMembership *VerifyNonMembershipQuery
+type IbcQuery struct {
+	VerifyMembership    *VerifyMembershipQuery    `json:"verify_membership,omitempty"`
+	VerifyNonMembership *VerifyNonMembershipQuery `json:"verify_non_membership,omitempty"`
 }

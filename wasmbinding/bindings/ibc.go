@@ -97,7 +97,7 @@ func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.Cli
 	return consensusState, &merklePath, nil
 }
 
-func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *storetypes.KVStoreKey, q *IBCQuery) error {
+func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *storetypes.KVStoreKey, q *IbcQuery) error {
 	switch {
 	case q.VerifyMembership != nil:
 		connectionID := q.VerifyMembership.Connection
@@ -122,7 +122,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 			return err
 		}
 
-		if err := merkleProof.VerifyMembership(clientState.(*ibctmtypes.ClientState).ProofSpecs, consState.GetRoot(), merklePath, q.VerifyMembership.Value); err != nil { //nolint
+		if err := merkleProof.VerifyMembership(clientState.(*ibctmtypes.ClientState).ProofSpecs, consState.GetRoot(), *merklePath, q.VerifyMembership.Value); err != nil { //nolint
 			return err
 		}
 

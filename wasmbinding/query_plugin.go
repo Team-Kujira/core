@@ -73,8 +73,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.IBC != nil {
-			err := bindings.HandleIBCQuery(ctx, qp.ibckeeper, qp.ibcstorekey, contractQuery.IBC)
+		} else if contractQuery.Ibc != nil {
+			err := bindings.HandleIBCQuery(ctx, qp.ibckeeper, qp.ibcstorekey, contractQuery.Ibc)
 			if err != nil {
 				return nil, err
 			}

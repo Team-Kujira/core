@@ -140,7 +140,7 @@ func TestVerifyMembership(t *testing.T) {
 		Value:          []byte{},
 	}
 	bz, err := json.Marshal(bindings.CosmosQuery{
-		IBC: &bindings.IBCQuery{
+		Ibc: &bindings.IbcQuery{
 			VerifyMembership: &queryParams,
 		},
 	})
