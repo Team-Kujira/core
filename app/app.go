@@ -675,6 +675,8 @@ func New(
 		authority,
 	)
 
+	govKeeper.SetLegacyRouter(govRouter)
+
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
 		// register the governance hooks
