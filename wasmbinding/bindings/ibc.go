@@ -18,7 +18,8 @@ type VerifyMembershipQuery struct {
 	RevisionHeight uint64 `json:"revision_height"`
 	Proof          []byte `josn:"proof"`
 	Value          []byte `json:"value"`
-	Path           string `json:"path"`
+	PathPrefix     string `json:"path_prefix"`
+	PathKey        string `json:"path_key"`
 }
 
 type VerifyNonMembershipQuery struct {
@@ -26,7 +27,8 @@ type VerifyNonMembershipQuery struct {
 	RevisionNumber uint64 `json:"revision_number"`
 	RevisionHeight uint64 `json:"revision_height"`
 	Proof          []byte `josn:"proof"`
-	Path           string `json:"path"`
+	PathPrefix     string `json:"path_prefix"`
+	PathKey        string `json:"path_key"`
 }
 
 type VerifyMembershipQueryResponse struct {
@@ -84,7 +86,7 @@ func getClientStateAndStore(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKe
 }
 
 // getConsStateAndMerklePath generates merkle path using path and get consensus state using height from the client store
-func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.ClientState, clientStore storetypes.KVStore, height clienttypes.Height, path string) (*ibctmtypes.ConsensusState, *commitmenttypes.MerklePath, error) {
+func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.ClientState, clientStore storetypes.KVStore, height clienttypes.Height, pathPrefix string, pathKey string) (*ibctmtypes.ConsensusState, *commitmenttypes.MerklePath, error) {
 	if clientState.GetLatestHeight().LT(height) {
 		return nil, nil, sdkerrors.Wrapf(
 			sdkerrors.ErrInvalidHeight,
@@ -92,7 +94,7 @@ func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.Cli
 		)
 	}
 
-	merklePath := commitmenttypes.NewMerklePath("ibc", path)
+	merklePath := commitmenttypes.NewMerklePath(pathPrefix, pathKey)
 
 	consensusState, found := ibctmtypes.GetConsensusState(clientStore, keeper.Codec(), height)
 	if !found {
@@ -122,7 +124,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 		}
 
 		height := clienttypes.NewHeight(q.VerifyMembership.RevisionNumber, q.VerifyMembership.RevisionHeight)
-		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.Path)
+		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, q.VerifyMembership.PathKey)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +153,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 		}
 
 		height := clienttypes.NewHeight(q.VerifyNonMembership.RevisionNumber, q.VerifyNonMembership.RevisionHeight)
-		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyNonMembership.Path)
+		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, q.VerifyMembership.PathKey)
 		if err != nil {
 			return nil, err
 		}
