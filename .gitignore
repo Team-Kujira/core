@@ -8,3 +8,5 @@ release/
 build/
 logs
 keys
+wasmbinding/test/wasm
+wasmbinding/test/data

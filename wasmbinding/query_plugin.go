@@ -74,12 +74,19 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			return bz, nil
 		} else if contractQuery.Ibc != nil {
+			var result any
 			res, err := bindings.HandleIBCQuery(ctx, qp.ibckeeper, qp.ibcstorekey, contractQuery.Ibc)
 			if err != nil {
-				return nil, err
+				if contractQuery.Ibc.VerifyMembership != nil {
+					result = bindings.VerifyMembershipQueryResponse{IsValid: false, Err: err.Error()}
+				} else {
+					result = bindings.VerifyNonMembershipQueryResponse{IsValid: false, Err: err.Error()}
+				}
+			} else {
+				result = res
 			}
 
-			bz, err := json.Marshal(res)
+			bz, err := json.Marshal(result)
 			if err != nil {
 				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 			}

@@ -16,7 +16,7 @@ type VerifyMembershipQuery struct {
 	Connection     string `json:"connection"`
 	RevisionNumber uint64 `json:"revision_number"`
 	RevisionHeight uint64 `json:"revision_height"`
-	Proof          []byte `josn:"proof"`
+	Proof          []byte `json:"proof"`
 	Value          []byte `json:"value"`
 	PathPrefix     string `json:"path_prefix"`
 	PathKey        string `json:"path_key"`
@@ -26,17 +26,19 @@ type VerifyNonMembershipQuery struct {
 	Connection     string `json:"connection"`
 	RevisionNumber uint64 `json:"revision_number"`
 	RevisionHeight uint64 `json:"revision_height"`
-	Proof          []byte `josn:"proof"`
+	Proof          []byte `json:"proof"`
 	PathPrefix     string `json:"path_prefix"`
 	PathKey        string `json:"path_key"`
 }
 
 type VerifyMembershipQueryResponse struct {
-	IsValid bool `json:"is_valid"`
+	IsValid bool   `json:"is_valid"`
+	Err     string `json:"err"`
 }
 
 type VerifyNonMembershipQueryResponse struct {
-	IsValid bool `json:"is_valid"`
+	IsValid bool   `json:"is_valid"`
+	Err     string `json:"err"`
 }
 
 // ----- moved from ibc-go/modules/core/03-connection -----
@@ -133,7 +135,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 			return nil, err
 		}
 
-		return &VerifyMembershipQueryResponse{IsValid: true}, nil
+		return &VerifyMembershipQueryResponse{IsValid: true, Err: ""}, nil
 
 	case q.VerifyNonMembership != nil:
 		connectionID := q.VerifyNonMembership.Connection
@@ -162,7 +164,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 			return nil, err
 		}
 
-		return &VerifyNonMembershipQueryResponse{IsValid: true}, nil
+		return &VerifyNonMembershipQueryResponse{IsValid: true, Err: ""}, nil
 	default:
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized query request")
 	}
