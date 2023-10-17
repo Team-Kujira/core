@@ -32,13 +32,11 @@ type VerifyNonMembershipQuery struct {
 }
 
 type VerifyMembershipQueryResponse struct {
-	IsValid bool   `json:"is_valid"`
-	Err     string `json:"err"`
+	IsValid bool `json:"is_valid"`
 }
 
 type VerifyNonMembershipQueryResponse struct {
-	IsValid bool   `json:"is_valid"`
-	Err     string `json:"err"`
+	IsValid bool `json:"is_valid"`
 }
 
 // ----- moved from ibc-go/modules/core/03-connection -----
@@ -135,7 +133,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 			return nil, err
 		}
 
-		return &VerifyMembershipQueryResponse{IsValid: true, Err: ""}, nil
+		return &VerifyMembershipQueryResponse{IsValid: true}, nil
 
 	case q.VerifyNonMembership != nil:
 		connectionID := q.VerifyNonMembership.Connection
@@ -164,7 +162,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 			return nil, err
 		}
 
-		return &VerifyNonMembershipQueryResponse{IsValid: true, Err: ""}, nil
+		return &VerifyNonMembershipQueryResponse{IsValid: true}, nil
 	default:
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized query request")
 	}
