@@ -74,17 +74,9 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 
 			return bz, nil
 		} else if contractQuery.Ibc != nil {
-			res, err := bindings.HandleIBCQuery(ctx, qp.ibckeeper, qp.ibcstorekey, contractQuery.Ibc)
-			if err != nil {
-				return nil, err
-			}
-
-			bz, err := json.Marshal(res)
-			if err != nil {
-				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-			}
-
-			return bz, nil
+			err := bindings.HandleIBCQuery(ctx, qp.ibckeeper, qp.ibcstorekey, contractQuery.Ibc)
+			res, _ := json.Marshal(bindings.IbcVerifyResponse{})
+			return res, err
 		} else {
 			return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 		}

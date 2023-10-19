@@ -31,13 +31,7 @@ type VerifyNonMembershipQuery struct {
 	PathKey        string `json:"path_key"`
 }
 
-type VerifyMembershipQueryResponse struct {
-	IsValid bool `json:"is_valid"`
-}
-
-type VerifyNonMembershipQueryResponse struct {
-	IsValid bool `json:"is_valid"`
-}
+type IbcVerifyResponse struct{}
 
 // ----- moved from ibc-go/modules/core/03-connection -----
 // getClientStateAndVerificationStore returns the client state and associated KVStore for the provided client identifier.
@@ -104,66 +98,66 @@ func getConsStateAndMerklePath(keeper ibckeeper.Keeper, clientState exported.Cli
 	return consensusState, &merklePath, nil
 }
 
-func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *storetypes.KVStoreKey, q *IbcQuery) (any, error) {
+func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *storetypes.KVStoreKey, q *IbcQuery) error {
 	switch {
 	case q.VerifyMembership != nil:
 		connectionID := q.VerifyMembership.Connection
 		connection, found := keeper.ConnectionKeeper.GetConnection(ctx, connectionID)
 		if !found {
-			return nil, sdkerrors.Wrap(types.ErrConnectionNotFound, connectionID)
+			return sdkerrors.Wrap(types.ErrConnectionNotFound, connectionID)
 		}
 
 		clientState, clientStore, err := getClientStateAndStore(ctx, keeper, ibcStoreKey, connection)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		var merkleProof commitmenttypes.MerkleProof
 		if err := keeper.Codec().Unmarshal(q.VerifyMembership.Proof, &merkleProof); err != nil {
-			return nil, sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "failed to unmarshal proof into ICS 23 commitment merkle proof")
+			return sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "failed to unmarshal proof into ICS 23 commitment merkle proof")
 		}
 
 		height := clienttypes.NewHeight(q.VerifyMembership.RevisionNumber, q.VerifyMembership.RevisionHeight)
 		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, q.VerifyMembership.PathKey)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		if err := merkleProof.VerifyMembership(clientState.(*ibctmtypes.ClientState).ProofSpecs, consState.GetRoot(), *merklePath, q.VerifyMembership.Value); err != nil { //nolint
-			return nil, err
+			return err
 		}
 
-		return &VerifyMembershipQueryResponse{IsValid: true}, nil
+		return nil
 
 	case q.VerifyNonMembership != nil:
 		connectionID := q.VerifyNonMembership.Connection
 		connection, found := keeper.ConnectionKeeper.GetConnection(ctx, connectionID)
 		if !found {
-			return nil, sdkerrors.Wrap(types.ErrConnectionNotFound, connectionID)
+			return sdkerrors.Wrap(types.ErrConnectionNotFound, connectionID)
 		}
 
 		clientState, clientStore, err := getClientStateAndStore(ctx, keeper, ibcStoreKey, connection)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		var merkleProof commitmenttypes.MerkleProof
 		if err := keeper.Codec().Unmarshal(q.VerifyNonMembership.Proof, &merkleProof); err != nil {
-			return nil, sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "failed to unmarshal proof into ICS 23 commitment merkle proof")
+			return sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "failed to unmarshal proof into ICS 23 commitment merkle proof")
 		}
 
 		height := clienttypes.NewHeight(q.VerifyNonMembership.RevisionNumber, q.VerifyNonMembership.RevisionHeight)
 		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, q.VerifyMembership.PathKey)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		if err := merkleProof.VerifyNonMembership(clientState.(*ibctmtypes.ClientState).ProofSpecs, consState.GetRoot(), merklePath); err != nil { //nolint
-			return nil, err
+			return err
 		}
 
-		return &VerifyNonMembershipQueryResponse{IsValid: true}, nil
+		return nil
 	default:
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized query request")
+		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized query request")
 	}
 }

@@ -145,12 +145,7 @@ func TestVerifyMembership(t *testing.T) {
 	require.NoError(t, err)
 
 	bz, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
-	require.NoError(t, err)
-
-	res := bindings.VerifyMembershipQueryResponse{}
-	err = json.Unmarshal(bz, &res)
-	require.NoError(t, err)
-	require.False(t, res.IsValid)
+	require.Error(t, err)
 }
 
 func TestVerifyNonMembership(t *testing.T) {
@@ -174,10 +169,5 @@ func TestVerifyNonMembership(t *testing.T) {
 	require.NoError(t, err)
 
 	bz, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
-	require.NoError(t, err)
-
-	res := bindings.VerifyNonMembershipQueryResponse{}
-	err = json.Unmarshal(bz, &res)
-	require.NoError(t, err)
-	require.False(t, res.IsValid)
+	require.Error(t, err)
 }
