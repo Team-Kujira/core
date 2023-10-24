@@ -228,7 +228,7 @@ var (
 		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		ibcfeetypes.ModuleName:              nil,
 		icatypes.ModuleName:                 nil,
-		wasm.ModuleName:                     {authtypes.Burner},
+		wasmtypes.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
 		batchtypes.ModuleName:               nil,
 		schedulertypes.ModuleName:           nil,
@@ -289,7 +289,7 @@ type App struct {
 	EvidenceKeeper        evidencekeeper.Keeper
 	TransferKeeper        ibctransferkeeper.Keeper
 	FeeGrantKeeper        feegrantkeeper.Keeper
-	WasmKeeper            wasm.Keeper
+	WasmKeeper            wasmkeeper.Keeper
 	DenomKeeper           *denomkeeper.Keeper
 	BatchKeeper           batchkeeper.Keeper
 	SchedulerKeeper       schedulerkeeper.Keeper
@@ -322,7 +322,7 @@ func New(
 	loadLatest bool,
 	encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 	appCodec := encodingConfig.Codec
@@ -357,7 +357,7 @@ func New(
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
 
-		wasm.StoreKey,
+		wasmtypes.StoreKey,
 		icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey,
 		denomtypes.StoreKey,
@@ -619,7 +619,7 @@ func New(
 		app.StakingKeeper,
 	)
 
-	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -635,9 +635,9 @@ func New(
 		*app.DenomKeeper,
 	), wasmOpts...)
 
-	app.WasmKeeper = wasm.NewKeeper(
+	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
-		keys[wasm.StoreKey],
+		keys[wasmtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
@@ -725,7 +725,7 @@ func New(
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
-		AddRoute(wasm.ModuleName, wasmStack).
+		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -924,7 +924,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -955,7 +955,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -999,7 +999,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -1037,7 +1037,7 @@ func New(
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
-			TXCounterStoreKey: keys[wasm.StoreKey],
+			TXCounterStoreKey: keys[wasmtypes.StoreKey],
 		},
 	)
 	if err != nil {
@@ -1283,7 +1283,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(denomtypes.ModuleName)
-	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(batchtypes.ModuleName)
