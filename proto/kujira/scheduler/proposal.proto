@@ -2,7 +2,7 @@ syntax = "proto3";
 package kujira.scheduler;
 
 import "gogoproto/gogo.proto";
-import "scheduler/hook.proto";
+import "kujira/scheduler/hook.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/scheduler/types";

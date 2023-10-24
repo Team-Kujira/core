@@ -9,7 +9,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard
     - errcheck
     - forcetypeassert
     - gofumpt
