@@ -228,7 +228,7 @@ var (
 		icatypes.ModuleName:                 nil,
 		wasm.ModuleName:                     {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
-		batchtypes.ModuleName:             nil,
+		batchtypes.ModuleName:               nil,
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
@@ -289,7 +289,7 @@ type App struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	WasmKeeper            wasm.Keeper
 	DenomKeeper           *denomkeeper.Keeper
-	BatchKeeper         batchkeeper.Keeper
+	BatchKeeper           batchkeeper.Keeper
 	SchedulerKeeper       schedulerkeeper.Keeper
 	OracleKeeper          oraclekeeper.Keeper
 	AllianceKeeper        alliancemodulekeeper.Keeper
@@ -360,6 +360,7 @@ func New(
 		denomtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
+		batchtypes.StoreKey,
 		AllianceStoreKey,
 	)
 
@@ -1283,6 +1284,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
+	paramsKeeper.Subspace(batchtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	return paramsKeeper
