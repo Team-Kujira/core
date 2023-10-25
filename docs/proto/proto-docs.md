@@ -13,11 +13,6 @@
  - [kujira/scheduler/genesis.proto](#kujira/scheduler/genesis.proto)
      - [GenesisState](#kujira.scheduler.GenesisState)
    
- - [kujira/scheduler/proposal.proto](#kujira/scheduler/proposal.proto)
-     - [CreateHookProposal](#kujira.scheduler.CreateHookProposal)
-     - [DeleteHookProposal](#kujira.scheduler.DeleteHookProposal)
-     - [UpdateHookProposal](#kujira.scheduler.UpdateHookProposal)
-   
  - [kujira/scheduler/query.proto](#kujira/scheduler/query.proto)
      - [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest)
      - [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse)
@@ -27,6 +22,16 @@
      - [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse)
    
      - [Query](#kujira.scheduler.Query)
+   
+ - [kujira/scheduler/tx.proto](#kujira/scheduler/tx.proto)
+     - [MsgCreateHook](#kujira.scheduler.MsgCreateHook)
+     - [MsgCreateHookResponse](#kujira.scheduler.MsgCreateHookResponse)
+     - [MsgDeleteHook](#kujira.scheduler.MsgDeleteHook)
+     - [MsgDeleteHookResponse](#kujira.scheduler.MsgDeleteHookResponse)
+     - [MsgUpdateHook](#kujira.scheduler.MsgUpdateHook)
+     - [MsgUpdateHookResponse](#kujira.scheduler.MsgUpdateHookResponse)
+   
+     - [Msg](#kujira.scheduler.Msg)
    
  - [Scalar Value Types](#scalar-value-types)
 
@@ -112,82 +117,6 @@
  | `params` | [Params](#kujira.scheduler.Params) |  |  |
  | `hookList` | [Hook](#kujira.scheduler.Hook) | repeated |  |
  | `hookCount` | [uint64](#uint64) |  |  |
- 
- 
-
- 
-
-  <!-- end messages -->
-
-  <!-- end enums -->
-
-  <!-- end HasExtensions -->
-
-  <!-- end services -->
-
- 
- 
- <a name="kujira/scheduler/proposal.proto"></a>
- <p align="right"><a href="#top">Top</a></p>
-
- ## kujira/scheduler/proposal.proto
- 
-
- 
- <a name="kujira.scheduler.CreateHookProposal"></a>
-
- ### CreateHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `executor` | [string](#string) |  | The account that will execute the msg on the schedule |
- | `contract` | [string](#string) |  | The contract that the msg is called on |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.DeleteHookProposal"></a>
-
- ### DeleteHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `id` | [uint64](#uint64) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.scheduler.UpdateHookProposal"></a>
-
- ### UpdateHookProposal
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `title` | [string](#string) |  | Title is a short summary |
- | `description` | [string](#string) |  | Description is a human readable text |
- | `id` | [uint64](#uint64) |  |  |
- | `executor` | [string](#string) |  |  |
- | `contract` | [string](#string) |  |  |
- | `msg` | [bytes](#bytes) |  |  |
- | `frequency` | [int64](#int64) |  |  |
- | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
  
  
 
@@ -312,6 +241,121 @@
  | `Params` | [QueryParamsRequest](#kujira.scheduler.QueryParamsRequest) | [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse) | Parameters queries the parameters of the module. | GET|/kujira/scheduler/params|
  | `Hook` | [QueryGetHookRequest](#kujira.scheduler.QueryGetHookRequest) | [QueryGetHookResponse](#kujira.scheduler.QueryGetHookResponse) | Queries a Hook by id. | GET|/kujira/scheduler/hook/{id}|
  | `HookAll` | [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest) | [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse) | Queries a list of Hook items. | GET|/kujira/scheduler/hook|
+ 
+  <!-- end services -->
+
+ 
+ 
+ <a name="kujira/scheduler/tx.proto"></a>
+ <p align="right"><a href="#top">Top</a></p>
+
+ ## kujira/scheduler/tx.proto
+ 
+
+ 
+ <a name="kujira.scheduler.MsgCreateHook"></a>
+
+ ### MsgCreateHook
+ 
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `authority` | [string](#string) |  |  |
+ | `executor` | [string](#string) |  | The account that will execute the msg on the schedule |
+ | `contract` | [string](#string) |  | The contract that the msg is called on |
+ | `msg` | [bytes](#bytes) |  |  |
+ | `frequency` | [int64](#int64) |  |  |
+ | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.scheduler.MsgCreateHookResponse"></a>
+
+ ### MsgCreateHookResponse
+ 
+
+ 
+
+ 
+
+ 
+ <a name="kujira.scheduler.MsgDeleteHook"></a>
+
+ ### MsgDeleteHook
+ 
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `authority` | [string](#string) |  |  |
+ | `id` | [uint64](#uint64) |  |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.scheduler.MsgDeleteHookResponse"></a>
+
+ ### MsgDeleteHookResponse
+ 
+
+ 
+
+ 
+
+ 
+ <a name="kujira.scheduler.MsgUpdateHook"></a>
+
+ ### MsgUpdateHook
+ 
+
+ 
+ | Field | Type | Label | Description |
+ | ----- | ---- | ----- | ----------- |
+ | `authority` | [string](#string) |  |  |
+ | `id` | [uint64](#uint64) |  |  |
+ | `executor` | [string](#string) |  |  |
+ | `contract` | [string](#string) |  |  |
+ | `msg` | [bytes](#bytes) |  |  |
+ | `frequency` | [int64](#int64) |  |  |
+ | `funds` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+ 
+ 
+
+ 
+
+ 
+ <a name="kujira.scheduler.MsgUpdateHookResponse"></a>
+
+ ### MsgUpdateHookResponse
+ 
+
+ 
+
+ 
+
+  <!-- end messages -->
+
+  <!-- end enums -->
+
+  <!-- end HasExtensions -->
+
+ 
+ <a name="kujira.scheduler.Msg"></a>
+
+ ### Msg
+ Msg defines the scheduler Msg service.
+
+ | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+ | ----------- | ------------ | ------------- | ------------| ------- | -------- |
+ | `CreateHook` | [MsgCreateHook](#kujira.scheduler.MsgCreateHook) | [MsgCreateHookResponse](#kujira.scheduler.MsgCreateHookResponse) | CreateHook adds a new hook to the scheduler | |
+ | `UpdateHook` | [MsgUpdateHook](#kujira.scheduler.MsgUpdateHook) | [MsgUpdateHookResponse](#kujira.scheduler.MsgUpdateHookResponse) | UpdateHook updates an existing hook | |
+ | `DeleteHook` | [MsgDeleteHook](#kujira.scheduler.MsgDeleteHook) | [MsgDeleteHookResponse](#kujira.scheduler.MsgDeleteHookResponse) | DeleteHook removes a hook from the scheduler | |
  
   <!-- end services -->
 

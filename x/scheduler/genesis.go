@@ -16,13 +16,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set hook count
 	k.SetHookCount(ctx, genState.HookCount)
-	k.SetParams(ctx, genState.Params)
 }
 
 // ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
+	genesis.Params = types.Params{}
 
 	genesis.HookList = k.GetAllHook(ctx)
 	genesis.HookCount = k.GetHookCount(ctx)
