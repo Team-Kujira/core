@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"cosmossdk.io/store"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,7 +10,7 @@ import (
 
 func MigrateParams(
 	ctx sdk.Context,
-	store sdk.KVStore,
+	store store.KVStore,
 	subspace paramtypes.Subspace,
 	cdc codec.BinaryCodec,
 ) error {

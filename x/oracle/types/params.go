@@ -3,9 +3,9 @@ package types
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	"gopkg.in/yaml.v2"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -32,11 +32,11 @@ const (
 
 // Default parameter values
 var (
-	DefaultVoteThreshold     = sdk.NewDecWithPrec(50, 2) // 50%
-	DefaultMaxDeviation      = sdk.NewDecWithPrec(2, 1)  // 2% (-1, 1)
+	DefaultVoteThreshold     = math.LegacyNewDecWithPrec(50, 2) // 50%
+	DefaultMaxDeviation      = math.LegacyNewDecWithPrec(2, 1)  // 2% (-1, 1)
 	DefaultRequiredDenoms    = []string{}
-	DefaultSlashFraction     = sdk.NewDecWithPrec(1, 4) // 0.01%
-	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
+	DefaultSlashFraction     = math.LegacyNewDecWithPrec(1, 4) // 0.01%
+	DefaultMinValidPerWindow = math.LegacyNewDecWithPrec(5, 2) // 5%
 )
 
 var _ paramstypes.ParamSet = &Params{}
@@ -86,15 +86,15 @@ func (p Params) Validate() error {
 	if p.VotePeriod == 0 {
 		return fmt.Errorf("oracle parameter VotePeriod must be > 0, is %d", p.VotePeriod)
 	}
-	if p.VoteThreshold.LTE(sdk.NewDecWithPrec(33, 2)) {
+	if p.VoteThreshold.LTE(math.LegacyNewDecWithPrec(33, 2)) {
 		return fmt.Errorf("oracle parameter VoteThreshold must be greater than 33 percent")
 	}
 
-	if p.MaxDeviation.GT(sdk.OneDec()) || p.MaxDeviation.IsNegative() {
+	if p.MaxDeviation.GT(math.LegacyOneDec()) || p.MaxDeviation.IsNegative() {
 		return fmt.Errorf("oracle parameter MaxDeviation must be between [0, 1]")
 	}
 
-	if p.SlashFraction.GT(sdk.OneDec()) || p.SlashFraction.IsNegative() {
+	if p.SlashFraction.GT(math.LegacyOneDec()) || p.SlashFraction.IsNegative() {
 		return fmt.Errorf("oracle parameter SlashFraction must be between [0, 1]")
 	}
 
@@ -102,7 +102,7 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter SlashWindow must be greater than or equal with VotePeriod")
 	}
 
-	if p.MinValidPerWindow.GT(sdk.OneDec()) || p.MinValidPerWindow.IsNegative() {
+	if p.MinValidPerWindow.GT(math.LegacyOneDec()) || p.MinValidPerWindow.IsNegative() {
 		return fmt.Errorf("oracle parameter MinValidPerWindow must be between [0, 1]")
 	}
 
@@ -128,16 +128,16 @@ func validateVotePeriod(i interface{}) error {
 }
 
 func validateVoteThreshold(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.LT(sdk.NewDecWithPrec(33, 2)) {
+	if v.LT(math.LegacyNewDecWithPrec(33, 2)) {
 		return fmt.Errorf("vote threshold must be bigger than 33%%: %s", v)
 	}
 
-	if v.GT(sdk.OneDec()) {
+	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("vote threshold too large: %s", v)
 	}
 
@@ -145,7 +145,7 @@ func validateVoteThreshold(i interface{}) error {
 }
 
 func validateMaxDeviation(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -154,7 +154,7 @@ func validateMaxDeviation(i interface{}) error {
 		return fmt.Errorf("reward band must be positive: %s", v)
 	}
 
-	if v.GT(sdk.OneDec()) {
+	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("reward band is too large: %s", v)
 	}
 
@@ -177,7 +177,7 @@ func validateRequiredDenoms(i interface{}) error {
 }
 
 func validateSlashFraction(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -186,7 +186,7 @@ func validateSlashFraction(i interface{}) error {
 		return fmt.Errorf("slash fraction must be positive: %s", v)
 	}
 
-	if v.GT(sdk.OneDec()) {
+	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("slash fraction is too large: %s", v)
 	}
 
@@ -207,7 +207,7 @@ func validateSlashWindow(i interface{}) error {
 }
 
 func validateMinValidPerWindow(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -216,7 +216,7 @@ func validateMinValidPerWindow(i interface{}) error {
 		return fmt.Errorf("min valid per window must be positive: %s", v)
 	}
 
-	if v.GT(sdk.OneDec()) {
+	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("min valid per window is too large: %s", v)
 	}
 

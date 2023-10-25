@@ -6,6 +6,7 @@ import (
 	"github.com/Team-Kujira/core/x/scheduler/types"
 
 	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -85,7 +86,7 @@ func (k Keeper) RemoveHook(ctx sdk.Context, id uint64) {
 // GetAllHook returns all hook
 func (k Keeper) GetAllHook(ctx sdk.Context) (list []types.Hook) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.HookKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 

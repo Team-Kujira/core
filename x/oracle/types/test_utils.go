@@ -2,10 +2,13 @@
 package types
 
 import (
+	"context"
 	"math"
 	"math/rand"
 
+	"cosmossdk.io/core/store"
 	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -77,45 +80,46 @@ func (sk DummyStakingKeeper) Validators() []MockValidator {
 }
 
 // Validator nolint
-func (sk DummyStakingKeeper) Validator(ctx sdk.Context, address sdk.ValAddress) stakingtypes.ValidatorI {
+func (sk DummyStakingKeeper) Validator(ctx context.Context, address sdk.ValAddress) (stakingtypes.ValidatorI, error) {
 	for _, validator := range sk.validators {
-		if validator.GetOperator().Equals(address) {
-			return validator
+		if validator.GetOperator() == address.String() {
+			return validator, nil
 		}
 	}
 
-	return nil
+	return nil, nil
 }
 
 // TotalBondedTokens nolint
-func (DummyStakingKeeper) TotalBondedTokens(_ sdk.Context) sdkmath.Int {
-	return sdk.ZeroInt()
+func (DummyStakingKeeper) TotalBondedTokens(_ context.Context) (sdkmath.Int, error) {
+	return sdkmath.ZeroInt(), nil
 }
 
 // Slash nolint
-func (DummyStakingKeeper) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) {}
+func (DummyStakingKeeper) Slash(context.Context, sdk.ConsAddress, int64, int64, sdkmath.LegacyDec) {}
 
 // ValidatorsPowerStoreIterator nolint
-func (DummyStakingKeeper) ValidatorsPowerStoreIterator(ctx sdk.Context) sdk.Iterator {
-	return sdk.KVStoreReversePrefixIterator(nil, nil)
+func (DummyStakingKeeper) ValidatorsPowerStoreIterator(ctx context.Context) (store.Iterator, error) {
+	return storetypes.KVStoreReversePrefixIterator(nil, nil), nil
 }
 
 // Jail nolint
-func (DummyStakingKeeper) Jail(sdk.Context, sdk.ConsAddress) {
+func (DummyStakingKeeper) Jail(context.Context, sdk.ConsAddress) {
 }
 
 // GetLastValidatorPower nolint
-func (sk DummyStakingKeeper) GetLastValidatorPower(ctx sdk.Context, operator sdk.ValAddress) (power int64) {
-	return sk.Validator(ctx, operator).GetConsensusPower(sdk.DefaultPowerReduction)
+func (sk DummyStakingKeeper) GetLastValidatorPower(ctx context.Context, operator sdk.ValAddress) (power int64) {
+	val, _ := sk.Validator(ctx, operator)
+	return val.GetConsensusPower(sdk.DefaultPowerReduction)
 }
 
 // MaxValidators returns the maximum amount of bonded validators
-func (DummyStakingKeeper) MaxValidators(sdk.Context) uint32 {
-	return 100
+func (DummyStakingKeeper) MaxValidators(context.Context) (uint32, error) {
+	return 100, nil
 }
 
 // PowerReduction - is the amount of staking tokens required for 1 unit of consensus-engine power
-func (DummyStakingKeeper) PowerReduction(ctx sdk.Context) (res sdkmath.Int) {
+func (DummyStakingKeeper) PowerReduction(ctx context.Context) (res sdkmath.Int) {
 	res = sdk.DefaultPowerReduction
 	return
 }
@@ -134,12 +138,12 @@ func (MockValidator) GetStatus() stakingtypes.BondStatus      { return stakingty
 func (MockValidator) IsBonded() bool                          { return true }
 func (MockValidator) IsUnbonded() bool                        { return false }
 func (MockValidator) IsUnbonding() bool                       { return false }
-func (v MockValidator) GetOperator() sdk.ValAddress           { return v.operator }
+func (v MockValidator) GetOperator() string                   { return v.operator.String() }
 func (MockValidator) ConsPubKey() (cryptotypes.PubKey, error) { return nil, nil }
 func (MockValidator) TmConsPublicKey() (tmprotocrypto.PublicKey, error) {
 	return tmprotocrypto.PublicKey{}, nil
 }
-func (MockValidator) GetConsAddr() (sdk.ConsAddress, error) { return nil, nil }
+func (MockValidator) GetConsAddr() ([]byte, error) { return nil, nil }
 func (v MockValidator) GetTokens() sdkmath.Int {
 	return sdk.TokensFromConsensusPower(v.power, sdk.DefaultPowerReduction)
 }
@@ -149,15 +153,23 @@ func (v MockValidator) GetBondedTokens() sdkmath.Int {
 }
 func (v MockValidator) GetConsensusPower(powerReduction sdkmath.Int) int64 { return v.power }
 func (v *MockValidator) SetConsensusPower(power int64)                     { v.power = power }
-func (v MockValidator) GetCommission() sdk.Dec                             { return sdk.ZeroDec() }
-func (v MockValidator) GetMinSelfDelegation() sdkmath.Int                  { return sdk.OneInt() }
-func (v MockValidator) GetDelegatorShares() sdk.Dec                        { return sdk.NewDec(v.power) }
-func (v MockValidator) TokensFromShares(sdk.Dec) sdk.Dec                   { return sdk.ZeroDec() }
-func (v MockValidator) TokensFromSharesTruncated(sdk.Dec) sdk.Dec          { return sdk.ZeroDec() }
-func (v MockValidator) TokensFromSharesRoundUp(sdk.Dec) sdk.Dec            { return sdk.ZeroDec() }
-func (v MockValidator) SharesFromTokens(amt sdkmath.Int) (sdk.Dec, error)  { return sdk.ZeroDec(), nil }
-func (v MockValidator) SharesFromTokensTruncated(amt sdkmath.Int) (sdk.Dec, error) {
-	return sdk.ZeroDec(), nil
+func (v MockValidator) GetCommission() sdkmath.LegacyDec                   { return sdkmath.LegacyZeroDec() }
+func (v MockValidator) GetMinSelfDelegation() sdkmath.Int                  { return sdkmath.OneInt() }
+func (v MockValidator) GetDelegatorShares() sdkmath.LegacyDec              { return sdkmath.LegacyNewDec(v.power) }
+func (v MockValidator) TokensFromShares(sdkmath.LegacyDec) sdkmath.LegacyDec {
+	return sdkmath.LegacyZeroDec()
+}
+func (v MockValidator) TokensFromSharesTruncated(sdkmath.LegacyDec) sdkmath.LegacyDec {
+	return sdkmath.LegacyZeroDec()
+}
+func (v MockValidator) TokensFromSharesRoundUp(sdkmath.LegacyDec) sdkmath.LegacyDec {
+	return sdkmath.LegacyZeroDec()
+}
+func (v MockValidator) SharesFromTokens(amt sdkmath.Int) (sdkmath.LegacyDec, error) {
+	return sdkmath.LegacyZeroDec(), nil
+}
+func (v MockValidator) SharesFromTokensTruncated(amt sdkmath.Int) (sdkmath.LegacyDec, error) {
+	return sdkmath.LegacyZeroDec(), nil
 }
 
 func NewMockValidator(valAddr sdk.ValAddress, power int64) MockValidator {

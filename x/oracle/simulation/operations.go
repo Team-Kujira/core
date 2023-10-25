@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
+	"cosmossdk.io/math"
 	simappparams "cosmossdk.io/simapp/params"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	"github.com/Team-Kujira/core/x/oracle/types"
@@ -48,19 +49,19 @@ func WeightedOperations(
 		weightMsgAggregateExchangeRateVote    int
 		weightMsgDelegateFeedConsent          int
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgAggregateExchangeRatePrevote, &weightMsgAggregateExchangeRatePrevote, nil,
+	appParams.GetOrGenerate(OpWeightMsgAggregateExchangeRatePrevote, &weightMsgAggregateExchangeRatePrevote, nil,
 		func(_ *rand.Rand) {
 			weightMsgAggregateExchangeRatePrevote = DefaultWeightMsgSend * 2
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAggregateExchangeRateVote, &weightMsgAggregateExchangeRateVote, nil,
+	appParams.GetOrGenerate(OpWeightMsgAggregateExchangeRateVote, &weightMsgAggregateExchangeRateVote, nil,
 		func(_ *rand.Rand) {
 			weightMsgAggregateExchangeRateVote = DefaultWeightMsgSend * 2
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgDelegateFeedConsent, &weightMsgDelegateFeedConsent, nil,
+	appParams.GetOrGenerate(OpWeightMsgDelegateFeedConsent, &weightMsgDelegateFeedConsent, nil,
 		func(_ *rand.Rand) {
 			weightMsgDelegateFeedConsent = DefaultWeightMsgSetWithdrawAddress
 		},
@@ -91,14 +92,14 @@ func SimulateMsgAggregateExchangeRatePrevote(ak types.AccountKeeper, bk types.Ba
 		address := sdk.ValAddress(simAccount.Address)
 
 		// ensure the validator exists
-		val := k.StakingKeeper.Validator(ctx, address)
+		val, _ := k.StakingKeeper.Validator(ctx, address)
 		if val == nil || !val.IsBonded() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAggregateExchangeRatePrevote, "unable to find validator"), nil, nil
 		}
 
 		exchangeRatesStr := ""
 		for _, denom := range whitelist {
-			price := sdk.NewDecWithPrec(int64(simtypes.RandIntBetween(r, 1, 10000)), int64(1))
+			price := math.LegacyNewDecWithPrec(int64(simtypes.RandIntBetween(r, 1, 10000)), int64(1))
 			exchangeRatesStr += price.String() + denom + ","
 		}
 
@@ -141,7 +142,7 @@ func SimulateMsgAggregateExchangeRatePrevote(ak types.AccountKeeper, bk types.Ba
 
 		voteHashMap[address.String()] = exchangeRatesStr
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -154,7 +155,7 @@ func SimulateMsgAggregateExchangeRateVote(ak types.AccountKeeper, bk types.BankK
 		address := sdk.ValAddress(simAccount.Address)
 
 		// ensure the validator exists
-		val := k.StakingKeeper.Validator(ctx, address)
+		val, _ := k.StakingKeeper.Validator(ctx, address)
 		if val == nil || !val.IsBonded() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAggregateExchangeRateVote, "unable to find validator"), nil, nil
 		}
@@ -209,7 +210,7 @@ func SimulateMsgAggregateExchangeRateVote(ak types.AccountKeeper, bk types.BankK
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -225,13 +226,13 @@ func SimulateMsgDelegateFeedConsent(ak types.AccountKeeper, bk types.BankKeeper,
 		account := ak.GetAccount(ctx, simAccount.Address)
 
 		// ensure the validator exists
-		val := k.StakingKeeper.Validator(ctx, valAddress)
+		val, _ := k.StakingKeeper.Validator(ctx, valAddress)
 		if val == nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDelegateFeedConsent, "unable to find validator"), nil, nil
 		}
 
 		// ensure the target address is not a validator
-		val2 := k.StakingKeeper.Validator(ctx, delegateValAddress)
+		val2, _ := k.StakingKeeper.Validator(ctx, delegateValAddress)
 		if val2 != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDelegateFeedConsent, "unable to delegate to validator"), nil, nil
 		}
@@ -265,6 +266,6 @@ func SimulateMsgDelegateFeedConsent(ak types.AccountKeeper, bk types.BankKeeper,
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

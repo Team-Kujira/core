@@ -4,12 +4,12 @@ import (
 	"sort"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
@@ -28,17 +28,17 @@ func TestOrganizeAggregate(t *testing.T) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
 	require.NoError(t, err)
-	staking.EndBlocker(ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(ctx)
 
 	sdrBallot := types.ExchangeRateBallot{
-		types.NewVoteForTally(sdk.NewDec(17), types.TestDenomD, ValAddrs[0], power),
-		types.NewVoteForTally(sdk.NewDec(10), types.TestDenomD, ValAddrs[1], power),
-		types.NewVoteForTally(sdk.NewDec(6), types.TestDenomD, ValAddrs[2], power),
+		types.NewVoteForTally(math.LegacyNewDec(17), types.TestDenomD, ValAddrs[0], power),
+		types.NewVoteForTally(math.LegacyNewDec(10), types.TestDenomD, ValAddrs[1], power),
+		types.NewVoteForTally(math.LegacyNewDec(6), types.TestDenomD, ValAddrs[2], power),
 	}
 	krwBallot := types.ExchangeRateBallot{
-		types.NewVoteForTally(sdk.NewDec(1000), types.TestDenomC, ValAddrs[0], power),
-		types.NewVoteForTally(sdk.NewDec(1300), types.TestDenomC, ValAddrs[1], power),
-		types.NewVoteForTally(sdk.NewDec(2000), types.TestDenomC, ValAddrs[2], power),
+		types.NewVoteForTally(math.LegacyNewDec(1000), types.TestDenomC, ValAddrs[0], power),
+		types.NewVoteForTally(math.LegacyNewDec(1300), types.TestDenomC, ValAddrs[1], power),
+		types.NewVoteForTally(math.LegacyNewDec(2000), types.TestDenomC, ValAddrs[2], power),
 	}
 
 	for i := range sdrBallot {
@@ -93,17 +93,17 @@ func TestClearBallots(t *testing.T) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
 	require.NoError(t, err)
-	staking.EndBlocker(ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(ctx)
 
 	sdrBallot := types.ExchangeRateBallot{
-		types.NewVoteForTally(sdk.NewDec(17), types.TestDenomD, ValAddrs[0], power),
-		types.NewVoteForTally(sdk.NewDec(10), types.TestDenomD, ValAddrs[1], power),
-		types.NewVoteForTally(sdk.NewDec(6), types.TestDenomD, ValAddrs[2], power),
+		types.NewVoteForTally(math.LegacyNewDec(17), types.TestDenomD, ValAddrs[0], power),
+		types.NewVoteForTally(math.LegacyNewDec(10), types.TestDenomD, ValAddrs[1], power),
+		types.NewVoteForTally(math.LegacyNewDec(6), types.TestDenomD, ValAddrs[2], power),
 	}
 	krwBallot := types.ExchangeRateBallot{
-		types.NewVoteForTally(sdk.NewDec(1000), types.TestDenomC, ValAddrs[0], power),
-		types.NewVoteForTally(sdk.NewDec(1300), types.TestDenomC, ValAddrs[1], power),
-		types.NewVoteForTally(sdk.NewDec(2000), types.TestDenomC, ValAddrs[2], power),
+		types.NewVoteForTally(math.LegacyNewDec(1000), types.TestDenomC, ValAddrs[0], power),
+		types.NewVoteForTally(math.LegacyNewDec(1300), types.TestDenomC, ValAddrs[1], power),
+		types.NewVoteForTally(math.LegacyNewDec(2000), types.TestDenomC, ValAddrs[2], power),
 	}
 
 	for i := range sdrBallot {

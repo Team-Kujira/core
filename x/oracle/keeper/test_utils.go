@@ -7,20 +7,24 @@ import (
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
+	storemetrics "cosmossdk.io/store/metrics"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	auth "github.com/cosmos/cosmos-sdk/x/auth"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	params "github.com/cosmos/cosmos-sdk/x/params"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/stretchr/testify/require"
 
-	dbm "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/log"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/secp256k1"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 
+	"cosmossdk.io/math"
 	simparams "cosmossdk.io/simapp/params"
 	"cosmossdk.io/store"
 	storetypes "cosmossdk.io/store/types"
@@ -117,8 +121,10 @@ var (
 
 	OracleDecPrecision = 8
 
-	testdenom            = "testdenom"
-	AccountAddressPrefix = "kujira"
+	testdenom              = "testdenom"
+	AccountAddressPrefix   = "kujira"
+	ValidatorAddressPrefix = AccountAddressPrefix + "valoper"
+	ConsensusAddressPrefix = AccountAddressPrefix + "valcons"
 )
 
 // TestInput nolint
@@ -134,18 +140,18 @@ type TestInput struct {
 
 // CreateTestInput nolint
 func CreateTestInput(t *testing.T) TestInput {
-	keyAcc := sdk.NewKVStoreKey(authtypes.StoreKey)
-	keyBank := sdk.NewKVStoreKey(banktypes.StoreKey)
-	keyParams := sdk.NewKVStoreKey(paramstypes.StoreKey)
-	tKeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-	keyOracle := sdk.NewKVStoreKey(types.StoreKey)
-	keySlashing := sdk.NewKVStoreKey(slashingtypes.StoreKey)
-	keyStaking := sdk.NewKVStoreKey(stakingtypes.StoreKey)
-	keyDistr := sdk.NewKVStoreKey(distrtypes.StoreKey)
+	keyAcc := storetypes.NewKVStoreKey(authtypes.StoreKey)
+	keyBank := storetypes.NewKVStoreKey(banktypes.StoreKey)
+	keyParams := storetypes.NewKVStoreKey(paramstypes.StoreKey)
+	tKeyParams := storetypes.NewTransientStoreKey(paramstypes.TStoreKey)
+	keyOracle := storetypes.NewKVStoreKey(types.StoreKey)
+	keySlashing := storetypes.NewKVStoreKey(slashingtypes.StoreKey)
+	keyStaking := storetypes.NewKVStoreKey(stakingtypes.StoreKey)
+	keyDistr := storetypes.NewKVStoreKey(distrtypes.StoreKey)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
-
+	logger := log.NewTestLogger(t)
 	db := dbm.NewMemDB()
-	ms := store.NewCommitMultiStore(db)
+	ms := store.NewCommitMultiStore(db, logger, storemetrics.NewNoOpMetrics())
 	ctx := sdk.NewContext(ms, tmproto.Header{Time: time.Now().UTC()}, false, log.NewNopLogger())
 	encodingConfig := MakeEncodingConfig(t)
 	appCodec, legacyAmino := encodingConfig.Codec, encodingConfig.Amino
@@ -181,18 +187,20 @@ func CreateTestInput(t *testing.T) TestInput {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, keyParams, tKeyParams)
 	accountKeeper := authkeeper.NewAccountKeeper(
 		appCodec,
-		keyAcc,
+		runtime.NewKVStoreService(keyAcc),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
+		authcodec.NewBech32Codec(AccountAddressPrefix),
 		AccountAddressPrefix,
 		authority,
 	)
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		appCodec,
-		keyBank,
+		runtime.NewKVStoreService(keyBank),
 		accountKeeper,
 		blackListAddrs,
 		authority,
+		logger,
 	)
 
 	totalSupply := sdk.NewCoins(sdk.NewCoin(testdenom, InitTokens.MulRaw(int64(len(Addrs)*10))))
@@ -200,10 +208,12 @@ func CreateTestInput(t *testing.T) TestInput {
 
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec,
-		keyStaking,
+		runtime.NewKVStoreService(keyStaking),
 		accountKeeper,
 		bankKeeper,
 		authority,
+		authcodec.NewBech32Codec(ValidatorAddressPrefix),
+		authcodec.NewBech32Codec(ConsensusAddressPrefix),
 	)
 
 	stakingParams := stakingtypes.DefaultParams()
@@ -213,14 +223,14 @@ func CreateTestInput(t *testing.T) TestInput {
 	slashingKeeper := slashingkeeper.NewKeeper(
 		appCodec,
 		legacyAmino,
-		keySlashing,
+		runtime.NewKVStoreService(keySlashing),
 		stakingKeeper,
 		authority,
 	)
 
 	distrKeeper := distrkeeper.NewKeeper(
 		appCodec,
-		keyDistr,
+		runtime.NewKVStoreService(keyDistr),
 		accountKeeper,
 		bankKeeper,
 		stakingKeeper,
@@ -228,12 +238,12 @@ func CreateTestInput(t *testing.T) TestInput {
 		authority,
 	)
 
-	distrKeeper.SetFeePool(ctx, distrtypes.InitialFeePool())
+	distrKeeper.FeePool.Set(ctx, distrtypes.InitialFeePool())
 	distrParams := distrtypes.DefaultParams()
-	distrParams.CommunityTax = sdk.NewDecWithPrec(2, 2)
-	distrParams.BaseProposerReward = sdk.NewDecWithPrec(1, 2)
-	distrParams.BonusProposerReward = sdk.NewDecWithPrec(4, 2)
-	distrKeeper.SetParams(ctx, distrParams)
+	distrParams.CommunityTax = math.LegacyNewDecWithPrec(2, 2)
+	distrParams.BaseProposerReward = math.LegacyNewDecWithPrec(1, 2)
+	distrParams.BonusProposerReward = math.LegacyNewDecWithPrec(4, 2)
+	distrKeeper.Params.Set(ctx, distrParams)
 	stakingKeeper.SetHooks(stakingtypes.NewMultiStakingHooks(distrKeeper.Hooks()))
 
 	feeCollectorAcc := authtypes.NewEmptyModuleAccount(authtypes.FeeCollectorName)
@@ -276,11 +286,11 @@ func CreateTestInput(t *testing.T) TestInput {
 }
 
 // NewTestMsgCreateValidator test msg creator
-func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey cryptotypes.PubKey, amt sdk.Int) *stakingtypes.MsgCreateValidator {
-	commission := stakingtypes.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
+func NewTestMsgCreateValidator(address sdk.ValAddress, pubKey cryptotypes.PubKey, amt math.Int) *stakingtypes.MsgCreateValidator {
+	commission := stakingtypes.NewCommissionRates(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec())
 	msg, _ := stakingtypes.NewMsgCreateValidator(
-		address, pubKey, sdk.NewCoin(testdenom, amt),
-		stakingtypes.Description{}, commission, sdk.OneInt(),
+		address.String(), pubKey, sdk.NewCoin(testdenom, amt),
+		stakingtypes.Description{}, commission, math.OneInt(),
 	)
 
 	return msg

@@ -5,6 +5,7 @@ import (
 	"sort"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,10 +15,9 @@ import (
 
 func TestQueryParams(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 
 	querier := NewQuerier(input.OracleKeeper)
-	res, err := querier.Params(ctx, &types.QueryParamsRequest{})
+	res, err := querier.Params(input.Ctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
 
 	require.Equal(t, input.OracleKeeper.GetParams(input.Ctx), res.Params)
@@ -25,18 +25,17 @@ func TestQueryParams(t *testing.T) {
 
 func TestQueryExchangeRate(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
-	rate := sdk.NewDec(1700)
+	rate := math.LegacyNewDec(1700)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomD, rate)
 
 	// empty request
-	_, err := querier.ExchangeRate(ctx, nil)
+	_, err := querier.ExchangeRate(input.Ctx, nil)
 	require.Error(t, err)
 
 	// Query to grpc
-	res, err := querier.ExchangeRate(ctx, &types.QueryExchangeRateRequest{
+	res, err := querier.ExchangeRate(input.Ctx, &types.QueryExchangeRateRequest{
 		Denom: types.TestDenomD,
 	})
 	require.NoError(t, err)
@@ -45,18 +44,17 @@ func TestQueryExchangeRate(t *testing.T) {
 
 func TestQueryMissCounter(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
 	missCounter := uint64(1)
 	input.OracleKeeper.SetMissCounter(input.Ctx, ValAddrs[0], missCounter)
 
 	// empty request
-	_, err := querier.MissCounter(ctx, nil)
+	_, err := querier.MissCounter(input.Ctx, nil)
 	require.Error(t, err)
 
 	// Query to grpc
-	res, err := querier.MissCounter(ctx, &types.QueryMissCounterRequest{
+	res, err := querier.MissCounter(input.Ctx, &types.QueryMissCounterRequest{
 		ValidatorAddr: ValAddrs[0].String(),
 	})
 	require.NoError(t, err)
@@ -65,14 +63,13 @@ func TestQueryMissCounter(t *testing.T) {
 
 func TestQueryExchangeRates(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
-	rate := sdk.NewDec(1700)
+	rate := math.LegacyNewDec(1700)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomD, rate)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomB, rate)
 
-	res, err := querier.ExchangeRates(ctx, &types.QueryExchangeRatesRequest{})
+	res, err := querier.ExchangeRates(input.Ctx, &types.QueryExchangeRatesRequest{})
 	require.NoError(t, err)
 
 	require.Equal(t, sdk.DecCoins{
@@ -83,15 +80,14 @@ func TestQueryExchangeRates(t *testing.T) {
 
 func TestQueryActives(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
-	rate := sdk.NewDec(1700)
+	rate := math.LegacyNewDec(1700)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomD, rate)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomC, rate)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomB, rate)
 
-	res, err := querier.Actives(ctx, &types.QueryActivesRequest{})
+	res, err := querier.Actives(input.Ctx, &types.QueryActivesRequest{})
 	require.NoError(t, err)
 
 	targetDenoms := []string{
@@ -105,16 +101,15 @@ func TestQueryActives(t *testing.T) {
 
 func TestQueryFeederDelegation(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
 	input.OracleKeeper.SetFeederDelegation(input.Ctx, ValAddrs[0], Addrs[1])
 
 	// empty request
-	_, err := querier.FeederDelegation(ctx, nil)
+	_, err := querier.FeederDelegation(input.Ctx, nil)
 	require.Error(t, err)
 
-	res, err := querier.FeederDelegation(ctx, &types.QueryFeederDelegationRequest{
+	res, err := querier.FeederDelegation(input.Ctx, &types.QueryFeederDelegationRequest{
 		ValidatorAddr: ValAddrs[0].String(),
 	})
 	require.NoError(t, err)
@@ -124,7 +119,6 @@ func TestQueryFeederDelegation(t *testing.T) {
 
 func TestQueryAggregatePrevote(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
 	prevote1 := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash{}, ValAddrs[0], 0)
@@ -133,18 +127,18 @@ func TestQueryAggregatePrevote(t *testing.T) {
 	input.OracleKeeper.SetAggregateExchangeRatePrevote(input.Ctx, ValAddrs[1], prevote2)
 
 	// validator 0 address params
-	res, err := querier.AggregatePrevote(ctx, &types.QueryAggregatePrevoteRequest{
+	res, err := querier.AggregatePrevote(input.Ctx, &types.QueryAggregatePrevoteRequest{
 		ValidatorAddr: ValAddrs[0].String(),
 	})
 	require.NoError(t, err)
 	require.Equal(t, prevote1, res.AggregatePrevote)
 
 	// empty request
-	_, err = querier.AggregatePrevote(ctx, nil)
+	_, err = querier.AggregatePrevote(input.Ctx, nil)
 	require.Error(t, err)
 
 	// validator 1 address params
-	res, err = querier.AggregatePrevote(ctx, &types.QueryAggregatePrevoteRequest{
+	res, err = querier.AggregatePrevote(input.Ctx, &types.QueryAggregatePrevoteRequest{
 		ValidatorAddr: ValAddrs[1].String(),
 	})
 	require.NoError(t, err)
@@ -153,7 +147,6 @@ func TestQueryAggregatePrevote(t *testing.T) {
 
 func TestQueryAggregatePrevotes(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
 	prevote1 := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash{}, ValAddrs[0], 0)
@@ -170,34 +163,33 @@ func TestQueryAggregatePrevotes(t *testing.T) {
 		return bytes.Compare(addr1, addr2) == -1
 	})
 
-	res, err := querier.AggregatePrevotes(ctx, &types.QueryAggregatePrevotesRequest{})
+	res, err := querier.AggregatePrevotes(input.Ctx, &types.QueryAggregatePrevotesRequest{})
 	require.NoError(t, err)
 	require.Equal(t, expectedPrevotes, res.AggregatePrevotes)
 }
 
 func TestQueryAggregateVote(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
-	vote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: sdk.OneDec()}}, ValAddrs[0])
+	vote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: math.LegacyOneDec()}}, ValAddrs[0])
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, ValAddrs[0], vote1)
-	vote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: sdk.OneDec()}}, ValAddrs[1])
+	vote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: math.LegacyOneDec()}}, ValAddrs[1])
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, ValAddrs[1], vote2)
 
 	// empty request
-	_, err := querier.AggregateVote(ctx, nil)
+	_, err := querier.AggregateVote(input.Ctx, nil)
 	require.Error(t, err)
 
 	// validator 0 address params
-	res, err := querier.AggregateVote(ctx, &types.QueryAggregateVoteRequest{
+	res, err := querier.AggregateVote(input.Ctx, &types.QueryAggregateVoteRequest{
 		ValidatorAddr: ValAddrs[0].String(),
 	})
 	require.NoError(t, err)
 	require.Equal(t, vote1, res.AggregateVote)
 
 	// validator 1 address params
-	res, err = querier.AggregateVote(ctx, &types.QueryAggregateVoteRequest{
+	res, err = querier.AggregateVote(input.Ctx, &types.QueryAggregateVoteRequest{
 		ValidatorAddr: ValAddrs[1].String(),
 	})
 	require.NoError(t, err)
@@ -206,14 +198,13 @@ func TestQueryAggregateVote(t *testing.T) {
 
 func TestQueryAggregateVotes(t *testing.T) {
 	input := CreateTestInput(t)
-	ctx := sdk.WrapSDKContext(input.Ctx)
 	querier := NewQuerier(input.OracleKeeper)
 
-	vote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: sdk.OneDec()}}, ValAddrs[0])
+	vote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: math.LegacyOneDec()}}, ValAddrs[0])
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, ValAddrs[0], vote1)
-	vote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: sdk.OneDec()}}, ValAddrs[1])
+	vote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: math.LegacyOneDec()}}, ValAddrs[1])
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, ValAddrs[1], vote2)
-	vote3 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: sdk.OneDec()}}, ValAddrs[2])
+	vote3 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{{Denom: "", ExchangeRate: math.LegacyOneDec()}}, ValAddrs[2])
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, ValAddrs[2], vote3)
 
 	expectedVotes := []types.AggregateExchangeRateVote{vote1, vote2, vote3}
@@ -223,7 +214,7 @@ func TestQueryAggregateVotes(t *testing.T) {
 		return bytes.Compare(addr1, addr2) == -1
 	})
 
-	res, err := querier.AggregateVotes(ctx, &types.QueryAggregateVotesRequest{})
+	res, err := querier.AggregateVotes(input.Ctx, &types.QueryAggregateVotesRequest{})
 	require.NoError(t, err)
 	require.Equal(t, expectedVotes, res.AggregateVotes)
 }

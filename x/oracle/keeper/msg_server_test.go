@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
@@ -143,7 +143,7 @@ func TestMsgServer_AggregatePrevoteVote(t *testing.T) {
 
 var (
 	stakingAmt         = sdk.TokensFromConsensusPower(10, sdk.DefaultPowerReduction)
-	randomExchangeRate = sdk.NewDec(1700)
+	randomExchangeRate = math.LegacyNewDec(1700)
 )
 
 func setup(t *testing.T) (TestInput, types.MsgServer) {
@@ -163,7 +163,6 @@ func setup(t *testing.T) (TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
 
 	return input, msgServer
 }

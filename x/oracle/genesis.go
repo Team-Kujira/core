@@ -3,6 +3,7 @@ package oracle
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/oracle/keeper"
@@ -84,7 +85,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 	})
 
 	exchangeRates := []types.ExchangeRateTuple{}
-	keeper.IterateExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
+	keeper.IterateExchangeRates(ctx, func(denom string, rate math.LegacyDec) (stop bool) {
 		exchangeRates = append(exchangeRates, types.ExchangeRateTuple{Denom: denom, ExchangeRate: rate})
 		return false
 	})

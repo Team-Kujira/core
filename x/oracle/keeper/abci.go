@@ -1,9 +1,9 @@
-package oracle
+package keeper
 
 import (
 	"time"
 
-	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/types"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -11,26 +11,41 @@ import (
 )
 
 // EndBlocker is called at the end of every block
-func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
+func (k Keeper) EndBlocker(ctx sdk.Context) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 	params := k.GetParams(ctx)
 	if IsPeriodLastBlock(ctx, params.VotePeriod) {
 		// Build claim map over all validators in active set
 		validatorClaimMap := make(map[string]types.Claim)
 
-		maxValidators := k.StakingKeeper.MaxValidators(ctx)
-		iterator := k.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+		maxValidators, err := k.StakingKeeper.MaxValidators(ctx)
+		if err != nil {
+			return err
+		}
+		iterator, err := k.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+		if err != nil {
+			return err
+		}
+
 		defer iterator.Close()
 
 		powerReduction := k.StakingKeeper.PowerReduction(ctx)
 
 		i := 0
 		for ; iterator.Valid() && i < int(maxValidators); iterator.Next() {
-			validator := k.StakingKeeper.Validator(ctx, iterator.Value())
+			validator, err := k.StakingKeeper.Validator(ctx, iterator.Value())
+			if err != nil {
+				return err
+			}
 
 			// Exclude not bonded validator
 			if validator.IsBonded() {
-				valAddr := validator.GetOperator()
+				valAddrStr := validator.GetOperator()
+				valAddr, err := sdk.ValAddressFromBech32(valAddrStr)
+				if err != nil {
+					return err
+				}
+
 				validatorClaimMap[valAddr.String()] = types.NewClaim(validator.GetConsensusPower(powerReduction), 0, 0, valAddr)
 				i++
 			}
@@ -41,7 +56,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 		voteTargets = append(voteTargets, params.RequiredDenoms...)
 
 		// Clear all exchange rates
-		k.IterateExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {
+		k.IterateExchangeRates(ctx, func(denom string, _ math.LegacyDec) (stop bool) {
 			k.DeleteExchangeRate(ctx, denom)
 			return false
 		})
@@ -54,10 +69,15 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) error {
 
 		// Iterate through ballots and update exchange rates; drop if not enough votes have been achieved.
 		for denom, ballot := range voteMap {
-			totalBondedPower := sdk.TokensToConsensusPower(k.StakingKeeper.TotalBondedTokens(ctx), k.StakingKeeper.PowerReduction(ctx))
+			bondedTokens, err := k.StakingKeeper.TotalBondedTokens(ctx)
+			if err != nil {
+				return err
+			}
+
+			totalBondedPower := sdk.TokensToConsensusPower(bondedTokens, k.StakingKeeper.PowerReduction(ctx))
 			voteThreshold := k.VoteThreshold(ctx)
 			thresholdVotes := voteThreshold.MulInt64(totalBondedPower).RoundInt()
-			ballotPower := sdk.NewInt(ballot.Power())
+			ballotPower := math.NewInt(ballot.Power())
 
 			if !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes) {
 				exchangeRate, err := Tally(

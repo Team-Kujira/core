@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/types"
 
 	"github.com/stretchr/testify/require"
@@ -43,7 +44,16 @@ func TestMsgAggregateExchangeRatePrevote(t *testing.T) {
 		sdk.AccAddress([]byte("addr1_______________")),
 	}
 
-	exchangeRates := sdk.DecCoins{sdk.NewDecCoinFromDec(types.TestDenomD, sdk.OneDec()), sdk.NewDecCoinFromDec(types.TestDenomC, sdk.NewDecWithPrec(32121, 1))}
+	exchangeRates := sdk.DecCoins{
+		sdk.NewDecCoinFromDec(
+			types.TestDenomD,
+			math.LegacyOneDec(),
+		),
+		sdk.NewDecCoinFromDec(
+			types.TestDenomC,
+			math.LegacyNewDecWithPrec(32121, 1),
+		),
+	}
 	bz := types.GetAggregateVoteHash("1", exchangeRates.String(), sdk.ValAddress(addrs[0]))
 
 	tests := []struct {

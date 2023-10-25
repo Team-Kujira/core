@@ -1,6 +1,7 @@
-package oracle
+package keeper
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
@@ -11,22 +12,22 @@ import (
 // CONTRACT: pb must be sorted
 func Tally(_ sdk.Context,
 	pb types.ExchangeRateBallot,
-	maxDeviation sdk.Dec,
+	maxDeviation math.LegacyDec,
 	validatorClaimMap map[string]types.Claim,
 	missMap map[string]sdk.ValAddress,
-) (sdk.Dec, error) {
+) (math.LegacyDec, error) {
 	weightedMedian, err := pb.WeightedMedian()
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return math.LegacyZeroDec(), err
 	}
 
 	standardDeviation, err := pb.StandardDeviation()
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return math.LegacyZeroDec(), err
 	}
 
 	spread := weightedMedian.Mul(maxDeviation)
-	spread = sdk.MaxDec(spread, standardDeviation)
+	spread = math.LegacyMaxDec(spread, standardDeviation)
 
 	for _, vote := range pb {
 		key := vote.Voter.String()

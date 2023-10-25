@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
 	gogotypes "github.com/cosmos/gogoproto/types"
 	"github.com/stretchr/testify/require"
 
@@ -29,13 +30,13 @@ func TestDecodeDistributionStore(t *testing.T) {
 	cdc := keeper.MakeTestCodec(t)
 	dec := sim.NewDecodeStore(cdc)
 
-	exchangeRate := sdk.NewDecWithPrec(1234, 1)
+	exchangeRate := math.LegacyNewDecWithPrec(1234, 1)
 	missCounter := uint64(23)
 
 	aggregatePrevote := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash([]byte("12345")), valAddr, 123)
 	aggregateVote := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: denomA, ExchangeRate: sdk.NewDecWithPrec(1234, 1)},
-		{Denom: denomB, ExchangeRate: sdk.NewDecWithPrec(4321, 1)},
+		{Denom: denomA, ExchangeRate: math.LegacyNewDecWithPrec(1234, 1)},
+		{Denom: denomB, ExchangeRate: math.LegacyNewDecWithPrec(4321, 1)},
 	}, valAddr)
 
 	kvPairs := kv.Pairs{

@@ -3,13 +3,14 @@ package keeper
 import (
 	"testing"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/store"
+	storemetrics "cosmossdk.io/store/metrics"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/Team-Kujira/core/x/scheduler/types"
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
@@ -29,8 +30,10 @@ var ModuleBasics = module.NewBasicManager(
 // Setup the testing environment
 func CreateTestKeeper(t *testing.T) (Keeper, sdk.Context) {
 	db := dbm.NewMemDB()
-	ms := store.NewCommitMultiStore(db)
-	key := sdk.NewKVStoreKey(types.StoreKey)
+	logger := log.NewTestLogger(t)
+
+	ms := store.NewCommitMultiStore(db, logger, storemetrics.NewNoOpMetrics())
+	key := storetypes.NewKVStoreKey(types.StoreKey)
 	ms.MountStoreWithDB(key, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, ms.LoadLatestVersion())
 
@@ -47,7 +50,7 @@ func CreateTestKeeper(t *testing.T) (Keeper, sdk.Context) {
 	types.RegisterLegacyAminoCodec(amino)
 	types.RegisterInterfaces(interfaceRegistry)
 
-	ctx := sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger())
+	ctx := sdk.NewContext(ms, tmproto.Header{}, false, nil)
 	keeper := NewKeeper(codec, key, authority)
 	return keeper, ctx
 }

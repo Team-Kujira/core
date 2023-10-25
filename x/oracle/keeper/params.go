@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,12 +13,12 @@ func (k Keeper) VotePeriod(ctx sdk.Context) (res uint64) {
 }
 
 // VoteThreshold returns the minimum percentage of votes that must be received for a ballot to pass.
-func (k Keeper) VoteThreshold(ctx sdk.Context) (res sdk.Dec) {
+func (k Keeper) VoteThreshold(ctx sdk.Context) (res math.LegacyDec) {
 	return k.GetParams(ctx).VoteThreshold
 }
 
 // MaxDeviation returns the ratio of allowable exchange rate error that a validator can be rewared
-func (k Keeper) MaxDeviation(ctx sdk.Context) (res sdk.Dec) {
+func (k Keeper) MaxDeviation(ctx sdk.Context) (res math.LegacyDec) {
 	return k.GetParams(ctx).MaxDeviation
 }
 
@@ -38,7 +39,7 @@ func (k Keeper) RequiredDenoms(ctx sdk.Context) (res []string) {
 // }
 
 // SlashFraction returns oracle voting penalty rate
-func (k Keeper) SlashFraction(ctx sdk.Context) (res sdk.Dec) {
+func (k Keeper) SlashFraction(ctx sdk.Context) (res math.LegacyDec) {
 	return k.GetParams(ctx).SlashFraction
 }
 
@@ -48,7 +49,7 @@ func (k Keeper) SlashWindow(ctx sdk.Context) (res uint64) {
 }
 
 // MinValidPerWindow returns oracle slashing threshold
-func (k Keeper) MinValidPerWindow(ctx sdk.Context) (res sdk.Dec) {
+func (k Keeper) MinValidPerWindow(ctx sdk.Context) (res math.LegacyDec) {
 	return k.GetParams(ctx).MinValidPerWindow
 }
 

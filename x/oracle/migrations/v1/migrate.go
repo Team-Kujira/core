@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"cosmossdk.io/math"
+	"cosmossdk.io/store"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,18 +11,18 @@ import (
 
 func MigrateParams(
 	ctx sdk.Context,
-	store sdk.KVStore,
+	store store.KVStore,
 	subspace paramtypes.Subspace,
 	cdc codec.BinaryCodec,
 ) error {
 	var (
 		votePeriod        uint64
-		voteThreshold     sdk.Dec
-		rewardBand        sdk.Dec
+		voteThreshold     math.LegacyDec
+		rewardBand        math.LegacyDec
 		whitelist         oracletypes.DenomList
-		slashFraction     sdk.Dec
+		slashFraction     math.LegacyDec
 		slashWindow       uint64
-		minValidPerWindow sdk.Dec
+		minValidPerWindow math.LegacyDec
 	)
 
 	subspace.Get(ctx, []byte("VotePeriod"), &votePeriod)

@@ -75,7 +75,7 @@ message QueryExchangeRateRequest {
 message QueryExchangeRateResponse {
   // exchange_rate defines the exchange rate of whitelisted assets
   string exchange_rate = 1
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 }
 
 // QueryExchangeRatesRequest is the request type for the Query/ExchangeRates RPC method.

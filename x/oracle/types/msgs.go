@@ -4,6 +4,7 @@ import (
 	"github.com/cometbft/cometbft/crypto/tmhash"
 
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -142,7 +143,7 @@ func (msg MsgAggregateExchangeRateVote) ValidateBasic() error {
 
 	for _, exchangeRate := range exchangeRates {
 		// Check overflow bit length
-		if exchangeRate.ExchangeRate.BigInt().BitLen() > 255+sdk.DecimalPrecisionBits {
+		if exchangeRate.ExchangeRate.BigInt().BitLen() > 255+math.LegacyDecimalPrecisionBits {
 			return errors.Wrap(ErrInvalidExchangeRate, "overflow")
 		}
 	}

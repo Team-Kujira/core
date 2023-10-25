@@ -11,7 +11,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -19,10 +18,10 @@ import (
 func TestExchangeRate(t *testing.T) {
 	input := CreateTestInput(t)
 
-	exchangeRateE := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
-	exchangeRateH := sdk.NewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
-	exchangeRateC := sdk.NewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
-	exchangeRateA := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateE := math.LegacyNewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateH := math.LegacyNewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateC := math.LegacyNewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateA := math.LegacyNewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
 
 	// Set & get rates
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomE, exchangeRateE)
@@ -49,7 +48,7 @@ func TestExchangeRate(t *testing.T) {
 	require.Error(t, err)
 
 	numExchangeRates := 0
-	handler := func(denom string, exchangeRate sdk.Dec) (stop bool) {
+	handler := func(denom string, exchangeRate math.LegacyDec) (stop bool) {
 		numExchangeRates = numExchangeRates + 1
 		return false
 	}
@@ -61,10 +60,10 @@ func TestExchangeRate(t *testing.T) {
 func TestIterateExchangeRates(t *testing.T) {
 	input := CreateTestInput(t)
 
-	exchangeRateE := sdk.NewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
-	exchangeRateH := sdk.NewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
-	exchangeRateC := sdk.NewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
-	exchangeRateA := sdk.NewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateE := math.LegacyNewDecWithPrec(839, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateH := math.LegacyNewDecWithPrec(4995, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateC := math.LegacyNewDecWithPrec(2838, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
+	exchangeRateA := math.LegacyNewDecWithPrec(3282384, int64(OracleDecPrecision)).MulInt64(types.MicroUnit)
 
 	// Set & get rates
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomE, exchangeRateE)
@@ -72,7 +71,7 @@ func TestIterateExchangeRates(t *testing.T) {
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomC, exchangeRateC)
 	input.OracleKeeper.SetExchangeRate(input.Ctx, types.TestDenomA, exchangeRateA)
 
-	input.OracleKeeper.IterateExchangeRates(input.Ctx, func(denom string, rate sdk.Dec) (stop bool) {
+	input.OracleKeeper.IterateExchangeRates(input.Ctx, func(denom string, rate math.LegacyDec) (stop bool) {
 		switch denom {
 		case types.TestDenomE:
 			require.Equal(t, exchangeRateE, rate)
@@ -90,7 +89,7 @@ func TestIterateExchangeRates(t *testing.T) {
 func TestRewardPool(t *testing.T) {
 	input := CreateTestInput(t)
 
-	fees := sdk.NewCoins(sdk.NewCoin(types.TestDenomD, sdk.NewInt(1000)))
+	fees := sdk.NewCoins(sdk.NewCoin(types.TestDenomD, math.NewInt(1000)))
 	acc := input.AccountKeeper.GetModuleAccount(input.Ctx, types.ModuleName)
 	err := FundAccount(input, acc.GetAddress(), fees)
 	if err != nil {
@@ -111,11 +110,11 @@ func TestParams(t *testing.T) {
 
 	// Test custom params setting
 	votePeriod := uint64(10)
-	voteThreshold := sdk.NewDecWithPrec(70, 2)
-	maxDeviation := sdk.NewDecWithPrec(1, 1)
-	slashFraction := sdk.NewDecWithPrec(1, 2)
+	voteThreshold := math.LegacyNewDecWithPrec(70, 2)
+	maxDeviation := math.LegacyNewDecWithPrec(1, 1)
+	slashFraction := math.LegacyNewDecWithPrec(1, 2)
 	slashWindow := uint64(1000)
-	minValidPerWindow := sdk.NewDecWithPrec(1, 4)
+	minValidPerWindow := math.LegacyNewDecWithPrec(1, 4)
 	requiredDenoms := []string{
 		types.TestDenomD,
 		types.TestDenomC,
@@ -263,9 +262,9 @@ func TestAggregateVoteAddDelete(t *testing.T) {
 	input := CreateTestInput(t)
 
 	aggregateVote := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: "foo", ExchangeRate: sdk.NewDec(-1)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(0)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(1)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(-1)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(0)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(1)},
 	}, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, sdk.ValAddress(Addrs[0]), aggregateVote)
 
@@ -282,16 +281,16 @@ func TestAggregateVoteIterate(t *testing.T) {
 	input := CreateTestInput(t)
 
 	aggregateVote1 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: "foo", ExchangeRate: sdk.NewDec(-1)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(0)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(1)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(-1)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(0)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(1)},
 	}, sdk.ValAddress(Addrs[0]))
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, sdk.ValAddress(Addrs[0]), aggregateVote1)
 
 	aggregateVote2 := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: "foo", ExchangeRate: sdk.NewDec(-1)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(0)},
-		{Denom: "foo", ExchangeRate: sdk.NewDec(1)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(-1)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(0)},
+		{Denom: "foo", ExchangeRate: math.LegacyNewDec(1)},
 	}, sdk.ValAddress(Addrs[1]))
 	input.OracleKeeper.SetAggregateExchangeRateVote(input.Ctx, sdk.ValAddress(Addrs[1]), aggregateVote2)
 
@@ -325,18 +324,21 @@ func TestValidateFeeder(t *testing.T) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(ctx, NewTestMsgCreateValidator(addr1, val1, amt))
 	require.NoError(t, err)
-	staking.EndBlocker(ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(ctx)
+	params, _ := input.StakingKeeper.GetParams(ctx)
 
 	require.Equal(
 		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr)),
-		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
+		sdk.NewCoins(sdk.NewCoin(params.BondDenom, InitTokens.Sub(amt))),
 	)
-	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr).GetBondedTokens())
+	validatorI, _ := input.StakingKeeper.Validator(ctx, addr)
+	require.Equal(t, amt, validatorI.GetBondedTokens())
 	require.Equal(
 		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr1)),
-		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
+		sdk.NewCoins(sdk.NewCoin(params.BondDenom, InitTokens.Sub(amt))),
 	)
-	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr1).GetBondedTokens())
+	validator1I, _ := input.StakingKeeper.Validator(ctx, addr)
+	require.Equal(t, amt, validator1I.GetBondedTokens())
 
 	require.NoError(t, input.OracleKeeper.ValidateFeeder(input.Ctx, sdk.AccAddress(addr), sdk.ValAddress(addr)))
 	require.NoError(t, input.OracleKeeper.ValidateFeeder(input.Ctx, sdk.AccAddress(addr1), sdk.ValAddress(addr1)))
@@ -347,8 +349,8 @@ func TestValidateFeeder(t *testing.T) {
 	require.Error(t, input.OracleKeeper.ValidateFeeder(input.Ctx, sdk.AccAddress(Addrs[2]), sdk.ValAddress(addr)))
 
 	// only active validators can do oracle votes
-	validator, found := input.StakingKeeper.GetValidator(input.Ctx, sdk.ValAddress(addr))
-	require.True(t, found)
+	validator, err := input.StakingKeeper.GetValidator(input.Ctx, sdk.ValAddress(addr))
+	require.NoError(t, err)
 	validator.Status = stakingtypes.Unbonded
 	input.StakingKeeper.SetValidator(input.Ctx, validator)
 	require.Error(t, input.OracleKeeper.ValidateFeeder(input.Ctx, sdk.AccAddress(addr1), sdk.ValAddress(addr)))

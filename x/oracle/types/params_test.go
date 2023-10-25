@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestParamsEqual(t *testing.T) {
@@ -23,25 +22,25 @@ func TestParamsEqual(t *testing.T) {
 
 	// small vote threshold
 	p2 := types.DefaultParams()
-	p2.VoteThreshold = sdk.ZeroDec()
+	p2.VoteThreshold = math.LegacyZeroDec()
 	err = p2.Validate()
 	require.Error(t, err)
 
 	// negative reward band
 	p3 := types.DefaultParams()
-	p3.MaxDeviation = sdk.NewDecWithPrec(-1, 1)
+	p3.MaxDeviation = math.LegacyNewDecWithPrec(-1, 1)
 	err = p3.Validate()
 	require.Error(t, err)
 
 	// negative slash fraction
 	p4 := types.DefaultParams()
-	p4.SlashFraction = sdk.NewDec(-1)
+	p4.SlashFraction = math.LegacyNewDec(-1)
 	err = p4.Validate()
 	require.Error(t, err)
 
 	// negative min valid per window
 	p5 := types.DefaultParams()
-	p5.MinValidPerWindow = sdk.NewDec(-1)
+	p5.MinValidPerWindow = math.LegacyNewDec(-1)
 	err = p5.Validate()
 	require.Error(t, err)
 
@@ -67,17 +66,17 @@ func TestValidate(t *testing.T) {
 			require.Error(t, pair.ValidatorFn("invalid"))
 			require.Error(t, pair.ValidatorFn(uint64(0)))
 		case bytes.Equal(types.KeyVoteThreshold, pair.Key):
-			require.NoError(t, pair.ValidatorFn(sdk.NewDecWithPrec(33, 2)))
+			require.NoError(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(33, 2)))
 			require.Error(t, pair.ValidatorFn("invalid"))
-			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(32, 2)))
-			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(101, 2)))
+			require.Error(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(32, 2)))
+			require.Error(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(101, 2)))
 		case bytes.Equal(types.KeyMaxDeviation, pair.Key) ||
 			bytes.Equal(types.KeySlashFraction, pair.Key) ||
 			bytes.Equal(types.KeyMinValidPerWindow, pair.Key):
-			require.NoError(t, pair.ValidatorFn(sdk.NewDecWithPrec(7, 2)))
+			require.NoError(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(7, 2)))
 			require.Error(t, pair.ValidatorFn("invalid"))
-			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(-1, 2)))
-			require.Error(t, pair.ValidatorFn(sdk.NewDecWithPrec(101, 2)))
+			require.Error(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(-1, 2)))
+			require.Error(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(101, 2)))
 		case bytes.Equal(types.KeyRequiredDenoms, pair.Key):
 			require.NoError(t, pair.ValidatorFn([]string{}))
 			require.Error(t, pair.ValidatorFn("invalid"))

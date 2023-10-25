@@ -3,22 +3,22 @@ package oracle_test
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	"github.com/Team-Kujira/core/x/oracle/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
 var (
-	uSDRAmt    = sdk.NewInt(1005 * types.MicroUnit)
+	uSDRAmt    = math.NewInt(1005 * types.MicroUnit)
 	stakingAmt = sdk.TokensFromConsensusPower(10, sdk.DefaultPowerReduction)
 
-	randomExchangeRate        = sdk.NewDec(1700)
-	anotherRandomExchangeRate = sdk.NewDecWithPrec(4882, 2) // swap rate
+	randomExchangeRate        = math.LegacyNewDec(1700)
+	anotherRandomExchangeRate = math.LegacyNewDecWithPrec(4882, 2) // swap rate
 )
 
 func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, types.MsgServer) {
@@ -38,7 +38,7 @@ func setupWithSmallVotingPower(t *testing.T) (keeper.TestInput, types.MsgServer)
 
 	require.NoError(t, err)
 
-	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(input.Ctx)
 
 	return input, h
 }
@@ -61,7 +61,7 @@ func setup(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[2], keeper.ValPubKeys[2], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(input.Ctx)
 
 	return input, h
 }
@@ -87,7 +87,7 @@ func setupVal5(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[4], keeper.ValPubKeys[4], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(input.Ctx)
 
 	return input, h
 }

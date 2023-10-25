@@ -67,7 +67,7 @@ func TestFullDenom(t *testing.T) {
 
 func TestDenomAdmin(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	ctx := app.BaseApp.NewContextLegacy(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	// set token creation fee to zero to make testing easier
 	tfParams := app.DenomKeeper.GetParams(ctx)

@@ -6,13 +6,12 @@ import (
 	"sort"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/libs/rand"
-	"github.com/stretchr/testify/require"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/stretchr/testify/require"
 
-	"github.com/Team-Kujira/core/x/oracle"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	"github.com/Team-Kujira/core/x/oracle/types"
 )
@@ -33,7 +32,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.Error(t, err)
@@ -70,7 +69,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	rate, err := input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.NoError(t, err)
@@ -101,7 +100,7 @@ func TestOracleThreshold(t *testing.T) {
 	require.NoError(t, err1)
 	require.NoError(t, err2)
 
-	oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx.WithBlockHeight(1), types.TestDenomD)
 	require.Error(t, err)
@@ -116,7 +115,7 @@ func TestOracleDrop(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 
 	// Immediately swap halt after an illiquid oracle vote
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomC)
 	require.Error(t, err)
@@ -131,7 +130,7 @@ func TestOracleTally(t *testing.T) {
 	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 	for i, rate := range rates {
 
-		decExchangeRate := sdk.NewDecWithPrec(int64(rate*math.Pow10(keeper.OracleDecPrecision)), int64(keeper.OracleDecPrecision))
+		decExchangeRate := sdkmath.LegacyNewDecWithPrec(int64(rate*math.Pow10(keeper.OracleDecPrecision)), int64(keeper.OracleDecPrecision))
 		exchangeRateStr := decExchangeRate.String() + types.TestDenomD
 
 		salt := fmt.Sprintf("%d", i)
@@ -161,8 +160,9 @@ func TestOracleTally(t *testing.T) {
 
 	validatorClaimMap := make(map[string]types.Claim)
 	for _, valAddr := range valAddrs {
+		val, _ := stakingKeeper.Validator(input.Ctx, valAddr)
 		validatorClaimMap[valAddr.String()] = types.Claim{
-			Power:     stakingKeeper.Validator(input.Ctx, valAddr).GetConsensusPower(sdk.DefaultPowerReduction),
+			Power:     val.GetConsensusPower(sdk.DefaultPowerReduction),
 			Weight:    int64(0),
 			WinCount:  int64(0),
 			Recipient: valAddr,
@@ -179,8 +179,9 @@ func TestOracleTally(t *testing.T) {
 
 	expectedValidatorClaimMap := make(map[string]types.Claim)
 	for _, valAddr := range valAddrs {
+		val, _ := stakingKeeper.Validator(input.Ctx, valAddr)
 		expectedValidatorClaimMap[valAddr.String()] = types.Claim{
-			Power:     stakingKeeper.Validator(input.Ctx, valAddr).GetConsensusPower(sdk.DefaultPowerReduction),
+			Power:     val.GetConsensusPower(sdk.DefaultPowerReduction),
 			Weight:    int64(0),
 			WinCount:  int64(0),
 			Recipient: valAddr,
@@ -201,7 +202,7 @@ func TestOracleTally(t *testing.T) {
 
 	missMap := map[string]sdk.ValAddress{}
 
-	tallyMedian, _ := oracle.Tally(input.Ctx, ballot, input.OracleKeeper.MaxDeviation(input.Ctx), validatorClaimMap, missMap)
+	tallyMedian, _ := keeper.Tally(input.Ctx, ballot, input.OracleKeeper.MaxDeviation(input.Ctx), validatorClaimMap, missMap)
 
 	require.Equal(t, validatorClaimMap, expectedValidatorClaimMap)
 	require.Equal(t, tallyMedian.MulInt64(100).TruncateInt(), weightedMedian.MulInt64(100).TruncateInt())
@@ -220,13 +221,13 @@ func TestOracleTallyTiming(t *testing.T) {
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	require.Equal(t, 0, int(input.Ctx.BlockHeight()))
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomD)
 	require.Error(t, err)
 
 	input.Ctx = input.Ctx.WithBlockHeight(int64(params.VotePeriod - 1))
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomD)
 	require.NoError(t, err)
 }
@@ -249,7 +250,7 @@ func TestOracleRewardBand(t *testing.T) {
 	// Account 3, DenomC
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(rewardSpread)}}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -257,7 +258,7 @@ func TestOracleRewardBand(t *testing.T) {
 
 	// Account 1 will miss the vote due to raward band condition
 	// Account 1, DenomC
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Sub(rewardSpread.Add(sdk.OneDec()))}}, 0)
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Sub(rewardSpread.Add(sdkmath.LegacyOneDec()))}}, 0)
 
 	// Account 2, DenomC
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 1)
@@ -265,7 +266,7 @@ func TestOracleRewardBand(t *testing.T) {
 	// Account 3, DenomC
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(rewardSpread)}}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -284,7 +285,7 @@ func TestOracleRewardBand(t *testing.T) {
 		{Denom: types.TestDenomE, Amount: randomExchangeRate.Add(rewardSpread)},
 	}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -306,7 +307,7 @@ func TestOracleRewardBand(t *testing.T) {
 		{Denom: types.TestDenomE, Amount: randomExchangeRate.Add(rewardSpread)},
 	}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -317,14 +318,14 @@ func TestOracleEnsureSorted(t *testing.T) {
 	input, h := setup(t)
 
 	for i := 0; i < 100; i++ {
-		exchangeRateA1 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
-		exchangeRateB1 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateA1 := sdkmath.LegacyNewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateB1 := sdkmath.LegacyNewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
 
-		exchangeRateA2 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
-		exchangeRateB2 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateA2 := sdkmath.LegacyNewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateB2 := sdkmath.LegacyNewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
 
-		exchangeRateA3 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
-		exchangeRateB3 := sdk.NewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateA3 := sdkmath.LegacyNewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
+		exchangeRateB3 := sdkmath.LegacyNewDecWithPrec(int64(rand.Uint64()%100000000), 6).MulInt64(types.MicroUnit)
 
 		// Account 1, DenomB, DenomC
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: exchangeRateB1}, {Denom: types.TestDenomC, Amount: exchangeRateA1}}, 0)
@@ -336,7 +337,7 @@ func TestOracleEnsureSorted(t *testing.T) {
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomB, Amount: exchangeRateA3}, {Denom: types.TestDenomC, Amount: exchangeRateB3}}, 2)
 
 		require.NotPanics(t, func() {
-			oracle.EndBlocker(input.Ctx.WithBlockHeight(1), input.OracleKeeper)
+			input.OracleKeeper.EndBlocker(input.Ctx)
 		})
 	}
 }
@@ -347,27 +348,27 @@ func TestInvalidVotesSlashing(t *testing.T) {
 	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
-	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
+	votePeriodsPerWindow := sdkmath.LegacyNewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
 	slashFraction := input.OracleKeeper.SlashFraction(input.Ctx)
 	minValidPerWindow := input.OracleKeeper.MinValidPerWindow(input.Ctx)
 
-	for i := uint64(0); i < uint64(sdk.OneDec().Sub(minValidPerWindow).MulInt64(votePeriodsPerWindow).TruncateInt64()); i++ {
+	for i := uint64(0); i < uint64(sdkmath.LegacyOneDec().Sub(minValidPerWindow).MulInt64(votePeriodsPerWindow).TruncateInt64()); i++ {
 		input.Ctx = input.Ctx.WithBlockHeight(input.Ctx.BlockHeight() + 1)
 
 		// Account 1, DenomC
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 
 		// Account 2, DenomC, miss vote
-		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(sdk.NewDec(100000000000000))}}, 1)
+		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(sdkmath.LegacyNewDec(100000000000000))}}, 1)
 
 		// Account 3, DenomC
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
-		oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+		input.OracleKeeper.EndBlocker(input.Ctx)
 		require.Equal(t, i+1, input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
 	}
 
-	validator := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
+	validator, _ := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
 	require.Equal(t, stakingAmt, validator.GetBondedTokens())
 
 	// one more miss vote will inccur keeper.ValAddrs[1] slashing
@@ -375,25 +376,25 @@ func TestInvalidVotesSlashing(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 
 	// Account 2, DenomC, miss vote
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(sdk.NewDec(100000000000000))}}, 1)
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate.Add(sdkmath.LegacyNewDec(100000000000000))}}, 1)
 
 	// Account 3, DenomC
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
 	input.Ctx = input.Ctx.WithBlockHeight(votePeriodsPerWindow - 1)
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
-	validator = input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
-	require.Equal(t, sdk.OneDec().Sub(slashFraction).MulInt(stakingAmt).TruncateInt(), validator.GetBondedTokens())
+	input.OracleKeeper.EndBlocker(input.Ctx)
+	validator, _ = input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
+	require.Equal(t, sdkmath.LegacyOneDec().Sub(slashFraction).MulInt(stakingAmt).TruncateInt(), validator.GetBondedTokens())
 }
 
 func TestRequiredDenomsSlashing(t *testing.T) {
 	input, h := setup(t)
 
-	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
+	votePeriodsPerWindow := sdkmath.LegacyNewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
 	slashFraction := input.OracleKeeper.SlashFraction(input.Ctx)
 	minValidPerWindow := input.OracleKeeper.MinValidPerWindow(input.Ctx)
 
-	for i := uint64(0); i < uint64(sdk.OneDec().Sub(minValidPerWindow).MulInt64(votePeriodsPerWindow).TruncateInt64()); i++ {
+	for i := uint64(0); i < uint64(sdkmath.LegacyOneDec().Sub(minValidPerWindow).MulInt64(votePeriodsPerWindow).TruncateInt64()); i++ {
 		input.Ctx = input.Ctx.WithBlockHeight(input.Ctx.BlockHeight() + 1)
 
 		// Account 2, DenomC
@@ -401,11 +402,11 @@ func TestRequiredDenomsSlashing(t *testing.T) {
 		// Account 3, DenomC
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
-		oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+		input.OracleKeeper.EndBlocker(input.Ctx)
 		require.Equal(t, i+1, input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	}
 
-	validator := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[0])
+	validator, _ := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[0])
 	require.Equal(t, stakingAmt, validator.GetBondedTokens())
 
 	// one more miss vote will inccur Account 1 slashing
@@ -416,9 +417,9 @@ func TestRequiredDenomsSlashing(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
 	input.Ctx = input.Ctx.WithBlockHeight(votePeriodsPerWindow - 1)
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
-	validator = input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[0])
-	require.Equal(t, sdk.OneDec().Sub(slashFraction).MulInt(stakingAmt).TruncateInt(), validator.GetBondedTokens())
+	input.OracleKeeper.EndBlocker(input.Ctx)
+	validator, _ = input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[0])
+	require.Equal(t, sdkmath.LegacyOneDec().Sub(slashFraction).MulInt(stakingAmt).TruncateInt(), validator.GetBondedTokens())
 }
 
 func TestNotPassedBallotSlashing(t *testing.T) {
@@ -432,7 +433,7 @@ func TestNotPassedBallotSlashing(t *testing.T) {
 	// Account 1, DenomC
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 	// Not slashing accounts that have voted
 	require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -445,26 +446,26 @@ func TestAbstainSlashing(t *testing.T) {
 	params.RequiredDenoms = []string{types.TestDenomC}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
-	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
+	votePeriodsPerWindow := sdkmath.LegacyNewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).TruncateInt64()
 	minValidPerWindow := input.OracleKeeper.MinValidPerWindow(input.Ctx)
 
-	for i := uint64(0); i <= uint64(sdk.OneDec().Sub(minValidPerWindow).MulInt64(votePeriodsPerWindow).TruncateInt64()); i++ {
+	for i := uint64(0); i <= uint64(sdkmath.LegacyOneDec().Sub(minValidPerWindow).MulInt64(votePeriodsPerWindow).TruncateInt64()); i++ {
 		input.Ctx = input.Ctx.WithBlockHeight(input.Ctx.BlockHeight() + 1)
 
 		// Account 1, DenomC
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 0)
 
 		// Account 2, DenomC, abstain vote
-		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: sdk.ZeroDec()}}, 1)
+		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: sdkmath.LegacyZeroDec()}}, 1)
 
 		// Account 3, DenomC
 		makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
-		oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+		input.OracleKeeper.EndBlocker(input.Ctx)
 		require.Equal(t, uint64(0), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
 	}
 
-	validator := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
+	validator, _ := input.StakingKeeper.Validator(input.Ctx, keeper.ValAddrs[1])
 	require.Equal(t, stakingAmt, validator.GetBondedTokens())
 }
 
@@ -479,7 +480,7 @@ func TestVoteTargets(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 1)
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	// missed D
 	require.Equal(t, uint64(1), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
@@ -495,7 +496,7 @@ func TestVoteTargets(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{}, 1)
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -506,7 +507,7 @@ func TestVoteTargets(t *testing.T) {
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 1)
 	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: randomExchangeRate}}, 2)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 
 	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[0]))
 	require.Equal(t, uint64(2), input.OracleKeeper.GetMissCounter(input.Ctx, keeper.ValAddrs[1]))
@@ -516,9 +517,9 @@ func TestVoteTargets(t *testing.T) {
 func TestAbstainWithSmallStakingPower(t *testing.T) {
 	input, h := setupWithSmallVotingPower(t)
 
-	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: sdk.ZeroDec()}}, 0)
+	makeAggregatePrevoteAndVote(t, input, h, 0, sdk.DecCoins{{Denom: types.TestDenomC, Amount: sdkmath.LegacyZeroDec()}}, 0)
 
-	oracle.EndBlocker(input.Ctx, input.OracleKeeper)
+	input.OracleKeeper.EndBlocker(input.Ctx)
 	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx, types.TestDenomC)
 	require.Error(t, err)
 }

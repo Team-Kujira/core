@@ -1,8 +1,8 @@
 package app
 
 import (
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
-	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -18,9 +18,9 @@ import (
 type HandlerOptions struct {
 	ante.HandlerOptions
 
-	IBCKeeper         *keeper.Keeper
-	WasmConfig        *wasmTypes.WasmConfig
-	TXCounterStoreKey storetypes.StoreKey
+	IBCKeeper             *keeper.Keeper
+	WasmConfig            *wasmTypes.WasmConfig
+	TXCounterStoreService store.KVStoreService
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -36,8 +36,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	if options.WasmConfig == nil {
 		return nil, errors.Wrap(sdkerrors.ErrLogic, "wasm config is required for ante builder")
 	}
-	if options.TXCounterStoreKey == nil {
-		return nil, errors.Wrap(sdkerrors.ErrLogic, "tx counter key is required for ante builder")
+	if options.TXCounterStoreService == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "tx counter store service is required for ante builder")
 	}
 
 	sigGasConsumer := options.SigGasConsumer
@@ -48,7 +48,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
-		wasmkeeper.NewCountTXDecorator(options.TXCounterStoreKey),
+		wasmkeeper.NewCountTXDecorator(options.TXCounterStoreService),
 		// ante.NewExtensionOptionsDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
