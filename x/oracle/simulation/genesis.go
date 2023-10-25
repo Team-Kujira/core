@@ -34,8 +34,8 @@ func GenVoteThreshold(r *rand.Rand) sdk.Dec {
 	return sdk.NewDecWithPrec(333, 3).Add(sdk.NewDecWithPrec(int64(r.Intn(333)), 3))
 }
 
-// GenRewardBand randomized RewardBand
-func GenRewardBand(r *rand.Rand) sdk.Dec {
+// GenMaxDeviation randomized MaxDeviation
+func GenMaxDeviation(r *rand.Rand) sdk.Dec {
 	return sdk.ZeroDec().Add(sdk.NewDecWithPrec(int64(r.Intn(100)), 3))
 }
 
@@ -73,16 +73,10 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { voteThreshold = GenVoteThreshold(r) },
 	)
 
-	var rewardBand sdk.Dec
+	var maxDeviation sdk.Dec
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, rewardBandKey, &rewardBand, simState.Rand,
-		func(r *rand.Rand) { rewardBand = GenRewardBand(r) },
-	)
-
-	var rewardDistributionWindow uint64
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, rewardDistributionWindowKey, &rewardDistributionWindow, simState.Rand,
-		func(r *rand.Rand) { rewardDistributionWindow = GenRewardDistributionWindow(r) },
+		simState.Cdc, rewardBandKey, &maxDeviation, simState.Rand,
+		func(r *rand.Rand) { maxDeviation = GenMaxDeviation(r) },
 	)
 
 	var slashFraction sdk.Dec
@@ -105,14 +99,13 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	oracleGenesis := types.NewGenesisState(
 		types.Params{
-			VotePeriod:               votePeriod,
-			VoteThreshold:            voteThreshold,
-			RewardBand:               rewardBand,
-			RewardDistributionWindow: rewardDistributionWindow,
-			Whitelist:                types.DenomList{},
-			SlashFraction:            slashFraction,
-			SlashWindow:              slashWindow,
-			MinValidPerWindow:        minValidPerWindow,
+			VotePeriod:        votePeriod,
+			VoteThreshold:     voteThreshold,
+			MaxDeviation:      maxDeviation,
+			RequiredDenoms:    []string{},
+			SlashFraction:     slashFraction,
+			SlashWindow:       slashWindow,
+			MinValidPerWindow: minValidPerWindow,
 		},
 		[]types.ExchangeRateTuple{},
 		[]types.FeederDelegation{},

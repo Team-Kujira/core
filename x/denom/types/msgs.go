@@ -13,9 +13,13 @@ const (
 	TypeMsgBurn          = "burn"
 	TypeMsgForceTransfer = "force_transfer"
 	TypeMsgChangeAdmin   = "change_admin"
+	TypeMsgUpdateParams  = "update_params"
 )
 
-var _ sdk.Msg = &MsgCreateDenom{}
+var (
+	_ sdk.Msg = &MsgCreateDenom{}
+	_ sdk.Msg = &MsgUpdateParams{}
+)
 
 // NewMsgCreateDenom creates a msg to create a new denom
 func NewMsgCreateDenom(sender, nonce string) *MsgCreateDenom {
@@ -203,4 +207,42 @@ func (m MsgChangeAdmin) GetSignBytes() []byte {
 func (m MsgChangeAdmin) GetSigners() []sdk.AccAddress {
 	sender, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{sender}
+}
+
+// NewMsgUpdateParams creates a MsgUpdateParams instance
+func NewMsgUpdateParams(params *Params) *MsgUpdateParams {
+	return &MsgUpdateParams{
+		Params: params,
+	}
+}
+
+// Route implements sdk.Msg
+func (m MsgUpdateParams) Route() string { return RouterKey }
+
+// Type implements sdk.Msg
+func (m MsgUpdateParams) Type() string { return TypeMsgUpdateParams }
+
+// GetSignBytes implements sdk.Msg
+func (m MsgUpdateParams) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// GetSigners implements sdk.Msg
+func (m MsgUpdateParams) GetSigners() []sdk.AccAddress {
+	operator, err := sdk.ValAddressFromBech32(m.Authority)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{sdk.AccAddress(operator)}
+}
+
+// ValidateBasic implements sdk.Msg
+func (m MsgUpdateParams) ValidateBasic() error {
+	_, err := sdk.ValAddressFromBech32(m.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
+	}
+
+	return nil
 }

@@ -8,65 +8,70 @@ import (
 
 // VotePeriod returns the number of blocks during which voting takes place.
 func (k Keeper) VotePeriod(ctx sdk.Context) (res uint64) {
-	k.paramSpace.Get(ctx, types.KeyVotePeriod, &res)
-	return
+	return k.GetParams(ctx).VotePeriod
 }
 
 // VoteThreshold returns the minimum percentage of votes that must be received for a ballot to pass.
 func (k Keeper) VoteThreshold(ctx sdk.Context) (res sdk.Dec) {
-	k.paramSpace.Get(ctx, types.KeyVoteThreshold, &res)
-	return
+	return k.GetParams(ctx).VoteThreshold
 }
 
-// RewardBand returns the ratio of allowable exchange rate error that a validator can be rewared
-func (k Keeper) RewardBand(ctx sdk.Context) (res sdk.Dec) {
-	k.paramSpace.Get(ctx, types.KeyRewardBand, &res)
-	return
+// MaxDeviation returns the ratio of allowable exchange rate error that a validator can be rewared
+func (k Keeper) MaxDeviation(ctx sdk.Context) (res sdk.Dec) {
+	return k.GetParams(ctx).MaxDeviation
 }
 
-// RewardDistributionWindow returns the number of vote periods during which seigiornage reward comes in and then is distributed.
-func (k Keeper) RewardDistributionWindow(ctx sdk.Context) (res uint64) {
-	k.paramSpace.Get(ctx, types.KeyRewardDistributionWindow, &res)
-	return
+// RequiredDenoms returns the denom list that can be activated
+func (k Keeper) RequiredDenoms(ctx sdk.Context) (res []string) {
+	return k.GetParams(ctx).RequiredDenoms
 }
 
-// Whitelist returns the denom list that can be activated
-func (k Keeper) Whitelist(ctx sdk.Context) (res types.DenomList) {
-	k.paramSpace.Get(ctx, types.KeyWhitelist, &res)
-	return
-}
-
-// SetWhitelist store new whitelist to param store
-// this function is only for test purpose
-func (k Keeper) SetWhitelist(ctx sdk.Context, whitelist types.DenomList) {
-	k.paramSpace.Set(ctx, types.KeyWhitelist, whitelist)
-}
+// // SetRequiredDenoms store new required denoms to param store
+// // this function is only for test purpose
+// func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms []string) {
+// 	params := k.GetParams(ctx)
+// 	params.RequiredDenoms = denoms
+// 	err := k.SetParams(ctx, params)
+// 	if err != nil {
+// 		return
+// 	}
+// }
 
 // SlashFraction returns oracle voting penalty rate
 func (k Keeper) SlashFraction(ctx sdk.Context) (res sdk.Dec) {
-	k.paramSpace.Get(ctx, types.KeySlashFraction, &res)
-	return
+	return k.GetParams(ctx).SlashFraction
 }
 
 // SlashWindow returns # of vote period for oracle slashing
 func (k Keeper) SlashWindow(ctx sdk.Context) (res uint64) {
-	k.paramSpace.Get(ctx, types.KeySlashWindow, &res)
-	return
+	return k.GetParams(ctx).SlashWindow
 }
 
 // MinValidPerWindow returns oracle slashing threshold
 func (k Keeper) MinValidPerWindow(ctx sdk.Context) (res sdk.Dec) {
-	k.paramSpace.Get(ctx, types.KeyMinValidPerWindow, &res)
-	return
+	return k.GetParams(ctx).MinValidPerWindow
 }
 
 // GetParams returns the total set of oracle parameters.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	k.paramSpace.GetParamSet(ctx, &params)
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return params
+	}
+
+	k.cdc.MustUnmarshal(bz, &params)
 	return params
 }
 
 // SetParams sets the total set of oracle parameters.
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramSpace.SetParamSet(ctx, &params)
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&params)
+	store.Set(types.ParamsKey, bz)
+	return nil
 }

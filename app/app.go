@@ -130,7 +130,6 @@ import (
 
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
-	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
 	schedulerkeeper "github.com/Team-Kujira/core/x/scheduler/keeper"
 	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
 
@@ -157,9 +156,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 	var govProposalHandlers []govclient.ProposalHandler
 
 	govProposalHandlers = append(govProposalHandlers,
-		schedulerclient.CreateHookProposalHandler,
-		schedulerclient.UpdateHookProposalHandler,
-		schedulerclient.DeleteHookProposalHandler,
 		paramsclient.ProposalHandler,
 		upgradeclient.LegacyProposalHandler,
 		upgradeclient.LegacyCancelProposalHandler,
@@ -579,7 +575,7 @@ func New(
 	app.SchedulerKeeper = schedulerkeeper.NewKeeper(
 		appCodec,
 		keys[denomtypes.StoreKey],
-		app.GetSubspace(schedulertypes.ModuleName),
+		authority,
 	)
 
 	app.OracleKeeper = oraclekeeper.NewKeeper(
@@ -592,6 +588,7 @@ func New(
 		app.SlashingKeeper,
 		app.StakingKeeper,
 		distrtypes.ModuleName,
+		authority,
 	)
 
 	denomKeeper := denomkeeper.NewKeeper(
@@ -601,6 +598,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
 		app.DistrKeeper,
+		authority,
 	)
 
 	app.DenomKeeper = &denomKeeper
@@ -651,7 +649,6 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(schedulertypes.RouterKey, schedulerkeeper.NewSchedulerProposalHandler(app.SchedulerKeeper)).
 		AddRoute(alliancemoduletypes.RouterKey, alliancemodule.NewAllianceProposalHandler(app.AllianceKeeper))
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
@@ -973,7 +970,6 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,

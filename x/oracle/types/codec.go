@@ -14,6 +14,9 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAggregateExchangeRatePrevote{}, "oracle/MsgAggregateExchangeRatePrevote", nil)
 	cdc.RegisterConcrete(&MsgAggregateExchangeRateVote{}, "oracle/MsgAggregateExchangeRateVote", nil)
 	cdc.RegisterConcrete(&MsgDelegateFeedConsent{}, "oracle/MsgDelegateFeedConsent", nil)
+	cdc.RegisterConcrete(&MsgAddRequiredDenom{}, "oracle/MsgAddRequiredDenom", nil)
+	cdc.RegisterConcrete(&MsgRemoveRequiredDenom{}, "oracle/MsgRemoveRequiredDenom", nil)
+	cdc.RegisterConcrete(&MsgUpdateParams{}, "oracle/MsgUpdateParams", nil)
 }
 
 // RegisterInterfaces registers the x/oracle interfaces types with the interface registry
@@ -22,6 +25,9 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgDelegateFeedConsent{},
 		&MsgAggregateExchangeRatePrevote{},
 		&MsgAggregateExchangeRateVote{},
+		&MsgAddRequiredDenom{},
+		&MsgRemoveRequiredDenom{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

@@ -2,6 +2,8 @@ syntax = "proto3";
 package kujira.oracle;
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
+import "kujira/oracle/oracle.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/oracle/types";
 
@@ -17,6 +19,15 @@ service Msg {
 
   // DelegateFeedConsent defines a method for setting the feeder delegation
   rpc DelegateFeedConsent(MsgDelegateFeedConsent) returns (MsgDelegateFeedConsentResponse);
+
+  // AddRequiredDenom adds a new price to the required list of prices
+  rpc AddRequiredDenom(MsgAddRequiredDenom) returns (MsgAddRequiredDenomResponse);
+
+  // RemoveRequiredDenom removes a price from the required list of prices
+  rpc RemoveRequiredDenom(MsgRemoveRequiredDenom) returns (MsgRemoveRequiredDenomResponse);
+
+  // UpdateParams sets new module params
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgAggregateExchangeRatePrevote represents a message to submit
@@ -60,3 +71,35 @@ message MsgDelegateFeedConsent {
 
 // MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent response type.
 message MsgDelegateFeedConsentResponse {}
+
+// MsgAddRequiredDenom represents a message to add a denom to the whitelist
+message MsgAddRequiredDenom {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
+}
+
+// MsgAddRequiredDenomResponse defines the Msg/AddRequiredDenom response type.
+message MsgAddRequiredDenomResponse {}
+
+// MsgRemoveRequiredDenom represents a message to remove a denom from the whitelist
+message MsgRemoveRequiredDenom {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
+}
+
+// MsgRemoveRequiredDenomResponse defines the Msg/RemoveRequiredDenom response type.
+message MsgRemoveRequiredDenomResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  Params params = 2 [(gogoproto.moretags) = "yaml:\"params\""];
+}
+
+// MsgUpdateParamsResponse defines the Msg/UpdateParams response type.
+message MsgUpdateParamsResponse {}

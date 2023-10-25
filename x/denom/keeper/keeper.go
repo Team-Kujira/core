@@ -13,7 +13,7 @@ import (
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type (
@@ -21,11 +21,13 @@ type (
 		cdc      codec.Codec
 		storeKey storetypes.StoreKey
 
-		paramSpace paramtypes.Subspace
+		paramSpace paramstypes.Subspace
 
 		accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
 		distrKeeper   types.DistrKeeper
+
+		authority string
 	}
 )
 
@@ -33,10 +35,11 @@ type (
 func NewKeeper(
 	cdc codec.Codec,
 	storeKey storetypes.StoreKey,
-	paramSpace paramtypes.Subspace,
+	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	distrKeeper types.DistrKeeper,
+	authority string,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -50,6 +53,8 @@ func NewKeeper(
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		distrKeeper:   distrKeeper,
+
+		authority: authority,
 	}
 }
 
@@ -83,4 +88,8 @@ func (k Keeper) GetCreatorsPrefixStore(ctx sdk.Context) sdk.KVStore {
 func (k Keeper) CreateModuleAccount(ctx sdk.Context) {
 	moduleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter, authtypes.Burner)
 	k.accountKeeper.SetModuleAccount(ctx, moduleAcc)
+}
+
+func (k Keeper) GetSubspace() paramstypes.Subspace {
+	return k.paramSpace
 }

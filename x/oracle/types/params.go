@@ -11,14 +11,16 @@ import (
 
 // Parameter keys
 var (
-	KeyVotePeriod               = []byte("VotePeriod")
-	KeyVoteThreshold            = []byte("VoteThreshold")
-	KeyRewardBand               = []byte("RewardBand")
-	KeyRewardDistributionWindow = []byte("RewardDistributionWindow")
-	KeyWhitelist                = []byte("Whitelist")
-	KeySlashFraction            = []byte("SlashFraction")
-	KeySlashWindow              = []byte("SlashWindow")
-	KeyMinValidPerWindow        = []byte("MinValidPerWindow")
+	KeyVotePeriod        = []byte("VotePeriod")
+	KeyVoteThreshold     = []byte("VoteThreshold")
+	KeyMaxDeviation      = []byte("MaxDeviation")
+	KeyRequiredDenoms    = []byte("RequiredDenoms")
+	KeySlashFraction     = []byte("SlashFraction")
+	KeySlashWindow       = []byte("SlashWindow")
+	KeyMinValidPerWindow = []byte("MinValidPerWindow")
+	// Deprecated
+	KeyRewardBand = []byte("RewardBand")
+	KeyWhitelist  = []byte("Whitelist")
 )
 
 // Default parameter values
@@ -31,8 +33,8 @@ const (
 // Default parameter values
 var (
 	DefaultVoteThreshold     = sdk.NewDecWithPrec(50, 2) // 50%
-	DefaultRewardBand        = sdk.NewDecWithPrec(2, 2)  // 2% (-1, 1)
-	DefaultWhitelist         = DenomList{}
+	DefaultMaxDeviation      = sdk.NewDecWithPrec(2, 1)  // 2% (-1, 1)
+	DefaultRequiredDenoms    = []string{}
 	DefaultSlashFraction     = sdk.NewDecWithPrec(1, 4) // 0.01%
 	DefaultMinValidPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
 )
@@ -42,14 +44,13 @@ var _ paramstypes.ParamSet = &Params{}
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
 	return Params{
-		VotePeriod:               DefaultVotePeriod,
-		VoteThreshold:            DefaultVoteThreshold,
-		RewardBand:               DefaultRewardBand,
-		RewardDistributionWindow: DefaultRewardDistributionWindow,
-		Whitelist:                DefaultWhitelist,
-		SlashFraction:            DefaultSlashFraction,
-		SlashWindow:              DefaultSlashWindow,
-		MinValidPerWindow:        DefaultMinValidPerWindow,
+		VotePeriod:        DefaultVotePeriod,
+		VoteThreshold:     DefaultVoteThreshold,
+		MaxDeviation:      DefaultMaxDeviation,
+		RequiredDenoms:    DefaultRequiredDenoms,
+		SlashFraction:     DefaultSlashFraction,
+		SlashWindow:       DefaultSlashWindow,
+		MinValidPerWindow: DefaultMinValidPerWindow,
 	}
 }
 
@@ -64,12 +65,13 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
 		paramstypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramstypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
-		paramstypes.NewParamSetPair(KeyRewardBand, &p.RewardBand, validateRewardBand),
-		paramstypes.NewParamSetPair(KeyRewardDistributionWindow, &p.RewardDistributionWindow, validateRewardDistributionWindow),
-		paramstypes.NewParamSetPair(KeyWhitelist, &p.Whitelist, validateWhitelist),
+		paramstypes.NewParamSetPair(KeyMaxDeviation, &p.MaxDeviation, validateMaxDeviation),
+		paramstypes.NewParamSetPair(KeyRequiredDenoms, &p.RequiredDenoms, validateRequiredDenoms),
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
 		paramstypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramstypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
+		paramstypes.NewParamSetPair(KeyRewardBand, &p.RewardBand, func(i interface{}) error { return nil }),
+		paramstypes.NewParamSetPair(KeyWhitelist, &p.Whitelist, func(i interface{}) error { return nil }),
 	}
 }
 
@@ -88,12 +90,8 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter VoteThreshold must be greater than 33 percent")
 	}
 
-	if p.RewardBand.GT(sdk.OneDec()) || p.RewardBand.IsNegative() {
-		return fmt.Errorf("oracle parameter RewardBand must be between [0, 1]")
-	}
-
-	if p.RewardDistributionWindow < p.VotePeriod {
-		return fmt.Errorf("oracle parameter RewardDistributionWindow must be greater than or equal with VotePeriod")
+	if p.MaxDeviation.GT(sdk.OneDec()) || p.MaxDeviation.IsNegative() {
+		return fmt.Errorf("oracle parameter MaxDeviation must be between [0, 1]")
 	}
 
 	if p.SlashFraction.GT(sdk.OneDec()) || p.SlashFraction.IsNegative() {
@@ -108,9 +106,9 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter MinValidPerWindow must be between [0, 1]")
 	}
 
-	for _, denom := range p.Whitelist {
-		if len(denom.Name) == 0 {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
+	for _, denom := range p.RequiredDenoms {
+		if len(denom) == 0 {
+			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
 		}
 	}
 	return nil
@@ -146,7 +144,7 @@ func validateVoteThreshold(i interface{}) error {
 	return nil
 }
 
-func validateRewardBand(i interface{}) error {
+func validateMaxDeviation(i interface{}) error {
 	v, ok := i.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
@@ -163,28 +161,15 @@ func validateRewardBand(i interface{}) error {
 	return nil
 }
 
-func validateRewardDistributionWindow(i interface{}) error {
-	v, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v == 0 {
-		return fmt.Errorf("reward distribution window must be positive: %d", v)
-	}
-
-	return nil
-}
-
-func validateWhitelist(i interface{}) error {
-	v, ok := i.(DenomList)
+func validateRequiredDenoms(i interface{}) error {
+	v, ok := i.([]string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	for _, d := range v {
-		if len(d.Name) == 0 {
-			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
+		if len(d) == 0 {
+			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
 		}
 	}
 

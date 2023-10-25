@@ -11,7 +11,7 @@ import (
 // CONTRACT: pb must be sorted
 func Tally(_ sdk.Context,
 	pb types.ExchangeRateBallot,
-	rewardBand sdk.Dec,
+	maxDeviation sdk.Dec,
 	validatorClaimMap map[string]types.Claim,
 	missMap map[string]sdk.ValAddress,
 ) (sdk.Dec, error) {
@@ -25,15 +25,15 @@ func Tally(_ sdk.Context,
 		return sdk.ZeroDec(), err
 	}
 
-	rewardSpread := weightedMedian.Mul(rewardBand.QuoInt64(2))
-	rewardSpread = sdk.MaxDec(rewardSpread, standardDeviation)
+	spread := weightedMedian.Mul(maxDeviation)
+	spread = sdk.MaxDec(spread, standardDeviation)
 
 	for _, vote := range pb {
 		key := vote.Voter.String()
 		claim := validatorClaimMap[key]
 		// Filter ballot winners & abstain voters
-		if (vote.ExchangeRate.GTE(weightedMedian.Sub(rewardSpread)) &&
-			vote.ExchangeRate.LTE(weightedMedian.Add(rewardSpread))) ||
+		if (vote.ExchangeRate.GTE(weightedMedian.Sub(spread)) &&
+			vote.ExchangeRate.LTE(weightedMedian.Add(spread))) ||
 			!vote.ExchangeRate.IsPositive() {
 			claim := validatorClaimMap[key]
 			claim.Weight += vote.Power
