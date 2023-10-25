@@ -73,8 +73,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else {
-			return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 		}
+
+		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 }

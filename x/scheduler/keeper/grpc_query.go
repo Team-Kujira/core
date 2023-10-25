@@ -8,6 +8,6 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) Params(_c context.Context, _req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) Params(_ context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	return &types.QueryParamsResponse{}, nil
 }
