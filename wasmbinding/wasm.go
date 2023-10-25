@@ -6,7 +6,8 @@ import (
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 )
 
 func RegisterCustomPlugins(

@@ -8,11 +8,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"client/grpc/cmtservice"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
-	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -35,10 +36,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
+	bank "github.com/cosmos/cosmos-sdk/x/bank"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/capability"
-	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+
+	"cosmossdk.io/x/evidence"
+	evidencekeeper "cosmossdk.io/x/evidence/keeper"
+	evidencetypes "cosmossdk.io/x/evidence/types"
+	"cosmossdk.io/x/feegrant"
+	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
+	feegrantmodule "cosmossdk.io/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
@@ -48,12 +55,6 @@ import (
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/x/evidence"
-	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
-	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -75,40 +76,42 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	bank "github.com/terra-money/alliance/custom/bank"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
-	alliancemodule "github.com/terra-money/alliance/x/alliance"
-	alliancemoduleclient "github.com/terra-money/alliance/x/alliance/client"
-	alliancemodulekeeper "github.com/terra-money/alliance/x/alliance/keeper"
-	alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
+	"github.com/cosmos/ibc-go/modules/capability"
+	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
-	"github.com/cosmos/cosmos-sdk/x/upgrade"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	// bank "github.com/terra-money/alliance/custom/bank"
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	// alliancemodule "github.com/terra-money/alliance/x/alliance"
+	// alliancemoduleclient "github.com/terra-money/alliance/x/alliance/client"
+	// alliancemodulekeeper "github.com/terra-money/alliance/x/alliance/keeper"
+	// alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
 
-	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
-	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
-	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
-	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
-	transfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v7/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
+	"cosmossdk.io/x/upgrade"
+	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+
+	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
+	icacontroller "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	ibcfee "github.com/cosmos/ibc-go/v8/modules/apps/29-fee"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
+	transfer "github.com/cosmos/ibc-go/v8/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v8/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v8/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
+	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -137,7 +140,7 @@ import (
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
 )
 
 const (
@@ -157,14 +160,10 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 
 	govProposalHandlers = append(govProposalHandlers,
 		paramsclient.ProposalHandler,
-		upgradeclient.LegacyProposalHandler,
-		upgradeclient.LegacyCancelProposalHandler,
-		ibcclientclient.UpdateClientProposalHandler,
-		ibcclientclient.UpgradeProposalHandler,
 
-		alliancemoduleclient.CreateAllianceProposalHandler,
-		alliancemoduleclient.UpdateAllianceProposalHandler,
-		alliancemoduleclient.DeleteAllianceProposalHandler,
+		// alliancemoduleclient.CreateAllianceProposalHandler,
+		// alliancemoduleclient.UpdateAllianceProposalHandler,
+		// alliancemoduleclient.DeleteAllianceProposalHandler,
 	)
 
 	return govProposalHandlers
@@ -205,26 +204,26 @@ var (
 		denom.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
-		alliancemodule.AppModuleBasic{},
+		// alliancemodule.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:          nil,
-		distrtypes.ModuleName:               nil,
-		minttypes.ModuleName:                {authtypes.Minter},
-		stakingtypes.BondedPoolName:         {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:                 {authtypes.Burner},
-		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		ibcfeetypes.ModuleName:              nil,
-		icatypes.ModuleName:                 nil,
-		wasmtypes.ModuleName:                {authtypes.Burner},
-		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
-		schedulertypes.ModuleName:           nil,
-		oracletypes.ModuleName:              nil,
-		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		alliancemoduletypes.RewardsPoolName: nil,
+		authtypes.FeeCollectorName:     nil,
+		distrtypes.ModuleName:          nil,
+		minttypes.ModuleName:           {authtypes.Minter},
+		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:            {authtypes.Burner},
+		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		ibcfeetypes.ModuleName:         nil,
+		icatypes.ModuleName:            nil,
+		wasmtypes.ModuleName:           {authtypes.Burner},
+		denomtypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		schedulertypes.ModuleName:      nil,
+		oracletypes.ModuleName:         nil,
+		// alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		// alliancemoduletypes.RewardsPoolName: nil,
 	}
 )
 
@@ -284,7 +283,7 @@ type App struct {
 	DenomKeeper     *denomkeeper.Keeper
 	SchedulerKeeper schedulerkeeper.Keeper
 	OracleKeeper    oraclekeeper.Keeper
-	AllianceKeeper  alliancemodulekeeper.Keeper
+	// AllianceKeeper  alliancemodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -353,7 +352,7 @@ func New(
 		denomtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
-		AllianceStoreKey,
+		// AllianceStoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -447,18 +446,18 @@ func New(
 		authority,
 	)
 
-	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
-		appCodec,
-		keys[AllianceStoreKey],
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.StakingKeeper,
-		app.DistrKeeper,
-		authtypes.FeeCollectorName,
-		authority,
-	)
+	// app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
+	// 	appCodec,
+	// 	keys[AllianceStoreKey],
+	// 	app.AccountKeeper,
+	// 	app.BankKeeper,
+	// 	app.StakingKeeper,
+	// 	app.DistrKeeper,
+	// 	authtypes.FeeCollectorName,
+	// 	authority,
+	// )
 
-	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
+	// app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
@@ -501,8 +500,8 @@ func New(
 
 	// register the staking hooks
 	app.StakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(),
-			app.AllianceKeeper.StakingHooks()),
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()), // app.AllianceKeeper.StakingHooks(),
+
 	)
 
 	// ... other modules keepers
@@ -648,8 +647,8 @@ func New(
 	govRouter.AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(alliancemoduletypes.RouterKey, alliancemodule.NewAllianceProposalHandler(app.AllianceKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+		// AddRoute(alliancemoduletypes.RouterKey, alliancemodule.NewAllianceProposalHandler(app.AllianceKeeper))
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -859,15 +858,15 @@ func New(
 			app.BankKeeper,
 		),
 
-		alliancemodule.NewAppModule(
-			appCodec,
-			app.AllianceKeeper,
-			app.StakingKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.interfaceRegistry,
-			app.GetSubspace(alliancemoduletypes.ModuleName),
-		),
+		// alliancemodule.NewAppModule(
+		// 	appCodec,
+		// 	app.AllianceKeeper,
+		// 	app.StakingKeeper,
+		// 	app.AccountKeeper,
+		// 	app.BankKeeper,
+		// 	app.interfaceRegistry,
+		// 	app.GetSubspace(alliancemoduletypes.ModuleName),
+		// ),
 
 		crisis.NewAppModule(
 			app.CrisisKeeper,
@@ -907,7 +906,7 @@ func New(
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
+		// alliancemoduletypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -937,7 +936,7 @@ func New(
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
+		// alliancemoduletypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -973,7 +972,7 @@ func New(
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
+		// alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 	)
 
@@ -1091,7 +1090,7 @@ func BlockedAddresses() map[string]bool {
 
 	// allow the following addresses to receive funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
-	delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
+	// delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
 	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
 
 	return modAccAddrs
@@ -1210,7 +1209,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, _ config.APIConfig) {
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 	// Register new tendermint queries routes from grpc-gateway.
-	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	cmtservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
@@ -1226,7 +1225,7 @@ func (app *App) RegisterTxService(clientCtx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *App) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(clientCtx, app.BaseApp.GRPCQueryRouter(), app.interfaceRegistry, app.Query)
+	cmtservice.RegisterTendermintService(clientCtx, app.BaseApp.GRPCQueryRouter(), app.interfaceRegistry, app.Query)
 }
 
 func (app *App) RegisterNodeService(clientCtx client.Context) {
@@ -1262,7 +1261,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
-	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+	// paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	return paramsKeeper
 }

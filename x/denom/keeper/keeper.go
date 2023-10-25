@@ -5,13 +5,13 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
+	"cosmossdk.io/store/prefix"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/denom/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )

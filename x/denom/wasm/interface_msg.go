@@ -7,7 +7,9 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 )
 
 type DenomMsg struct {

@@ -8,9 +8,9 @@ import (
 	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"

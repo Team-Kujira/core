@@ -7,7 +7,9 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
