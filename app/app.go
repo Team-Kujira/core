@@ -8,7 +8,10 @@ import (
 	"os"
 	"path/filepath"
 
+	appparams "github.com/Team-Kujira/core/app/params"
+
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
+	"github.com/cosmos/gogoproto/proto"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/x/evidence"
@@ -17,11 +20,13 @@ import (
 	"cosmossdk.io/x/feegrant"
 	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
 	feegrantmodule "cosmossdk.io/x/feegrant/module"
+	"cosmossdk.io/x/tx/signing"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -37,6 +42,7 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
@@ -110,7 +116,6 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -123,11 +128,11 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/Team-Kujira/core/app/openapiconsole"
-	appparams "github.com/Team-Kujira/core/app/params"
 	"github.com/Team-Kujira/core/wasmbinding"
 	"github.com/Team-Kujira/core/x/denom"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
+	"github.com/cosmos/cosmos-sdk/std"
 
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
@@ -142,10 +147,7 @@ import (
 )
 
 const (
-	AccountAddressPrefix   = "kujira"
-	ValidatorAddressPrefix = AccountAddressPrefix + "valoper"
-	ConsensusAddressPrefix = AccountAddressPrefix + "valcons"
-	Name                   = "kujira"
+	Name = "kujira"
 	// Either the SDK or some combination of the creation of the alliance module
 	// in 0.8.0 means that deleting the module leaves remenants at the original store key,
 	// preventing a re-add at the same key.
@@ -172,40 +174,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
-
-	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration
-	// and genesis verification.
-	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-		authzmodule.AppModuleBasic{},
-		bank.AppModule{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(getGovProposalHandlers()),
-		params.AppModuleBasic{},
-		consensus.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		feegrantmodule.AppModuleBasic{},
-		ibc.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
-
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		wasm.AppModuleBasic{},
-		ica.AppModuleBasic{},
-		ibcfee.AppModuleBasic{},
-		denom.AppModuleBasic{},
-		scheduler.AppModuleBasic{},
-		oracle.AppModuleBasic{},
-		// alliancemodule.AppModuleBasic{},
-	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -247,7 +215,7 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
-	cdc               *codec.LegacyAmino
+	legacyAmino       *codec.LegacyAmino
 	appCodec          codec.Codec
 	txConfig          client.TxConfig
 	interfaceRegistry types.InterfaceRegistry
@@ -294,7 +262,8 @@ type App struct {
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 
 	// ModuleManager is the module manager
-	ModuleManager *module.Manager
+	ModuleManager      *module.Manager
+	BasicModuleManager module.BasicManager
 
 	// sm is the simulation manager
 	sm *module.SimulationManager
@@ -309,16 +278,62 @@ func New(
 	db dbm.DB,
 	traceStore io.Writer,
 	loadLatest bool,
-	encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-	appCodec := encodingConfig.Codec
-	cdc := encodingConfig.Amino
-	interfaceRegistry := encodingConfig.InterfaceRegistry
+
+	interfaceRegistry, _ := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
+		ProtoFiles: proto.HybridResolver,
+		SigningOptions: signing.Options{
+			AddressCodec: address.Bech32Codec{
+				Bech32Prefix: sdk.GetConfig().GetBech32AccountAddrPrefix(),
+			},
+			ValidatorAddressCodec: address.Bech32Codec{
+				Bech32Prefix: sdk.GetConfig().GetBech32ValidatorAddrPrefix(),
+			},
+		},
+	})
+	appCodec := codec.NewProtoCodec(interfaceRegistry)
+	legacyAmino := codec.NewLegacyAmino()
+	txConfig := tx.NewTxConfig(appCodec, tx.DefaultSignModes)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
-	txConfig := encodingConfig.TxConfig
+
+	std.RegisterLegacyAminoCodec(legacyAmino)
+	std.RegisterInterfaces(interfaceRegistry)
+
+	// Below we could construct and set an application specific mempool and
+	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are
+	// already set in the SDK's BaseApp, this shows an example of how to override
+	// them.
+	//
+	// Example:
+	//
+	// bApp := baseapp.NewBaseApp(...)
+	// nonceMempool := mempool.NewSenderNonceMempool()
+	// abciPropHandler := NewDefaultProposalHandler(nonceMempool, bApp)
+	//
+	// bApp.SetMempool(nonceMempool)
+	// bApp.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
+	// bApp.SetProcessProposal(abciPropHandler.ProcessProposalHandler())
+	//
+	// Alternatively, you can construct BaseApp options, append those to
+	// baseAppOptions and pass them to NewBaseApp.
+	//
+	// Example:
+	//
+	// prepareOpt = func(app *baseapp.BaseApp) {
+	// 	abciPropHandler := baseapp.NewDefaultProposalHandler(nonceMempool, app)
+	// 	app.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
+	// }
+	// baseAppOptions = append(baseAppOptions, prepareOpt)
+
+	// create and set dummy vote extension handler
+	voteExtOp := func(bApp *baseapp.BaseApp) {
+		voteExtHandler := NewVoteExtensionHandler()
+		voteExtHandler.SetHandlers(bApp)
+	}
+	baseAppOptions = append(baseAppOptions, voteExtOp)
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -355,12 +370,17 @@ func New(
 		// AllianceStoreKey,
 	)
 
+	// register streaming services
+	if err := bApp.RegisterStreamingServices(appOpts, keys); err != nil {
+		panic(err)
+	}
+
 	tkeys := storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := storetypes.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
 	app := &App{
 		BaseApp:           bApp,
-		cdc:               cdc,
+		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
 		txConfig:          txConfig,
 		interfaceRegistry: interfaceRegistry,
@@ -371,7 +391,7 @@ func New(
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
-	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
+	app.ParamsKeeper = initParamsKeeper(appCodec, legacyAmino, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
 
 	// set the BaseApp's parameter store
 	app.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(
@@ -400,8 +420,8 @@ func New(
 		runtime.NewKVStoreService(keys[authtypes.StoreKey]),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		authcodec.NewBech32Codec(AccountAddressPrefix),
-		AccountAddressPrefix,
+		authcodec.NewBech32Codec(appparams.Bech32Prefix),
+		appparams.Bech32Prefix,
 		authority,
 	)
 
@@ -427,8 +447,8 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		authority,
-		authcodec.NewBech32Codec(ValidatorAddressPrefix),
-		authcodec.NewBech32Codec(ConsensusAddressPrefix),
+		authcodec.NewBech32Codec(appparams.Bech32PrefixValAddr),
+		authcodec.NewBech32Codec(appparams.Bech32PrefixConsAddr),
 	)
 
 	app.MintKeeper = mintkeeper.NewKeeper(
@@ -466,7 +486,7 @@ func New(
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
-		cdc,
+		legacyAmino,
 		runtime.NewKVStoreService(keys[slashingtypes.StoreKey]),
 		app.StakingKeeper,
 		authority,
@@ -740,7 +760,7 @@ func New(
 			app.AccountKeeper,
 			app.StakingKeeper,
 			app,
-			encodingConfig.TxConfig,
+			txConfig,
 		),
 
 		auth.NewAppModule(
@@ -887,6 +907,23 @@ func New(
 			app.GetSubspace(crisistypes.ModuleName),
 		),
 	)
+
+	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration and genesis verification.
+	// By default it is composed of all the module from the module manager.
+	// Additionally, app module basics can be overwritten by passing them as argument.
+	app.BasicModuleManager = module.NewBasicManagerFromManager(
+		app.ModuleManager,
+		map[string]module.AppModuleBasic{
+			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+			govtypes.ModuleName: gov.NewAppModuleBasic(
+				[]govclient.ProposalHandler{
+					paramsclient.ProposalHandler,
+				},
+			),
+		})
+	app.BasicModuleManager.RegisterLegacyAminoCodec(app.LegacyAmino())
+	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	// NOTE: upgrade module is required to be prioritized
 	app.ModuleManager.SetOrderPreBlockers(
@@ -1176,7 +1213,7 @@ func (app *App) ModuleAccountAddrs() map[string]bool {
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
 func (app *App) LegacyAmino() *codec.LegacyAmino {
-	return app.cdc
+	return app.legacyAmino
 }
 
 // AppCodec returns an app codec.
@@ -1199,7 +1236,7 @@ func (app *App) TxConfig() client.TxConfig {
 
 // DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
 func (app *App) DefaultGenesis() map[string]json.RawMessage {
-	return ModuleBasics.DefaultGenesis(app.appCodec)
+	return app.BasicModuleManager.DefaultGenesis(app.appCodec)
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
@@ -1241,7 +1278,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, _ config.APIConfig) {
 	// Register new tendermint queries routes from grpc-gateway.
 	cmtservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	app.BasicModuleManager.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register app's OpenAPI routes.
 	apiSvr.Router.Handle("/static/openapi.yml", http.FileServer(http.FS(docs.Docs)))

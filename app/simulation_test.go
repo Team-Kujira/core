@@ -13,7 +13,6 @@ import (
 	"cosmossdk.io/store"
 	storetypes "cosmossdk.io/store/types"
 	evidencetypes "cosmossdk.io/x/evidence/types"
-	appparams "github.com/Team-Kujira/core/app/params"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
@@ -137,7 +136,6 @@ func TestAppImportExport(t *testing.T) {
 		newDB,
 		nil,
 		true,
-		appparams.MakeEncodingConfig(),
 		appOptions,
 		emptyWasmOpts,
 		fauxMerkleModeOpt,
@@ -250,7 +248,6 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		newDB,
 		nil,
 		true,
-		appparams.MakeEncodingConfig(),
 		appOptions,
 		emptyWasmOpts,
 		fauxMerkleModeOpt,
@@ -302,7 +299,6 @@ func setupSimulationApp(t *testing.T, msg string) (simtypes.Config, dbm.DB, simt
 		db,
 		nil,
 		true,
-		appparams.MakeEncodingConfig(),
 		appOptions,
 		emptyWasmOpts,
 		fauxMerkleModeOpt,
@@ -351,7 +347,6 @@ func TestAppStateDeterminism(t *testing.T) {
 				db,
 				nil,
 				true,
-				appparams.MakeEncodingConfig(),
 				appOptions,
 				emptyWasmOpts,
 				interBlockCacheOpt(),

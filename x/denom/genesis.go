@@ -10,7 +10,7 @@ import (
 // InitGenesis initializes the denom module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	k.CreateModuleAccount(ctx)
+	// k.CreateModuleAccount(ctx)
 
 	if genState.Params.CreationFee == nil {
 		genState.Params.CreationFee = sdk.NewCoins()

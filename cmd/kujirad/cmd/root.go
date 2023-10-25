@@ -26,9 +26,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -40,7 +45,22 @@ import (
 // NewRootCmd creates a new root command for wasmd. It is called once in the
 // main function.
 func NewRootCmd() *cobra.Command {
-	encodingConfig := app.MakeEncodingConfig()
+
+	tempApp := app.New(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(tempDir()),
+		[]wasmkeeper.Option{},
+	)
+
+	encodingConfig := params.EncodingConfig{
+		InterfaceRegistry: tempApp.InterfaceRegistry(),
+		Codec:             tempApp.AppCodec(),
+		TxConfig:          tempApp.TxConfig(),
+		Amino:             tempApp.LegacyAmino(),
+	}
 
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Codec).
@@ -81,7 +101,7 @@ func NewRootCmd() *cobra.Command {
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig)
+	initRootCmd(rootCmd, encodingConfig.TxConfig, encodingConfig.InterfaceRegistry, encodingConfig.Codec, tempApp.BasicModuleManager)
 
 	return rootCmd
 }
@@ -157,23 +177,30 @@ func initAppConfig() (string, interface{}) {
 	return customAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	a := appCreator{encodingConfig}
+func initRootCmd(
+	rootCmd *cobra.Command,
+	txConfig client.TxConfig,
+	interfaceRegistry codectypes.InterfaceRegistry,
+	appCodec codec.Codec,
+	basicManager module.BasicManager,
+) {
+	cfg := sdk.GetConfig()
+	cfg.Seal()
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
-		genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, app.ModuleBasics, app.DefaultNodeHome),
+		genutilcli.InitCmd(basicManager, app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
-		pruning.Cmd(a.newApp, app.DefaultNodeHome),
-		snapshot.Cmd(a.newApp),
+		pruning.Cmd(newApp, app.DefaultNodeHome),
+		snapshot.Cmd(newApp),
 	)
 
-	server.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
+	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),
+		genesisCommand(txConfig, basicManager),
 		queryCommand(),
 		txCommand(),
 		keys.Commands(),
@@ -207,9 +234,18 @@ func queryCommand() *cobra.Command {
 		server.QueryBlocksCmd(),
 	)
 
-	app.ModuleBasics.AddQueryCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
+	return cmd
+}
+
+// genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
+func genesisCommand(txConfig client.TxConfig, basicManager module.BasicManager, cmds ...*cobra.Command) *cobra.Command {
+	cmd := genutilcli.Commands(txConfig, basicManager, app.DefaultNodeHome)
+
+	for _, subCmd := range cmds {
+		cmd.AddCommand(subCmd)
+	}
 	return cmd
 }
 
@@ -234,18 +270,14 @@ func txCommand() *cobra.Command {
 		authcmd.GetSimulateCmd(),
 	)
 
-	app.ModuleBasics.AddTxCommands(cmd)
+	// app.ModuleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
 
-type appCreator struct {
-	encCfg params.EncodingConfig
-}
-
 // newApp is an appCreator
-func (a appCreator) newApp(
+func newApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -266,7 +298,6 @@ func (a appCreator) newApp(
 		db,
 		traceStore,
 		true,
-		a.encCfg,
 		appOpts,
 		wasmOpts,
 		baseappOptions...,
@@ -275,7 +306,7 @@ func (a appCreator) newApp(
 
 // appExport creates a new kujiraApp (optionally at a given height)
 // and exports state.
-func (a appCreator) appExport(
+func appExport(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -298,7 +329,6 @@ func (a appCreator) appExport(
 		db,
 		traceStore,
 		loadLatest,
-		a.encCfg,
 		appOpts,
 		emptyWasmOpts,
 	)
@@ -310,4 +340,14 @@ func (a appCreator) appExport(
 	}
 
 	return kujiraApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+}
+
+var tempDir = func() string {
+	dir, err := os.MkdirTemp("", "kujirad")
+	if err != nil {
+		panic("failed to create temp dir: " + err.Error())
+	}
+	defer os.RemoveAll(dir)
+
+	return dir
 }

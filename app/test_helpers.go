@@ -37,7 +37,6 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 		db,
 		nil,
 		true,
-		MakeEncodingConfig(),
 		appOptions,
 		wasmOpts,
 	)
@@ -58,7 +57,7 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	}
 
 	if !isCheckTx {
-		genesisState := NewDefaultGenesisState(app.AppCodec())
+		genesisState := app.DefaultGenesis()
 		genesisState, err = GenesisStateWithValSet(app.AppCodec(), genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 		if err != nil {
 			panic(err)
@@ -97,12 +96,11 @@ func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 		db,
 		nil,
 		true,
-		MakeEncodingConfig(),
 		appOptions,
 		wasmOpts,
 	)
 	if !isCheckTx {
-		genesisState := NewDefaultGenesisState(app.AppCodec())
+		genesisState := app.DefaultGenesis()
 		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 		if err != nil {
 			panic(err)
