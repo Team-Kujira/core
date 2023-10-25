@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"client/grpc/cmtservice"
+	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
