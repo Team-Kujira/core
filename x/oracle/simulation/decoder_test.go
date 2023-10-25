@@ -10,10 +10,13 @@ import (
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/Team-Kujira/core/x/oracle/keeper"
 	sim "github.com/Team-Kujira/core/x/oracle/simulation"
 	"github.com/Team-Kujira/core/x/oracle/types"
 )
@@ -27,7 +30,11 @@ var (
 )
 
 func TestDecodeDistributionStore(t *testing.T) {
-	cdc := keeper.MakeTestCodec(t)
+	interfaceRegistry := codectypes.NewInterfaceRegistry()
+	std.RegisterInterfaces(interfaceRegistry)
+	authtypes.RegisterInterfaces(interfaceRegistry)
+
+	cdc := codec.NewProtoCodec(interfaceRegistry)
 	dec := sim.NewDecodeStore(cdc)
 
 	exchangeRate := math.LegacyNewDecWithPrec(1234, 1)

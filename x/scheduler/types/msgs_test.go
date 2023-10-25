@@ -12,9 +12,9 @@ func TestMsgCreateHook_ValidateBasic(t *testing.T) {
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
 
 	msg := NewMsgCreateHook(
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
 		jsonMsg,
 		1000,
 		sdk.NewCoins(sdk.NewInt64Coin("atom", 100)),
@@ -38,10 +38,10 @@ func TestMsgUpdateHook_ValidateBasic(t *testing.T) {
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
 
 	msg := NewMsgUpdateHook(
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
 		1,
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
 		jsonMsg,
 		1000,
 		sdk.NewCoins(sdk.NewInt64Coin("atom", 100)),
@@ -64,7 +64,7 @@ func TestMsgUpdateHook_ValidateBasic_Error(t *testing.T) {
 
 func TestMsgDeleteHook_ValidateBasic(t *testing.T) {
 	msg := NewMsgDeleteHook(
-		"kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a",
+		"cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh",
 		1,
 	)
 	require.NoError(t, msg.ValidateBasic())
