@@ -13,7 +13,7 @@ func TestCreateHook(t *testing.T) {
 	keeper, ctx := SetupKeeper(t)
 	ms := NewMsgServerImpl(keeper)
 
-	authority := "kujira10d07y265gmmuvt4z0w9aw880jnsr700jt23ame"
+	authority := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 	executor := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
 	contract := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
@@ -47,7 +47,7 @@ func TestUpdateHook(t *testing.T) {
 	keeper, ctx := SetupKeeper(t)
 	ms := NewMsgServerImpl(keeper)
 
-	authority := "kujira10d07y265gmmuvt4z0w9aw880jnsr700jt23ame"
+	authority := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 	executor := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
 	contract := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
@@ -92,7 +92,7 @@ func TestDeleteHook(t *testing.T) {
 	keeper, ctx := SetupKeeper(t)
 	ms := NewMsgServerImpl(keeper)
 
-	authority := "kujira10d07y265gmmuvt4z0w9aw880jnsr700jt23ame"
+	authority := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 	executor := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
 	contract := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
