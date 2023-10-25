@@ -13,9 +13,9 @@ func TestCreateHook(t *testing.T) {
 	keeper, ctx := SetupKeeper(t)
 	ms := NewMsgServerImpl(keeper)
 
-	authority := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
-	executor := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
-	contract := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
+	authority := "kujira10d07y265gmmuvt4z0w9aw880jnsr700jt23ame"
+	executor := "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
+	contract := "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
 	frequency := int64(1000)
 	funds := sdk.NewCoins(sdk.NewInt64Coin("atom", 100))
@@ -30,7 +30,7 @@ func TestCreateHook(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	authority = "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
+	authority = "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
 
 	_, err = ms.CreateHook(ctx, &types.MsgCreateHook{
 		Authority: authority,
@@ -47,9 +47,9 @@ func TestUpdateHook(t *testing.T) {
 	keeper, ctx := SetupKeeper(t)
 	ms := NewMsgServerImpl(keeper)
 
-	authority := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
-	executor := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
-	contract := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
+	authority := "kujira10d07y265gmmuvt4z0w9aw880jnsr700jt23ame"
+	executor := "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
+	contract := "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
 	frequency := int64(1000)
 	funds := sdk.NewCoins(sdk.NewInt64Coin("atom", 100))
@@ -74,7 +74,7 @@ func TestUpdateHook(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	authority = "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
+	authority = "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
 
 	_, err = ms.UpdateHook(ctx, &types.MsgUpdateHook{
 		Authority: authority,
@@ -92,9 +92,9 @@ func TestDeleteHook(t *testing.T) {
 	keeper, ctx := SetupKeeper(t)
 	ms := NewMsgServerImpl(keeper)
 
-	authority := "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
-	executor := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
-	contract := "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
+	authority := "kujira10d07y265gmmuvt4z0w9aw880jnsr700jt23ame"
+	executor := "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
+	contract := "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
 	jsonMsg := wasmtypes.RawContractMessage(`{"foo": 123}`)
 	frequency := int64(1000)
 	funds := sdk.NewCoins(sdk.NewInt64Coin("atom", 100))
@@ -114,7 +114,7 @@ func TestDeleteHook(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	authority = "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh"
+	authority = "kujira1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3ynth5a"
 	_, err = ms.DeleteHook(ctx, &types.MsgDeleteHook{
 		Authority: authority,
 		Id:        id,

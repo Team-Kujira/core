@@ -53,7 +53,6 @@ func setup(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	h := keeper.NewMsgServerImpl(input.OracleKeeper)
 
 	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
-
 	// Validator created
 	_, err := sh.CreateValidator(input.Ctx, keeper.NewTestMsgCreateValidator(keeper.ValAddrs[0], keeper.ValPubKeys[0], stakingAmt))
 	require.NoError(t, err)
