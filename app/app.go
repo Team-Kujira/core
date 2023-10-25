@@ -75,7 +75,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	bank "github.com/terra-money/alliance/custom/bank"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 	alliancemodule "github.com/terra-money/alliance/x/alliance"
@@ -84,6 +83,7 @@ import (
 	alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
 
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
