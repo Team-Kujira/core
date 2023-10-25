@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -29,7 +29,7 @@ import (
 // Setup initializes a new KujiraApp.
 func Setup(t *testing.T, isCheckTx bool) *App {
 	db := dbm.NewMemDB()
-	var wasmOpts []wasm.Option
+	var wasmOpts []wasmkeeper.Option
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 
 	app := New(
@@ -89,7 +89,7 @@ func SetupTestingAppWithLevelDB(isCheckTx bool) (app *App, cleanupFn func()) {
 	if err != nil {
 		panic(err)
 	}
-	var wasmOpts []wasm.Option
+	var wasmOpts []wasmkeeper.Option
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 
 	app = New(

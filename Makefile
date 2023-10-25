@@ -61,13 +61,13 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 #### Command List ####
 
 check-go-version:
-	@if ! go version | grep -Eq "go1.20."; then \
-		echo "\033[0;31mERROR:\033[0m Go version 1.20.1 through 1.20.2 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
+	@if ! go version | grep -Eq "go1.20.[1-8]"; then \
+		echo "\033[0;31mERROR:\033[0m Go version 1.20.1 through 1.20.8 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
 		exit 1; \
 	fi
 
-proto:
-	./scripts/protocgen-wrapper.sh
+proto: 
+    docker run --volume "$(pwd)\:/workspace" --workdir /workspace ghcr.io/cosmos/proto-builder:0.12.1 sh ./scripts/protocgen.sh
 
 all: lint install
 

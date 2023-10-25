@@ -87,9 +87,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	ibchooks "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7"
-	ibchookskeeper "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/keeper"
-	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
@@ -159,6 +156,9 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 	var govProposalHandlers []govclient.ProposalHandler
 
 	govProposalHandlers = append(govProposalHandlers,
+		schedulerclient.CreateHookProposalHandler,
+		schedulerclient.UpdateHookProposalHandler,
+		schedulerclient.DeleteHookProposalHandler,
 		paramsclient.ProposalHandler,
 		upgradeclient.LegacyProposalHandler,
 		upgradeclient.LegacyCancelProposalHandler,
@@ -197,7 +197,6 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
-		ibchooks.AppModuleBasic{},
 
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -223,7 +222,7 @@ var (
 		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		ibcfeetypes.ModuleName:              nil,
 		icatypes.ModuleName:                 nil,
-		wasm.ModuleName:                     {authtypes.Burner},
+		wasmtypes.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
@@ -280,17 +279,15 @@ type App struct {
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
-	IBCHooksKeeper        ibchookskeeper.Keeper
-	Ics20WasmHooks        ibchooks.WasmHooks
-	HooksICS4Wrapper      ibchooks.ICS4Middleware
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        ibctransferkeeper.Keeper
-	FeeGrantKeeper        feegrantkeeper.Keeper
-	WasmKeeper            wasm.Keeper
-	DenomKeeper           *denomkeeper.Keeper
-	SchedulerKeeper       schedulerkeeper.Keeper
-	OracleKeeper          oraclekeeper.Keeper
-	AllianceKeeper        alliancemodulekeeper.Keeper
+
+	EvidenceKeeper  evidencekeeper.Keeper
+	TransferKeeper  ibctransferkeeper.Keeper
+	FeeGrantKeeper  feegrantkeeper.Keeper
+	WasmKeeper      wasmkeeper.Keeper
+	DenomKeeper     *denomkeeper.Keeper
+	SchedulerKeeper schedulerkeeper.Keeper
+	OracleKeeper    oraclekeeper.Keeper
+	AllianceKeeper  alliancemodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -318,7 +315,7 @@ func New(
 	loadLatest bool,
 	encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 	appCodec := encodingConfig.Codec
@@ -352,8 +349,8 @@ func New(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
-		ibchookstypes.StoreKey,
-		wasm.StoreKey,
+
+		wasmtypes.StoreKey,
 		icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey,
 		denomtypes.StoreKey,
@@ -456,11 +453,12 @@ func New(
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
 		keys[AllianceStoreKey],
-		app.GetSubspace(alliancemoduletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
+		authtypes.FeeCollectorName,
+		authority,
 	)
 
 	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
@@ -577,10 +575,6 @@ func New(
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
-	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
-		app.keys[ibchookstypes.StoreKey],
-	)
-
 	app.SchedulerKeeper = schedulerkeeper.NewKeeper(
 		appCodec,
 		keys[denomtypes.StoreKey],
@@ -613,7 +607,7 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
-	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -629,9 +623,9 @@ func New(
 		*app.DenomKeeper,
 	), wasmOpts...)
 
-	app.WasmKeeper = wasm.NewKeeper(
+	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
-		keys[wasm.StoreKey],
+		keys[wasmtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
@@ -683,28 +677,18 @@ func New(
 		authority,
 	)
 
+	govKeeper.SetLegacyRouter(govRouter)
+
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
 		// register the governance hooks
 		),
 	)
 
-	prefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
-	app.Ics20WasmHooks = ibchooks.NewWasmHooks(
-		&app.IBCHooksKeeper,
-		&app.WasmKeeper,
-		prefix,
-	)
-	app.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
-		app.IBCKeeper.ChannelKeeper,
-		app.Ics20WasmHooks,
-	)
-
 	// Create Transfer Stack
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
-	transferStack = ibchooks.NewIBCMiddleware(transferStack, &app.HooksICS4Wrapper)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -731,7 +715,7 @@ func New(
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
-		AddRoute(wasm.ModuleName, wasmStack).
+		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -887,6 +871,7 @@ func New(
 			app.AccountKeeper,
 			app.BankKeeper,
 			app.interfaceRegistry,
+			app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
 		crisis.NewAppModule(
@@ -922,8 +907,8 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		ibchookstypes.ModuleName,
-		wasm.ModuleName,
+
+		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
@@ -952,8 +937,8 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		ibchookstypes.ModuleName,
-		wasm.ModuleName,
+
+		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
@@ -990,12 +975,11 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		ibchookstypes.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -1033,7 +1017,7 @@ func New(
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
-			TXCounterStoreKey: keys[wasm.StoreKey],
+			TXCounterStoreKey: keys[wasmtypes.StoreKey],
 		},
 	)
 	if err != nil {
@@ -1113,6 +1097,7 @@ func BlockedAddresses() map[string]bool {
 	// allow the following addresses to receive funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 	delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
+	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
 
 	return modAccAddrs
 }
@@ -1279,7 +1264,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(denomtypes.ModuleName)
-	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)

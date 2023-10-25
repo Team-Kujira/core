@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cast"
 
 	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
-	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/Team-Kujira/core/app"
 	"github.com/Team-Kujira/core/app/params"
@@ -246,7 +245,7 @@ func (a appCreator) newApp(
 	traceStore io.Writer,
 	appOpts servertypes.AppOptions,
 ) servertypes.Application {
-	var wasmOpts []wasm.Option
+	var wasmOpts []wasmkeeper.Option
 	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
 		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
 	}
@@ -287,7 +286,7 @@ func (a appCreator) appExport(
 	}
 
 	loadLatest := height == -1
-	var emptyWasmOpts []wasm.Option
+	var emptyWasmOpts []wasmkeeper.Option
 	kujiraApp = app.New(
 		logger,
 		db,
