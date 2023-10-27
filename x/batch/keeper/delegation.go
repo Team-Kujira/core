@@ -1,13 +1,14 @@
 package keeper
 
 import (
-	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // increment the reference count for a historical rewards value
+// this func was copied from
+// https://github.com/cosmos/cosmos-sdk/blob/main/x/distribution/keeper/validator.go
 func (k Keeper) incrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress, period uint64) {
 	historical := k.distrKeeper.GetValidatorHistoricalRewards(ctx, valAddr, period)
 	if historical.ReferenceCount > 2 {
@@ -18,6 +19,8 @@ func (k Keeper) incrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress,
 }
 
 // decrement the reference count for a historical rewards value, and delete if zero references remain
+// this func was copied from
+// https://github.com/cosmos/cosmos-sdk/blob/main/x/distribution/keeper/validator.go
 func (k Keeper) decrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress, period uint64) {
 	historical := k.distrKeeper.GetValidatorHistoricalRewards(ctx, valAddr, period)
 	if historical.ReferenceCount == 0 {
@@ -32,6 +35,8 @@ func (k Keeper) decrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress,
 }
 
 // initialize starting info for a new delegation
+// this func was copied from
+// https://github.com/cosmos/cosmos-sdk/blob/main/x/distribution/keeper/delegation.go
 func (k Keeper) initializeDelegation(ctx sdk.Context, val sdk.ValAddress, del sdk.AccAddress) {
 	// period has already been incremented - we want to store the period ended by this delegation action
 	previousPeriod := k.distrKeeper.GetValidatorCurrentRewards(ctx, val).Period - 1
@@ -52,6 +57,8 @@ func (k Keeper) initializeDelegation(ctx sdk.Context, val sdk.ValAddress, del sd
 func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAddress) (sdk.Coins, error) {
 	rewardsTotal := sdk.Coins{}
 	remainderTotal := sdk.DecCoins{}
+	// callback func was referenced from withdrawDelegationRewards func in
+	// https://github.com/cosmos/cosmos-sdk/blob/main/x/distribution/keeper/delegation.go
 	k.stakingKeeper.IterateDelegations(ctx, delAddr, func(_ int64, del stakingtypes.DelegationI) (stop bool) {
 		valAddr := del.GetValidatorAddr()
 		val := k.stakingKeeper.Validator(ctx, valAddr)
@@ -97,13 +104,6 @@ func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAdd
 		// reinitialize the delegation
 		k.initializeDelegation(ctx, valAddr, delAddr)
 
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeWithdrawRewards,
-				sdk.NewAttribute(sdk.AttributeKeyAmount, finalRewards.String()),
-				sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
-			),
-		)
 		return false
 	})
 
@@ -120,11 +120,15 @@ func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAdd
 			return nil, err
 		}
 	} else {
-		baseDenom, _ := sdk.GetBaseDenom()
-		rewardsTotal = sdk.Coins{sdk.Coin{
-			Denom:  baseDenom,
-			Amount: math.ZeroInt(),
-		}}
+		rewardsTotal = sdk.Coins{}
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeWithdrawRewards,
+			sdk.NewAttribute(sdk.AttributeKeyAmount, rewardsTotal.String()),
+			sdk.NewAttribute(types.AttributeKeyDelegator, delAddr.String()),
+		),
+	)
 	return rewardsTotal, nil
 }

@@ -98,8 +98,9 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	}
 
 	// Withdraw all rewards using a single batch transaction
-	res, err := batchMsgServer.WithdrawAllDelegatorRewards(suite.ctx, batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
 	gasForBatchWithdrawal := suite.ctx.GasMeter().GasConsumed()
+	res, err := batchMsgServer.WithdrawAllDelegatorRewards(suite.ctx, batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
+	gasForBatchWithdrawal = suite.ctx.GasMeter().GasConsumed() - gasForBatchWithdrawal
 	require.NoError(suite.T(), err)
 	require.False(suite.T(), res.Amount.IsZero())
 
@@ -107,12 +108,12 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	suite.ctx = suite.ctx.WithBlockHeight(suite.ctx.BlockHeight() + 1)
 
 	// Allocate rewards to validators
-	totalGasForIndividualWithdrawals := uint64(0)
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
 		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, suite.app.StakingKeeper.Validator(suite.ctx, valAddr), valRewardTokens)
 	}
 
+	totalGasForIndividualWithdrawals := suite.ctx.GasMeter().GasConsumed()
 	// Withdraw all rewards using multiple individual transactions
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
@@ -121,8 +122,8 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 		require.NoError(suite.T(), err)
 		require.False(suite.T(), res.Amount.IsZero())
 
-		totalGasForIndividualWithdrawals += suite.ctx.GasMeter().GasConsumed()
 	}
+	totalGasForIndividualWithdrawals = suite.ctx.GasMeter().GasConsumed() - totalGasForIndividualWithdrawals
 
 	require.True(suite.T(), gasForBatchWithdrawal < totalGasForIndividualWithdrawals)
 	suite.T().Log(">>>>>>> Gas usage for batch withdrawals is ", gasForBatchWithdrawal)
