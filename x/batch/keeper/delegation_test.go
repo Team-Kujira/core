@@ -99,9 +99,9 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	}
 
 	// Withdraw all rewards using a single batch transaction
-	gasForBatchDelegation := suite.ctx.GasMeter().GasConsumed()
+	gasForBatchWithdrawal := suite.ctx.GasMeter().GasConsumed()
 	res, err := batchMsgServer.WithdrawAllDelegatorRewards(suite.ctx, batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
-	gasForBatchDelegation = suite.ctx.GasMeter().GasConsumed() - gasForBatchDelegation
+	gasForBatchWithdrawal = suite.ctx.GasMeter().GasConsumed() - gasForBatchWithdrawal
 	require.NoError(suite.T(), err)
 	require.False(suite.T(), res.Amount.IsZero())
 
@@ -114,7 +114,7 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, suite.app.StakingKeeper.Validator(suite.ctx, valAddr), valRewardTokens)
 	}
 
-	totalGasForIndividualDelegations := suite.ctx.GasMeter().GasConsumed()
+	totalGasForIndividualWithdrawals := suite.ctx.GasMeter().GasConsumed()
 	// Withdraw all rewards using multiple individual transactions
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
@@ -124,11 +124,11 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 		require.False(suite.T(), res.Amount.IsZero())
 
 	}
-	totalGasForIndividualDelegations = suite.ctx.GasMeter().GasConsumed() - totalGasForIndividualDelegations
+	totalGasForIndividualWithdrawals = suite.ctx.GasMeter().GasConsumed() - totalGasForIndividualWithdrawals
 
-	require.True(suite.T(), gasForBatchDelegation < totalGasForIndividualDelegations)
-	suite.T().Log(">>>>>>> Gas usage for batch withdrawals is ", gasForBatchDelegation)
-	suite.T().Log(">>>>>>> Gas usage for individual withdrawals is ", totalGasForIndividualDelegations)
+	require.True(suite.T(), gasForBatchWithdrawal < totalGasForIndividualWithdrawals)
+	suite.T().Log(">>>>>>> Gas usage for batch withdrawals is ", gasForBatchWithdrawal)
+	suite.T().Log(">>>>>>> Gas usage for individual withdrawals is ", totalGasForIndividualWithdrawals)
 }
 
 func (suite *KeeperTestSuite) TestBatchResetDelegation() {
