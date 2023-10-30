@@ -8,5 +8,7 @@ import (
 
 // x/batch module sentinel errors
 var (
-	ErrSample = errorsmod.Register(ModuleName, 1100, "sample error")
+	ErrValidatorsAndAmountsMismatch = errorsmod.Register(ModuleName, 1, "validators and amounts length mismatch")
+	ErrInvalidAmount                = errorsmod.Register(ModuleName, 2, "invalid amount")
+	ErrNegativeDelegationAmount     = errorsmod.Register(ModuleName, 3, "negative delegation amount")
 )
