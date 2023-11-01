@@ -60,7 +60,6 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -119,7 +118,6 @@ import (
 	"github.com/spf13/cast"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
@@ -160,7 +158,9 @@ const (
 )
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
-	govProposalHandlers := append(wasmclient.ProposalHandlers,
+	var govProposalHandlers []govclient.ProposalHandler
+
+	govProposalHandlers = append(govProposalHandlers,
 		schedulerclient.CreateHookProposalHandler,
 		schedulerclient.UpdateHookProposalHandler,
 		schedulerclient.DeleteHookProposalHandler,
@@ -171,7 +171,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 		ibcclientclient.UpgradeProposalHandler,
 
 		alliancemoduleclient.CreateAllianceProposalHandler,
-
 		alliancemoduleclient.UpdateAllianceProposalHandler,
 		alliancemoduleclient.DeleteAllianceProposalHandler,
 	)
@@ -203,6 +202,7 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
+
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
@@ -228,7 +228,7 @@ var (
 		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		ibcfeetypes.ModuleName:              nil,
 		icatypes.ModuleName:                 nil,
-		wasm.ModuleName:                     {authtypes.Burner},
+		wasmtypes.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
@@ -286,15 +286,16 @@ type App struct {
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        ibctransferkeeper.Keeper
-	FeeGrantKeeper        feegrantkeeper.Keeper
-	WasmKeeper            wasm.Keeper
-	DenomKeeper           *denomkeeper.Keeper
-	SchedulerKeeper       schedulerkeeper.Keeper
-	OracleKeeper          oraclekeeper.Keeper
-	AllianceKeeper        alliancemodulekeeper.Keeper
-	InterTxKeeper         intertxkeeper.Keeper
+
+	EvidenceKeeper  evidencekeeper.Keeper
+	TransferKeeper  ibctransferkeeper.Keeper
+	FeeGrantKeeper  feegrantkeeper.Keeper
+	WasmKeeper      wasmkeeper.Keeper
+	DenomKeeper     *denomkeeper.Keeper
+	SchedulerKeeper schedulerkeeper.Keeper
+	OracleKeeper    oraclekeeper.Keeper
+	AllianceKeeper  alliancemodulekeeper.Keeper
+	InterTxKeeper   intertxkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -305,8 +306,8 @@ type App struct {
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
-	// mm is the module manager
-	mm *module.Manager
+	// ModuleManager is the module manager
+	ModuleManager *module.Manager
 
 	// sm is the simulation manager
 	sm *module.SimulationManager
@@ -323,7 +324,7 @@ func New(
 	loadLatest bool,
 	encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 	appCodec := encodingConfig.Codec
@@ -357,7 +358,8 @@ func New(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
-		wasm.StoreKey,
+
+		wasmtypes.StoreKey,
 		icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey,
 		denomtypes.StoreKey,
@@ -381,7 +383,7 @@ func New(
 		memKeys:           memKeys,
 	}
 
-	cfg := module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
 
@@ -426,7 +428,6 @@ func New(
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
-		app.GetSubspace(banktypes.ModuleName),
 		BlockedAddresses(),
 		authority,
 	)
@@ -509,15 +510,6 @@ func New(
 		app.BaseApp,
 		authority,
 	)
-
-	// app.UpgradeKeeper.SetUpgradeHandler("v0.9.0",
-	// 	func(
-	// 		ctx sdk.Context,
-	// 		plan upgradetypes.Plan,
-	// 		fromVM module.VersionMap,
-	// 	) (module.VersionMap, error) {
-	// 		return app.mm.RunMigrations(ctx, cfg, fromVM)
-	// 	})
 
 	// register the staking hooks
 	app.StakingKeeper.SetHooks(
@@ -631,7 +623,7 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
-	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -649,13 +641,14 @@ func New(
 		app.ICAControllerKeeper,
 	), wasmOpts...)
 
-	app.WasmKeeper = wasm.NewKeeper(
+	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
-		keys[wasm.StoreKey],
+		keys[wasmtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
 		distrkeeper.NewQuerier(app.DistrKeeper),
+		app.IBCFeeKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedWasmKeeper,
@@ -678,7 +671,6 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasm.EnableAllProposals)).
 		AddRoute(schedulertypes.RouterKey, schedulerkeeper.NewSchedulerProposalHandler(app.SchedulerKeeper)).
 		AddRoute(alliancemoduletypes.RouterKey, alliancemodule.NewAllianceProposalHandler(app.AllianceKeeper))
 
@@ -739,7 +731,7 @@ func New(
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
-		AddRoute(wasm.ModuleName, wasmStack).
+		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -753,7 +745,7 @@ func New(
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 
-	app.mm = module.NewManager(
+	app.ModuleManager = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
@@ -910,7 +902,7 @@ func New(
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
-	app.mm.SetOrderBeginBlockers(
+	app.ModuleManager.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		minttypes.ModuleName,
@@ -932,7 +924,8 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		wasm.ModuleName,
+
+		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
@@ -940,7 +933,7 @@ func New(
 		intertxtypes.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(
+	app.ModuleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
@@ -962,7 +955,8 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		wasm.ModuleName,
+
+		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
@@ -978,7 +972,7 @@ func New(
 	// can do so safely.
 	// NOTE: wasm module should be at the end as it can call other module functionality direct or via message dispatching during
 	// genesis phase. For example bank transfer, auth account check, staking, ...
-	app.mm.SetOrderInitGenesis(
+	app.ModuleManager.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		authz.ModuleName,
@@ -1000,18 +994,21 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
+
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		intertxtypes.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(app.CrisisKeeper)
-	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
+	app.ModuleManager.RegisterServices(app.configurator)
 
-	app.mm.RegisterServices(cfg)
+	// RegisterUpgradeHandlers is used for registering any on-chain upgrades.
+	// Make sure it's called after `app.ModuleManager` and `app.configurator` are set.
+	app.RegisterUpgradeHandlers()
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	overrideModules := map[string]module.AppModuleSimulation{
@@ -1022,7 +1019,7 @@ func New(
 			app.GetSubspace(authtypes.ModuleName),
 		),
 	}
-	app.sm = module.NewSimulationManagerFromAppModules(app.mm.Modules, overrideModules)
+	app.sm = module.NewSimulationManagerFromAppModules(app.ModuleManager.Modules, overrideModules)
 	app.sm.RegisterStoreDecoders()
 
 	// initialize stores
@@ -1041,7 +1038,7 @@ func New(
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
-			TXCounterStoreKey: keys[wasm.StoreKey],
+			TXCounterStoreKey: keys[wasmtypes.StoreKey],
 		},
 	)
 	if err != nil {
@@ -1134,12 +1131,16 @@ func (app App) GetBaseApp() *baseapp.BaseApp { return app.BaseApp }
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
+	return app.ModuleManager.BeginBlock(ctx, req)
 }
 
 // EndBlocker application updates every end block
 func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
+	return app.ModuleManager.EndBlock(ctx, req)
+}
+
+func (app *App) Configurator() module.Configurator {
+	return app.configurator
 }
 
 // InitChainer application update at chain initialization
@@ -1148,8 +1149,8 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
-	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
-	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
+	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap())
+	return app.ModuleManager.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
 // LoadHeight loads a particular height
@@ -1277,14 +1278,14 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypesv1.ParamKeyTable())
+	paramsKeeper.Subspace(govtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(denomtypes.ModuleName)
-	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)

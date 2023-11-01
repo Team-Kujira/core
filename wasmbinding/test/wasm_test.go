@@ -21,7 +21,7 @@ import (
 )
 
 func TestQueryExchangeRates(t *testing.T) {
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	ExchangeRateC := sdk.NewDec(1700)
@@ -93,7 +93,7 @@ func TestQueryExchangeRates(t *testing.T) {
 }
 
 func TestSupply(t *testing.T) {
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, app.InterTxKeeper)

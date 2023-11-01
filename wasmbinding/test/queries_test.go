@@ -44,9 +44,9 @@ func TestFullDenom(t *testing.T) {
 			subdenom:     "",
 			expFullDenom: fmt.Sprintf("factory/%s/", actor.String()),
 		},
-		"invalid sub-denom (contains underscore)": {
+		"invalid sub-denom": {
 			addr:     actor.String(),
-			subdenom: "sub_denom",
+			subdenom: "adsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsf",
 			expErr:   true,
 		},
 	}
@@ -66,7 +66,7 @@ func TestFullDenom(t *testing.T) {
 }
 
 func TestDenomAdmin(t *testing.T) {
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	// set token creation fee to zero to make testing easier

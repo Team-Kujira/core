@@ -16,8 +16,8 @@ import (
 	"github.com/Team-Kujira/core/app"
 )
 
-func CreateTestInput() (*app.App, sdk.Context) {
-	app := app.Setup(false)
+func CreateTestInput(t *testing.T) (*app.App, sdk.Context) {
+	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 	return app, ctx
 }

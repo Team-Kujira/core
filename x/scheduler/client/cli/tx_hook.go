@@ -78,8 +78,10 @@ func CreateHookProposalCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
+
 	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
+
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	return cmd
 }
@@ -155,8 +157,10 @@ func UpdateHookProposalCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
+
 	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
+
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	return cmd
 }
@@ -211,8 +215,10 @@ func DeleteHookProposalCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "Title of proposal")
+
 	cmd.Flags().String(cli.FlagDescription, "", "Description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "Deposit of proposal")
+
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	return cmd
 }
