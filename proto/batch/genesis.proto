@@ -1,0 +1,13 @@
+syntax = "proto3";
+package batch;
+
+import "gogoproto/gogo.proto";
+import "batch/params.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/batch/types";
+
+// GenesisState defines the batch module's genesis state.
+message GenesisState {
+  // params defines the paramaters of the module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}

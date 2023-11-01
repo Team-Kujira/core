@@ -128,6 +128,10 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
+	"github.com/Team-Kujira/core/x/batch"
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
+	batchtypes "github.com/Team-Kujira/core/x/batch/types"
+
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
 	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
@@ -207,6 +211,7 @@ var (
 		ica.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		denom.AppModuleBasic{},
+		batch.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
@@ -225,6 +230,7 @@ var (
 		icatypes.ModuleName:                 nil,
 		wasmtypes.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		batchtypes.ModuleName:               nil,
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
@@ -280,15 +286,15 @@ type App struct {
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
-
-	EvidenceKeeper  evidencekeeper.Keeper
-	TransferKeeper  ibctransferkeeper.Keeper
-	FeeGrantKeeper  feegrantkeeper.Keeper
-	WasmKeeper      wasmkeeper.Keeper
-	DenomKeeper     *denomkeeper.Keeper
-	SchedulerKeeper schedulerkeeper.Keeper
-	OracleKeeper    oraclekeeper.Keeper
-	AllianceKeeper  alliancemodulekeeper.Keeper
+	EvidenceKeeper        evidencekeeper.Keeper
+	TransferKeeper        ibctransferkeeper.Keeper
+	FeeGrantKeeper        feegrantkeeper.Keeper
+	WasmKeeper            wasmkeeper.Keeper
+	DenomKeeper           *denomkeeper.Keeper
+	BatchKeeper           batchkeeper.Keeper
+	SchedulerKeeper       schedulerkeeper.Keeper
+	OracleKeeper          oraclekeeper.Keeper
+	AllianceKeeper        alliancemodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -357,6 +363,7 @@ func New(
 		denomtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
+		batchtypes.StoreKey,
 		AllianceStoreKey,
 	)
 
@@ -605,6 +612,14 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
+	app.BatchKeeper = batchkeeper.NewKeeper(
+		appCodec,
+		app.keys[batchtypes.StoreKey],
+		app.BankKeeper,
+		app.DistrKeeper,
+		app.StakingKeeper,
+	)
+
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -847,6 +862,13 @@ func New(
 			app.BankKeeper,
 		),
 
+		batch.NewAppModule(
+			appCodec,
+			app.BatchKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+		),
+
 		icaModule,
 
 		scheduler.NewAppModule(
@@ -910,6 +932,7 @@ func New(
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -940,6 +963,7 @@ func New(
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -977,6 +1001,7 @@ func New(
 		ibcfeetypes.ModuleName,
 
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -1268,6 +1293,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
+	paramsKeeper.Subspace(batchtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	return paramsKeeper
