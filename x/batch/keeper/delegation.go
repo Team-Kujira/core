@@ -1,8 +1,14 @@
 package keeper
 
 import (
+	"time"
+
+	"github.com/Team-Kujira/core/x/batch/types"
+	"github.com/armon/go-metrics"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/distribution/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -51,7 +57,7 @@ func (k Keeper) initializeDelegation(ctx sdk.Context, val sdk.ValAddress, del sd
 	// we don't store directly, so multiply delegation shares * (tokens per share)
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
 	stake := validator.TokensFromSharesTruncated(delegation.GetShares())
-	k.distrKeeper.SetDelegatorStartingInfo(ctx, val, del, types.NewDelegatorStartingInfo(previousPeriod, stake, uint64(ctx.BlockHeight())))
+	k.distrKeeper.SetDelegatorStartingInfo(ctx, val, del, distrtypes.NewDelegatorStartingInfo(previousPeriod, stake, uint64(ctx.BlockHeight())))
 }
 
 func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAddress) (sdk.Coins, error) {
@@ -94,7 +100,7 @@ func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAdd
 
 		// update the outstanding rewards and the community pool only if the
 		// transaction was successful
-		k.distrKeeper.SetValidatorOutstandingRewards(ctx, del.GetValidatorAddr(), types.ValidatorOutstandingRewards{Rewards: outstanding.Sub(rewards)})
+		k.distrKeeper.SetValidatorOutstandingRewards(ctx, del.GetValidatorAddr(), distrtypes.ValidatorOutstandingRewards{Rewards: outstanding.Sub(rewards)})
 
 		// decrement reference count of starting period
 		startingInfo := k.distrKeeper.GetDelegatorStartingInfo(ctx, del.GetValidatorAddr(), del.GetDelegatorAddr())
@@ -115,7 +121,7 @@ func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAdd
 	// add total reward coins to user account
 	if !rewardsTotal.IsZero() {
 		withdrawAddr := k.distrKeeper.GetDelegatorWithdrawAddr(ctx, delAddr)
-		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, rewardsTotal)
+		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, distrtypes.ModuleName, withdrawAddr, rewardsTotal)
 		if err != nil {
 			return nil, err
 		}
@@ -125,10 +131,110 @@ func (k Keeper) withdrawAllDelegationRewards(ctx sdk.Context, delAddr sdk.AccAdd
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			types.EventTypeWithdrawRewards,
+			distrtypes.EventTypeWithdrawRewards,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, rewardsTotal.String()),
-			sdk.NewAttribute(types.AttributeKeyDelegator, delAddr.String()),
+			sdk.NewAttribute(distrtypes.AttributeKeyDelegator, delAddr.String()),
 		),
 	)
 	return rewardsTotal, nil
+}
+
+func (k Keeper) batchResetDelegation(ctx sdk.Context, msg *types.MsgBatchResetDelegation) error {
+	delAddr, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
+	if err != nil {
+		return err
+	}
+
+	if len(msg.Validators) != len(msg.Amounts) {
+		return types.ErrValidatorsAndAmountsMismatch
+	}
+
+	bondDenom := k.stakingKeeper.BondDenom(ctx)
+
+	for i, valStr := range msg.Validators {
+		valAddr, valErr := sdk.ValAddressFromBech32(valStr)
+		if valErr != nil {
+			return sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", valErr)
+		}
+
+		validator, found := k.stakingKeeper.GetValidator(ctx, valAddr)
+		if !found {
+			return stakingtypes.ErrNoValidatorFound
+		}
+
+		targetAmount := msg.Amounts[i]
+		currAmount := sdk.ZeroInt()
+		delegation, found := k.stakingKeeper.GetDelegation(ctx, delAddr, valAddr)
+		if found {
+			currAmount = validator.TokensFromShares(delegation.Shares).RoundInt()
+		}
+
+		if currAmount.Equal(targetAmount) {
+			continue
+		}
+
+		if currAmount.LT(targetAmount) {
+			amount := targetAmount.Sub(currAmount)
+			// NOTE: source funds are always unbonded
+			newShares, err := k.stakingKeeper.Delegate(ctx, delAddr, amount, stakingtypes.Unbonded, validator, true)
+			if err != nil {
+				return err
+			}
+
+			if amount.IsInt64() {
+				defer func() {
+					telemetry.IncrCounter(1, types.ModuleName, "delegate")
+					telemetry.SetGaugeWithLabels(
+						[]string{"tx", "msg", sdk.MsgTypeURL(msg)},
+						float32(amount.Int64()),
+						[]metrics.Label{telemetry.NewLabel("denom", bondDenom)},
+					)
+				}()
+			}
+
+			ctx.EventManager().EmitEvents(sdk.Events{
+				sdk.NewEvent(
+					stakingtypes.EventTypeDelegate,
+					sdk.NewAttribute(stakingtypes.AttributeKeyValidator, valStr),
+					sdk.NewAttribute(stakingtypes.AttributeKeyDelegator, msg.DelegatorAddress),
+					sdk.NewAttribute(sdk.AttributeKeyAmount, amount.String()),
+					sdk.NewAttribute(stakingtypes.AttributeKeyNewShares, newShares.String()),
+				),
+			})
+		} else {
+			amount := currAmount.Sub(targetAmount)
+			shares, err := k.stakingKeeper.ValidateUnbondAmount(
+				ctx, delAddr, valAddr, amount,
+			)
+			if err != nil {
+				return err
+			}
+
+			completionTime, err := k.stakingKeeper.Undelegate(ctx, delAddr, valAddr, shares)
+			if err != nil {
+				return err
+			}
+
+			if amount.IsInt64() {
+				defer func() {
+					telemetry.IncrCounter(1, types.ModuleName, "undelegate")
+					telemetry.SetGaugeWithLabels(
+						[]string{"tx", "msg", msg.Type()},
+						float32(amount.Int64()),
+						[]metrics.Label{telemetry.NewLabel("denom", bondDenom)},
+					)
+				}()
+			}
+
+			ctx.EventManager().EmitEvents(sdk.Events{
+				sdk.NewEvent(
+					stakingtypes.EventTypeUnbond,
+					sdk.NewAttribute(stakingtypes.AttributeKeyValidator, valStr),
+					sdk.NewAttribute(sdk.AttributeKeyAmount, amount.String()),
+					sdk.NewAttribute(stakingtypes.AttributeKeyCompletionTime, completionTime.Format(time.RFC3339)),
+				),
+			})
+		}
+	}
+	return nil
 }

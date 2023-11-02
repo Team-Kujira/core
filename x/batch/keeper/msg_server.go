@@ -5,10 +5,9 @@ import (
 
 	"github.com/armon/go-metrics"
 
+	"github.com/Team-Kujira/core/x/batch/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/Team-Kujira/core/x/batch/types"
 )
 
 type msgServer struct {
@@ -45,4 +44,15 @@ func (k msgServer) WithdrawAllDelegatorRewards(goCtx context.Context, msg *types
 		}
 	}()
 	return &types.MsgWithdrawAllDelegatorRewardsResponse{Amount: amount}, nil
+}
+
+// BatchResetDelegation defines a method to delegate or undelegate in batches
+// from existing delegation and target delegation amount
+func (k msgServer) BatchResetDelegation(goCtx context.Context, msg *types.MsgBatchResetDelegation) (*types.MsgBatchResetDelegationResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	err := k.batchResetDelegation(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgBatchResetDelegationResponse{}, nil
 }
