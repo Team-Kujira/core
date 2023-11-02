@@ -2,6 +2,7 @@ package types
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -43,7 +44,7 @@ func (m MsgWithdrawAllDelegatorRewards) GetSigners() []sdk.AccAddress {
 var _ sdk.Msg = &MsgBatchResetDelegation{}
 
 // NewMsgWithdrawAllDelegatorRewards creates a msg to create a new distrib
-func NewMsgBatchResetDelegation(delegator sdk.AccAddress, validators []string, amounts []sdk.Int) *MsgBatchResetDelegation {
+func NewMsgBatchResetDelegation(delegator sdk.AccAddress, validators []string, amounts []math.Int) *MsgBatchResetDelegation {
 	return &MsgBatchResetDelegation{
 		DelegatorAddress: delegator.String(),
 		Validators:       validators,

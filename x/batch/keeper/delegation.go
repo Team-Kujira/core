@@ -235,7 +235,6 @@ func (k Keeper) batchResetDelegation(ctx sdk.Context, msg *types.MsgBatchResetDe
 				),
 			})
 		}
-
 	}
 	return nil
 }
