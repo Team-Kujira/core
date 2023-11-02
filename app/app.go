@@ -461,11 +461,12 @@ func New(
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
 		keys[AllianceStoreKey],
-		app.GetSubspace(alliancemoduletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
+		authtypes.FeeCollectorName,
+		authority,
 	)
 
 	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
@@ -633,6 +634,8 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		*app.IBCKeeper,
+		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
@@ -688,6 +691,8 @@ func New(
 		govtypes.DefaultConfig(),
 		authority,
 	)
+
+	govKeeper.SetLegacyRouter(govRouter)
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
@@ -888,6 +893,7 @@ func New(
 			app.AccountKeeper,
 			app.BankKeeper,
 			app.interfaceRegistry,
+			app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
 		crisis.NewAppModule(
@@ -1117,6 +1123,7 @@ func BlockedAddresses() map[string]bool {
 	// allow the following addresses to receive funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 	delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
+	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
 
 	return modAccAddrs
 }
