@@ -19,17 +19,13 @@ type WithdrawAllDelegatorRewards struct{}
 func withdrawAllDelegatorRewards(ctx sdk.Context, contractAddr sdk.AccAddress, withdrawAllDelegatorRewards *WithdrawAllDelegatorRewards, bk batchkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
 	err := PerformWithdrawAllDelegatorRewards(bk, ctx, contractAddr, withdrawAllDelegatorRewards)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "perform withdrawAllDelegatorRewards denom")
+		return nil, nil, errors.Wrap(err, "perform withdrawAllDelegatorRewards")
 	}
 	return nil, nil, nil
 }
 
 // PerformWithdrawAllDelegatorRewards is used to perform delegation rewards from the contract delegations
 func PerformWithdrawAllDelegatorRewards(bk batchkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, withdrawAllDelegatorRewards *WithdrawAllDelegatorRewards) error {
-	if withdrawAllDelegatorRewards == nil {
-		return wasmvmtypes.InvalidRequest{Err: "withdrawAllDelegatorRewards denom null withdrawAllDelegatorRewards denom"}
-	}
-
 	msgServer := batchkeeper.NewMsgServerImpl(bk)
 	msgWithdrawAllDelegatorRewards := batchtypes.NewMsgWithdrawAllDelegatorRewards(contractAddr)
 
@@ -42,7 +38,7 @@ func PerformWithdrawAllDelegatorRewards(bk batchkeeper.Keeper, ctx sdk.Context, 
 		msgWithdrawAllDelegatorRewards,
 	)
 	if err != nil {
-		return errors.Wrap(err, "creating denom")
+		return errors.Wrap(err, "batch claim")
 	}
 	return nil
 }
