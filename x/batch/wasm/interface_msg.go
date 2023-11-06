@@ -25,7 +25,7 @@ func withdrawAllDelegatorRewards(ctx sdk.Context, contractAddr sdk.AccAddress, w
 }
 
 // PerformWithdrawAllDelegatorRewards is used to perform delegation rewards from the contract delegations
-func PerformWithdrawAllDelegatorRewards(bk batchkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, withdrawAllDelegatorRewards *WithdrawAllDelegatorRewards) error {
+func PerformWithdrawAllDelegatorRewards(bk batchkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, _ *WithdrawAllDelegatorRewards) error {
 	msgServer := batchkeeper.NewMsgServerImpl(bk)
 	msgWithdrawAllDelegatorRewards := batchtypes.NewMsgWithdrawAllDelegatorRewards(contractAddr)
 
