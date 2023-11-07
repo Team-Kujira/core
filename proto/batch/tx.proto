@@ -1,0 +1,47 @@
+syntax = "proto3";
+package batch;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/msg/v1/msg.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/batch/types";
+
+// Msg defines the batch Msg service.
+service Msg {
+   // WithdrawAllDelegatorRewards defines a method to withdraw rewards of delegator
+  // from all staked validators.
+  rpc WithdrawAllDelegatorRewards(MsgWithdrawAllDelegatorRewards) returns (MsgWithdrawAllDelegatorRewardsResponse);
+  // BatchResetDelegation defines a method to delegate or undelegate in batches 
+  // from existing delegation and target delegation amount
+  rpc BatchResetDelegation(MsgBatchResetDelegation) returns (MsgBatchResetDelegationResponse);
+}
+
+// MsgWithdrawAllDelegatorRewards represents delegation withdrawal to a delegator
+// from all staked validators.
+message MsgWithdrawAllDelegatorRewards {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// MsgWithdrawAllDelegatorRewardsResponse defines the Msg/WithdrawAllDelegatorRewards response type.
+message MsgWithdrawAllDelegatorRewardsResponse {
+  repeated cosmos.base.v1beta1.Coin amount = 1
+      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+}
+
+message MsgBatchResetDelegation {
+  string          delegator_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated string validators = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+  repeated string amounts            = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
+  ];
+}
+
+message MsgBatchResetDelegationResponse {}

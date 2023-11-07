@@ -1,67 +1,44 @@
 <!-- This file is auto-generated. Please do not modify it yourself. -->
- # Protobuf Documentation
- <a name="top"></a>
 
- ## Table of Contents
- 
- - [kujira/denom/authorityMetadata.proto](#kujira/denom/authorityMetadata.proto)
-     - [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata)
-   
- - [kujira/denom/params.proto](#kujira/denom/params.proto)
-     - [Params](#kujira.denom.Params)
-   
- - [kujira/denom/genesis.proto](#kujira/denom/genesis.proto)
-     - [GenesisDenom](#kujira.denom.GenesisDenom)
-     - [GenesisState](#kujira.denom.GenesisState)
-   
- - [kujira/denom/query.proto](#kujira/denom/query.proto)
-     - [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest)
-     - [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse)
-     - [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest)
-     - [QueryDenomsFromCreatorResponse](#kujira.denom.QueryDenomsFromCreatorResponse)
-     - [QueryParamsRequest](#kujira.denom.QueryParamsRequest)
-     - [QueryParamsResponse](#kujira.denom.QueryParamsResponse)
-   
-     - [Query](#kujira.denom.Query)
-   
- - [kujira/denom/tx.proto](#kujira/denom/tx.proto)
-     - [MsgBurn](#kujira.denom.MsgBurn)
-     - [MsgBurnResponse](#kujira.denom.MsgBurnResponse)
-     - [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin)
-     - [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse)
-     - [MsgCreateDenom](#kujira.denom.MsgCreateDenom)
-     - [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse)
-     - [MsgMint](#kujira.denom.MsgMint)
-     - [MsgMintResponse](#kujira.denom.MsgMintResponse)
-   
-     - [Msg](#kujira.denom.Msg)
-   
- - [Scalar Value Types](#scalar-value-types)
+# Protobuf Documentation
 
- 
- 
- <a name="kujira/denom/authorityMetadata.proto"></a>
+<a name="top"></a>
+
+## Table of Contents
+
+- [Protobuf Documentation](#protobuf-documentation)
+  - [Table of Contents](#table-of-contents)
+  - [kujira/scheduler/params.proto](#kujiraschedulerparamsproto)
+    - [Params](#params)
+  - [kujira/scheduler/hook.proto](#kujiraschedulerhookproto)
+    - [Hook](#hook)
+  - [kujira/scheduler/genesis.proto](#kujiraschedulergenesisproto)
+    - [GenesisState](#genesisstate)
+  - [kujira/scheduler/proposal.proto](#kujiraschedulerproposalproto)
+    - [CreateHookProposal](#createhookproposal)
+    - [DeleteHookProposal](#deletehookproposal)
+    - [UpdateHookProposal](#updatehookproposal)
+  - [kujira/scheduler/query.proto](#kujiraschedulerqueryproto)
+    - [QueryAllHookRequest](#queryallhookrequest)
+    - [QueryAllHookResponse](#queryallhookresponse)
+    - [QueryGetHookRequest](#querygethookrequest)
+    - [QueryGetHookResponse](#querygethookresponse)
+    - [QueryParamsRequest](#queryparamsrequest)
+    - [QueryParamsResponse](#queryparamsresponse)
+    - [Query](#query)
+  - [Scalar Value Types](#scalar-value-types)
+
+<a name="kujira/scheduler/params.proto"></a>
+
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/denom/authorityMetadata.proto
- 
+## kujira/scheduler/params.proto
 
- 
- <a name="kujira.denom.DenomAuthorityMetadata"></a>
+<a name="kujira.scheduler.Params"></a>
 
- ### DenomAuthorityMetadata
- DenomAuthorityMetadata specifies metadata for addresses that have specific
-capabilities over a token factory denom. Right now there is only one Admin
-permission, but is planned to be extended to the future.
+### Params
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `Admin` | [string](#string) |  | Can be empty for no admin, or a valid kujira address |
- 
- 
-
- 
+Params defines the parameters for the module.
 
   <!-- end messages -->
 
@@ -71,28 +48,24 @@ permission, but is planned to be extended to the future.
 
   <!-- end services -->
 
- 
- 
- <a name="kujira/denom/params.proto"></a>
+<a name="kujira/scheduler/hook.proto"></a>
+
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/denom/params.proto
- 
+## kujira/scheduler/hook.proto
 
- 
- <a name="kujira.denom.Params"></a>
+<a name="kujira.scheduler.Hook"></a>
 
- ### Params
- Params holds parameters for the denom module
+### Hook
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `creation_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
- 
- 
-
- 
+| Field       | Type                                                  | Label    | Description |
+| ----------- | ----------------------------------------------------- | -------- | ----------- |
+| `id`        | [uint64](#uint64)                                     |          |             |
+| `executor`  | [string](#string)                                     |          |             |
+| `contract`  | [string](#string)                                     |          |             |
+| `msg`       | [bytes](#bytes)                                       |          |             |
+| `frequency` | [int64](#int64)                                       |          |             |
+| `funds`     | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |             |
 
   <!-- end messages -->
 
@@ -102,45 +75,23 @@ permission, but is planned to be extended to the future.
 
   <!-- end services -->
 
- 
- 
- <a name="kujira/denom/genesis.proto"></a>
+<a name="kujira/scheduler/genesis.proto"></a>
+
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/denom/genesis.proto
- 
+## kujira/scheduler/genesis.proto
 
- 
- <a name="kujira.denom.GenesisDenom"></a>
+<a name="kujira.scheduler.GenesisState"></a>
 
- ### GenesisDenom
- 
+### GenesisState
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `denom` | [string](#string) |  |  |
- | `authority_metadata` | [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata) |  |  |
- 
- 
+GenesisState defines the scheduler module's genesis state.
 
- 
-
- 
- <a name="kujira.denom.GenesisState"></a>
-
- ### GenesisState
- GenesisState defines the denom module's genesis state.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.denom.Params) |  | params defines the paramaters of the module. |
- | `factory_denoms` | [GenesisDenom](#kujira.denom.GenesisDenom) | repeated |  |
- 
- 
-
- 
+| Field       | Type                               | Label    | Description |
+| ----------- | ---------------------------------- | -------- | ----------- |
+| `params`    | [Params](#kujira.scheduler.Params) |          |             |
+| `hookList`  | [Hook](#kujira.scheduler.Hook)     | repeated |             |
+| `hookCount` | [uint64](#uint64)                  |          |             |
 
   <!-- end messages -->
 
@@ -150,98 +101,50 @@ permission, but is planned to be extended to the future.
 
   <!-- end services -->
 
- 
- 
- <a name="kujira/denom/query.proto"></a>
+<a name="kujira/scheduler/proposal.proto"></a>
+
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/denom/query.proto
- 
+## kujira/scheduler/proposal.proto
 
- 
- <a name="kujira.denom.QueryDenomAuthorityMetadataRequest"></a>
+<a name="kujira.scheduler.CreateHookProposal"></a>
 
- ### QueryDenomAuthorityMetadataRequest
- 
+### CreateHookProposal
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `denom` | [string](#string) |  |  |
- 
- 
+| Field         | Type                                                  | Label    | Description                                           |
+| ------------- | ----------------------------------------------------- | -------- | ----------------------------------------------------- |
+| `title`       | [string](#string)                                     |          | Title is a short summary                              |
+| `description` | [string](#string)                                     |          | Description is a human readable text                  |
+| `executor`    | [string](#string)                                     |          | The account that will execute the msg on the schedule |
+| `contract`    | [string](#string)                                     |          | The contract that the msg is called on                |
+| `msg`         | [bytes](#bytes)                                       |          |                                                       |
+| `frequency`   | [int64](#int64)                                       |          |                                                       |
+| `funds`       | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |                                                       |
 
- 
+<a name="kujira.scheduler.DeleteHookProposal"></a>
 
- 
- <a name="kujira.denom.QueryDenomAuthorityMetadataResponse"></a>
+### DeleteHookProposal
 
- ### QueryDenomAuthorityMetadataResponse
- 
+| Field         | Type              | Label | Description                          |
+| ------------- | ----------------- | ----- | ------------------------------------ |
+| `title`       | [string](#string) |       | Title is a short summary             |
+| `description` | [string](#string) |       | Description is a human readable text |
+| `id`          | [uint64](#uint64) |       |                                      |
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `authority_metadata` | [DenomAuthorityMetadata](#kujira.denom.DenomAuthorityMetadata) |  |  |
- 
- 
+<a name="kujira.scheduler.UpdateHookProposal"></a>
 
- 
+### UpdateHookProposal
 
- 
- <a name="kujira.denom.QueryDenomsFromCreatorRequest"></a>
-
- ### QueryDenomsFromCreatorRequest
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `creator` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.QueryDenomsFromCreatorResponse"></a>
-
- ### QueryDenomsFromCreatorResponse
- 
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `denoms` | [string](#string) | repeated |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.QueryParamsRequest"></a>
-
- ### QueryParamsRequest
- QueryParamsRequest is the request type for the Query/Params RPC method.
-
- 
-
- 
-
- 
- <a name="kujira.denom.QueryParamsResponse"></a>
-
- ### QueryParamsResponse
- QueryParamsResponse is the response type for the Query/Params RPC method.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `params` | [Params](#kujira.denom.Params) |  | params defines the parameters of the module. |
- 
- 
-
- 
+| Field         | Type                                                  | Label    | Description                          |
+| ------------- | ----------------------------------------------------- | -------- | ------------------------------------ |
+| `title`       | [string](#string)                                     |          | Title is a short summary             |
+| `description` | [string](#string)                                     |          | Description is a human readable text |
+| `id`          | [uint64](#uint64)                                     |          |                                      |
+| `executor`    | [string](#string)                                     |          |                                      |
+| `contract`    | [string](#string)                                     |          |                                      |
+| `msg`         | [bytes](#bytes)                                       |          |                                      |
+| `frequency`   | [int64](#int64)                                       |          |                                      |
+| `funds`       | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |                                      |
 
   <!-- end messages -->
 
@@ -249,144 +152,62 @@ permission, but is planned to be extended to the future.
 
   <!-- end HasExtensions -->
 
- 
- <a name="kujira.denom.Query"></a>
-
- ### Query
- Query defines the gRPC querier service.
-
- | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
- | ----------- | ------------ | ------------- | ------------| ------- | -------- |
- | `Params` | [QueryParamsRequest](#kujira.denom.QueryParamsRequest) | [QueryParamsResponse](#kujira.denom.QueryParamsResponse) | Params returns the total set of minting parameters. | GET|/kujira/denoms/params|
- | `DenomAuthorityMetadata` | [QueryDenomAuthorityMetadataRequest](#kujira.denom.QueryDenomAuthorityMetadataRequest) | [QueryDenomAuthorityMetadataResponse](#kujira.denom.QueryDenomAuthorityMetadataResponse) |  | GET|/kujira/denoms/{denom}/authority_metadata|
- | `DenomsFromCreator` | [QueryDenomsFromCreatorRequest](#kujira.denom.QueryDenomsFromCreatorRequest) | [QueryDenomsFromCreatorResponse](#kujira.denom.QueryDenomsFromCreatorResponse) |  | GET|/kujira/denoms/by_creator/{creator}|
- 
   <!-- end services -->
 
- 
- 
- <a name="kujira/denom/tx.proto"></a>
+<a name="kujira/scheduler/query.proto"></a>
+
  <p align="right"><a href="#top">Top</a></p>
 
- ## kujira/denom/tx.proto
- 
+## kujira/scheduler/query.proto
 
- 
- <a name="kujira.denom.MsgBurn"></a>
+<a name="kujira.scheduler.QueryAllHookRequest"></a>
 
- ### MsgBurn
- MsgBurn is the sdk.Msg type for allowing an admin account to burn
-a token.  For now, we only support burning from the sender account.
+### QueryAllHookRequest
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
- 
- 
+| Field        | Type                                                                            | Label | Description |
+| ------------ | ------------------------------------------------------------------------------- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |       |             |
 
- 
+<a name="kujira.scheduler.QueryAllHookResponse"></a>
 
- 
- <a name="kujira.denom.MsgBurnResponse"></a>
+### QueryAllHookResponse
 
- ### MsgBurnResponse
- 
+| Field        | Type                                                                              | Label    | Description |
+| ------------ | --------------------------------------------------------------------------------- | -------- | ----------- |
+| `Hook`       | [Hook](#kujira.scheduler.Hook)                                                    | repeated |             |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |          |             |
 
- 
+<a name="kujira.scheduler.QueryGetHookRequest"></a>
 
- 
+### QueryGetHookRequest
 
- 
- <a name="kujira.denom.MsgChangeAdmin"></a>
+| Field | Type              | Label | Description |
+| ----- | ----------------- | ----- | ----------- |
+| `id`  | [uint64](#uint64) |       |             |
 
- ### MsgChangeAdmin
- MsgChangeAdmin is the sdk.Msg type for allowing an admin account to reassign
-adminship of a denom to a new account
+<a name="kujira.scheduler.QueryGetHookResponse"></a>
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `denom` | [string](#string) |  |  |
- | `newAdmin` | [string](#string) |  |  |
- 
- 
+### QueryGetHookResponse
 
- 
+| Field  | Type                           | Label | Description |
+| ------ | ------------------------------ | ----- | ----------- |
+| `Hook` | [Hook](#kujira.scheduler.Hook) |       |             |
 
- 
- <a name="kujira.denom.MsgChangeAdminResponse"></a>
+<a name="kujira.scheduler.QueryParamsRequest"></a>
 
- ### MsgChangeAdminResponse
- 
+### QueryParamsRequest
 
- 
+QueryParamsRequest is request type for the Query/Params RPC method.
 
- 
+<a name="kujira.scheduler.QueryParamsResponse"></a>
 
- 
- <a name="kujira.denom.MsgCreateDenom"></a>
+### QueryParamsResponse
 
- ### MsgCreateDenom
- MsgCreateDenom is the sdk.Msg type for allowing an account to create
-a new denom.  It requires a sender address and a unique nonce
-(to allow accounts to create multiple denoms)
+QueryParamsResponse is response type for the Query/Params RPC method.
 
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `nonce` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.MsgCreateDenomResponse"></a>
-
- ### MsgCreateDenomResponse
- MsgCreateDenomResponse is the return value of MsgCreateDenom
-It returns the full string of the newly created denom
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `new_token_denom` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.MsgMint"></a>
-
- ### MsgMint
- MsgMint is the sdk.Msg type for allowing an admin account to mint
-more of a token.
-
- 
- | Field | Type | Label | Description |
- | ----- | ---- | ----- | ----------- |
- | `sender` | [string](#string) |  |  |
- | `amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
- | `recipient` | [string](#string) |  |  |
- 
- 
-
- 
-
- 
- <a name="kujira.denom.MsgMintResponse"></a>
-
- ### MsgMintResponse
- 
-
- 
-
- 
+| Field    | Type                               | Label | Description                                     |
+| -------- | ---------------------------------- | ----- | ----------------------------------------------- |
+| `params` | [Params](#kujira.scheduler.Params) |       | params holds all the parameters of this module. |
 
   <!-- end messages -->
 
@@ -394,40 +215,36 @@ more of a token.
 
   <!-- end HasExtensions -->
 
- 
- <a name="kujira.denom.Msg"></a>
+<a name="kujira.scheduler.Query"></a>
 
- ### Msg
- Msg defines the Msg service.
+### Query
 
- | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
- | ----------- | ------------ | ------------- | ------------| ------- | -------- |
- | `CreateDenom` | [MsgCreateDenom](#kujira.denom.MsgCreateDenom) | [MsgCreateDenomResponse](#kujira.denom.MsgCreateDenomResponse) |  | |
- | `Mint` | [MsgMint](#kujira.denom.MsgMint) | [MsgMintResponse](#kujira.denom.MsgMintResponse) |  | |
- | `Burn` | [MsgBurn](#kujira.denom.MsgBurn) | [MsgBurnResponse](#kujira.denom.MsgBurnResponse) |  | |
- | `ChangeAdmin` | [MsgChangeAdmin](#kujira.denom.MsgChangeAdmin) | [MsgChangeAdminResponse](#kujira.denom.MsgChangeAdminResponse) | ForceTransfer is deactivated for now because we need to think through edge cases rpc ForceTransfer(MsgForceTransfer) returns (MsgForceTransferResponse); | |
- 
+Query defines the gRPC querier service.
+
+| Method Name | Request Type                                                 | Response Type                                                  | Description                                      | HTTP Verb | Endpoint                    |
+| ----------- | ------------------------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------ | --------- | --------------------------- |
+| `Params`    | [QueryParamsRequest](#kujira.scheduler.QueryParamsRequest)   | [QueryParamsResponse](#kujira.scheduler.QueryParamsResponse)   | Parameters queries the parameters of the module. | GET       | /kujira/scheduler/params    |
+| `Hook`      | [QueryGetHookRequest](#kujira.scheduler.QueryGetHookRequest) | [QueryGetHookResponse](#kujira.scheduler.QueryGetHookResponse) | Queries a Hook by id.                            | GET       | /kujira/scheduler/hook/{id} |
+| `HookAll`   | [QueryAllHookRequest](#kujira.scheduler.QueryAllHookRequest) | [QueryAllHookResponse](#kujira.scheduler.QueryAllHookResponse) | Queries a list of Hook items.                    | GET       | /kujira/scheduler/hook      |
+
   <!-- end services -->
 
- 
+## Scalar Value Types
 
- ## Scalar Value Types
-
- | .proto Type | Notes | C++ | Java | Python | Go | C# | PHP | Ruby |
- | ----------- | ----- | --- | ---- | ------ | -- | -- | --- | ---- |
- | <a name="double" /> double |  | double | double | float | float64 | double | float | Float |
- | <a name="float" /> float |  | float | float | float | float32 | float | float | Float |
- | <a name="int32" /> int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
- | <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
- | <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer | Bignum or Fixnum (as required) |
- | <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) |
- | <a name="sint32" /> sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
- | <a name="sint64" /> sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long | int64 | long | integer/string | Bignum |
- | <a name="fixed32" /> fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or Fixnum (as required) |
- | <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum |
- | <a name="sfixed32" /> sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
- | <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string | Bignum |
- | <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
- | <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
- | <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
- 
+| .proto Type                    | Notes                                                                                                                                           | C++    | Java       | Python      | Go      | C#         | PHP            | Ruby                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- | ----------- | ------- | ---------- | -------------- | ------------------------------ |
+| <a name="double" /> double     |                                                                                                                                                 | double | double     | float       | float64 | double     | float          | Float                          |
+| <a name="float" /> float       |                                                                                                                                                 | float  | float      | float       | float32 | float      | float          | Float                          |
+| <a name="int32" /> int32       | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32  | int        | int         | int32   | int        | integer        | Bignum or Fixnum (as required) |
+| <a name="int64" /> int64       | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64  | long       | int/long    | int64   | long       | integer/string | Bignum                         |
+| <a name="uint32" /> uint32     | Uses variable-length encoding.                                                                                                                  | uint32 | int        | int/long    | uint32  | uint       | integer        | Bignum or Fixnum (as required) |
+| <a name="uint64" /> uint64     | Uses variable-length encoding.                                                                                                                  | uint64 | long       | int/long    | uint64  | ulong      | integer/string | Bignum or Fixnum (as required) |
+| <a name="sint32" /> sint32     | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.                            | int32  | int        | int         | int32   | int        | integer        | Bignum or Fixnum (as required) |
+| <a name="sint64" /> sint64     | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.                            | int64  | long       | int/long    | int64   | long       | integer/string | Bignum                         |
+| <a name="fixed32" /> fixed32   | Always four bytes. More efficient than uint32 if values are often greater than 2^28.                                                            | uint32 | int        | int         | uint32  | uint       | integer        | Bignum or Fixnum (as required) |
+| <a name="fixed64" /> fixed64   | Always eight bytes. More efficient than uint64 if values are often greater than 2^56.                                                           | uint64 | long       | int/long    | uint64  | ulong      | integer/string | Bignum                         |
+| <a name="sfixed32" /> sfixed32 | Always four bytes.                                                                                                                              | int32  | int        | int         | int32   | int        | integer        | Bignum or Fixnum (as required) |
+| <a name="sfixed64" /> sfixed64 | Always eight bytes.                                                                                                                             | int64  | long       | int/long    | int64   | long       | integer/string | Bignum                         |
+| <a name="bool" /> bool         |                                                                                                                                                 | bool   | boolean    | boolean     | bool    | bool       | boolean        | TrueClass/FalseClass           |
+| <a name="string" /> string     | A string must always contain UTF-8 encoded or 7-bit ASCII text.                                                                                 | string | String     | str/unicode | string  | string     | string         | String (UTF-8)                 |
+| <a name="bytes" /> bytes       | May contain any arbitrary sequence of bytes.                                                                                                    | string | ByteString | str         | []byte  | ByteString | string         | String (ASCII-8BIT)            |

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/Team-Kujira/core/x/oracle/wasm"
@@ -32,7 +33,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomB, ExchangeRateB)
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomD, ExchangeRateD)
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, app.InterTxKeeper)
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.InterTxKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 	var err error
 
@@ -96,7 +97,7 @@ func TestSupply(t *testing.T) {
 	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, app.InterTxKeeper)
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.InterTxKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 
 	var err error
@@ -120,4 +121,53 @@ func TestSupply(t *testing.T) {
 
 	err = json.Unmarshal(res, &x)
 	require.NoError(t, err)
+}
+
+func TestVerifyMembership(t *testing.T) {
+	app := app.Setup(t, false)
+	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+
+	var err error
+	contractAddr, _ := SetupContract(t, ctx, app)
+	queryMsg := bindings.IbcQuery{
+		VerifyMembership: &bindings.VerifyMembershipQuery{
+			Connection:     "connection-0",
+			RevisionNumber: 0,
+			RevisionHeight: 0,
+			Proof:          []byte{},
+			Value:          []byte{},
+			PathPrefix:     "ibc",
+			PathKey:        "connections/connection-0",
+		},
+	}
+
+	bz, err := json.Marshal(queryMsg)
+	require.NoError(t, err)
+
+	bz, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
+	require.Error(t, err)
+}
+
+func TestVerifyNonMembership(t *testing.T) {
+	app := app.Setup(t, false)
+	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+
+	var err error
+	contractAddr, _ := SetupContract(t, ctx, app)
+	queryMsg := bindings.IbcQuery{
+		VerifyNonMembership: &bindings.VerifyNonMembershipQuery{
+			Connection:     "connection-0",
+			RevisionNumber: 0,
+			RevisionHeight: 0,
+			Proof:          []byte{},
+			PathPrefix:     "ibc",
+			PathKey:        "connections/connection-0",
+		},
+	}
+
+	bz, err := json.Marshal(queryMsg)
+	require.NoError(t, err)
+
+	bz, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
+	require.Error(t, err)
 }

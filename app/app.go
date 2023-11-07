@@ -128,6 +128,10 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
+	"github.com/Team-Kujira/core/x/batch"
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
+	batchtypes "github.com/Team-Kujira/core/x/batch/types"
+
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
 	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
@@ -211,6 +215,7 @@ var (
 		ica.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		denom.AppModuleBasic{},
+		batch.AppModuleBasic{},
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
@@ -230,6 +235,7 @@ var (
 		icatypes.ModuleName:                 nil,
 		wasmtypes.ModuleName:                {authtypes.Burner},
 		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		batchtypes.ModuleName:               nil,
 		schedulertypes.ModuleName:           nil,
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
@@ -292,6 +298,7 @@ type App struct {
 	FeeGrantKeeper  feegrantkeeper.Keeper
 	WasmKeeper      wasmkeeper.Keeper
 	DenomKeeper     *denomkeeper.Keeper
+	BatchKeeper     batchkeeper.Keeper
 	SchedulerKeeper schedulerkeeper.Keeper
 	OracleKeeper    oraclekeeper.Keeper
 	AllianceKeeper  alliancemodulekeeper.Keeper
@@ -365,6 +372,7 @@ func New(
 		denomtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
+		batchtypes.StoreKey,
 		AllianceStoreKey,
 		intertxtypes.StoreKey,
 	)
@@ -469,6 +477,8 @@ func New(
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
+		// authtypes.FeeCollectorName,
+		// authority,
 	)
 
 	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
@@ -624,6 +634,14 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
+	app.BatchKeeper = batchkeeper.NewKeeper(
+		appCodec,
+		app.keys[batchtypes.StoreKey],
+		app.BankKeeper,
+		app.DistrKeeper,
+		app.StakingKeeper,
+	)
+
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -638,8 +656,10 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		*app.IBCKeeper,
 		app.InterTxKeeper,
 		app.ICAControllerKeeper,
+		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
@@ -695,6 +715,8 @@ func New(
 		govtypes.DefaultConfig(),
 		authority,
 	)
+
+	govKeeper.SetLegacyRouter(govRouter)
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
@@ -864,6 +886,13 @@ func New(
 			app.BankKeeper,
 		),
 
+		batch.NewAppModule(
+			appCodec,
+			app.BatchKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+		),
+
 		icaModule,
 
 		scheduler.NewAppModule(
@@ -888,6 +917,7 @@ func New(
 			app.AccountKeeper,
 			app.BankKeeper,
 			app.interfaceRegistry,
+			// app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
 		intertx.NewAppModule(appCodec, app.InterTxKeeper),
@@ -928,6 +958,7 @@ func New(
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -959,6 +990,7 @@ func New(
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -997,6 +1029,7 @@ func New(
 		ibcfeetypes.ModuleName,
 
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -1120,6 +1153,7 @@ func BlockedAddresses() map[string]bool {
 	// allow the following addresses to receive funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 	delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
+	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
 
 	return modAccAddrs
 }
@@ -1289,6 +1323,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
+	paramsKeeper.Subspace(batchtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	return paramsKeeper

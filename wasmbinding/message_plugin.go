@@ -11,13 +11,12 @@ import (
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
-	denom "github.com/Team-Kujira/core/x/denom/wasm"
-
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
+	batch "github.com/Team-Kujira/core/x/batch/wasm"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
-
+	denom "github.com/Team-Kujira/core/x/denom/wasm"
 	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
 	intertx "github.com/Team-Kujira/core/x/inter-tx/wasm"
-
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
@@ -45,6 +44,7 @@ type CustomMessenger struct {
 	denom   denomkeeper.Keeper
 	intertx intertxkeeper.Keeper
 	ica     icacontrollerkeeper.Keeper
+	batch   batchkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -68,11 +68,15 @@ func (m *CustomMessenger) DispatchMsg(
 			return denom.HandleMsg(m.denom, m.bank, contractAddr, ctx, contractMsg.Denom)
 		}
 
+		if contractMsg.Batch != nil {
+			return batch.HandleMsg(m.batch, contractAddr, ctx, contractMsg.Batch)
+		}
+
 		if contractMsg.Intertx != nil {
 			return intertx.HandleMsg(ctx, m.intertx, m.ica, contractAddr, contractMsg.Intertx)
 		}
 
-		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom WASM variant"}
+		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }
