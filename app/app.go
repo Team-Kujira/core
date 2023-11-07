@@ -428,6 +428,7 @@ func New(
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
+		app.GetSubspace(banktypes.ModuleName),
 		BlockedAddresses(),
 		authority,
 	)
