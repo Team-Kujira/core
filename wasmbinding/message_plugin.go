@@ -11,9 +11,10 @@ import (
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
-	denom "github.com/Team-Kujira/core/x/denom/wasm"
-
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
+	batch "github.com/Team-Kujira/core/x/batch/wasm"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
+	denom "github.com/Team-Kujira/core/x/denom/wasm"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages
@@ -34,6 +35,7 @@ type CustomMessenger struct {
 	wrapped wasmkeeper.Messenger
 	bank    bankkeeper.Keeper
 	denom   denomkeeper.Keeper
+	batch   batchkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -55,6 +57,10 @@ func (m *CustomMessenger) DispatchMsg(
 
 		if contractMsg.Denom != nil {
 			return denom.HandleMsg(m.denom, m.bank, contractAddr, ctx, contractMsg.Denom)
+		}
+
+		if contractMsg.Batch != nil {
+			return batch.HandleMsg(m.batch, contractAddr, ctx, contractMsg.Batch)
 		}
 
 		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
