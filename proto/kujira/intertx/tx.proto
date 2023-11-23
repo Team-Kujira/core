@@ -24,7 +24,7 @@ message MsgRegisterAccount {
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
   string account_id = 3 [(gogoproto.moretags) = "yaml:\"account_id\""];
-  string version       = 4;
+  string version = 4;
 }
 
 // MsgRegisterAccountResponse defines the response for Msg/RegisterAccount

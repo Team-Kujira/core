@@ -1,15 +1,11 @@
 package intertx
 
 import (
-	proto "github.com/gogo/protobuf/proto"
+	"errors"
 
-	errorsmod "cosmossdk.io/errors"
 	"github.com/Team-Kujira/core/x/inter-tx/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
@@ -30,7 +26,7 @@ func NewIBCModule(k keeper.Keeper) IBCModule {
 	}
 }
 
-// OnChanOpenInit implements the IBCModule interface
+// OnChanOpenInit implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenInit(
 	ctx sdk.Context,
 	order channeltypes.Order,
@@ -44,7 +40,7 @@ func (im IBCModule) OnChanOpenInit(
 	return version, nil
 }
 
-// OnChanOpenTry implements the IBCModule interface
+// OnChanOpenTry implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenTry(
 	ctx sdk.Context,
 	order channeltypes.Order,
@@ -58,18 +54,19 @@ func (im IBCModule) OnChanOpenTry(
 	return "", nil
 }
 
-// OnChanOpenAck implements the IBCModule interface
+// OnChanOpenAck implements the IBCModule interface. This handler is called after we create an
+// account on a remote zone (because icaControllerKeeper.RegisterInterchainAccount opens a channel).
 func (im IBCModule) OnChanOpenAck(
 	ctx sdk.Context,
 	portID,
 	channelID string,
-	counterpartyChannelID string,
+	counterPartyChannelID string,
 	counterpartyVersion string,
 ) error {
-	return nil
+	return im.keeper.HandleChanOpenAck(ctx, portID, channelID, counterPartyChannelID, counterpartyVersion)
 }
 
-// OnChanOpenConfirm implements the IBCModule interface
+// OnChanOpenConfirm implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenConfirm(
 	ctx sdk.Context,
 	portID,
@@ -78,7 +75,8 @@ func (im IBCModule) OnChanOpenConfirm(
 	return nil
 }
 
-// OnChanCloseInit implements the IBCModule interface
+// OnChanCloseInit implements the IBCModule interface. We don't need to implement this handler.
+// Handler will be implemented in https://p2pvalidator.atlassian.net/browse/LSC-137
 func (im IBCModule) OnChanCloseInit(
 	ctx sdk.Context,
 	portID,
@@ -87,7 +85,7 @@ func (im IBCModule) OnChanCloseInit(
 	return nil
 }
 
-// OnChanCloseConfirm implements the IBCModule interface
+// OnChanCloseConfirm implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanCloseConfirm(
 	ctx sdk.Context,
 	portID,
@@ -96,49 +94,25 @@ func (im IBCModule) OnChanCloseConfirm(
 	return nil
 }
 
-// OnRecvPacket implements the IBCModule interface
+// OnRecvPacket implements the IBCModule interface. A successful acknowledgement
+// is returned if the packet data is successfully decoded and the receiving application
+// logic returns without error.
 func (im IBCModule) OnRecvPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
-	return channeltypes.NewErrorAcknowledgement(errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "cannot receive packet via interchain accounts authentication module"))
+	return channeltypes.NewErrorAcknowledgement(errors.New("cannot receive packet via interchain accounts authentication module"))
 }
 
-// OnAcknowledgementPacket implements the IBCModule interface
+// OnAcknowledgementPacket implements the IBCModule interface.
 func (im IBCModule) OnAcknowledgementPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
 ) error {
-	var ack channeltypes.Acknowledgement
-	if err := channeltypes.SubModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-27 packet acknowledgement: %v", err)
-	}
-
-	var txMsgData sdk.TxMsgData
-	if err := proto.Unmarshal(ack.GetResult(), &txMsgData); err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-27 tx message data: %v", err)
-	}
-
-	switch len(txMsgData.Data) {
-	case 0:
-		for _, msgResp := range txMsgData.GetMsgResponses() {
-			im.keeper.Logger(ctx).Info("msg response in ICS-27 packet", "response", msgResp.GoString(), "typeURL", msgResp.GetTypeUrl())
-		}
-		return nil
-	default:
-		for _, msgData := range txMsgData.Data {
-			response, err := handleMsgData(ctx, msgData)
-			if err != nil {
-				return err
-			}
-
-			im.keeper.Logger(ctx).Info("message response in ICS-27 packet response", "response", response)
-		}
-		return nil
-	}
+	return im.keeper.HandleAcknowledgement(ctx, packet, acknowledgement, relayer)
 }
 
 // OnTimeoutPacket implements the IBCModule interface.
@@ -147,26 +121,5 @@ func (im IBCModule) OnTimeoutPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) error {
-	return nil
-}
-
-func handleMsgData(ctx sdk.Context, msgData *sdk.MsgData) (string, error) { //nolint:staticcheck // SA1019: sdk.MsgData is deprecated: Do not use.
-	switch msgData.MsgType {
-	case sdk.MsgTypeURL(&banktypes.MsgSend{}):
-		msgResponse := &banktypes.MsgSendResponse{}
-		if err := proto.Unmarshal(msgData.Data, msgResponse); err != nil {
-			return "", errorsmod.Wrapf(sdkerrors.ErrJSONUnmarshal, "cannot unmarshal send response message: %s", err.Error())
-		}
-
-		return msgResponse.String(), nil
-	case sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}):
-		msgResponse := &stakingtypes.MsgDelegateResponse{}
-		if err := proto.Unmarshal(msgData.Data, msgResponse); err != nil {
-			return "", errorsmod.Wrapf(sdkerrors.ErrJSONUnmarshal, "cannot unmarshal delegate response message: %s", err.Error())
-		}
-
-		return msgResponse.String(), nil
-	default:
-		return "", nil
-	}
+	return im.keeper.HandleTimeout(ctx, packet, relayer)
 }

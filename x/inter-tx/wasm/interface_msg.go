@@ -10,7 +10,9 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
 	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
+	"github.com/Team-Kujira/core/x/inter-tx/types"
 	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object
@@ -38,6 +40,7 @@ type Register struct {
 	ConnectionId string `json:"connection_id"`
 	AccountId    string `json:"account_id"`
 	Version      string `json:"version"`
+	TxId         uint64 `json:"tx_id"`
 }
 
 // / Submit submits transactions to the ICA
@@ -49,10 +52,11 @@ type Submit struct {
 	Msgs    []ProtobufAny `json:"msgs"`
 	Memo    string        `json:"memo"`
 	Timeout uint64        `json:"timeout"`
+	TxId    uint64        `json:"tx_id"`
 }
 
-func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	_, err := PerformRegisterICA(ik, ctx, contractAddr, register)
+func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, itxk intertxkeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
+	_, err := PerformRegisterICA(itxk, ik, ctx, contractAddr, register)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "perform register ICA")
 	}
@@ -64,7 +68,7 @@ func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, 
 }
 
 // PerformRegisterICA is used with register to validate the register message and register the ICA.
-func PerformRegisterICA(f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
+func PerformRegisterICA(itxk intertxkeeper.Keeper, f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
 	if msg == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "register ICA null message"}
 	}
@@ -84,9 +88,28 @@ func PerformRegisterICA(f icacontrollerkeeper.Keeper, ctx sdk.Context, contractA
 		msgRegister,
 	)
 
+	portID, err := icatypes.NewControllerPortID(owner)
+	if err != nil {
+		return nil, err
+	}
+
 	if err != nil {
 		return nil, errors.Wrap(err, "registering ICA")
 	}
+
+	f.SetMiddlewareEnabled(ctx, portID, msg.ConnectionId)
+
+	itxk.SetCallbackData(ctx, types.CallbackData{
+		CallbackKey:  types.PacketID(portID, "", 0),
+		PortId:       portID,
+		ChannelId:    "",
+		Sequence:     0,
+		Contract:     contractAddr.String(),
+		ConnectionId: msg.ConnectionId,
+		AccountId:    msg.AccountId,
+		TxId:         msg.TxId,
+	})
+
 	return res, nil
 }
 
@@ -128,12 +151,33 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk intertxkeeper.Keeper, c
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}
+
+	portID, err := icatypes.NewControllerPortID(owner)
+	if err != nil {
+		return nil, err
+	}
+
+	activeChannelID, found := f.GetOpenActiveChannel(ctx, submitTx.ConnectionId, portID)
+	if !found {
+		return nil, sdkerrors.Wrapf(icatypes.ErrActiveChannelNotFound, "failed to retrieve active channel on connection %s for port %s", submitTx.ConnectionId, portID)
+	}
+
+	itxk.SetCallbackData(ctx, types.CallbackData{
+		CallbackKey:  types.PacketID(portID, activeChannelID, res.Sequence),
+		PortId:       portID,
+		ChannelId:    activeChannelID,
+		Sequence:     res.Sequence,
+		Contract:     contractAddr.String(),
+		ConnectionId: submitTx.ConnectionId,
+		AccountId:    submitTx.AccountId,
+		TxId:         submitTx.TxId,
+	})
 	return res, nil
 }
 
 func HandleMsg(ctx sdk.Context, itxk intertxkeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
 	if msg.Register != nil {
-		return register(ctx, contractAddr, msg.Register, icak)
+		return register(ctx, contractAddr, msg.Register, itxk, icak)
 	}
 	if msg.Submit != nil {
 		return submit(ctx, contractAddr, msg.Submit, itxk, icak)
