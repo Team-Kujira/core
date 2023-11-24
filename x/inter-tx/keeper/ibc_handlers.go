@@ -87,9 +87,17 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Pack
 	errorText := ack.GetError()
 	var err error
 	if errorText != "" {
-		err = k.CallRegisteredICACallback(cacheCtx, packet, types.ResultCodeFailure, []byte(errorText))
+		err = k.CallRegisteredICACallback(cacheCtx, packet, types.IcaCallbackResult{
+			Error: &types.IcaCallbackError{
+				Error: errorText,
+			},
+		})
 	} else {
-		err = k.CallRegisteredICACallback(cacheCtx, packet, types.ResultCodeSuccess, ack.GetResult())
+		err = k.CallRegisteredICACallback(cacheCtx, packet, types.IcaCallbackResult{
+			Success: &types.IcaCallbackSuccess{
+				Data: ack.GetResult(),
+			},
+		})
 	}
 
 	if err != nil {
@@ -112,7 +120,9 @@ func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, rela
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
 	defer k.outOfGasRecovery(ctx, newGasMeter, "timeout")
 
-	err := k.CallRegisteredICACallback(ctx, packet, types.ResultCodeTimeout, []byte{})
+	err := k.CallRegisteredICACallback(ctx, packet, types.IcaCallbackResult{
+		Timeout: &types.IcaCallbackTimeout{},
+	})
 	if err != nil {
 		k.Logger(ctx).Error("HandleTimeout: failed to Sudo contract on packet timeout", "port", packet.SourcePort, "error", err)
 	} else {
@@ -149,7 +159,11 @@ func (k *Keeper) HandleChanOpenAck(
 	defer k.outOfGasRecovery(ctx, newGasMeter, "timeout")
 
 	// If there's an associated callback function, execute it
-	_, err := k.SudoCallback(cacheCtx, callbackData, types.ResultCodeSuccess, []byte(counterpartyVersion))
+	_, err := k.SudoIcaCallback(cacheCtx, callbackData, types.IcaCallbackResult{
+		Success: &types.IcaCallbackSuccess{
+			Data: []byte(counterpartyVersion),
+		},
+	})
 	if err != nil {
 		k.Logger(ctx).Error("SudoCallback failure", "error", err)
 	} else {
@@ -161,7 +175,7 @@ func (k *Keeper) HandleChanOpenAck(
 	return nil
 }
 
-func (k Keeper) CallRegisteredICACallback(ctx sdk.Context, packet channeltypes.Packet, resultCode uint64, resultData []byte) error {
+func (k Keeper) CallRegisteredICACallback(ctx sdk.Context, packet channeltypes.Packet, result types.IcaCallbackResult) error {
 	// Get the callback key and associated callback data from the packet
 	callbackDataKey := types.PacketID(packet.GetSourcePort(), packet.GetSourceChannel(), packet.Sequence)
 	callbackData, found := k.GetCallbackData(ctx, callbackDataKey)
@@ -172,7 +186,7 @@ func (k Keeper) CallRegisteredICACallback(ctx sdk.Context, packet channeltypes.P
 	}
 
 	// If there's an associated callback function, execute it
-	_, err := k.SudoCallback(ctx, callbackData, resultCode, resultData)
+	_, err := k.SudoIcaCallback(ctx, callbackData, result)
 	if err != nil {
 		return err
 	}

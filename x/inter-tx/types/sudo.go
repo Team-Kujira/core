@@ -1,19 +1,29 @@
 package types
 
 type MessageCallback struct {
-	Callback Callback `json:"callback"`
+	IcaCallback IcaCallbackData `json:"ica_callback"`
 }
 
-type Callback struct {
-	ConnId     string `json:"connection_id"`
-	AccId      string `json:"account_id"`
-	TxId       uint64 `json:"tx_id"`
-	ResultCode uint64 `json:"result_code"` // Success(0) | Failure(1) | Timeout(2)
-	ResultData []byte `json:"result_data"`
+type IcaCallbackData struct {
+	ConnId string            `json:"connection_id"`
+	AccId  string            `json:"account_id"`
+	TxId   uint64            `json:"tx_id"`
+	Result IcaCallbackResult `json:"result"`
 }
 
-var (
-	ResultCodeSuccess uint64 = 0
-	ResultCodeFailure uint64 = 1
-	ResultCodeTimeout uint64 = 2
-)
+type IcaCallbackResult struct {
+	Success *IcaCallbackSuccess `json:"success,omitempty"`
+	Error   *IcaCallbackError   `json:"error,omitempty"`
+	Timeout *IcaCallbackTimeout `json:"timeout,omitempty"`
+}
+
+type IcaCallbackSuccess struct {
+	Data []byte `json:"data"`
+}
+
+type IcaCallbackError struct {
+	Error string `json:"error"`
+}
+
+type IcaCallbackTimeout struct {
+}

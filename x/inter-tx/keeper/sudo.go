@@ -14,11 +14,10 @@ func (k Keeper) HasContractInfo(ctx sdk.Context, contractAddress sdk.AccAddress)
 	return k.wasmKeeper.HasContractInfo(ctx, contractAddress)
 }
 
-func (k Keeper) SudoCallback(
+func (k Keeper) SudoIcaCallback(
 	ctx sdk.Context,
 	callbackData types.CallbackData,
-	resultCode uint64,
-	resultData []byte,
+	result types.IcaCallbackResult,
 ) ([]byte, error) {
 	contractAddr := sdk.MustAccAddressFromBech32(callbackData.Contract)
 
@@ -33,11 +32,10 @@ func (k Keeper) SudoCallback(
 	}
 
 	x := types.MessageCallback{}
-	x.Callback.ConnId = callbackData.ConnectionId
-	x.Callback.AccId = callbackData.AccountId
-	x.Callback.TxId = callbackData.TxId
-	x.Callback.ResultCode = resultCode
-	x.Callback.ResultData = resultData
+	x.IcaCallback.ConnId = callbackData.ConnectionId
+	x.IcaCallback.AccId = callbackData.AccountId
+	x.IcaCallback.TxId = callbackData.TxId
+	x.IcaCallback.Result = result
 
 	m, err := json.Marshal(x)
 	if err != nil {
