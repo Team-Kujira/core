@@ -1,4 +1,4 @@
-package intertx
+package cwica
 
 import (
 	"context"
@@ -10,9 +10,9 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/Team-Kujira/core/x/inter-tx/client/cli"
-	"github.com/Team-Kujira/core/x/inter-tx/keeper"
-	"github.com/Team-Kujira/core/x/inter-tx/types"
+	"github.com/Team-Kujira/core/x/cw-ica/client/cli"
+	"github.com/Team-Kujira/core/x/cw-ica/keeper"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -91,7 +91,7 @@ type AppModule struct {
 	keeper keeper.Keeper
 }
 
-// NewAppModule creates and returns a new intertx AppModule
+// NewAppModule creates and returns a new cwica AppModule
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),

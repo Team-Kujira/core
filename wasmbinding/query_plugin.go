@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
+	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
-	intertx "github.com/Team-Kujira/core/x/inter-tx/wasm"
 	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
 
 	"cosmossdk.io/errors"
@@ -74,8 +74,8 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.Intertx != nil {
-			res, err := intertx.HandleQuery(qp.intertxkeeper, ctx, contractQuery.Intertx)
+		} else if contractQuery.CwIca != nil {
+			res, err := cwica.HandleQuery(qp.cwicakeeper, ctx, contractQuery.CwIca)
 			if err != nil {
 				return nil, err
 			}

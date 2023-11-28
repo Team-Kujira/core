@@ -2,12 +2,12 @@ package bindings
 
 import (
 	batch "github.com/Team-Kujira/core/x/batch/wasm"
+	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
-	intertx "github.com/Team-Kujira/core/x/inter-tx/wasm"
 )
 
 type CosmosMsg struct {
-	Denom   *denom.DenomMsg
-	Batch   *batch.BatchMsg
-	Intertx *intertx.ICAMsg
+	Denom *denom.DenomMsg
+	Batch *batch.BatchMsg
+	CwIca *cwica.ICAMsg
 }

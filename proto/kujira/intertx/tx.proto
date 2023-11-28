@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package kujira.intertx;
+package kujira.cwica;
 
-option go_package = "github.com/Team-Kujira/core/x/inter-tx/types";
+option go_package = "github.com/Team-Kujira/core/x/cw-ica/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 
-// Msg defines the intertx Msg service.
+// Msg defines the cwica Msg service.
 service Msg {
   // Register defines a rpc handler for MsgRegisterAccount
   rpc RegisterAccount(MsgRegisterAccount) returns (MsgRegisterAccountResponse);

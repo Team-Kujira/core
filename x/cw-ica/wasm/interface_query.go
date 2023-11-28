@@ -5,7 +5,7 @@ import (
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/Team-Kujira/core/x/inter-tx/keeper"
+	"github.com/Team-Kujira/core/x/cw-ica/keeper"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 )
 
@@ -24,7 +24,7 @@ func (Querier) Query(_ sdk.Context, _ wasmvmtypes.QueryRequest) ([]byte, error) 
 	return nil, nil
 }
 
-type IntertxQuery struct {
+type CwICAQuery struct {
 	/// Given the connection-id, owner, and account-id, returns the address
 	/// of the interchain account.
 	AccountAddress *AccountAddress `json:"account_address,omitempty"`
@@ -41,7 +41,7 @@ type AccountAddressResponse struct {
 }
 
 // QueryCustom implements custom query interface
-func HandleQuery(k keeper.Keeper, ctx sdk.Context, q *IntertxQuery) (any, error) {
+func HandleQuery(k keeper.Keeper, ctx sdk.Context, q *CwICAQuery) (any, error) {
 	switch {
 	case q.AccountAddress != nil:
 		owner := q.AccountAddress.Owner + "-" + q.AccountAddress.AccountID
@@ -61,6 +61,6 @@ func HandleQuery(k keeper.Keeper, ctx sdk.Context, q *IntertxQuery) (any, error)
 		}, nil
 
 	default:
-		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Intertx Query variant"}
+		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown CwIca Query variant"}
 	}
 }

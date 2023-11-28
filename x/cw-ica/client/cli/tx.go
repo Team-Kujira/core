@@ -3,7 +3,7 @@ package cli
 import (
 	"os"
 
-	"github.com/Team-Kujira/core/x/inter-tx/types"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// GetTxCmd creates and returns the intertx tx command
+// GetTxCmd creates and returns the cwica tx command
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,

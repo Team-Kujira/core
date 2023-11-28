@@ -1,13 +1,13 @@
 package cli
 
 import (
-	"github.com/Team-Kujira/core/x/inter-tx/types"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 )
 
-// GetQueryCmd creates and returns the intertx query command
+// GetQueryCmd creates and returns the cwica query command
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,

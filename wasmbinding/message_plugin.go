@@ -13,10 +13,10 @@ import (
 
 	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
 	batch "github.com/Team-Kujira/core/x/batch/wasm"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
-	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
-	intertx "github.com/Team-Kujira/core/x/inter-tx/wasm"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
@@ -24,7 +24,7 @@ import (
 func CustomMessageDecorator(
 	bank bankkeeper.Keeper,
 	denom denomkeeper.Keeper,
-	intertx intertxkeeper.Keeper,
+	cwica cwicakeeper.Keeper,
 	ica icacontrollerkeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
@@ -32,7 +32,7 @@ func CustomMessageDecorator(
 			wrapped: old,
 			bank:    bank,
 			denom:   denom,
-			intertx: intertx,
+			cwica:   cwica,
 			ica:     ica,
 		}
 	}
@@ -42,7 +42,7 @@ type CustomMessenger struct {
 	wrapped wasmkeeper.Messenger
 	bank    bankkeeper.Keeper
 	denom   denomkeeper.Keeper
-	intertx intertxkeeper.Keeper
+	cwica   cwicakeeper.Keeper
 	ica     icacontrollerkeeper.Keeper
 	batch   batchkeeper.Keeper
 }
@@ -72,8 +72,8 @@ func (m *CustomMessenger) DispatchMsg(
 			return batch.HandleMsg(m.batch, contractAddr, ctx, contractMsg.Batch)
 		}
 
-		if contractMsg.Intertx != nil {
-			return intertx.HandleMsg(ctx, m.intertx, m.ica, contractAddr, contractMsg.Intertx)
+		if contractMsg.CwIca != nil {
+			return cwica.HandleMsg(ctx, m.cwica, m.ica, contractAddr, contractMsg.CwIca)
 		}
 
 		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}

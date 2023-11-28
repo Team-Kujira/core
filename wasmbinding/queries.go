@@ -1,8 +1,8 @@
 package wasmbinding
 
 import (
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
-	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -10,22 +10,22 @@ import (
 )
 
 type QueryPlugin struct {
-	denomKeeper   denomkeeper.Keeper
-	bankkeeper    bankkeeper.Keeper
-	oraclekeeper  oraclekeeper.Keeper
-	ibckeeper     ibckeeper.Keeper
-	intertxkeeper intertxkeeper.Keeper
-	ibcstorekey   *storetypes.KVStoreKey
+	denomKeeper  denomkeeper.Keeper
+	bankkeeper   bankkeeper.Keeper
+	oraclekeeper oraclekeeper.Keeper
+	ibckeeper    ibckeeper.Keeper
+	cwicakeeper  cwicakeeper.Keeper
+	ibcstorekey  *storetypes.KVStoreKey
 }
 
 // NewQueryPlugin returns a reference to a new QueryPlugin.
-func NewQueryPlugin(bk bankkeeper.Keeper, ok oraclekeeper.Keeper, dk denomkeeper.Keeper, ik ibckeeper.Keeper, itxk intertxkeeper.Keeper, isk *storetypes.KVStoreKey) *QueryPlugin {
+func NewQueryPlugin(bk bankkeeper.Keeper, ok oraclekeeper.Keeper, dk denomkeeper.Keeper, ik ibckeeper.Keeper, itxk cwicakeeper.Keeper, isk *storetypes.KVStoreKey) *QueryPlugin {
 	return &QueryPlugin{
-		denomKeeper:   dk,
-		bankkeeper:    bk,
-		oraclekeeper:  ok,
-		ibckeeper:     ik,
-		intertxkeeper: itxk,
-		ibcstorekey:   isk,
+		denomKeeper:  dk,
+		bankkeeper:   bk,
+		oraclekeeper: ok,
+		ibckeeper:    ik,
+		cwicakeeper:  itxk,
+		ibcstorekey:  isk,
 	}
 }

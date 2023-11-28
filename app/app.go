@@ -142,9 +142,9 @@ import (
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
-	intertx "github.com/Team-Kujira/core/x/inter-tx"
-	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
-	intertxtypes "github.com/Team-Kujira/core/x/inter-tx/types"
+	cwica "github.com/Team-Kujira/core/x/cw-ica"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
@@ -219,7 +219,7 @@ var (
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
-		intertx.AppModuleBasic{},
+		cwica.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -240,7 +240,7 @@ var (
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		alliancemoduletypes.RewardsPoolName: nil,
-		intertxtypes.ModuleName:             nil,
+		cwicatypes.ModuleName:               nil,
 	}
 )
 
@@ -302,7 +302,7 @@ type App struct {
 	SchedulerKeeper schedulerkeeper.Keeper
 	OracleKeeper    oraclekeeper.Keeper
 	AllianceKeeper  alliancemodulekeeper.Keeper
-	InterTxKeeper   intertxkeeper.Keeper
+	CwICAKeeper     cwicakeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -311,7 +311,7 @@ type App struct {
 	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
+	ScopedCwICAKeeper         capabilitykeeper.ScopedKeeper
 
 	// ModuleManager is the module manager
 	ModuleManager *module.Manager
@@ -374,7 +374,7 @@ func New(
 		oracletypes.StoreKey,
 		batchtypes.StoreKey,
 		AllianceStoreKey,
-		intertxtypes.StoreKey,
+		cwicatypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -580,13 +580,13 @@ func New(
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
-	// Create InterTx Keeper
-	scopedInterTxKeeper := app.CapabilityKeeper.ScopeToModule(intertxtypes.ModuleName)
-	app.InterTxKeeper = intertxkeeper.NewKeeper(
+	// Create CwIca Keeper
+	scopedCwICAKeeper := app.CapabilityKeeper.ScopeToModule(cwicatypes.ModuleName)
+	app.CwICAKeeper = cwicakeeper.NewKeeper(
 		appCodec,
-		keys[intertxtypes.StoreKey],
+		keys[cwicatypes.StoreKey],
 		app.ICAControllerKeeper,
-		scopedInterTxKeeper,
+		scopedCwICAKeeper,
 		&app.WasmKeeper,
 	)
 
@@ -657,7 +657,7 @@ func New(
 		app.OracleKeeper,
 		*app.DenomKeeper,
 		*app.IBCKeeper,
-		app.InterTxKeeper,
+		app.CwICAKeeper,
 		app.ICAControllerKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
@@ -736,7 +736,7 @@ func New(
 	// integration point for custom authentication modules
 	// see https://medium.com/the-interchain-foundation/ibc-go-v6-changes-to-interchain-accounts-and-how-it-impacts-your-chain-806c185300d7
 
-	icaControllerStack = intertx.NewIBCModule(app.InterTxKeeper)
+	icaControllerStack = cwica.NewIBCModule(app.CwICAKeeper)
 	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, app.ICAControllerKeeper)
 	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
 
@@ -757,7 +757,7 @@ func New(
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
-		AddRoute(intertxtypes.ModuleName, icaControllerStack).
+		AddRoute(cwicatypes.ModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -922,7 +922,7 @@ func New(
 			// app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
-		intertx.NewAppModule(appCodec, app.InterTxKeeper),
+		cwica.NewAppModule(appCodec, app.CwICAKeeper),
 
 		crisis.NewAppModule(
 			app.CrisisKeeper,
@@ -964,7 +964,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-		intertxtypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -996,7 +996,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
-		intertxtypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1036,7 +1036,7 @@ func New(
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
-		intertxtypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -1129,7 +1129,7 @@ func New(
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
-	app.ScopedInterTxKeeper = scopedInterTxKeeper
+	app.ScopedCwICAKeeper = scopedCwICAKeeper
 
 	return app
 }

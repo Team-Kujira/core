@@ -11,7 +11,7 @@ import (
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
-	"github.com/Team-Kujira/core/x/inter-tx/types"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 )
 
 var _ types.MsgServer = msgServer{}
@@ -20,7 +20,7 @@ type msgServer struct {
 	Keeper
 }
 
-// NewMsgServerImpl creates and returns a new types.MsgServer, fulfilling the intertx Msg service interface
+// NewMsgServerImpl creates and returns a new types.MsgServer, fulfilling the cwica Msg service interface
 func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }

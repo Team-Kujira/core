@@ -9,8 +9,8 @@ import (
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
-	intertxkeeper "github.com/Team-Kujira/core/x/inter-tx/keeper"
-	"github.com/Team-Kujira/core/x/inter-tx/types"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -55,7 +55,7 @@ type Submit struct {
 	Callback []byte        `json:"callback"`
 }
 
-func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, itxk intertxkeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
+func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, itxk cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
 	_, err := PerformRegisterICA(itxk, ik, ctx, contractAddr, register)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "perform register ICA")
@@ -68,7 +68,7 @@ func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, 
 }
 
 // PerformRegisterICA is used with register to validate the register message and register the ICA.
-func PerformRegisterICA(itxk intertxkeeper.Keeper, f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
+func PerformRegisterICA(itxk cwicakeeper.Keeper, f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
 	if msg == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "register ICA null message"}
 	}
@@ -112,7 +112,7 @@ func PerformRegisterICA(itxk intertxkeeper.Keeper, f icacontrollerkeeper.Keeper,
 	return res, nil
 }
 
-func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, itxk intertxkeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
+func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, itxk cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
 	_, err := PerformSubmitTxs(ik, itxk, ctx, contractAddr, submitTx)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "perform submit txs")
@@ -121,7 +121,7 @@ func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, itxk
 }
 
 // PerformSubmitTxs is used with submitTxs to validate the submitTxs message and submit the txs.
-func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk intertxkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit) (*icacontrollertypes.MsgSendTxResponse, error) {
+func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk cwicakeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit) (*icacontrollertypes.MsgSendTxResponse, error) {
 	if submitTx == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "submit txs null message"}
 	}
@@ -173,7 +173,7 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk intertxkeeper.Keeper, c
 	return res, nil
 }
 
-func HandleMsg(ctx sdk.Context, itxk intertxkeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
+func HandleMsg(ctx sdk.Context, itxk cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
 	if msg.Register != nil {
 		return register(ctx, contractAddr, msg.Register, itxk, icak)
 	}

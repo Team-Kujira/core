@@ -8,8 +8,8 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 
-	"github.com/Team-Kujira/core/x/inter-tx/keeper"
-	"github.com/Team-Kujira/core/x/inter-tx/types"
+	"github.com/Team-Kujira/core/x/cw-ica/keeper"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 )
 
 func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {
@@ -74,7 +74,7 @@ func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {
 
 			tc.malleate() // malleate mutates test data
 
-			msgSrv := keeper.NewMsgServerImpl(GetICAApp(suite.chainA).InterTxKeeper)
+			msgSrv := keeper.NewMsgServerImpl(GetICAApp(suite.chainA).CwICAKeeper)
 			msg := types.NewMsgRegisterAccount(owner, path.EndpointA.ConnectionID, path.EndpointA.ChannelConfig.Version)
 
 			res, err := msgSrv.RegisterAccount(sdk.WrapSDKContext(suite.chainA.GetContext()), msg)
@@ -174,7 +174,7 @@ func (suite *KeeperTestSuite) TestSubmitTx() {
 				}
 			}
 
-			msgSrv := keeper.NewMsgServerImpl(icaAppA.InterTxKeeper)
+			msgSrv := keeper.NewMsgServerImpl(icaAppA.CwICAKeeper)
 			msg, err := types.NewMsgSubmitTx(icaMsg, connectionID, owner)
 			suite.Require().NoError(err)
 

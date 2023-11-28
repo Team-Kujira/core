@@ -1,9 +1,9 @@
-package intertx
+package cwica
 
 import (
 	"errors"
 
-	"github.com/Team-Kujira/core/x/inter-tx/keeper"
+	"github.com/Team-Kujira/core/x/cw-ica/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 

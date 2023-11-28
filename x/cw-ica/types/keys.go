@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName = "intertx"
+	ModuleName = "cwica"
 
 	StoreKey = ModuleName
 
