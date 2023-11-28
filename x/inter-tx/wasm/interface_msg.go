@@ -40,7 +40,7 @@ type Register struct {
 	ConnectionId string `json:"connection_id"`
 	AccountId    string `json:"account_id"`
 	Version      string `json:"version"`
-	TxId         uint64 `json:"tx_id"`
+	Callback     []byte `json:"callback"`
 }
 
 // / Submit submits transactions to the ICA
@@ -49,10 +49,10 @@ type Submit struct {
 	ConnectionId string `json:"connection_id"`
 	AccountId    string `json:"account_id"`
 	//TODO: Use ProtobufAny and serialize into Cosmos Tx like in msg_server.go
-	Msgs    []ProtobufAny `json:"msgs"`
-	Memo    string        `json:"memo"`
-	Timeout uint64        `json:"timeout"`
-	TxId    uint64        `json:"tx_id"`
+	Msgs     []ProtobufAny `json:"msgs"`
+	Memo     string        `json:"memo"`
+	Timeout  uint64        `json:"timeout"`
+	Callback []byte        `json:"callback"`
 }
 
 func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, itxk intertxkeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
@@ -100,14 +100,13 @@ func PerformRegisterICA(itxk intertxkeeper.Keeper, f icacontrollerkeeper.Keeper,
 	f.SetMiddlewareEnabled(ctx, portID, msg.ConnectionId)
 
 	itxk.SetCallbackData(ctx, types.CallbackData{
-		CallbackKey:  types.PacketID(portID, "", 0),
 		PortId:       portID,
 		ChannelId:    "",
 		Sequence:     0,
 		Contract:     contractAddr.String(),
 		ConnectionId: msg.ConnectionId,
 		AccountId:    msg.AccountId,
-		TxId:         msg.TxId,
+		Callback:     msg.Callback,
 	})
 
 	return res, nil
@@ -163,14 +162,13 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk intertxkeeper.Keeper, c
 	}
 
 	itxk.SetCallbackData(ctx, types.CallbackData{
-		CallbackKey:  types.PacketID(portID, activeChannelID, res.Sequence),
 		PortId:       portID,
 		ChannelId:    activeChannelID,
 		Sequence:     res.Sequence,
 		Contract:     contractAddr.String(),
 		ConnectionId: submitTx.ConnectionId,
 		AccountId:    submitTx.AccountId,
-		TxId:         submitTx.TxId,
+		Callback:     submitTx.Callback,
 	})
 	return res, nil
 }

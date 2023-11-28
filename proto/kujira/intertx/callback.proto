@@ -8,12 +8,11 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
 message CallbackData {
-  string callback_key = 1;
-  string port_id = 2;
-  string channel_id = 3;
-  uint64 sequence = 4;
-  string contract = 5;
-  string connection_id = 6;
-  string account_id = 7;
-  uint64 tx_id = 8;       
+  string port_id = 1;
+  string channel_id = 2;
+  uint64 sequence = 3;
+  string contract = 4;
+  string connection_id = 5;
+  string account_id = 6;
+  bytes  callback = 7;
 }

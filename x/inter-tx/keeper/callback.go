@@ -8,10 +8,10 @@ import (
 )
 
 // SetCallbackData set a specific callbackData in the store from its index
-func (k Keeper) SetCallbackData(ctx sdk.Context, callbackData types.CallbackData) {
+func (k Keeper) SetCallbackData(ctx sdk.Context, data types.CallbackData) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CallbackDataKeyPrefix))
-	b := k.Codec.MustMarshal(&callbackData)
-	store.Set(types.CallbackDataKey(callbackData.CallbackKey), b)
+	b := k.Codec.MustMarshal(&data)
+	store.Set(types.CallbackDataKey(types.PacketID(data.PortId, data.ChannelId, data.Sequence)), b)
 }
 
 // GetCallbackData returns a callbackData from its index

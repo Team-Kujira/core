@@ -1,14 +1,26 @@
 package types
 
-type MessageCallback struct {
-	IcaCallback IcaCallbackData `json:"ica_callback"`
+type MessageTxCallback struct {
+	IcaTxCallback IcaTxCallbackData `json:"ica_tx_callback"`
 }
 
-type IcaCallbackData struct {
-	ConnId string            `json:"connection_id"`
-	AccId  string            `json:"account_id"`
-	TxId   uint64            `json:"tx_id"`
-	Result IcaCallbackResult `json:"result"`
+type MessageRegisterCallback struct {
+	IcaRegisterCallback IcaRegisterCallbackData `json:"ica_register_callback"`
+}
+
+type IcaRegisterCallbackData struct {
+	ConnId   string            `json:"connection_id"`
+	AccId    string            `json:"account_id"`
+	Callback []byte            `json:"callback"`
+	Result   IcaCallbackResult `json:"result"`
+}
+
+type IcaTxCallbackData struct {
+	ConnId   string            `json:"connection_id"`
+	AccId    string            `json:"account_id"`
+	Sequence uint64            `json:"sequence"`
+	Callback []byte            `json:"callback"`
+	Result   IcaCallbackResult `json:"result"`
 }
 
 type IcaCallbackResult struct {
