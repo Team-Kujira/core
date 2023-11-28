@@ -11,7 +11,7 @@ import "google/api/annotations.proto";
 service Query {
   // QueryInterchainAccount returns the interchain account for given owner address on a given connection pair
   rpc InterchainAccount(QueryInterchainAccountRequest) returns (QueryInterchainAccountResponse) {
-    option (google.api.http).get = "/inter-tx/interchain_account/owner/{owner}/connection/{connection_id}";
+    option (google.api.http).get = "/cw-ica/interchain_account/owner/{owner}/connection/{connection_id}";
   }
 }
 
