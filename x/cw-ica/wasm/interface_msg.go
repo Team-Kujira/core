@@ -46,13 +46,12 @@ type Register struct {
 // / Submit submits transactions to the ICA
 // / associated with the given address.
 type Submit struct {
-	ConnectionId string `json:"connection_id"`
-	AccountId    string `json:"account_id"`
-	//TODO: Use ProtobufAny and serialize into Cosmos Tx like in msg_server.go
-	Msgs     []ProtobufAny `json:"msgs"`
-	Memo     string        `json:"memo"`
-	Timeout  uint64        `json:"timeout"`
-	Callback []byte        `json:"callback"`
+	ConnectionId string        `json:"connection_id"`
+	AccountId    string        `json:"account_id"`
+	Msgs         []ProtobufAny `json:"msgs"`
+	Memo         string        `json:"memo"`
+	Timeout      uint64        `json:"timeout"`
+	Callback     []byte        `json:"callback"`
 }
 
 func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, itxk cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {

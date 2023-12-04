@@ -436,7 +436,6 @@ func New(
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
-		app.GetSubspace(banktypes.ModuleName),
 		BlockedAddresses(),
 		authority,
 	)
@@ -472,13 +471,12 @@ func New(
 	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
 		appCodec,
 		keys[AllianceStoreKey],
-		app.GetSubspace(alliancemoduletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
-		// authtypes.FeeCollectorName,
-		// authority,
+		authtypes.FeeCollectorName,
+		authority,
 	)
 
 	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
@@ -919,7 +917,7 @@ func New(
 			app.AccountKeeper,
 			app.BankKeeper,
 			app.interfaceRegistry,
-			// app.GetSubspace(alliancemoduletypes.ModuleName),
+			app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
 		cwica.NewAppModule(appCodec, app.CwICAKeeper),
