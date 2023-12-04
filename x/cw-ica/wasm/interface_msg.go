@@ -3,7 +3,6 @@ package wasm
 import (
 	"cosmossdk.io/errors"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
@@ -54,8 +53,8 @@ type Submit struct {
 	Callback     []byte        `json:"callback"`
 }
 
-func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, itxk cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	_, err := PerformRegisterICA(itxk, ik, ctx, contractAddr, register)
+func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, cwicak cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
+	_, err := PerformRegisterICA(cwicak, ik, ctx, contractAddr, register)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "perform register ICA")
 	}
@@ -67,7 +66,7 @@ func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, 
 }
 
 // PerformRegisterICA is used with register to validate the register message and register the ICA.
-func PerformRegisterICA(itxk cwicakeeper.Keeper, f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
+func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
 	if msg == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "register ICA null message"}
 	}
@@ -98,7 +97,7 @@ func PerformRegisterICA(itxk cwicakeeper.Keeper, f icacontrollerkeeper.Keeper, c
 
 	f.SetMiddlewareEnabled(ctx, portID, msg.ConnectionId)
 
-	itxk.SetCallbackData(ctx, types.CallbackData{
+	cwicak.SetCallbackData(ctx, types.CallbackData{
 		PortId:       portID,
 		ChannelId:    "",
 		Sequence:     0,
@@ -111,8 +110,8 @@ func PerformRegisterICA(itxk cwicakeeper.Keeper, f icacontrollerkeeper.Keeper, c
 	return res, nil
 }
 
-func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, itxk cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	_, err := PerformSubmitTxs(ik, itxk, ctx, contractAddr, submitTx)
+func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, cwicak cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
+	_, err := PerformSubmitTxs(ik, cwicak, ctx, contractAddr, submitTx)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "perform submit txs")
 	}
@@ -120,7 +119,7 @@ func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, itxk
 }
 
 // PerformSubmitTxs is used with submitTxs to validate the submitTxs message and submit the txs.
-func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk cwicakeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit) (*icacontrollertypes.MsgSendTxResponse, error) {
+func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit) (*icacontrollertypes.MsgSendTxResponse, error) {
 	if submitTx == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "submit txs null message"}
 	}
@@ -131,7 +130,7 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk cwicakeeper.Keeper, ctx
 			Value:   msg.Value,
 		})
 	}
-	data, err := SerializeCosmosTx(itxk.Codec, msgs)
+	data, err := types.SerializeCosmosTx(cwicak.Codec, msgs)
 	if err != nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "failed to serialize txs"}
 	}
@@ -160,7 +159,7 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk cwicakeeper.Keeper, ctx
 		return nil, sdkerrors.Wrapf(icatypes.ErrActiveChannelNotFound, "failed to retrieve active channel on connection %s for port %s", submitTx.ConnectionId, portID)
 	}
 
-	itxk.SetCallbackData(ctx, types.CallbackData{
+	cwicak.SetCallbackData(ctx, types.CallbackData{
 		PortId:       portID,
 		ChannelId:    activeChannelID,
 		Sequence:     res.Sequence,
@@ -172,31 +171,12 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, itxk cwicakeeper.Keeper, ctx
 	return res, nil
 }
 
-func HandleMsg(ctx sdk.Context, itxk cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
+func HandleMsg(ctx sdk.Context, cwicak cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
 	if msg.Register != nil {
-		return register(ctx, contractAddr, msg.Register, itxk, icak)
+		return register(ctx, contractAddr, msg.Register, cwicak, icak)
 	}
 	if msg.Submit != nil {
-		return submit(ctx, contractAddr, msg.Submit, itxk, icak)
+		return submit(ctx, contractAddr, msg.Submit, cwicak, icak)
 	}
 	return nil, nil, wasmvmtypes.InvalidRequest{Err: "unknown ICA Message variant"}
-}
-
-// From neutron inter-tx
-func SerializeCosmosTx(cdc codec.BinaryCodec, msgs []*cosmostypes.Any) (bz []byte, err error) {
-	// only ProtoCodec is supported
-	if _, ok := cdc.(*codec.ProtoCodec); !ok {
-		return nil, wasmvmtypes.InvalidRequest{Err: "only ProtoCodec is supported for receiving messages on the host chain"}
-	}
-
-	cosmosTx := &icatypes.CosmosTx{
-		Messages: msgs,
-	}
-
-	bz, err = cdc.Marshal(cosmosTx)
-	if err != nil {
-		return nil, err
-	}
-
-	return bz, nil
 }

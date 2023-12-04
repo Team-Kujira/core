@@ -19,13 +19,13 @@ type QueryPlugin struct {
 }
 
 // NewQueryPlugin returns a reference to a new QueryPlugin.
-func NewQueryPlugin(bk bankkeeper.Keeper, ok oraclekeeper.Keeper, dk denomkeeper.Keeper, ik ibckeeper.Keeper, itxk cwicakeeper.Keeper, isk *storetypes.KVStoreKey) *QueryPlugin {
+func NewQueryPlugin(bk bankkeeper.Keeper, ok oraclekeeper.Keeper, dk denomkeeper.Keeper, ik ibckeeper.Keeper, cwicak cwicakeeper.Keeper, isk *storetypes.KVStoreKey) *QueryPlugin {
 	return &QueryPlugin{
 		denomKeeper:  dk,
 		bankkeeper:   bk,
 		oraclekeeper: ok,
 		ibckeeper:    ik,
-		cwicakeeper:  itxk,
+		cwicakeeper:  cwicak,
 		ibcstorekey:  isk,
 	}
 }

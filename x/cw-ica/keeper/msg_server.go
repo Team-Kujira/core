@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"cosmossdk.io/errors"
-	"github.com/cosmos/cosmos-sdk/codec"
-	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
@@ -51,7 +49,7 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegister
 func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.MsgSubmitTxResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	data, err := SerializeCosmosTx(k.Keeper.Codec, msg.Msgs)
+	data, err := types.SerializeCosmosTx(k.Keeper.Codec, msg.Msgs)
 	if err != nil {
 		return nil, err
 	}
@@ -72,23 +70,4 @@ func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*typ
 	}
 
 	return &types.MsgSubmitTxResponse{Sequence: res.Sequence}, nil
-}
-
-// From neutron inter-tx
-func SerializeCosmosTx(cdc codec.BinaryCodec, msgs []*cosmostypes.Any) (bz []byte, err error) {
-	// only ProtoCodec is supported
-	if _, ok := cdc.(*codec.ProtoCodec); !ok {
-		return nil, errors.Wrap(err, "only ProtoCodec is supported on host chain")
-	}
-
-	cosmosTx := &icatypes.CosmosTx{
-		Messages: msgs,
-	}
-
-	bz, err = cdc.Marshal(cosmosTx)
-	if err != nil {
-		return nil, err
-	}
-
-	return bz, nil
 }
