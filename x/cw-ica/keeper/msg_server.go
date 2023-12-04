@@ -39,7 +39,6 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegister
 		sdk.WrapSDKContext(ctx),
 		msgRegister,
 	)
-
 	if err != nil {
 		return nil, errors.Wrap(err, "registering ICA")
 	}
@@ -64,7 +63,6 @@ func (k msgServer) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*typ
 
 	owner := msg.Sender + "-" + msg.AccountId
 	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, msg.ConnectionId, msg.Timeout, packetData))
-
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}

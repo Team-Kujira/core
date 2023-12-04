@@ -100,7 +100,6 @@ func getSubmitTxCmd() *cobra.Command {
 				viper.GetString(FlagICAMemo),
 				viper.GetUint64(FlagICATimeout),
 			)
-
 			if err != nil {
 				return err
 			}

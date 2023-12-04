@@ -20,7 +20,6 @@ const (
 func (k *Keeper) outOfGasRecovery(
 	ctx sdk.Context,
 	gasMeter sdk.GasMeter,
-	failureAckType string,
 ) {
 	if r := recover(); r != nil {
 		_, ok := r.(sdk.ErrorOutOfGas)
@@ -81,7 +80,7 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Pack
 	}
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
-	defer k.outOfGasRecovery(ctx, newGasMeter, "ack")
+	defer k.outOfGasRecovery(ctx, newGasMeter)
 
 	// Actually we have only one kind of error returned from acknowledgement
 	// maybe later we'll retrieve actual errors from events
@@ -119,7 +118,7 @@ func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, _ sd
 	k.Logger(ctx).Debug("HandleTimeout")
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
-	defer k.outOfGasRecovery(ctx, newGasMeter, "timeout")
+	defer k.outOfGasRecovery(ctx, newGasMeter)
 
 	err := k.CallRegisteredICATxCallback(ctx, packet, types.IcaCallbackResult{
 		Timeout: &types.IcaCallbackTimeout{},
@@ -157,7 +156,7 @@ func (k *Keeper) HandleChanOpenAck(
 	}
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
-	defer k.outOfGasRecovery(ctx, newGasMeter, "timeout")
+	defer k.outOfGasRecovery(ctx, newGasMeter)
 
 	// If there's an associated callback function, execute it
 	_, err := k.SudoIcaRegisterCallback(cacheCtx, callbackData, types.IcaCallbackResult{
