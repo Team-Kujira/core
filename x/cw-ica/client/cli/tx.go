@@ -81,7 +81,6 @@ func getSubmitTxCmd() *cobra.Command {
 
 			var txMsg sdk.Msg
 			if err := cdc.UnmarshalInterfaceJSON([]byte(args[0]), &txMsg); err != nil {
-
 				// check for file path if JSON input is not provided
 				contents, err := os.ReadFile(args[0])
 				if err != nil {

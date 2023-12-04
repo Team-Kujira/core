@@ -32,8 +32,8 @@ func (k Keeper) SudoIcaRegisterCallback(
 	}
 
 	x := types.MessageRegisterCallback{}
-	x.IcaRegisterCallback.ConnId = callbackData.ConnectionId
-	x.IcaRegisterCallback.AccId = callbackData.AccountId
+	x.IcaRegisterCallback.ConnID = callbackData.ConnectionId
+	x.IcaRegisterCallback.AccID = callbackData.AccountId
 	x.IcaRegisterCallback.Callback = callbackData.Callback
 	x.IcaRegisterCallback.Result = result
 
@@ -70,8 +70,8 @@ func (k Keeper) SudoIcaTxCallback(
 	}
 
 	x := types.MessageTxCallback{}
-	x.IcaTxCallback.ConnId = callbackData.ConnectionId
-	x.IcaTxCallback.AccId = callbackData.AccountId
+	x.IcaTxCallback.ConnID = callbackData.ConnectionId
+	x.IcaTxCallback.AccID = callbackData.AccountId
 	x.IcaTxCallback.Sequence = callbackData.Sequence
 	x.IcaTxCallback.Callback = callbackData.Callback
 	x.IcaTxCallback.Result = result

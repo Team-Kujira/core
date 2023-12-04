@@ -9,15 +9,15 @@ type MessageRegisterCallback struct {
 }
 
 type IcaRegisterCallbackData struct {
-	ConnId   string            `json:"connection_id"`
-	AccId    string            `json:"account_id"`
+	ConnID   string            `json:"connection_id"`
+	AccID    string            `json:"account_id"`
 	Callback []byte            `json:"callback"`
 	Result   IcaCallbackResult `json:"result"`
 }
 
 type IcaTxCallbackData struct {
-	ConnId   string            `json:"connection_id"`
-	AccId    string            `json:"account_id"`
+	ConnID   string            `json:"connection_id"`
+	AccID    string            `json:"account_id"`
 	Sequence uint64            `json:"sequence"`
 	Callback []byte            `json:"callback"`
 	Result   IcaCallbackResult `json:"result"`
@@ -37,5 +37,4 @@ type IcaCallbackError struct {
 	Error string `json:"error"`
 }
 
-type IcaCallbackTimeout struct {
-}
+type IcaCallbackTimeout struct{}

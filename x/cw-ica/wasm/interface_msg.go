@@ -11,7 +11,6 @@ import (
 	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
 	"github.com/Team-Kujira/core/x/cw-ica/types"
 	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object
@@ -36,8 +35,8 @@ type ICAMsg struct {
 // / The account is registered using (port, channel, sender, id)
 // / as the unique identifier.
 type Register struct {
-	ConnectionId string `json:"connection_id"`
-	AccountId    string `json:"account_id"`
+	ConnectionID string `json:"connection_id"`
+	AccountID    string `json:"account_id"`
 	Version      string `json:"version"`
 	Callback     []byte `json:"callback"`
 }
@@ -45,8 +44,8 @@ type Register struct {
 // / Submit submits transactions to the ICA
 // / associated with the given address.
 type Submit struct {
-	ConnectionId string        `json:"connection_id"`
-	AccountId    string        `json:"account_id"`
+	ConnectionID string        `json:"connection_id"`
+	AccountID    string        `json:"account_id"`
 	Msgs         []ProtobufAny `json:"msgs"`
 	Memo         string        `json:"memo"`
 	Timeout      uint64        `json:"timeout"`
@@ -58,10 +57,6 @@ func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, 
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "perform register ICA")
 	}
-	// Construct an sdk.Event from the MsgRegisterInterchainAccountResponse.
-	// Somewhat hacky way to get the data back to the contract.
-	// attrs := []sdk.Attribute{
-	// 	sdk.NewAttribute()
 	return nil, nil, nil
 }
 
@@ -74,8 +69,8 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 	msgServer := icacontrollerkeeper.NewMsgServerImpl(&f)
 
 	// format "{owner}-{id}"
-	owner := contractAddr.String() + "-" + msg.AccountId
-	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(msg.ConnectionId, owner, msg.Version)
+	owner := contractAddr.String() + "-" + msg.AccountID
+	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(msg.ConnectionID, owner, msg.Version)
 
 	if err := msgRegister.ValidateBasic(); err != nil {
 		return nil, errors.Wrap(err, "failed validating MsgRegisterInterchainAccount")
@@ -85,6 +80,9 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 		sdk.WrapSDKContext(ctx),
 		msgRegister,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	portID, err := icatypes.NewControllerPortID(owner)
 	if err != nil {
@@ -95,15 +93,15 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 		return nil, errors.Wrap(err, "registering ICA")
 	}
 
-	f.SetMiddlewareEnabled(ctx, portID, msg.ConnectionId)
+	f.SetMiddlewareEnabled(ctx, portID, msg.ConnectionID)
 
 	cwicak.SetCallbackData(ctx, types.CallbackData{
 		PortId:       portID,
 		ChannelId:    "",
 		Sequence:     0,
 		Contract:     contractAddr.String(),
-		ConnectionId: msg.ConnectionId,
-		AccountId:    msg.AccountId,
+		ConnectionId: msg.ConnectionID,
+		AccountId:    msg.AccountID,
 		Callback:     msg.Callback,
 	})
 
@@ -143,8 +141,8 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 
 	msgServer := icacontrollerkeeper.NewMsgServerImpl(&f)
 
-	owner := contractAddr.String() + "-" + submitTx.AccountId
-	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionId, submitTx.Timeout, packetData))
+	owner := contractAddr.String() + "-" + submitTx.AccountID
+	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionID, submitTx.Timeout, packetData))
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}
@@ -154,9 +152,9 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 		return nil, err
 	}
 
-	activeChannelID, found := f.GetOpenActiveChannel(ctx, submitTx.ConnectionId, portID)
+	activeChannelID, found := f.GetOpenActiveChannel(ctx, submitTx.ConnectionID, portID)
 	if !found {
-		return nil, sdkerrors.Wrapf(icatypes.ErrActiveChannelNotFound, "failed to retrieve active channel on connection %s for port %s", submitTx.ConnectionId, portID)
+		return nil, errors.Wrapf(icatypes.ErrActiveChannelNotFound, "failed to retrieve active channel on connection %s for port %s", submitTx.ConnectionID, portID)
 	}
 
 	cwicak.SetCallbackData(ctx, types.CallbackData{
@@ -164,8 +162,8 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 		ChannelId:    activeChannelID,
 		Sequence:     res.Sequence,
 		Contract:     contractAddr.String(),
-		ConnectionId: submitTx.ConnectionId,
-		AccountId:    submitTx.AccountId,
+		ConnectionId: submitTx.ConnectionID,
+		AccountId:    submitTx.AccountID,
 		Callback:     submitTx.Callback,
 	})
 	return res, nil

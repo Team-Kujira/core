@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -71,12 +72,12 @@ func (k *Keeper) createCachedContext(ctx sdk.Context) (sdk.Context, func(), sdk.
 }
 
 // HandleAcknowledgement passes the acknowledgement data to the appropriate contract via a Sudo call.
-func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) error {
+func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Packet, acknowledgement []byte, _ sdk.AccAddress) error {
 	k.Logger(ctx).Debug("Handling acknowledgement")
 	var ack channeltypes.Acknowledgement
 	if err := channeltypes.SubModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
 		k.Logger(ctx).Error("HandleAcknowledgement: cannot unmarshal ICS-27 packet acknowledgement", "error", err)
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-27 packet acknowledgement: %v", err)
+		return errors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-27 packet acknowledgement: %v", err)
 	}
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
@@ -114,7 +115,7 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Pack
 // HandleTimeout passes the timeout data to the appropriate contract via a Sudo call.
 // Since all ICA channels are ORDERED, a single timeout shuts down a channel.
 // The affected zone should be paused after a timeout.
-func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, relayer sdk.AccAddress) error {
+func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, _ sdk.AccAddress) error {
 	k.Logger(ctx).Debug("HandleTimeout")
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
