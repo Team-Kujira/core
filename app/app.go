@@ -75,6 +75,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"
 	bank "github.com/terra-money/alliance/custom/bank"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 	alliancemodule "github.com/terra-money/alliance/x/alliance"
@@ -141,6 +142,10 @@ import (
 	"github.com/Team-Kujira/core/x/oracle"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
+
+	cwica "github.com/Team-Kujira/core/x/cw-ica"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
@@ -215,6 +220,7 @@ var (
 		scheduler.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
+		cwica.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -235,6 +241,7 @@ var (
 		oracletypes.ModuleName:              nil,
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		alliancemoduletypes.RewardsPoolName: nil,
+		cwicatypes.ModuleName:               nil,
 	}
 )
 
@@ -286,15 +293,17 @@ type App struct {
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        ibctransferkeeper.Keeper
-	FeeGrantKeeper        feegrantkeeper.Keeper
-	WasmKeeper            wasmkeeper.Keeper
-	DenomKeeper           *denomkeeper.Keeper
-	BatchKeeper           batchkeeper.Keeper
-	SchedulerKeeper       schedulerkeeper.Keeper
-	OracleKeeper          oraclekeeper.Keeper
-	AllianceKeeper        alliancemodulekeeper.Keeper
+
+	EvidenceKeeper  evidencekeeper.Keeper
+	TransferKeeper  ibctransferkeeper.Keeper
+	FeeGrantKeeper  feegrantkeeper.Keeper
+	WasmKeeper      wasmkeeper.Keeper
+	DenomKeeper     *denomkeeper.Keeper
+	BatchKeeper     batchkeeper.Keeper
+	SchedulerKeeper schedulerkeeper.Keeper
+	OracleKeeper    oraclekeeper.Keeper
+	AllianceKeeper  alliancemodulekeeper.Keeper
+	CwICAKeeper     cwicakeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -303,6 +312,7 @@ type App struct {
 	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedCwICAKeeper         capabilitykeeper.ScopedKeeper
 
 	// ModuleManager is the module manager
 	ModuleManager *module.Manager
@@ -365,6 +375,7 @@ func New(
 		oracletypes.StoreKey,
 		batchtypes.StoreKey,
 		AllianceStoreKey,
+		cwicatypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -568,6 +579,16 @@ func New(
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
+	// Create CwIca Keeper
+	scopedCwICAKeeper := app.CapabilityKeeper.ScopeToModule(cwicatypes.ModuleName)
+	app.CwICAKeeper = cwicakeeper.NewKeeper(
+		appCodec,
+		keys[cwicatypes.StoreKey],
+		app.ICAControllerKeeper,
+		scopedCwICAKeeper,
+		&app.WasmKeeper,
+	)
+
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
@@ -635,6 +656,8 @@ func New(
 		app.OracleKeeper,
 		*app.DenomKeeper,
 		*app.IBCKeeper,
+		app.CwICAKeeper,
+		app.ICAControllerKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
@@ -711,8 +734,9 @@ func New(
 	var icaControllerStack ibcporttypes.IBCModule
 	// integration point for custom authentication modules
 	// see https://medium.com/the-interchain-foundation/ibc-go-v6-changes-to-interchain-accounts-and-how-it-impacts-your-chain-806c185300d7
-	var noAuthzModule ibcporttypes.IBCModule
-	icaControllerStack = icacontroller.NewIBCMiddleware(noAuthzModule, app.ICAControllerKeeper)
+
+	icaControllerStack = cwica.NewIBCModule(app.CwICAKeeper)
+	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, app.ICAControllerKeeper)
 	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
 
 	// RecvPacket, message that originates from core IBC and goes down to app, the flow is:
@@ -732,6 +756,7 @@ func New(
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
+		AddRoute(cwicatypes.ModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -896,6 +921,8 @@ func New(
 			app.GetSubspace(alliancemoduletypes.ModuleName),
 		),
 
+		cwica.NewAppModule(appCodec, app.CwICAKeeper),
+
 		crisis.NewAppModule(
 			app.CrisisKeeper,
 			skipGenesisInvariants,
@@ -936,6 +963,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -967,6 +995,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1006,6 +1035,7 @@ func New(
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -1098,6 +1128,7 @@ func New(
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
+	app.ScopedCwICAKeeper = scopedCwICAKeeper
 
 	return app
 }
@@ -1231,6 +1262,22 @@ func (app *App) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
+}
+
+func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
+	return app.StakingKeeper
+}
+
+func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
+
+func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
+
+func (app *App) GetTxConfig() client.TxConfig {
+	return app.txConfig
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided

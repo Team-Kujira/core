@@ -1,6 +1,7 @@
 package bindings
 
 import (
+	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
 	oracle "github.com/Team-Kujira/core/x/oracle/wasm"
 
@@ -14,6 +15,7 @@ type CosmosQuery struct {
 	Bank   *BankQuery
 	Oracle *oracle.OracleQuery
 	Ibc    *IbcQuery
+	CwIca  *cwica.CwIcaQuery `json:"ica,omitempty"`
 }
 
 type BankQuery struct {

@@ -33,7 +33,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomB, ExchangeRateB)
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomD, ExchangeRateD)
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibcexported.StoreKey))
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.CwICAKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 	var err error
 
@@ -97,7 +97,7 @@ func TestSupply(t *testing.T) {
 	app := app.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.GetKey(ibcexported.StoreKey))
+	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.CwICAKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
 
 	var err error
