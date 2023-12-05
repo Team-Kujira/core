@@ -36,7 +36,9 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.Bank != nil {
+		}
+
+		if contractQuery.Bank != nil {
 			if contractQuery.Bank.DenomMetadata != nil {
 				metadata, _ := qp.bankkeeper.GetDenomMetaData(ctx, contractQuery.Bank.DenomMetadata.Denom)
 				res := banktypes.QueryDenomMetadataResponse{
@@ -62,7 +64,9 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.Denom != nil {
+		}
+
+		if contractQuery.Denom != nil {
 			res, err := denom.HandleQuery(qp.denomKeeper, ctx, contractQuery.Denom)
 			if err != nil {
 				return nil, err
@@ -74,7 +78,9 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.CwIca != nil {
+		}
+
+		if contractQuery.CwIca != nil {
 			res, err := cwica.HandleQuery(qp.cwicakeeper, ctx, contractQuery.CwIca)
 			if err != nil {
 				return nil, err
@@ -86,12 +92,14 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			}
 
 			return bz, nil
-		} else if contractQuery.Ibc != nil {
+		}
+
+		if contractQuery.Ibc != nil {
 			err := bindings.HandleIBCQuery(ctx, qp.ibckeeper, qp.ibcstorekey, contractQuery.Ibc)
 			res, _ := json.Marshal(bindings.IbcVerifyResponse{})
 			return res, err
-		} else {
-			return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 		}
+
+		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 }
