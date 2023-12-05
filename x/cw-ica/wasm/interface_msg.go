@@ -20,7 +20,7 @@ type ProtobufAny struct {
 	Value   []byte `json:"value"`
 }
 
-type ICAMsg struct {
+type CwIcaMsg struct {
 	/// Contracts can register a new interchain account.
 	Register *Register `json:"register,omitempty"`
 	/// Contracts can submit transactions to the ICA
@@ -169,7 +169,7 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 	return res, nil
 }
 
-func HandleMsg(ctx sdk.Context, cwicak cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *ICAMsg) ([]sdk.Event, [][]byte, error) {
+func HandleMsg(ctx sdk.Context, cwicak cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *CwIcaMsg) ([]sdk.Event, [][]byte, error) {
 	if msg.Register != nil {
 		return register(ctx, contractAddr, msg.Register, cwicak, icak)
 	}

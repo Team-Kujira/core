@@ -9,5 +9,5 @@ import (
 type CosmosMsg struct {
 	Denom *denom.DenomMsg
 	Batch *batch.BatchMsg
-	CwIca *cwica.ICAMsg `json:"ica,omitempty"`
+	CwIca *cwica.CwIcaMsg `json:"ica,omitempty"`
 }
