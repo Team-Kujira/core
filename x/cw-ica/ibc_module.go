@@ -29,7 +29,7 @@ func NewIBCModule(k keeper.Keeper) IBCModule {
 // OnChanOpenInit implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenInit(
 	_ sdk.Context,
-	_after_ channeltypes.Order,
+	_ channeltypes.Order,
 	_ []string,
 	_ string,
 	_ string,
@@ -68,9 +68,9 @@ func (im IBCModule) OnChanOpenAck(
 
 // OnChanOpenConfirm implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenConfirm(
-	ctx sdk.Context,
-	portID,
-	channelID string,
+	_ sdk.Context,
+	_,
+	_ string,
 ) error {
 	return nil
 }
@@ -78,18 +78,18 @@ func (im IBCModule) OnChanOpenConfirm(
 // OnChanCloseInit implements the IBCModule interface. We don't need to implement this handler.
 // Handler will be implemented in https://p2pvalidator.atlassian.net/browse/LSC-137
 func (im IBCModule) OnChanCloseInit(
-	ctx sdk.Context,
-	portID,
-	channelID string,
+	_ sdk.Context,
+	_,
+	_ string,
 ) error {
 	return nil
 }
 
 // OnChanCloseConfirm implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanCloseConfirm(
-	ctx sdk.Context,
-	portID,
-	channelID string,
+	_ sdk.Context,
+	_,
+	_ string,
 ) error {
 	return nil
 }
