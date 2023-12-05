@@ -15,7 +15,7 @@ type CosmosQuery struct {
 	Bank   *BankQuery
 	Oracle *oracle.OracleQuery
 	Ibc    *IbcQuery
-	CwIca  *cwica.CwICAQuery `json:"cw_ica,omitempty"`
+	CwIca  *cwica.CwICAQuery `json:"ica,omitempty"`
 }
 
 type BankQuery struct {
