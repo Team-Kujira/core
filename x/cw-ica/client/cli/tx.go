@@ -1,17 +1,9 @@
 package cli
 
 import (
-	"os"
-
 	"github.com/Team-Kujira/core/x/cw-ica/types"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // GetTxCmd creates and returns the cwica tx command
@@ -24,103 +16,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(
-		getRegisterAccountCmd(),
-		getSubmitTxCmd(),
-	)
-
-	return cmd
-}
-
-func getRegisterAccountCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use: "register",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRegisterAccount(
-				clientCtx.GetFromAddress().String(),
-				viper.GetString(FlagConnectionID),
-				viper.GetString(FlagAccountID),
-				viper.GetString(FlagVersion),
-			)
-
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().AddFlagSet(fsConnectionID)
-	cmd.Flags().AddFlagSet(fsVersion)
-	cmd.Flags().AddFlagSet(fsAccountID)
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
-	_ = cmd.MarkFlagRequired(FlagAccountID)
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func getSubmitTxCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:  "submit [path/to/sdk_msg.json]",
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			cdc := codec.NewProtoCodec(clientCtx.InterfaceRegistry)
-
-			var txMsg sdk.Msg
-			if err := cdc.UnmarshalInterfaceJSON([]byte(args[0]), &txMsg); err != nil {
-				// check for file path if JSON input is not provided
-				contents, err := os.ReadFile(args[0])
-				if err != nil {
-					return errors.Wrap(err, "neither JSON input nor path to .json file for sdk msg were provided")
-				}
-
-				if err := cdc.UnmarshalInterfaceJSON(contents, &txMsg); err != nil {
-					return errors.Wrap(err, "error unmarshalling sdk msg file")
-				}
-			}
-
-			msg, err := types.NewMsgSubmitTx(
-				txMsg,
-				viper.GetString(FlagConnectionID),
-				viper.GetString(FlagAccountID),
-				clientCtx.GetFromAddress().String(),
-				viper.GetString(FlagICAMemo),
-				viper.GetUint64(FlagICATimeout),
-			)
-			if err != nil {
-				return err
-			}
-
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().AddFlagSet(fsConnectionID)
-	cmd.Flags().AddFlagSet(fsAccountID)
-	cmd.Flags().AddFlagSet(fsICAMemo)
-	cmd.Flags().AddFlagSet(fsICATimeout)
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
-	_ = cmd.MarkFlagRequired(FlagAccountID)
-	_ = cmd.MarkFlagRequired(FlagICATimeout)
-
-	flags.AddTxFlagsToCmd(cmd)
+	cmd.AddCommand()
 
 	return cmd
 }
