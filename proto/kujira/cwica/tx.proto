@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package kujira.cwica;
+
+option go_package = "github.com/Team-Kujira/core/x/cw-ica/types";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+// Msg defines the cwica Msg service.
+service Msg {
+}

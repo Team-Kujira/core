@@ -86,6 +86,7 @@ import (
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"
 
 	// bank "github.com/terra-money/alliance/custom/bank"
 	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
@@ -134,6 +135,10 @@ import (
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 	"github.com/cosmos/cosmos-sdk/std"
 
+	"github.com/Team-Kujira/core/x/batch"
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
+	batchtypes "github.com/Team-Kujira/core/x/batch/types"
+
 	"github.com/Team-Kujira/core/docs"
 	scheduler "github.com/Team-Kujira/core/x/scheduler"
 	schedulerkeeper "github.com/Team-Kujira/core/x/scheduler/keeper"
@@ -144,6 +149,9 @@ import (
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
 	storetypes "cosmossdk.io/store/types"
+	cwica "github.com/Team-Kujira/core/x/cw-ica"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
 )
 
 const (
@@ -188,10 +196,12 @@ var (
 		icatypes.ModuleName:            nil,
 		wasmtypes.ModuleName:           {authtypes.Burner},
 		denomtypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		batchtypes.ModuleName:          nil,
 		schedulertypes.ModuleName:      nil,
 		oracletypes.ModuleName:         nil,
 		// alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		// alliancemoduletypes.RewardsPoolName: nil,
+		cwicatypes.ModuleName: nil,
 	}
 )
 
@@ -249,8 +259,10 @@ type App struct {
 	FeeGrantKeeper  feegrantkeeper.Keeper
 	WasmKeeper      wasmkeeper.Keeper
 	DenomKeeper     *denomkeeper.Keeper
+	BatchKeeper     batchkeeper.Keeper
 	SchedulerKeeper schedulerkeeper.Keeper
 	OracleKeeper    oraclekeeper.Keeper
+	CwICAKeeper     cwicakeeper.Keeper
 	// AllianceKeeper  alliancemodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
@@ -260,6 +272,7 @@ type App struct {
 	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedCwICAKeeper         capabilitykeeper.ScopedKeeper
 
 	// ModuleManager is the module manager
 	ModuleManager      *module.Manager
@@ -367,7 +380,9 @@ func New(
 		denomtypes.StoreKey,
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
+		batchtypes.StoreKey,
 		// AllianceStoreKey,
+		cwicatypes.StoreKey,
 	)
 
 	// register streaming services
@@ -585,6 +600,16 @@ func New(
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
+	// Create CwIca Keeper
+	scopedCwICAKeeper := app.CapabilityKeeper.ScopeToModule(cwicatypes.ModuleName)
+	app.CwICAKeeper = cwicakeeper.NewKeeper(
+		appCodec,
+		keys[cwicatypes.StoreKey],
+		app.ICAControllerKeeper,
+		scopedCwICAKeeper,
+		&app.WasmKeeper,
+	)
+
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
@@ -632,6 +657,14 @@ func New(
 
 	app.DenomKeeper = &denomKeeper
 
+	app.BatchKeeper = batchkeeper.NewKeeper(
+		appCodec,
+		app.keys[batchtypes.StoreKey],
+		app.BankKeeper,
+		app.DistrKeeper,
+		app.StakingKeeper,
+	)
+
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -646,6 +679,10 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		*app.IBCKeeper,
+		app.CwICAKeeper,
+		app.ICAControllerKeeper,
+		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
@@ -722,8 +759,9 @@ func New(
 	var icaControllerStack ibcporttypes.IBCModule
 	// integration point for custom authentication modules
 	// see https://medium.com/the-interchain-foundation/ibc-go-v6-changes-to-interchain-accounts-and-how-it-impacts-your-chain-806c185300d7
-	var noAuthzModule ibcporttypes.IBCModule
-	icaControllerStack = icacontroller.NewIBCMiddleware(noAuthzModule, app.ICAControllerKeeper)
+
+	icaControllerStack = cwica.NewIBCModule(app.CwICAKeeper)
+	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, app.ICAControllerKeeper)
 	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
 
 	// RecvPacket, message that originates from core IBC and goes down to app, the flow is:
@@ -743,6 +781,7 @@ func New(
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
+		AddRoute(cwicatypes.ModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -874,6 +913,13 @@ func New(
 			app.BankKeeper,
 		),
 
+		batch.NewAppModule(
+			appCodec,
+			app.BatchKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+		),
+
 		icaModule,
 
 		scheduler.NewAppModule(
@@ -900,6 +946,8 @@ func New(
 		// 	app.interfaceRegistry,
 		// 	app.GetSubspace(alliancemoduletypes.ModuleName),
 		// ),
+
+		cwica.NewAppModule(appCodec, app.CwICAKeeper),
 
 		crisis.NewAppModule(
 			app.CrisisKeeper,
@@ -957,8 +1005,10 @@ func New(
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
+		cwicatypes.ModuleName,
 		// alliancemoduletypes.ModuleName,
 	)
 
@@ -987,8 +1037,10 @@ func New(
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
+		cwicatypes.ModuleName,
 		// alliancemoduletypes.ModuleName,
 	)
 
@@ -1023,10 +1075,12 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		denomtypes.ModuleName,
+		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		// alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
+		cwicatypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -1119,6 +1173,7 @@ func New(
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
+	app.ScopedCwICAKeeper = scopedCwICAKeeper
 
 	return app
 }
@@ -1268,6 +1323,22 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
+func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
+	return app.StakingKeeper
+}
+
+func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
+
+func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
+
+func (app *App) GetTxConfig() client.TxConfig {
+	return app.txConfig
+}
+
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *App) RegisterAPIRoutes(apiSvr *api.Server, _ config.APIConfig) {
@@ -1328,6 +1399,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
+	paramsKeeper.Subspace(batchtypes.ModuleName)
 	// paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	return paramsKeeper

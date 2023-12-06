@@ -6,3 +6,7 @@ release/
 .vscode/
 .DS_Store
 build/
+logs
+keys
+wasmbinding/test/wasm
+wasmbinding/test/data
