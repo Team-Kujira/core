@@ -8,7 +8,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/Team-Kujira/core/x/oracle/wasm"

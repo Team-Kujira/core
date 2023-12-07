@@ -2,15 +2,15 @@ package bindings
 
 import (
 	"cosmossdk.io/errors"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	"github.com/cosmos/ibc-go/v7/modules/core/03-connection/types"
-	commitmenttypes "github.com/cosmos/ibc-go/v7/modules/core/23-commitment/types"
-	"github.com/cosmos/ibc-go/v7/modules/core/exported"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibctmtypes "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	"github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
+	commitmenttypes "github.com/cosmos/ibc-go/v8/modules/core/23-commitment/types"
+	"github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctmtypes "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 )
 
 type VerifyMembershipQuery struct {
@@ -37,7 +37,7 @@ type IbcVerifyResponse struct{}
 // ----- moved from ibc-go/modules/core/03-connection -----
 // getClientStateAndVerificationStore returns the client state and associated KVStore for the provided client identifier.
 // If the client type is localhost then the core IBC KVStore is returned, otherwise the client prefixed store is returned.
-func getClientStateAndVerificationStore(ctx sdk.Context, keeper ibckeeper.Keeper, clientID string, ibcStoreKey *storetypes.KVStoreKey) (exported.ClientState, sdk.KVStore, error) {
+func getClientStateAndVerificationStore(ctx sdk.Context, keeper ibckeeper.Keeper, clientID string, ibcStoreKey *storetypes.KVStoreKey) (exported.ClientState, storetypes.KVStore, error) {
 	clientState, found := keeper.ClientKeeper.GetClientState(ctx, clientID)
 	if !found {
 		return nil, nil, errors.Wrap(clienttypes.ErrClientNotFound, clientID)

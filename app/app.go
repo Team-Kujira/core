@@ -86,7 +86,7 @@ import (
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
-	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"
+	ibctestingtypes "github.com/cosmos/ibc-go/v8/testing/types"
 
 	// bank "github.com/terra-money/alliance/custom/bank"
 	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"

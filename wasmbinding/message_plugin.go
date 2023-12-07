@@ -19,7 +19,7 @@ import (
 	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages
