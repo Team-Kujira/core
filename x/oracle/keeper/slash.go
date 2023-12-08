@@ -39,11 +39,17 @@ func (k Keeper) SlashAndResetMissCounters(ctx sdk.Context) {
 					panic(err)
 				}
 
-				k.SlashingKeeper.Slash(
+				err = k.SlashingKeeper.Slash(
 					ctx, consAddr, slashFraction,
 					validator.GetConsensusPower(powerReduction), distributionHeight,
 				)
-				k.SlashingKeeper.Jail(ctx, consAddr)
+				if err != nil {
+					panic(err)
+				}
+				err = k.SlashingKeeper.Jail(ctx, consAddr)
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 
