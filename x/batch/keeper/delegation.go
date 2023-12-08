@@ -169,6 +169,12 @@ func (k Keeper) withdrawAllDelegationRewards(ctx context.Context, delAddr sdk.Ac
 			panic(err)
 		}
 
+		// reinitialize the delegation
+		err = k.initializeDelegation(ctx, valAddr, delAddr)
+		if err != nil {
+			panic(err)
+		}
+
 		return false
 	})
 

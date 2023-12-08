@@ -8,7 +8,6 @@ import (
 	batchtypes "github.com/Team-Kujira/core/x/batch/types"
 	"github.com/cometbft/cometbft/crypto/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtestutil "github.com/cosmos/cosmos-sdk/x/distribution/testutil"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -43,7 +42,6 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 
 	delPub := secp256k1.GenPrivKey().PubKey()
 	delAddr := sdk.AccAddress(delPub.Address())
-	suite.app.AccountKeeper.SetAccount(sdk.WrapSDKContext(suite.ctx), authtypes.NewBaseAccount(delAddr, nil, 0, 0))
 
 	delTokens := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
 
@@ -172,7 +170,6 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 
 	delPub := secp256k1.GenPrivKey().PubKey()
 	delAddr := sdk.AccAddress(delPub.Address())
-	suite.app.AccountKeeper.SetAccount(sdk.WrapSDKContext(suite.ctx), authtypes.NewBaseAccount(delAddr, nil, 0, 0))
 
 	delTokens := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
 
