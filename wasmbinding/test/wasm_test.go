@@ -125,7 +125,7 @@ func TestSupply(t *testing.T) {
 
 func TestVerifyMembership(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	ctx := app.BaseApp.NewContext(false)
 
 	var err error
 	contractAddr, _ := SetupContract(t, ctx, app)
@@ -150,7 +150,7 @@ func TestVerifyMembership(t *testing.T) {
 
 func TestVerifyNonMembership(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	ctx := app.BaseApp.NewContext(false)
 
 	var err error
 	contractAddr, _ := SetupContract(t, ctx, app)
