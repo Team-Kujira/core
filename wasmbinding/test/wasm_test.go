@@ -125,7 +125,8 @@ func TestSupply(t *testing.T) {
 
 func TestVerifyMembership(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false)
+	now := time.Now()
+	ctx := app.BaseApp.NewContext(false).WithBlockTime(now)
 
 	var err error
 	contractAddr, _ := SetupContract(t, ctx, app)
@@ -150,7 +151,8 @@ func TestVerifyMembership(t *testing.T) {
 
 func TestVerifyNonMembership(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false)
+	now := time.Now()
+	ctx := app.BaseApp.NewContext(false).WithBlockTime(now)
 
 	var err error
 	contractAddr, _ := SetupContract(t, ctx, app)
