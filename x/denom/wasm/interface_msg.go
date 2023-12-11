@@ -80,7 +80,7 @@ func PerformCreate(f denomkeeper.Keeper, _ bankkeeper.Keeper, ctx sdk.Context, c
 
 	// Create denom
 	_, err := msgServer.CreateDenom(
-		sdk.WrapSDKContext(ctx),
+		ctx,
 		msgCreate,
 	)
 	if err != nil {
@@ -116,7 +116,7 @@ func PerformMint(f denomkeeper.Keeper, _ bankkeeper.Keeper, ctx sdk.Context, con
 
 	// Mint through token factory / message server
 	msgServer := denomkeeper.NewMsgServerImpl(f)
-	_, err = msgServer.Mint(sdk.WrapSDKContext(ctx), sdkMsg)
+	_, err = msgServer.Mint(ctx, sdkMsg)
 	if err != nil {
 		return errors.Wrap(err, "minting coins from message")
 	}
@@ -148,7 +148,7 @@ func PerformChangeAdmin(f denomkeeper.Keeper, ctx sdk.Context, contractAddr sdk.
 	}
 
 	msgServer := denomkeeper.NewMsgServerImpl(f)
-	_, err = msgServer.ChangeAdmin(sdk.WrapSDKContext(ctx), changeAdminMsg)
+	_, err = msgServer.ChangeAdmin(ctx, changeAdminMsg)
 	if err != nil {
 		return errors.Wrap(err, "failed changing admin from message")
 	}
@@ -178,7 +178,7 @@ func PerformBurn(f denomkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddr
 
 	// Burn through token factory / message server
 	msgServer := denomkeeper.NewMsgServerImpl(f)
-	_, err := msgServer.Burn(sdk.WrapSDKContext(ctx), sdkMsg)
+	_, err := msgServer.Burn(ctx, sdkMsg)
 	if err != nil {
 		return errors.Wrap(err, "burning coins from message")
 	}

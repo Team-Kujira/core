@@ -77,7 +77,7 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 	}
 
 	res, err := msgServer.RegisterInterchainAccount(
-		sdk.WrapSDKContext(ctx),
+		ctx,
 		msgRegister,
 	)
 	if err != nil {
@@ -142,7 +142,7 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 	msgServer := icacontrollerkeeper.NewMsgServerImpl(&f)
 
 	owner := contractAddr.String() + "-" + submitTx.AccountID
-	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionID, submitTx.Timeout, packetData))
+	res, err := msgServer.SendTx(ctx, icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionID, submitTx.Timeout, packetData))
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}

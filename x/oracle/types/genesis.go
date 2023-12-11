@@ -2,8 +2,6 @@ package types
 
 import (
 	"encoding/json"
-
-	"github.com/cosmos/cosmos-sdk/codec"
 )
 
 // NewGenesisState creates a new GenesisState object
@@ -40,11 +38,14 @@ func ValidateGenesis(data *GenesisState) error {
 
 // GetGenesisStateFromAppState returns x/oracle GenesisState given raw application
 // genesis state.
-func GetGenesisStateFromAppState(cdc codec.JSONCodec, appState map[string]json.RawMessage) *GenesisState {
+func GetGenesisStateFromAppState(appState map[string]json.RawMessage) *GenesisState {
 	var genesisState GenesisState
 
 	if appState[ModuleName] != nil {
-		cdc.MustUnmarshalJSON(appState[ModuleName], &genesisState)
+		err := json.Unmarshal(appState[ModuleName], &genesisState)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return &genesisState

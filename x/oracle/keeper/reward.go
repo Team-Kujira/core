@@ -63,7 +63,10 @@ func (k Keeper) RewardBallotWinners(
 
 		// In case absence of the validator, we just skip distribution
 		if receiverVal != nil && !rewardCoins.IsZero() {
-			k.distrKeeper.AllocateTokensToValidator(ctx, receiverVal, sdk.NewDecCoinsFromCoins(rewardCoins...))
+			err = k.distrKeeper.AllocateTokensToValidator(ctx, receiverVal, sdk.NewDecCoinsFromCoins(rewardCoins...))
+			if err != nil {
+				return err
+			}
 			distributedReward = distributedReward.Add(rewardCoins...)
 		}
 	}

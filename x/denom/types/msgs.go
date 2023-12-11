@@ -45,10 +45,6 @@ func (m MsgCreateDenom) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgCreateDenom) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 func (m MsgCreateDenom) GetSigners() []sdk.AccAddress {
 	sender, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{sender}
@@ -80,10 +76,6 @@ func (m MsgMint) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgMint) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 func (m MsgMint) GetSigners() []sdk.AccAddress {
 	sender, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{sender}
@@ -112,10 +104,6 @@ func (m MsgBurn) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m MsgBurn) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgBurn) GetSigners() []sdk.AccAddress {
@@ -159,10 +147,6 @@ func (m MsgBurn) GetSigners() []sdk.AccAddress {
 // 	return nil
 // }
 
-// func (m MsgForceTransfer) GetSignBytes() []byte {
-// 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-// }
-
 // func (m MsgForceTransfer) GetSigners() []sdk.AccAddress {
 // 	sender, _ := sdk.AccAddressFromBech32(m.Sender)
 // 	return []sdk.AccAddress{sender}
@@ -200,10 +184,6 @@ func (m MsgChangeAdmin) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgChangeAdmin) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 func (m MsgChangeAdmin) GetSigners() []sdk.AccAddress {
 	sender, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{sender}
@@ -221,11 +201,6 @@ func (m MsgUpdateParams) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
 func (m MsgUpdateParams) Type() string { return TypeMsgUpdateParams }
-
-// GetSignBytes implements sdk.Msg
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // GetSigners implements sdk.Msg
 func (m MsgUpdateParams) GetSigners() []sdk.AccAddress {

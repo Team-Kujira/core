@@ -52,9 +52,12 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 
 		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)))
 		validator, _ = validator.AddTokensFromDel(valTokens)
-		suite.app.StakingKeeper.SetValidator(sdk.WrapSDKContext(suite.ctx), validator)
-		suite.app.StakingKeeper.SetValidatorByConsAddr(sdk.WrapSDKContext(suite.ctx), validator)
-		suite.app.StakingKeeper.SetValidatorByPowerIndex(sdk.WrapSDKContext(suite.ctx), validator)
+		err = suite.app.StakingKeeper.SetValidator(sdk.WrapSDKContext(suite.ctx), validator)
+		suite.NoError(err)
+		err = suite.app.StakingKeeper.SetValidatorByConsAddr(sdk.WrapSDKContext(suite.ctx), validator)
+		suite.NoError(err)
+		err = suite.app.StakingKeeper.SetValidatorByPowerIndex(sdk.WrapSDKContext(suite.ctx), validator)
+		suite.NoError(err)
 
 		// Call the after-creation hook
 		valAddr, err := sdk.ValAddressFromBech32(validator.GetOperator())

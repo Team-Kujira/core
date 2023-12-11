@@ -72,10 +72,6 @@ func (msg MsgCreateHook) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{authority}
 }
 
-func (msg MsgCreateHook) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 func NewMsgUpdateHook(
 	authority string,
 	id uint64,
@@ -133,10 +129,6 @@ func (msg MsgUpdateHook) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{authority}
 }
 
-func (msg MsgUpdateHook) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 func NewMsgDeleteHook(
 	authority string,
 	id uint64,
@@ -169,8 +161,4 @@ func (msg MsgDeleteHook) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{authority}
-}
-
-func (msg MsgDeleteHook) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }

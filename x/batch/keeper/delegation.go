@@ -88,7 +88,7 @@ func (k Keeper) withdrawAllDelegationRewards(ctx context.Context, delAddr sdk.Ac
 	remainderTotal := sdk.DecCoins{}
 	// callback func was referenced from withdrawDelegationRewards func in
 	// https://github.com/cosmos/cosmos-sdk/blob/main/x/distribution/keeper/delegation.go
-	k.stakingKeeper.IterateDelegations(ctx, delAddr, func(_ int64, del stakingtypes.DelegationI) (stop bool) {
+	err := k.stakingKeeper.IterateDelegations(ctx, delAddr, func(_ int64, del stakingtypes.DelegationI) (stop bool) {
 		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(del.GetValidatorAddr())
 		if err != nil {
 			panic(err)
@@ -177,17 +177,20 @@ func (k Keeper) withdrawAllDelegationRewards(ctx context.Context, delAddr sdk.Ac
 
 		return false
 	})
+	if err != nil {
+		return rewardsTotal, err
+	}
 
 	// distribute total remainder to community pool
 	feePool, err := k.distrKeeper.FeePool.Get(ctx)
 	if err != nil {
-		panic(err)
+		return rewardsTotal, err
 	}
 
 	feePool.CommunityPool = feePool.CommunityPool.Add(remainderTotal...)
 	err = k.distrKeeper.FeePool.Set(ctx, feePool)
 	if err != nil {
-		panic(err)
+		return rewardsTotal, err
 	}
 
 	// add total reward coins to user account

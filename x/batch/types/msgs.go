@@ -32,10 +32,6 @@ func (m MsgWithdrawAllDelegatorRewards) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgWithdrawAllDelegatorRewards) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 func (m MsgWithdrawAllDelegatorRewards) GetSigners() []sdk.AccAddress {
 	sender, _ := sdk.AccAddressFromBech32(m.DelegatorAddress)
 	return []sdk.AccAddress{sender}
@@ -78,10 +74,6 @@ func (m MsgBatchResetDelegation) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m MsgBatchResetDelegation) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgBatchResetDelegation) GetSigners() []sdk.AccAddress {
