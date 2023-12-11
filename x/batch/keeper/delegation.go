@@ -100,7 +100,7 @@ func (k Keeper) withdrawAllDelegationRewards(ctx context.Context, delAddr sdk.Ac
 		}
 
 		// check existence of delegator starting info
-		hasInfo, err := k.distrKeeper.HasDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
+		hasInfo, err := k.distrKeeper.HasDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), delAddr)
 		if err != nil {
 			panic(err)
 		}
@@ -152,7 +152,7 @@ func (k Keeper) withdrawAllDelegationRewards(ctx context.Context, delAddr sdk.Ac
 		}
 
 		// decrement reference count of starting period
-		startingInfo, err := k.distrKeeper.GetDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
+		startingInfo, err := k.distrKeeper.GetDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), delAddr)
 		if err != nil {
 			panic(err)
 		}
@@ -164,7 +164,7 @@ func (k Keeper) withdrawAllDelegationRewards(ctx context.Context, delAddr sdk.Ac
 		}
 
 		// remove delegator starting info
-		err = k.distrKeeper.DeleteDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
+		err = k.distrKeeper.DeleteDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), delAddr)
 		if err != nil {
 			panic(err)
 		}
