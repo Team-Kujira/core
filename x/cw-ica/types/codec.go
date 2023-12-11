@@ -9,10 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-var (
-	amino = codec.NewLegacyAmino()
-)
-
 func RegisterCodec(_ *codec.LegacyAmino) {
 }
 

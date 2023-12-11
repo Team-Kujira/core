@@ -159,15 +159,19 @@ func (v MockValidator) GetDelegatorShares() sdkmath.LegacyDec              { ret
 func (v MockValidator) TokensFromShares(sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return sdkmath.LegacyZeroDec()
 }
+
 func (v MockValidator) TokensFromSharesTruncated(sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return sdkmath.LegacyZeroDec()
 }
+
 func (v MockValidator) TokensFromSharesRoundUp(sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return sdkmath.LegacyZeroDec()
 }
+
 func (v MockValidator) SharesFromTokens(amt sdkmath.Int) (sdkmath.LegacyDec, error) {
 	return sdkmath.LegacyZeroDec(), nil
 }
+
 func (v MockValidator) SharesFromTokensTruncated(amt sdkmath.Int) (sdkmath.LegacyDec, error) {
 	return sdkmath.LegacyZeroDec(), nil
 }
