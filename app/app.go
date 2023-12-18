@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	appparams "github.com/Team-Kujira/core/app/params"
 
@@ -144,7 +145,9 @@ import (
 	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/Team-Kujira/core/x/oracle"
+	oracleabci "github.com/Team-Kujira/core/x/oracle/abci"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/mockprovider"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
 	storetypes "cosmossdk.io/store/types"
@@ -619,6 +622,7 @@ func New(
 	app.OracleKeeper = oraclekeeper.NewKeeper(
 		appCodec,
 		keys[oracletypes.StoreKey],
+		nil,
 		app.GetSubspace(oracletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -777,6 +781,36 @@ func New(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
+
+	voteExtHandler := oracleabci.NewVoteExtHandler(
+		logger,
+		time.Second,
+		map[string]oracleabci.Provider{
+			"mock": mockprovider.NewMockProvider(),
+		},
+		map[string][]oraclekeeper.CurrencyPair{
+			"mock": {
+				{Base: "ATOM", Quote: "USD"},
+				{Base: "OSMO", Quote: "USD"},
+			},
+		},
+		app.OracleKeeper,
+	)
+
+	propHandler := oracleabci.NewProposalHandler(
+		logger,
+		app.OracleKeeper,
+		app.StakingKeeper,
+	)
+
+	baseAppOptions = append(baseAppOptions, func(ba *baseapp.BaseApp) {
+		ba.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler())
+		ba.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler())
+		ba.SetPrepareProposal(propHandler.PrepareProposal())
+		ba.SetProcessProposal(propHandler.ProcessProposal())
+		ba.SetPreBlocker(propHandler.PreBlocker)
+	})
+	// TODO: base option to be initialized at the beginning
 
 	app.ModuleManager = module.NewManager(
 		genutil.NewAppModule(

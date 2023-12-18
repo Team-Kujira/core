@@ -232,6 +232,7 @@ func CreateTestInput(t *testing.T) TestInput {
 	keeper := NewKeeper(
 		appCodec,
 		keyOracle,
+		nil,
 		paramsKeeper.Subspace(types.ModuleName),
 		accountKeeper,
 		bankKeeper,
