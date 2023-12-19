@@ -11,11 +11,12 @@ import (
 // DenomQuery contains denom custom queries.
 
 type CosmosQuery struct {
-	Denom  *denom.DenomQuery
-	Bank   *BankQuery
-	Oracle *oracle.OracleQuery
-	Ibc    *IbcQuery
-	CwIca  *cwica.CwIcaQuery `json:"ica,omitempty"`
+	Denom    *denom.DenomQuery
+	Bank     *BankQuery
+	Oracle   *oracle.OracleQuery
+	Ibc      *IbcQuery
+	CwIca    *cwica.CwIcaQuery `json:"ica,omitempty"`
+	Alliance *AllianceQuery
 }
 
 type BankQuery struct {
