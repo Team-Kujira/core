@@ -658,6 +658,7 @@ func New(
 		*app.IBCKeeper,
 		app.CwICAKeeper,
 		app.ICAControllerKeeper,
+		app.AllianceKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 

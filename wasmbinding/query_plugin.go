@@ -100,6 +100,20 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			return res, err
 		}
 
+		if contractQuery.Alliance != nil {
+			res, err := bindings.HandleAllianceQuery(ctx, qp.allianceKeeper, contractQuery.Alliance)
+			if err != nil {
+				return nil, err
+			}
+
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+			}
+
+			return bz, nil
+		}
+
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 }
