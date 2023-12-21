@@ -302,39 +302,6 @@ func New(
 	std.RegisterLegacyAminoCodec(legacyAmino)
 	std.RegisterInterfaces(interfaceRegistry)
 
-	// Below we could construct and set an application specific mempool and
-	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are
-	// already set in the SDK's BaseApp, this shows an example of how to override
-	// them.
-	//
-	// Example:
-	//
-	// bApp := baseapp.NewBaseApp(...)
-	// nonceMempool := mempool.NewSenderNonceMempool()
-	// abciPropHandler := NewDefaultProposalHandler(nonceMempool, bApp)
-	//
-	// bApp.SetMempool(nonceMempool)
-	// bApp.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
-	// bApp.SetProcessProposal(abciPropHandler.ProcessProposalHandler())
-	//
-	// Alternatively, you can construct BaseApp options, append those to
-	// baseAppOptions and pass them to NewBaseApp.
-	//
-	// Example:
-	//
-	// prepareOpt = func(app *baseapp.BaseApp) {
-	// 	abciPropHandler := baseapp.NewDefaultProposalHandler(nonceMempool, app)
-	// 	app.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
-	// }
-	// baseAppOptions = append(baseAppOptions, prepareOpt)
-
-	// create and set dummy vote extension handler
-	voteExtOp := func(bApp *baseapp.BaseApp) {
-		voteExtHandler := NewVoteExtensionHandler()
-		voteExtHandler.SetHandlers(bApp)
-	}
-	baseAppOptions = append(baseAppOptions, voteExtOp)
-
 	bApp := baseapp.NewBaseApp(Name, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
@@ -633,6 +600,32 @@ func New(
 		authority,
 	)
 
+	voteExtHandler := oracleabci.NewVoteExtHandler(
+		logger,
+		time.Second,
+		map[string]oracleabci.Provider{
+			"mock": mockprovider.NewMockProvider(),
+		},
+		map[string][]oraclekeeper.CurrencyPair{
+			"mock": {
+				{Base: "ATOM", Quote: "USD"},
+				{Base: "OSMO", Quote: "USD"},
+			},
+		},
+		app.OracleKeeper,
+	)
+
+	propHandler := oracleabci.NewProposalHandler(
+		logger,
+		app.OracleKeeper,
+		app.StakingKeeper,
+	)
+	bApp.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler())
+	bApp.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler())
+	bApp.SetPrepareProposal(propHandler.PrepareProposal())
+	bApp.SetProcessProposal(propHandler.ProcessProposal())
+	bApp.SetPreBlocker(propHandler.PreBlocker)
+
 	denomKeeper := denomkeeper.NewKeeper(
 		appCodec,
 		keys[denomtypes.StoreKey],
@@ -781,36 +774,6 @@ func New(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
-
-	voteExtHandler := oracleabci.NewVoteExtHandler(
-		logger,
-		time.Second,
-		map[string]oracleabci.Provider{
-			"mock": mockprovider.NewMockProvider(),
-		},
-		map[string][]oraclekeeper.CurrencyPair{
-			"mock": {
-				{Base: "ATOM", Quote: "USD"},
-				{Base: "OSMO", Quote: "USD"},
-			},
-		},
-		app.OracleKeeper,
-	)
-
-	propHandler := oracleabci.NewProposalHandler(
-		logger,
-		app.OracleKeeper,
-		app.StakingKeeper,
-	)
-
-	baseAppOptions = append(baseAppOptions, func(ba *baseapp.BaseApp) {
-		ba.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler())
-		ba.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler())
-		ba.SetPrepareProposal(propHandler.PrepareProposal())
-		ba.SetProcessProposal(propHandler.ProcessProposal())
-		ba.SetPreBlocker(propHandler.PreBlocker)
-	})
-	// TODO: base option to be initialized at the beginning
 
 	app.ModuleManager = module.NewManager(
 		genutil.NewAppModule(
