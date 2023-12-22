@@ -589,7 +589,7 @@ func New(
 	app.OracleKeeper = oraclekeeper.NewKeeper(
 		appCodec,
 		keys[oracletypes.StoreKey],
-		nil,
+		runtime.NewKVStoreService(keys[oracletypes.StoreKey]),
 		app.GetSubspace(oracletypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
