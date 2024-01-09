@@ -6,7 +6,6 @@ import (
 
 	gogotypes "github.com/cosmos/gogoproto/types"
 
-	"cosmossdk.io/collections"
 	corestore "cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
@@ -34,11 +33,6 @@ type Keeper struct {
 	distrName   string
 	rewardDenom string
 	authority   string
-
-	// state management
-	Schema  collections.Schema
-	Counter collections.Map[string, uint64]
-	Prices  collections.Map[string, []byte]
 }
 
 // NewKeeper constructs a new keeper for oracle
@@ -58,7 +52,6 @@ func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey,
 		paramspace = paramspace.WithKeyTable(types.ParamKeyTable())
 	}
 
-	sb := collections.NewSchemaBuilder(storeService)
 	return Keeper{
 		cdc:            cdc,
 		storeKey:       storeKey,
@@ -71,8 +64,6 @@ func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey,
 		distrName:      distrName,
 		rewardDenom:    "ukuji",
 		authority:      authority,
-		Counter:        collections.NewMap(sb, types.CounterKey, "counter", collections.StringKey, collections.Uint64Value),
-		Prices:         collections.NewMap(sb, types.PricesKey, "prices", collections.StringKey, collections.BytesValue),
 	}
 }
 
@@ -349,35 +340,11 @@ func (k Keeper) GetSupportedPairs(_ context.Context) []CurrencyPair {
 	}
 }
 
-func (k Keeper) SetOraclePrices(ctx context.Context, prices map[string]math.LegacyDec) error {
+func (k Keeper) SetOraclePrices(ctx sdk.Context, prices map[string]math.LegacyDec) error {
 	for b, q := range prices {
-		bz, err := q.Marshal()
-		if err != nil {
-			return err
-		}
-
-		err = k.Prices.Set(ctx, b, bz)
-		if err != nil {
-			return err
-		}
+		k.SetExchangeRateWithEvent(ctx, b, q)
 	}
 	return nil
-}
-
-func (k Keeper) GetOraclePrices(ctx context.Context) (map[string]math.LegacyDec, error) {
-	prices := make(map[string]math.LegacyDec)
-	err := k.Prices.Walk(ctx, nil, func(key string, value []byte) (bool, error) {
-		var q math.LegacyDec
-		if err := q.Unmarshal(value); err != nil {
-			return true, err
-		}
-		prices[key] = q
-		return false, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return prices, nil
 }
 
 type (
