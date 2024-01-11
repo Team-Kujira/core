@@ -150,7 +150,6 @@ import (
 	"github.com/Team-Kujira/core/x/oracle"
 	oracleabci "github.com/Team-Kujira/core/x/oracle/abci"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
-	"github.com/Team-Kujira/core/x/oracle/mockprovider"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
 	storetypes "cosmossdk.io/store/types"
@@ -606,9 +605,6 @@ func New(
 	voteExtHandler := oracleabci.NewVoteExtHandler(
 		logger,
 		time.Second,
-		map[string]oracleabci.Provider{
-			"mock": mockprovider.NewMockProvider(),
-		},
 		map[string][]oraclekeeper.CurrencyPair{
 			"mock": {
 				{Base: "ATOM", Quote: "USD"},

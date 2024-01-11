@@ -335,8 +335,9 @@ func (k Keeper) GetSubspace() paramstypes.Subspace {
 
 func (k Keeper) GetSupportedPairs(_ context.Context) []CurrencyPair {
 	return []CurrencyPair{
-		{Base: "ATOM", Quote: "USD"},
-		{Base: "OSMO", Quote: "USD"},
+		{Base: "BTC", Quote: "USD"},
+		{Base: "ETH", Quote: "USD"},
+		{Base: "USDT", Quote: "USD"},
 	}
 }
 
