@@ -6,7 +6,6 @@ import (
 
 	gogotypes "github.com/cosmos/gogoproto/types"
 
-	corestore "cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -37,7 +36,6 @@ type Keeper struct {
 
 // NewKeeper constructs a new keeper for oracle
 func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey,
-	storeService corestore.KVStoreService,
 	paramspace paramstypes.Subspace, accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper, distrKeeper types.DistributionKeeper,
 	slashingkeeper types.SlashingKeeper, stakingKeeper types.StakingKeeper, distrName string, authority string,
