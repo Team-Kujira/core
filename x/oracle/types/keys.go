@@ -1,7 +1,6 @@
 package types
 
 import (
-	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 )
@@ -43,8 +42,6 @@ var (
 	AggregateExchangeRateVoteKey    = []byte{0x05} // prefix for each key to a aggregate vote
 	ParamsKey                       = []byte{0x06}
 	WhitelistKey                    = []byte{0x07}
-	CounterKey                      = collections.NewPrefix(8)
-	PricesKey                       = collections.NewPrefix(9)
 )
 
 // GetExchangeRateKey - stored by *denom*

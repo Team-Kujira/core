@@ -16,25 +16,19 @@ import (
 
 type VoteExtHandler struct {
 	logger          log.Logger
-	currentBlock    int64                            // current block height
-	lastPriceSyncTS time.Time                        // last time we synced prices
-	providerTimeout time.Duration                    // timeout for fetching prices from providers
-	providerPairs   map[string][]keeper.CurrencyPair // mapping of provider name to supported pairs (e.g. Binance -> [ATOM/USD])
+	currentBlock    int64     // current block height
+	lastPriceSyncTS time.Time // last time we synced prices
 
 	Keeper keeper.Keeper
 }
 
 func NewVoteExtHandler(
 	logger log.Logger,
-	providerTimeout time.Duration,
-	providerPairs map[string][]keeper.CurrencyPair,
 	keeper keeper.Keeper,
 ) *VoteExtHandler {
 	return &VoteExtHandler{
-		logger:          logger,
-		providerTimeout: providerTimeout,
-		providerPairs:   providerPairs,
-		Keeper:          keeper,
+		logger: logger,
+		Keeper: keeper,
 	}
 }
 

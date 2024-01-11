@@ -351,15 +351,6 @@ type (
 		Base  string
 		Quote string
 	}
-
-	TickerPrice struct {
-		Price  math.LegacyDec // last trade price
-		Volume math.LegacyDec // 24h volume
-	}
-
-	// AggregatedProviderPrices defines a type alias for a map of
-	// provider -> asset -> TickerPrice (e.g. Binance -> ATOM/USD -> 11.98)
-	AggregatedProviderPrices map[string]map[string]TickerPrice
 )
 
 func (cp CurrencyPair) String() string {

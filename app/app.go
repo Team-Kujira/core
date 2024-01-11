@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	appparams "github.com/Team-Kujira/core/app/params"
 
@@ -603,13 +602,6 @@ func New(
 
 	voteExtHandler := oracleabci.NewVoteExtHandler(
 		logger,
-		time.Second,
-		map[string][]oraclekeeper.CurrencyPair{
-			"mock": {
-				{Base: "ATOM", Quote: "USD"},
-				{Base: "OSMO", Quote: "USD"},
-			},
-		},
 		app.OracleKeeper,
 	)
 

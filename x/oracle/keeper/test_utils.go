@@ -232,7 +232,6 @@ func CreateTestInput(t *testing.T) TestInput {
 	keeper := NewKeeper(
 		appCodec,
 		keyOracle,
-		runtime.NewKVStoreService(keyOracle),
 		paramsKeeper.Subspace(types.ModuleName),
 		accountKeeper,
 		bankKeeper,
