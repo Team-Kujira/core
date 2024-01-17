@@ -37,6 +37,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/mempool"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -605,16 +606,8 @@ func New(
 		app.OracleKeeper,
 	)
 
-	propHandler := oracleabci.NewProposalHandler(
-		logger,
-		app.OracleKeeper,
-		app.StakingKeeper,
-	)
 	bApp.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler())
 	bApp.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler())
-	bApp.SetPrepareProposal(propHandler.PrepareProposal())
-	bApp.SetProcessProposal(propHandler.ProcessProposal())
-	bApp.SetPreBlocker(propHandler.PreBlocker)
 
 	denomKeeper := denomkeeper.NewKeeper(
 		appCodec,
@@ -1103,6 +1096,20 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+
+	nonceMempool := mempool.NewSenderNonceMempool()
+	propHandler := oracleabci.NewProposalHandler(
+		logger,
+		app.OracleKeeper,
+		app.StakingKeeper,
+		app.ModuleManager,
+		nonceMempool,
+		bApp,
+	)
+	bApp.SetMempool(nonceMempool)
+	bApp.SetPrepareProposal(propHandler.PrepareProposal())
+	bApp.SetProcessProposal(propHandler.ProcessProposal())
+	bApp.SetPreBlocker(propHandler.PreBlocker)
 
 	// must be before Loading version
 	// requires the snapshot store to be created and registered as a BaseAppOption
