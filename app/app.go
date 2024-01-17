@@ -75,6 +75,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"
 	bank "github.com/terra-money/alliance/custom/bank"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
@@ -83,11 +84,13 @@ import (
 	alliancemodulekeeper "github.com/terra-money/alliance/x/alliance/keeper"
 	alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
 
-	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
@@ -116,11 +119,13 @@ import (
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/spf13/cast"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	wasmvm "github.com/CosmWasm/wasmvm"
 
 	"github.com/Team-Kujira/core/app/openapiconsole"
 	appparams "github.com/Team-Kujira/core/app/params"
@@ -207,6 +212,7 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
+		ibcwasm.AppModuleBasic{},
 
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -294,16 +300,17 @@ type App struct {
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
 
-	EvidenceKeeper  evidencekeeper.Keeper
-	TransferKeeper  ibctransferkeeper.Keeper
-	FeeGrantKeeper  feegrantkeeper.Keeper
-	WasmKeeper      wasmkeeper.Keeper
-	DenomKeeper     *denomkeeper.Keeper
-	BatchKeeper     batchkeeper.Keeper
-	SchedulerKeeper schedulerkeeper.Keeper
-	OracleKeeper    oraclekeeper.Keeper
-	AllianceKeeper  alliancemodulekeeper.Keeper
-	CwICAKeeper     cwicakeeper.Keeper
+	EvidenceKeeper   evidencekeeper.Keeper
+	TransferKeeper   ibctransferkeeper.Keeper
+	FeeGrantKeeper   feegrantkeeper.Keeper
+	WasmKeeper       wasmkeeper.Keeper
+	DenomKeeper      *denomkeeper.Keeper
+	BatchKeeper      batchkeeper.Keeper
+	SchedulerKeeper  schedulerkeeper.Keeper
+	OracleKeeper     oraclekeeper.Keeper
+	AllianceKeeper   alliancemodulekeeper.Keeper
+	CwICAKeeper      cwicakeeper.Keeper
+	WasmClientKeeper ibcwasmkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -366,6 +373,7 @@ func New(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
+		ibcwasmtypes.StoreKey,
 
 		wasmtypes.StoreKey,
 		icahosttypes.StoreKey,
@@ -651,6 +659,18 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	availableCapabilities := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2,cosmwasm_1_3,cosmwasm_1_4"
+
+	wasmer, err := wasmvm.NewVM(
+		filepath.Join(wasmDir, "wasm"),
+		availableCapabilities,
+		32, // wasmkeeper.contractMemoryLimit,
+		wasmConfig.ContractDebugMode,
+		wasmConfig.MemoryCacheSize,
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(
 		app.BankKeeper,
 		app.OracleKeeper,
@@ -660,6 +680,8 @@ func New(
 		app.ICAControllerKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
+
+	wasmOpts = append(wasmOpts, wasmkeeper.WithWasmEngine(wasmer))
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
@@ -721,6 +743,15 @@ func New(
 		govtypes.NewMultiGovHooks(
 		// register the governance hooks
 		),
+	)
+
+	app.WasmClientKeeper = ibcwasmkeeper.NewKeeperWithVM(
+		appCodec,
+		keys[wasmtypes.StoreKey],
+		app.IBCKeeper.ClientKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		wasmer,
+		app.GRPCQueryRouter(),
 	)
 
 	// Create Transfer Stack
@@ -928,6 +959,8 @@ func New(
 			skipGenesisInvariants,
 			app.GetSubspace(crisistypes.ModuleName),
 		),
+
+		ibcwasm.NewAppModule(app.WasmClientKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -964,6 +997,7 @@ func New(
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 		cwicatypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -996,6 +1030,7 @@ func New(
 		oracletypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 		cwicatypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1028,7 +1063,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-
+		ibcwasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -1091,6 +1126,7 @@ func New(
 	if manager := app.SnapshotManager(); manager != nil {
 		err := manager.RegisterExtensions(
 			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
+			ibcwasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmClientKeeper),
 		)
 		if err != nil {
 			panic(fmt.Errorf("failed to register snapshot extension: %s", err))
@@ -1120,6 +1156,13 @@ func New(
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
+		}
+
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+
+		// Initialize pinned codes in wasmvm as they are not persisted there
+		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			panic(fmt.Sprintf("failed initialize pinned codes %s", err))
 		}
 	}
 
