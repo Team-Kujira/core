@@ -606,8 +606,13 @@ func New(
 		app.OracleKeeper,
 	)
 
-	bApp.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler())
-	bApp.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler())
+	oracleConfig, err := oracleabci.ReadOracleConfig(appOpts)
+	if err != nil {
+		panic(fmt.Sprintf("error while reading oracle config: %s", err))
+	}
+
+	bApp.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler(oracleConfig))
+	bApp.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler(oracleConfig))
 
 	denomKeeper := denomkeeper.NewKeeper(
 		appCodec,

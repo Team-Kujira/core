@@ -15,6 +15,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/Team-Kujira/core/app"
 	"github.com/Team-Kujira/core/app/params"
+	oracleabci "github.com/Team-Kujira/core/x/oracle/abci"
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
 	dbm "github.com/cosmos/cosmos-db"
@@ -146,7 +147,8 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		WASM WASMConfig `mapstructure:"wasm"`
+		WASM   WASMConfig              `mapstructure:"wasm"`
+		Oracle oracleabci.OracleConfig `mapstructure:"oracle"`
 	}
 
 	// Optionally allow the chain developer to overwrite the SDK's default
@@ -173,6 +175,9 @@ func initAppConfig() (string, interface{}) {
 			LruSize:       1,
 			QueryGasLimit: 30000000,
 		},
+		Oracle: oracleabci.OracleConfig{
+			Endpoint: "http://localhost:10171/api/v1/prices",
+		},
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate + `
@@ -181,7 +186,11 @@ func initAppConfig() (string, interface{}) {
  query_gas_limit = 30000000
  # This is the number of wasm vm instances we keep cached in memory for speed-up
  # Warning: this is currently unstable and may lead to crashes, best to keep for 0 unless testing locally
- lru_size = 0`
+ lru_size = 0
+
+[oracle]
+ # Endpoint to query oracle prices for vote extension
+ endpoint = "http://localhost:10171/api/v1/prices"`
 
 	return customAppTemplate, customAppConfig
 }

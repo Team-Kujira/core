@@ -42,15 +42,14 @@ type PricesResponse struct {
 	Prices map[string]math.LegacyDec `json:"prices"`
 }
 
-func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
+func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
 		h.currentBlock = req.Height
 		h.lastPriceSyncTS = time.Now()
 
-		h.logger.Info("computing oracle prices for vote extension", "height", req.Height, "time", h.lastPriceSyncTS)
+		h.logger.Info("computing oracle prices for vote extension", "height", req.Height, "time", h.lastPriceSyncTS, "endpoint", oracleConfig.Endpoint)
 
-		requestURL := fmt.Sprintf("http://localhost:10171/api/v1/prices")
-		res, err := http.Get(requestURL)
+		res, err := http.Get(oracleConfig.Endpoint)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +86,7 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	}
 }
 
-func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
+func (h *VoteExtHandler) VerifyVoteExtensionHandler(oracleConfig OracleConfig) sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
 		var voteExt OracleVoteExtension
 
