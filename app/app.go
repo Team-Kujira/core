@@ -747,9 +747,9 @@ func New(
 
 	app.WasmClientKeeper = ibcwasmkeeper.NewKeeperWithVM(
 		appCodec,
-		keys[wasmtypes.StoreKey],
+		keys[ibcwasmtypes.StoreKey],
 		app.IBCKeeper.ClientKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		authority,
 		wasmer,
 		app.GRPCQueryRouter(),
 	)
