@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"context"
 	"fmt"
 
 	gogotypes "github.com/cosmos/gogoproto/types"
@@ -329,14 +328,6 @@ func (k Keeper) ValidateFeeder(ctx sdk.Context, feederAddr sdk.AccAddress, valid
 
 func (k Keeper) GetSubspace() paramstypes.Subspace {
 	return k.paramSpace
-}
-
-func (k Keeper) GetSupportedPairs(_ context.Context) []CurrencyPair {
-	return []CurrencyPair{
-		{Base: "BTC", Quote: "USD"},
-		{Base: "ETH", Quote: "USD"},
-		{Base: "USDT", Quote: "USD"},
-	}
 }
 
 func (k Keeper) SetOraclePrices(ctx sdk.Context, prices map[string]math.LegacyDec) error {

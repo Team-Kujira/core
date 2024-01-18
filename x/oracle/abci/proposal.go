@@ -270,11 +270,7 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 }
 
 func (h *ProposalHandler) computeStakeWeightedOraclePrices(ctx sdk.Context, ci abci.ExtendedCommitInfo) (map[string]math.LegacyDec, error) {
-	requiredPairs := h.keeper.GetSupportedPairs(ctx)
-	stakeWeightedPrices := make(map[string]math.LegacyDec, len(requiredPairs)) // base -> average stake-weighted price
-	for _, pair := range requiredPairs {
-		stakeWeightedPrices[pair.Base] = math.LegacyZeroDec()
-	}
+	stakeWeightedPrices := make(map[string]math.LegacyDec) // base -> average stake-weighted price
 
 	var totalStake int64
 	for _, v := range ci.Votes {
@@ -290,18 +286,15 @@ func (h *ProposalHandler) computeStakeWeightedOraclePrices(ctx sdk.Context, ci a
 
 		totalStake += v.Validator.Power
 
-		// Compute stake-weighted average of prices for each supported pair, i.e.
+		// Compute stake-weighted average of prices, i.e.
 		// (P1)(W1) + (P2)(W2) + ... + (Pn)(Wn) / (W1 + W2 + ... + Wn)
 		//
 		// NOTE: These are the prices computed at the PREVIOUS height, i.e. H-1
 		for base, price := range voteExt.Prices {
-			// Only compute stake-weighted average for supported pairs.
-			//
-			// NOTE: VerifyVoteExtension should be sufficient to ensure that only
-			// supported pairs are supplied, but we add this here for demo purposes.
-			if _, ok := stakeWeightedPrices[base]; ok {
-				stakeWeightedPrices[base] = stakeWeightedPrices[base].Add(price.MulInt64(v.Validator.Power))
+			if _, ok := stakeWeightedPrices[base]; !ok {
+				stakeWeightedPrices[base] = math.LegacyZeroDec()
 			}
+			stakeWeightedPrices[base] = stakeWeightedPrices[base].Add(price.MulInt64(v.Validator.Power))
 		}
 	}
 
