@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -24,6 +26,7 @@ import (
 type StakeWeightedPrices struct {
 	StakeWeightedPrices map[string]math.LegacyDec
 	ExtendedCommitInfo  abci.ExtendedCommitInfo
+	MissCounter         map[string]sdk.ValAddress
 }
 
 type ProposalHandler struct {
@@ -133,7 +136,12 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		}
 
 		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
-			stakeWeightedPrices, err := h.computeStakeWeightedOraclePrices(ctx, req.LocalLastCommit)
+			// stakeWeightedPrices, err := h.computeStakeWeightedOraclePrices(ctx, req.LocalLastCommit)
+			// if err != nil {
+			// 	return nil, errors.New("failed to compute stake-weighted oracle prices")
+			// }
+
+			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, req.LocalLastCommit)
 			if err != nil {
 				return nil, errors.New("failed to compute stake-weighted oracle prices")
 			}
@@ -141,6 +149,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			injectedVoteExtTx := StakeWeightedPrices{
 				StakeWeightedPrices: stakeWeightedPrices,
 				ExtendedCommitInfo:  req.LocalLastCommit,
+				MissCounter:         missMap,
 			}
 
 			// NOTE: We use stdlib JSON encoding, but an application may choose to use
@@ -193,14 +202,24 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 					return nil, err
 				}
 
-				// Verify the proposer's stake-weighted oracle prices by computing the same
-				// calculation and comparing the results. We omit verification for brevity
-				// and demo purposes.
-				stakeWeightedPrices, err := h.computeStakeWeightedOraclePrices(ctx, injectedVoteExtTx.ExtendedCommitInfo)
+				// Verify the proposer's stake-weighted oracle prices & miss counter by computing the same
+				// calculation and comparing the results.
+				// stakeWeightedPrices, err := h.computeStakeWeightedOraclePrices(ctx, injectedVoteExtTx.ExtendedCommitInfo)
+				// if err != nil {
+				// 	return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
+				// }
+				stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, injectedVoteExtTx.ExtendedCommitInfo)
 				if err != nil {
+					return nil, errors.New("failed to compute stake-weighted oracle prices")
+				}
+
+				// compare stakeWeightedPrices
+				if err := compareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
 					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
 				}
-				if err := compareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
+
+				// compare missMap
+				if err := compareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
 					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
 				}
 				continue
@@ -258,6 +277,10 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 			continue
 		}
 
+		for _, valAddr := range injectedVoteExtTx.MissCounter {
+			h.keeper.SetMissCounter(ctx, valAddr, h.keeper.GetMissCounter(ctx, valAddr)+1)
+		}
+
 		// set oracle prices using the passed in context, which will make these prices available in the current block
 		if err := h.keeper.SetOraclePrices(ctx, injectedVoteExtTx.StakeWeightedPrices); err != nil {
 			return nil, err
@@ -269,47 +292,202 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 	}, nil
 }
 
-func (h *ProposalHandler) computeStakeWeightedOraclePrices(ctx sdk.Context, ci abci.ExtendedCommitInfo) (map[string]math.LegacyDec, error) {
-	stakeWeightedPrices := make(map[string]math.LegacyDec) // base -> average stake-weighted price
+// func (h *ProposalHandler) computeStakeWeightedOraclePrices(ctx sdk.Context, ci abci.ExtendedCommitInfo) (map[string]math.LegacyDec, error) {
+// 	stakeWeightedPrices := make(map[string]math.LegacyDec) // base -> average stake-weighted price
 
-	var totalStake int64
+// 	var totalStake int64
+// 	for _, v := range ci.Votes {
+// 		if v.BlockIdFlag != cmtproto.BlockIDFlagCommit {
+// 			continue
+// 		}
+
+// 		var voteExt OracleVoteExtension
+// 		if err := json.Unmarshal(v.VoteExtension, &voteExt); err != nil {
+// 			h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
+// 			return nil, err
+// 		}
+
+// 		totalStake += v.Validator.Power
+
+// 		// Compute stake-weighted average of prices, i.e.
+// 		// (P1)(W1) + (P2)(W2) + ... + (Pn)(Wn) / (W1 + W2 + ... + Wn)
+// 		//
+// 		// NOTE: These are the prices computed at the PREVIOUS height, i.e. H-1
+// 		for base, price := range voteExt.Prices {
+// 			if _, ok := stakeWeightedPrices[base]; !ok {
+// 				stakeWeightedPrices[base] = math.LegacyZeroDec()
+// 			}
+// 			stakeWeightedPrices[base] = stakeWeightedPrices[base].Add(price.MulInt64(v.Validator.Power))
+// 		}
+// 	}
+
+// 	if totalStake == 0 {
+// 		return nil, nil
+// 	}
+
+// 	// finalize average by dividing by total stake, i.e. total weights
+// 	for base, price := range stakeWeightedPrices {
+// 		stakeWeightedPrices[base] = price.QuoInt64(totalStake)
+// 	}
+
+// 	return stakeWeightedPrices, nil
+// }
+
+func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
+	return nil
+}
+
+func compareMissMap(m1, m2 map[string]sdk.ValAddress) error {
+	return nil
+}
+
+func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim) (votes map[string]types.ExchangeRateBallot) {
+	votes = map[string]types.ExchangeRateBallot{}
+
 	for _, v := range ci.Votes {
 		if v.BlockIdFlag != cmtproto.BlockIDFlagCommit {
 			continue
 		}
 
-		var voteExt OracleVoteExtension
-		if err := json.Unmarshal(v.VoteExtension, &voteExt); err != nil {
-			h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
-			return nil, err
-		}
+		claim, ok := validatorClaimMap[sdk.ValAddress(v.Validator.Address).String()]
+		if ok {
+			power := claim.Power
 
-		totalStake += v.Validator.Power
-
-		// Compute stake-weighted average of prices, i.e.
-		// (P1)(W1) + (P2)(W2) + ... + (Pn)(Wn) / (W1 + W2 + ... + Wn)
-		//
-		// NOTE: These are the prices computed at the PREVIOUS height, i.e. H-1
-		for base, price := range voteExt.Prices {
-			if _, ok := stakeWeightedPrices[base]; !ok {
-				stakeWeightedPrices[base] = math.LegacyZeroDec()
+			var voteExt OracleVoteExtension
+			if err := json.Unmarshal(v.VoteExtension, &voteExt); err != nil {
+				h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
+				return votes
 			}
-			stakeWeightedPrices[base] = stakeWeightedPrices[base].Add(price.MulInt64(v.Validator.Power))
+
+			for base, price := range voteExt.Prices {
+				tmpPower := power
+				if !price.IsPositive() {
+					// Make the power of abstain vote zero
+					tmpPower = 0
+				}
+
+				votes[base] = append(votes[base],
+					types.NewVoteForTally(
+						price,
+						base,
+						v.Validator.Address,
+						tmpPower,
+					),
+				)
+			}
 		}
 	}
 
-	if totalStake == 0 {
-		return nil, nil
+	// sort created ballot
+	for denom, ballot := range votes {
+		sort.Sort(ballot)
+		votes[denom] = ballot
 	}
 
-	// finalize average by dividing by total stake, i.e. total weights
-	for base, price := range stakeWeightedPrices {
-		stakeWeightedPrices[base] = price.QuoInt64(totalStake)
-	}
-
-	return stakeWeightedPrices, nil
+	return votes
 }
 
-func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
-	return nil
+func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, ci abci.ExtendedCommitInfo) (map[string]math.LegacyDec, map[string]sdk.ValAddress, error) {
+	params := h.keeper.GetParams(ctx)
+
+	// Build claim map over all validators in active set
+	stakeWeightedPrices := make(map[string]math.LegacyDec) // base -> average stake-weighted price
+	validatorClaimMap := make(map[string]types.Claim)
+
+	maxValidators, err := h.keeper.StakingKeeper.MaxValidators(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	iterator, err := h.keeper.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	defer iterator.Close()
+
+	powerReduction := h.keeper.StakingKeeper.PowerReduction(ctx)
+
+	i := 0
+	for ; iterator.Valid() && i < int(maxValidators); iterator.Next() {
+		validator, err := h.keeper.StakingKeeper.Validator(ctx, iterator.Value())
+		if err != nil {
+			return nil, nil, err
+		}
+
+		// Exclude not bonded validator
+		if validator.IsBonded() {
+			valAddrStr := validator.GetOperator()
+			valAddr, err := sdk.ValAddressFromBech32(valAddrStr)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			validatorClaimMap[valAddr.String()] = types.NewClaim(validator.GetConsensusPower(powerReduction), 0, 0, valAddr)
+			i++
+		}
+	}
+
+	voteMap := h.GetBallotByDenom(ctx, ci, validatorClaimMap)
+
+	// Keep track, if a voter submitted a price deviating too much
+	missMap := map[string]sdk.ValAddress{}
+
+	// Iterate through ballots and update exchange rates; drop if not enough votes have been achieved.
+	for denom, ballot := range voteMap {
+		bondedTokens, err := h.keeper.StakingKeeper.TotalBondedTokens(ctx)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		totalBondedPower := sdk.TokensToConsensusPower(bondedTokens, h.keeper.StakingKeeper.PowerReduction(ctx))
+		voteThreshold := h.keeper.VoteThreshold(ctx)
+		thresholdVotes := voteThreshold.MulInt64(totalBondedPower).RoundInt()
+		ballotPower := math.NewInt(ballot.Power())
+
+		if !ballotPower.IsZero() && ballotPower.GTE(thresholdVotes) {
+			exchangeRate, err := keeper.Tally(
+				ctx, ballot, params.MaxDeviation, validatorClaimMap, missMap,
+			)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			stakeWeightedPrices[denom] = exchangeRate
+		}
+	}
+
+	//---------------------------
+	// Do miss counting & slashing
+	denomMap := map[string]map[string]struct{}{}
+	var voteTargets []string
+	voteTargets = append(voteTargets, params.RequiredDenoms...)
+
+	for _, denom := range voteTargets {
+		denomMap[denom] = map[string]struct{}{}
+	}
+
+	for denom, votes := range voteMap {
+		for _, vote := range votes {
+			// ignore denoms, not requested in voteTargets
+			_, ok := denomMap[denom]
+			if !ok {
+				continue
+			}
+
+			denomMap[denom][vote.Voter.String()] = struct{}{}
+		}
+	}
+
+	// Check if each validator is missing a required denom price
+	for _, claim := range validatorClaimMap {
+		for _, denom := range voteTargets {
+			_, ok := denomMap[denom][claim.Recipient.String()]
+			if !ok {
+				missMap[claim.Recipient.String()] = claim.Recipient
+				break
+			}
+		}
+	}
+
+	return stakeWeightedPrices, missMap, nil
 }
