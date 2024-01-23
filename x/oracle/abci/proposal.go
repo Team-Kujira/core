@@ -12,7 +12,6 @@ import (
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	"github.com/Team-Kujira/core/x/oracle/types"
 	abci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
@@ -341,15 +340,12 @@ func compareMissMap(m1, m2 map[string]sdk.ValAddress) error {
 	return nil
 }
 
-func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim) (votes map[string]types.ExchangeRateBallot) {
+func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim, validatorConsensusAddrMap map[string]sdk.ValAddress) (votes map[string]types.ExchangeRateBallot) {
 	votes = map[string]types.ExchangeRateBallot{}
 
 	for _, v := range ci.Votes {
-		if v.BlockIdFlag != cmtproto.BlockIDFlagCommit {
-			continue
-		}
-
-		claim, ok := validatorClaimMap[sdk.ValAddress(v.Validator.Address).String()]
+		valAddr := validatorConsensusAddrMap[sdk.ConsAddress(v.Validator.Address).String()]
+		claim, ok := validatorClaimMap[valAddr.String()]
 		if ok {
 			power := claim.Power
 
@@ -393,6 +389,7 @@ func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, 
 	// Build claim map over all validators in active set
 	stakeWeightedPrices := make(map[string]math.LegacyDec) // base -> average stake-weighted price
 	validatorClaimMap := make(map[string]types.Claim)
+	validatorConsensusAddrMap := make(map[string]sdk.ValAddress)
 
 	maxValidators, err := h.keeper.StakingKeeper.MaxValidators(ctx)
 	if err != nil {
@@ -423,11 +420,17 @@ func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, 
 			}
 
 			validatorClaimMap[valAddr.String()] = types.NewClaim(validator.GetConsensusPower(powerReduction), 0, 0, valAddr)
+
+			consAddr, err := validator.GetConsAddr()
+			if err != nil {
+				return nil, nil, err
+			}
+			validatorConsensusAddrMap[sdk.ConsAddress(consAddr).String()] = valAddr
 			i++
 		}
 	}
 
-	voteMap := h.GetBallotByDenom(ctx, ci, validatorClaimMap)
+	voteMap := h.GetBallotByDenom(ctx, ci, validatorClaimMap, validatorConsensusAddrMap)
 
 	// Keep track, if a voter submitted a price deviating too much
 	missMap := map[string]sdk.ValAddress{}
