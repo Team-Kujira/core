@@ -333,10 +333,34 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 // }
 
 func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
+	for denom, p := range p1 {
+		if !p2[denom].Equal(p) {
+			return errors.New("oracle prices mismatch")
+		}
+	}
+
+	for denom, p := range p2 {
+		if !p1[denom].Equal(p) {
+			return errors.New("oracle prices mismatch")
+		}
+	}
+
 	return nil
 }
 
 func compareMissMap(m1, m2 map[string]sdk.ValAddress) error {
+	for valAddr := range m1 {
+		if _, ok := m2[valAddr]; !ok {
+			return errors.New("oracle missMap mismatch")
+		}
+	}
+
+	for valAddr := range m2 {
+		if _, ok := m1[valAddr]; !ok {
+			return errors.New("oracle missMap mismatch")
+		}
+	}
+
 	return nil
 }
 
