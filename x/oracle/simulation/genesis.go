@@ -108,10 +108,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			MinValidPerWindow: minValidPerWindow,
 		},
 		[]types.ExchangeRateTuple{},
-		[]types.FeederDelegation{},
 		[]types.MissCounter{},
-		[]types.AggregateExchangeRatePrevote{},
-		[]types.AggregateExchangeRateVote{},
 	)
 
 	bz, err := json.MarshalIndent(&oracleGenesis.Params, "", " ")

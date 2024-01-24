@@ -281,11 +281,22 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 		if err := h.keeper.SetOraclePrices(ctx, injectedVoteExtTx.StakeWeightedPrices); err != nil {
 			return nil, err
 		}
+
+		// Do slash who did miss voting over threshold and
+		// reset miss counters of all validators at the last block of slash window
+		params := h.keeper.GetParams(ctx)
+		if IsPeriodLastBlock(ctx, params.SlashWindow) {
+			h.keeper.SlashAndResetMissCounters(ctx)
+		}
 	}
 
 	return &sdk.ResponsePreBlock{
 		ConsensusParamsChanged: paramsChanged,
 	}, nil
+}
+
+func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod uint64) bool {
+	return (uint64(ctx.BlockHeight())+1)%blocksPerPeriod == 0
 }
 
 func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {

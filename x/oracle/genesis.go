@@ -13,20 +13,6 @@ import (
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data *types.GenesisState) {
-	for _, d := range data.FeederDelegations {
-		voter, err := sdk.ValAddressFromBech32(d.ValidatorAddress)
-		if err != nil {
-			panic(err)
-		}
-
-		feeder, err := sdk.AccAddressFromBech32(d.FeederAddress)
-		if err != nil {
-			panic(err)
-		}
-
-		keeper.SetFeederDelegation(ctx, voter, feeder)
-	}
-
 	for _, ex := range data.ExchangeRates {
 		keeper.SetExchangeRate(ctx, ex.Denom, ex.ExchangeRate)
 	}
@@ -38,24 +24,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data *types.GenesisState
 		}
 
 		keeper.SetMissCounter(ctx, operator, mc.MissCounter)
-	}
-
-	for _, ap := range data.AggregateExchangeRatePrevotes {
-		valAddr, err := sdk.ValAddressFromBech32(ap.Voter)
-		if err != nil {
-			panic(err)
-		}
-
-		keeper.SetAggregateExchangeRatePrevote(ctx, valAddr, ap)
-	}
-
-	for _, av := range data.AggregateExchangeRateVotes {
-		valAddr, err := sdk.ValAddressFromBech32(av.Voter)
-		if err != nil {
-			panic(err)
-		}
-
-		keeper.SetAggregateExchangeRateVote(ctx, valAddr, av)
 	}
 
 	err := keeper.SetParams(ctx, data.Params)
@@ -75,14 +43,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data *types.GenesisState
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 	params := keeper.GetParams(ctx)
-	feederDelegations := []types.FeederDelegation{}
-	keeper.IterateFeederDelegations(ctx, func(valAddr sdk.ValAddress, feederAddr sdk.AccAddress) (stop bool) {
-		feederDelegations = append(feederDelegations, types.FeederDelegation{
-			FeederAddress:    feederAddr.String(),
-			ValidatorAddress: valAddr.String(),
-		})
-		return false
-	})
 
 	exchangeRates := []types.ExchangeRateTuple{}
 	keeper.IterateExchangeRates(ctx, func(denom string, rate math.LegacyDec) (stop bool) {
@@ -99,22 +59,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 		return false
 	})
 
-	aggregateExchangeRatePrevotes := []types.AggregateExchangeRatePrevote{}
-	keeper.IterateAggregateExchangeRatePrevotes(ctx, func(_ sdk.ValAddress, aggregatePrevote types.AggregateExchangeRatePrevote) (stop bool) {
-		aggregateExchangeRatePrevotes = append(aggregateExchangeRatePrevotes, aggregatePrevote)
-		return false
-	})
-
-	aggregateExchangeRateVotes := []types.AggregateExchangeRateVote{}
-	keeper.IterateAggregateExchangeRateVotes(ctx, func(_ sdk.ValAddress, aggregateVote types.AggregateExchangeRateVote) bool {
-		aggregateExchangeRateVotes = append(aggregateExchangeRateVotes, aggregateVote)
-		return false
-	})
-
 	return types.NewGenesisState(params,
 		exchangeRates,
-		feederDelegations,
-		missCounters,
-		aggregateExchangeRatePrevotes,
-		aggregateExchangeRateVotes)
+		missCounters)
 }
