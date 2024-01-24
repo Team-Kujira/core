@@ -135,11 +135,6 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		}
 
 		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
-			// stakeWeightedPrices, err := h.computeStakeWeightedOraclePrices(ctx, req.LocalLastCommit)
-			// if err != nil {
-			// 	return nil, errors.New("failed to compute stake-weighted oracle prices")
-			// }
-
 			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, req.LocalLastCommit)
 			if err != nil {
 				return nil, errors.New("failed to compute stake-weighted oracle prices")
@@ -203,10 +198,6 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 
 				// Verify the proposer's stake-weighted oracle prices & miss counter by computing the same
 				// calculation and comparing the results.
-				// stakeWeightedPrices, err := h.computeStakeWeightedOraclePrices(ctx, injectedVoteExtTx.ExtendedCommitInfo)
-				// if err != nil {
-				// 	return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-				// }
 				stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, injectedVoteExtTx.ExtendedCommitInfo)
 				if err != nil {
 					return nil, errors.New("failed to compute stake-weighted oracle prices")
@@ -276,6 +267,12 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 			continue
 		}
 
+		// Clear all exchange rates
+		h.keeper.IterateExchangeRates(ctx, func(denom string, _ math.LegacyDec) (stop bool) {
+			h.keeper.DeleteExchangeRate(ctx, denom)
+			return false
+		})
+
 		for _, valAddr := range injectedVoteExtTx.MissCounter {
 			h.keeper.SetMissCounter(ctx, valAddr, h.keeper.GetMissCounter(ctx, valAddr)+1)
 		}
@@ -290,47 +287,6 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 		ConsensusParamsChanged: paramsChanged,
 	}, nil
 }
-
-// func (h *ProposalHandler) computeStakeWeightedOraclePrices(ctx sdk.Context, ci abci.ExtendedCommitInfo) (map[string]math.LegacyDec, error) {
-// 	stakeWeightedPrices := make(map[string]math.LegacyDec) // base -> average stake-weighted price
-
-// 	var totalStake int64
-// 	for _, v := range ci.Votes {
-// 		if v.BlockIdFlag != cmtproto.BlockIDFlagCommit {
-// 			continue
-// 		}
-
-// 		var voteExt OracleVoteExtension
-// 		if err := json.Unmarshal(v.VoteExtension, &voteExt); err != nil {
-// 			h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
-// 			return nil, err
-// 		}
-
-// 		totalStake += v.Validator.Power
-
-// 		// Compute stake-weighted average of prices, i.e.
-// 		// (P1)(W1) + (P2)(W2) + ... + (Pn)(Wn) / (W1 + W2 + ... + Wn)
-// 		//
-// 		// NOTE: These are the prices computed at the PREVIOUS height, i.e. H-1
-// 		for base, price := range voteExt.Prices {
-// 			if _, ok := stakeWeightedPrices[base]; !ok {
-// 				stakeWeightedPrices[base] = math.LegacyZeroDec()
-// 			}
-// 			stakeWeightedPrices[base] = stakeWeightedPrices[base].Add(price.MulInt64(v.Validator.Power))
-// 		}
-// 	}
-
-// 	if totalStake == 0 {
-// 		return nil, nil
-// 	}
-
-// 	// finalize average by dividing by total stake, i.e. total weights
-// 	for base, price := range stakeWeightedPrices {
-// 		stakeWeightedPrices[base] = price.QuoInt64(totalStake)
-// 	}
-
-// 	return stakeWeightedPrices, nil
-// }
 
 func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
 	for denom, p := range p1 {

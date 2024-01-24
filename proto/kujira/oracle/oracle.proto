@@ -58,34 +58,6 @@ message Denom {
   string name      = 1 [(gogoproto.moretags) = "yaml:\"name\""];
 }
 
-// struct for aggregate prevoting on the ExchangeRateVote.
-// The purpose of aggregate prevote is to hide vote exchange rates with hash
-// which is formatted as hex string in SHA256("{salt}:{exchange rate}{denom},...,{exchange rate}{denom}:{voter}")
-message AggregateExchangeRatePrevote {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = false;
-
-  string hash         = 1 [(gogoproto.moretags) = "yaml:\"hash\""];
-  string voter        = 2 [(gogoproto.moretags) = "yaml:\"voter\""];
-  uint64 submit_block = 3 [(gogoproto.moretags) = "yaml:\"submit_block\""];
-}
-
-// MsgAggregateExchangeRateVote - struct for voting on exchange rates.
-message AggregateExchangeRateVote {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = false;
-
-  repeated ExchangeRateTuple exchange_rate_tuples = 1 [
-    (gogoproto.moretags)     = "yaml:\"exchange_rate_tuples\"",
-    (gogoproto.castrepeated) = "ExchangeRateTuples",
-    (gogoproto.nullable)     = false
-  ];
-
-  string voter = 2 [(gogoproto.moretags) = "yaml:\"voter\""];
-}
-
 // ExchangeRateTuple - struct to store interpreted exchange rates data to store
 message ExchangeRateTuple {
   option (gogoproto.equal)            = false;
