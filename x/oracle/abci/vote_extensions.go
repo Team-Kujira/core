@@ -75,8 +75,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 		h.logger.Info("computed prices", "prices", computedPrices)
 
-		// NOTE: We use stdlib JSON encoding, but an application may choose to use
-		// a performant mechanism. This is for demo purposes only.
+		// Encode vote extension to bytes
 		bz, err := json.Marshal(voteExt)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)

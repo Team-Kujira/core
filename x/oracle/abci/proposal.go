@@ -134,6 +134,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			return nil, err
 		}
 
+		// Note: Upgrade height should be equal to vote extension enable height
 		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
 			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, req.LocalLastCommit)
 			if err != nil {
@@ -146,15 +147,14 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				MissCounter:         missMap,
 			}
 
-			// NOTE: We use stdlib JSON encoding, but an application may choose to use
-			// a performant mechanism. This is for demo purposes only.
+			// Encode vote extension to bytes
 			bz, err := json.Marshal(injectedVoteExtTx)
 			if err != nil {
 				h.logger.Error("failed to encode injected vote extension tx", "err", err)
 				return nil, errors.New("failed to encode injected vote extension tx")
 			}
 
-			// Inject a "fake" tx into the proposal s.t. validators can decode, verify,
+			// Inject vote extension tx into the proposal s.t. validators can decode, verify,
 			// and store the canonical stake-weighted average prices.
 			proposalTxs = append(proposalTxs, bz)
 		}
@@ -190,7 +190,7 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 		for _, txBytes := range req.Txs {
 			var injectedVoteExtTx StakeWeightedPrices
 			if err := json.Unmarshal(txBytes, &injectedVoteExtTx); err == nil {
-				h.logger.Error("failed to decode injected vote extension tx", "err", err)
+				h.logger.Debug("handling injected vote extension tx")
 				err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
 				if err != nil {
 					return nil, err
@@ -263,7 +263,7 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 	for _, txBytes := range req.Txs {
 		var injectedVoteExtTx StakeWeightedPrices
 		if err := json.Unmarshal(txBytes, &injectedVoteExtTx); err != nil {
-			h.logger.Error("failed to decode injected vote extension tx", "err", err)
+			h.logger.Debug("Skipping regular tx, not one of our vote", "tx", string(txBytes))
 			continue
 		}
 
