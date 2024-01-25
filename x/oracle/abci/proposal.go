@@ -29,113 +29,44 @@ type StakeWeightedPrices struct {
 }
 
 type ProposalHandler struct {
-	logger        log.Logger
-	keeper        keeper.Keeper
-	valStore      baseapp.ValidatorStore
-	mempool       mempool.Mempool
-	txVerifier    baseapp.ProposalTxVerifier
-	txSelector    baseapp.TxSelector
+	logger   log.Logger
+	keeper   keeper.Keeper
+	valStore baseapp.ValidatorStore
+	baseapp.DefaultProposalHandler
 	ModuleManager *module.Manager
 }
 
 func NewProposalHandler(logger log.Logger, keeper keeper.Keeper, valStore baseapp.ValidatorStore, ModuleManager *module.Manager, mp mempool.Mempool, txVerifier baseapp.ProposalTxVerifier) *ProposalHandler {
 	return &ProposalHandler{
-		logger:        logger,
-		keeper:        keeper,
-		valStore:      valStore,
-		ModuleManager: ModuleManager,
-		mempool:       mp,
-		txVerifier:    txVerifier,
-		txSelector:    baseapp.NewDefaultTxSelector(),
+		logger:                 logger,
+		keeper:                 keeper,
+		valStore:               valStore,
+		ModuleManager:          ModuleManager,
+		DefaultProposalHandler: *baseapp.NewDefaultProposalHandler(mp, txVerifier),
 	}
 }
 
-// cosmos-sdk/baseapp/abci_utils.go#L191
-// PrepareProposalHandler returns the default implementation for processing an
-// ABCI proposal. The application's mempool is enumerated and all valid
-// transactions are added to the proposal. Transactions are valid if they:
-//
-// 1) Successfully encode to bytes.
-// 2) Are valid (i.e. pass runTx, AnteHandler only).
-//
-// Enumeration is halted once RequestPrepareProposal.MaxBytes of transactions is
-// reached or the mempool is exhausted.
-//
-// Note:
-//
-// - Step (2) is identical to the validation step performed in
-// DefaultProcessProposal. It is very important that the same validation logic
-// is used in both steps, and applications must ensure that this is the case in
-// non-default handlers.
-//
-// - If no mempool is set or if the mempool is a no-op mempool, the transactions
-// requested from CometBFT will simply be returned, which, by default, are in
-// FIFO order.
+// PrepareProposalHandler returns the implementation for processing an
+// ABCI proposal.
+// - Default PrepareProposalHandler selects regular txs
+// - Appends vote extension tx at the end
 func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestPrepareProposal) (*abci.ResponsePrepareProposal, error) {
-		var maxBlockGas uint64
-		if b := ctx.ConsensusParams().Block; b != nil {
-			maxBlockGas = uint64(b.MaxGas)
-		}
-
-		defer h.txSelector.Clear()
-
-		proposalTxs := [][]byte{}
-
-		// If the mempool is nil or NoOp we simply return the transactions
-		// requested from CometBFT, which, by default, should be in FIFO order.
-		//
-		// Note, we still need to ensure the transactions returned respect req.MaxTxBytes.
-		_, isNoOp := h.mempool.(mempool.NoOpMempool)
-		if h.mempool == nil || isNoOp {
-			for _, txBz := range req.Txs {
-				tx, err := h.txVerifier.TxDecode(txBz)
-				if err != nil {
-					return nil, err
-				}
-
-				stop := h.txSelector.SelectTxForProposal(ctx, uint64(req.MaxTxBytes), maxBlockGas, tx, txBz)
-				if stop {
-					break
-				}
-			}
-
-			proposalTxs = h.txSelector.SelectedTxs(ctx)
-		} else {
-			iterator := h.mempool.Select(ctx, req.Txs)
-			for iterator != nil {
-				memTx := iterator.Tx()
-
-				// NOTE: Since transaction verification was already executed in CheckTx,
-				// which calls mempool.Insert, in theory everything in the pool should be
-				// valid. But some mempool implementations may insert invalid txs, so we
-				// check again.
-				txBz, err := h.txVerifier.PrepareProposalVerifyTx(memTx)
-				if err != nil {
-					err := h.mempool.Remove(memTx)
-					if err != nil && !errors.Is(err, mempool.ErrTxNotFound) {
-						return nil, err
-					}
-				} else {
-					stop := h.txSelector.SelectTxForProposal(ctx, uint64(req.MaxTxBytes), maxBlockGas, memTx, txBz)
-					if stop {
-						break
-					}
-				}
-
-				iterator = iterator.Next()
-			}
-
-			proposalTxs = h.txSelector.SelectedTxs(ctx)
-		}
-
-		err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
+		defaultHandler := h.DefaultProposalHandler.PrepareProposalHandler()
+		defaultResponse, err := defaultHandler(ctx, req)
 		if err != nil {
 			return nil, err
 		}
 
+		proposalTxs := defaultResponse.Txs
+
 		// Note: Upgrade height should be equal to vote extension enable height
 		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
+			err = baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
+			if err != nil {
+				return nil, err
+			}
+
 			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, req.LocalLastCommit)
 			if err != nil {
 				return nil, errors.New("failed to compute stake-weighted oracle prices")
@@ -166,78 +97,46 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	}
 }
 
-// cosmos-sdk/baseapp/abci_utils.go#L260
-// ProcessProposalHandler returns the default implementation for processing an
-// ABCI proposal. Every transaction in the proposal must pass 2 conditions:
-//
-// 1. The transaction bytes must decode to a valid transaction.
-// 2. The transaction must be valid (i.e. pass runTx, AnteHandler only)
-//
-// If any transaction fails to pass either condition, the proposal is rejected.
-// Note that step (2) is identical to the validation step performed in
-// DefaultPrepareProposal. It is very important that the same validation logic
-// is used in both steps, and applications must ensure that this is the case in
-// non-default handlers.
+// ProcessProposalHandler returns the implementation for processing an
+// ABCI proposal
+// - Validate vote extension tx
+// - Validate regular tx with default PrepareProposalHandler
 func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
-		var totalTxGas uint64
 
-		var maxBlockGas int64
-		if b := ctx.ConsensusParams().Block; b != nil {
-			maxBlockGas = b.MaxGas
-		}
-
-		for _, txBytes := range req.Txs {
-			var injectedVoteExtTx StakeWeightedPrices
-			if err := json.Unmarshal(txBytes, &injectedVoteExtTx); err == nil {
-				h.logger.Debug("handling injected vote extension tx")
-				err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
-				if err != nil {
-					return nil, err
-				}
-
-				// Verify the proposer's stake-weighted oracle prices & miss counter by computing the same
-				// calculation and comparing the results.
-				stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, injectedVoteExtTx.ExtendedCommitInfo)
-				if err != nil {
-					return nil, errors.New("failed to compute stake-weighted oracle prices")
-				}
-
-				// compare stakeWeightedPrices
-				if err := compareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
-					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-				}
-
-				// compare missMap
-				if err := compareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
-					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-				}
-				continue
-			}
-
-			_, isNoOp := h.mempool.(mempool.NoOpMempool)
-			if h.mempool == nil || isNoOp {
-				continue
-			}
-
-			tx, err := h.txVerifier.ProcessProposalVerifyTx(txBytes)
+		var reReq = *req
+		var injectedVoteExtTx StakeWeightedPrices
+		var lastTx = req.Txs[len(req.Txs)-1]
+		if err := json.Unmarshal(lastTx, &injectedVoteExtTx); err == nil {
+			h.logger.Debug("handling injected vote extension tx")
+			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
 			if err != nil {
+				return nil, err
+			}
+
+			// Verify the proposer's stake-weighted oracle prices & miss counter by computing the same
+			// calculation and comparing the results.
+			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, injectedVoteExtTx.ExtendedCommitInfo)
+			if err != nil {
+				return nil, errors.New("failed to compute stake-weighted oracle prices")
+			}
+
+			// compare stakeWeightedPrices
+			if err := compareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
 				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
 			}
 
-			if maxBlockGas > 0 {
-				gasTx, ok := tx.(baseapp.GasTx)
-				if ok {
-					totalTxGas += gasTx.GetGas()
-				}
-
-				if totalTxGas > uint64(maxBlockGas) {
-					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-				}
+			// compare missMap
+			if err := compareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
+				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
 			}
+
+			// Exclude last tx if it's vote extension tx
+			reReq.Txs = reReq.Txs[:len(reReq.Txs)-1]
 		}
 
-		return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
+		defaultHandler := h.DefaultProposalHandler.ProcessProposalHandler()
+		return defaultHandler(ctx, &reReq)
 	}
 }
 
