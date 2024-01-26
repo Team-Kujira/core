@@ -103,10 +103,9 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 // - Validate regular tx with default PrepareProposalHandler
 func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
-
-		var reReq = *req
+		reReq := *req
 		var injectedVoteExtTx StakeWeightedPrices
-		var lastTx = req.Txs[len(req.Txs)-1]
+		lastTx := req.Txs[len(req.Txs)-1]
 		if err := json.Unmarshal(lastTx, &injectedVoteExtTx); err == nil {
 			h.logger.Debug("handling injected vote extension tx")
 			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
@@ -230,7 +229,7 @@ func compareMissMap(m1, m2 map[string]sdk.ValAddress) error {
 	return nil
 }
 
-func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim, validatorConsensusAddrMap map[string]sdk.ValAddress) (votes map[string]types.ExchangeRateBallot) {
+func (h *ProposalHandler) GetBallotByDenom(ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim, validatorConsensusAddrMap map[string]sdk.ValAddress) (votes map[string]types.ExchangeRateBallot) {
 	votes = map[string]types.ExchangeRateBallot{}
 
 	for _, v := range ci.Votes {
@@ -320,7 +319,7 @@ func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, 
 		}
 	}
 
-	voteMap := h.GetBallotByDenom(ctx, ci, validatorClaimMap, validatorConsensusAddrMap)
+	voteMap := h.GetBallotByDenom(ci, validatorClaimMap, validatorConsensusAddrMap)
 
 	// Keep track, if a voter submitted a price deviating too much
 	missMap := map[string]sdk.ValAddress{}

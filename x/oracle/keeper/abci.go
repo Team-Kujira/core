@@ -10,7 +10,7 @@ import (
 )
 
 // EndBlocker is called at the end of every block
-func (k Keeper) EndBlocker(ctx sdk.Context) error {
+func (k Keeper) EndBlocker(_ sdk.Context) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
 	return nil

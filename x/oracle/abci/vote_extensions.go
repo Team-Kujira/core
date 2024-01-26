@@ -53,6 +53,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 		if err != nil {
 			return nil, err
 		}
+		defer res.Body.Close()
 
 		resBody, err := io.ReadAll(res.Body)
 		if err != nil {
@@ -85,7 +86,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 	}
 }
 
-func (h *VoteExtHandler) VerifyVoteExtensionHandler(oracleConfig OracleConfig) sdk.VerifyVoteExtensionHandler {
+func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
 		var voteExt OracleVoteExtension
 
@@ -111,6 +112,6 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(oracleConfig OracleConfig) s
 	}
 }
 
-func (h *VoteExtHandler) verifyOraclePrices(ctx sdk.Context, prices map[string]math.LegacyDec) error {
+func (h *VoteExtHandler) verifyOraclePrices(_ sdk.Context, _ map[string]math.LegacyDec) error {
 	return nil
 }
