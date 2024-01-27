@@ -30,38 +30,25 @@ import (
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
-	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/capability"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/cosmos/cosmos-sdk/x/gov"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -69,13 +56,10 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	bank "github.com/terra-money/alliance/custom/bank"
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 	alliancemodule "github.com/terra-money/alliance/x/alliance"
 	alliancemoduleclient "github.com/terra-money/alliance/x/alliance/client"
@@ -87,28 +71,24 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
 	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	transfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	ibcporttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -124,17 +104,14 @@ import (
 	"github.com/Team-Kujira/core/app/openapiconsole"
 	appparams "github.com/Team-Kujira/core/app/params"
 	"github.com/Team-Kujira/core/wasmbinding"
-	"github.com/Team-Kujira/core/x/denom"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denomtypes "github.com/Team-Kujira/core/x/denom/types"
 
 	"github.com/Team-Kujira/core/docs"
-	scheduler "github.com/Team-Kujira/core/x/scheduler"
 	schedulerclient "github.com/Team-Kujira/core/x/scheduler/client"
 	schedulerkeeper "github.com/Team-Kujira/core/x/scheduler/keeper"
 	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
 
-	"github.com/Team-Kujira/core/x/oracle"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
@@ -177,59 +154,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
-
-	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration
-	// and genesis verification.
-	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-		authzmodule.AppModuleBasic{},
-		bank.AppModule{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(getGovProposalHandlers()),
-		params.AppModuleBasic{},
-		consensus.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		feegrantmodule.AppModuleBasic{},
-		ibc.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
-
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		wasm.AppModuleBasic{},
-		ica.AppModuleBasic{},
-		ibcfee.AppModuleBasic{},
-		denom.AppModuleBasic{},
-		scheduler.AppModuleBasic{},
-		oracle.AppModuleBasic{},
-		alliancemodule.AppModuleBasic{},
-	)
-
-	// module account permissions
-	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:          nil,
-		distrtypes.ModuleName:               nil,
-		minttypes.ModuleName:                {authtypes.Minter},
-		stakingtypes.BondedPoolName:         {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:                 {authtypes.Burner},
-		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		ibcfeetypes.ModuleName:              nil,
-		icatypes.ModuleName:                 nil,
-		wasmtypes.ModuleName:                {authtypes.Burner},
-		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
-		schedulertypes.ModuleName:           nil,
-		oracletypes.ModuleName:              nil,
-		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		alliancemoduletypes.RewardsPoolName: nil,
-	}
 )
 
 var (
@@ -559,7 +483,6 @@ func New(
 		scopedICAControllerKeeper,
 		app.MsgServiceRouter(),
 	)
-	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -573,8 +496,6 @@ func New(
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
-
-	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	app.SchedulerKeeper = schedulerkeeper.NewKeeper(
 		appCodec,
@@ -727,221 +648,16 @@ func New(
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 
-	app.ModuleManager = module.NewManager(
-		genutil.NewAppModule(
-			app.AccountKeeper,
-			app.StakingKeeper,
-			app.BaseApp.DeliverTx,
-			encodingConfig.TxConfig,
-		),
-
-		auth.NewAppModule(
-			appCodec,
-			app.AccountKeeper,
-			authsims.RandomGenesisAccounts,
-			app.GetSubspace(authtypes.ModuleName),
-		),
-
-		authzmodule.NewAppModule(
-			appCodec,
-			app.AuthzKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.interfaceRegistry,
-		),
-
-		vesting.NewAppModule(
-			app.AccountKeeper,
-			app.BankKeeper,
-		),
-
-		bank.NewAppModule(
-			appCodec,
-			app.BankKeeper,
-			app.AccountKeeper,
-			app.GetSubspace(banktypes.ModuleName),
-		),
-
-		capability.NewAppModule(
-			appCodec,
-			*app.CapabilityKeeper,
-			false,
-		),
-
-		feegrantmodule.NewAppModule(
-			appCodec,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.FeeGrantKeeper,
-			app.interfaceRegistry,
-		),
-
-		gov.NewAppModule(
-			appCodec,
-			&app.GovKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.GetSubspace(govtypes.ModuleName),
-		),
-
-		mint.NewAppModule(
-			appCodec,
-			app.MintKeeper,
-			app.AccountKeeper,
-			nil,
-			app.GetSubspace(minttypes.ModuleName),
-		),
-
-		slashing.NewAppModule(
-			appCodec,
-			app.SlashingKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.StakingKeeper,
-			app.GetSubspace(slashingtypes.ModuleName),
-		),
-
-		distr.NewAppModule(
-			appCodec,
-			app.DistrKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.StakingKeeper,
-			app.GetSubspace(distrtypes.ModuleName),
-		),
-
-		staking.NewAppModule(
-			appCodec,
-			app.StakingKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.GetSubspace(stakingtypes.ModuleName),
-		),
-
-		upgrade.NewAppModule(app.UpgradeKeeper),
-		evidence.NewAppModule(app.EvidenceKeeper),
-		ibc.NewAppModule(app.IBCKeeper),
-		params.NewAppModule(app.ParamsKeeper),
-		transferModule,
-
-		ibcfee.NewAppModule(app.IBCFeeKeeper),
-
-		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
-
-		wasm.NewAppModule(
-			appCodec,
-			&app.WasmKeeper,
-			app.StakingKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.MsgServiceRouter(),
-			app.GetSubspace(wasmtypes.ModuleName),
-		),
-
-		denom.NewAppModule(
-			appCodec,
-			*app.DenomKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-		),
-
-		icaModule,
-
-		scheduler.NewAppModule(
-			appCodec,
-			app.SchedulerKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper),
-		),
-
-		oracle.NewAppModule(
-			appCodec,
-			app.OracleKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-		),
-
-		alliancemodule.NewAppModule(
-			appCodec,
-			app.AllianceKeeper,
-			app.StakingKeeper,
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.interfaceRegistry,
-			app.GetSubspace(alliancemoduletypes.ModuleName),
-		),
-
-		crisis.NewAppModule(
-			app.CrisisKeeper,
-			skipGenesisInvariants,
-			app.GetSubspace(crisistypes.ModuleName),
-		),
-	)
+	app.ModuleManager = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
-	app.ModuleManager.SetOrderBeginBlockers(
-		upgradetypes.ModuleName,
-		capabilitytypes.ModuleName,
-		minttypes.ModuleName,
-		distrtypes.ModuleName,
-		slashingtypes.ModuleName,
-		evidencetypes.ModuleName,
-		stakingtypes.ModuleName,
-		vestingtypes.ModuleName,
-		ibcexported.ModuleName,
-		ibctransfertypes.ModuleName,
-		authtypes.ModuleName,
-		authz.ModuleName,
-		banktypes.ModuleName,
-		govtypes.ModuleName,
-		crisistypes.ModuleName,
-		genutiltypes.ModuleName,
-		feegrant.ModuleName,
-		paramstypes.ModuleName,
-		consensusparamtypes.ModuleName,
-		icatypes.ModuleName,
-		ibcfeetypes.ModuleName,
 
-		wasmtypes.ModuleName,
-		denomtypes.ModuleName,
-		schedulertypes.ModuleName,
-		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
-	)
+	app.ModuleManager.SetOrderBeginBlockers(orderBeginBlockers()...)
 
-	app.ModuleManager.SetOrderEndBlockers(
-		crisistypes.ModuleName,
-		govtypes.ModuleName,
-		stakingtypes.ModuleName,
-		capabilitytypes.ModuleName,
-		authtypes.ModuleName,
-		authz.ModuleName,
-		banktypes.ModuleName,
-		distrtypes.ModuleName,
-		slashingtypes.ModuleName,
-		vestingtypes.ModuleName,
-		minttypes.ModuleName,
-		genutiltypes.ModuleName,
-		evidencetypes.ModuleName,
-		feegrant.ModuleName,
-		paramstypes.ModuleName,
-		upgradetypes.ModuleName,
-		ibcexported.ModuleName,
-		ibctransfertypes.ModuleName,
-		consensusparamtypes.ModuleName,
-		icatypes.ModuleName,
-		ibcfeetypes.ModuleName,
-
-		wasmtypes.ModuleName,
-		denomtypes.ModuleName,
-		schedulertypes.ModuleName,
-		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
-	)
+	app.ModuleManager.SetOrderEndBlockers(orderEndBlockers()...)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -951,35 +667,7 @@ func New(
 	// can do so safely.
 	// NOTE: wasm module should be at the end as it can call other module functionality direct or via message dispatching during
 	// genesis phase. For example bank transfer, auth account check, staking, ...
-	app.ModuleManager.SetOrderInitGenesis(
-		capabilitytypes.ModuleName,
-		authtypes.ModuleName,
-		authz.ModuleName,
-		banktypes.ModuleName,
-		distrtypes.ModuleName,
-		stakingtypes.ModuleName,
-		vestingtypes.ModuleName,
-		slashingtypes.ModuleName,
-		govtypes.ModuleName,
-		minttypes.ModuleName,
-		crisistypes.ModuleName,
-		ibcexported.ModuleName,
-		genutiltypes.ModuleName,
-		evidencetypes.ModuleName,
-		paramstypes.ModuleName,
-		upgradetypes.ModuleName,
-		feegrant.ModuleName,
-		ibctransfertypes.ModuleName,
-		consensusparamtypes.ModuleName,
-		icatypes.ModuleName,
-		ibcfeetypes.ModuleName,
-
-		denomtypes.ModuleName,
-		schedulertypes.ModuleName,
-		oracletypes.ModuleName,
-		alliancemoduletypes.ModuleName,
-		wasmtypes.ModuleName,
-	)
+	app.ModuleManager.SetOrderInitGenesis(orderInitBlockers()...)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
 	app.ModuleManager.RegisterServices(app.configurator)
