@@ -87,6 +87,9 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	ibchooks "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7"
+	ibchookskeeper "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/keeper"
+	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
@@ -198,6 +201,7 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
+		ibchooks.AppModuleBasic{},
 
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -280,11 +284,17 @@ type App struct {
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
+	IBCHooksKeeper        ibchookskeeper.Keeper
+
+	// IBC modules
+	// transfer module
+	Ics20WasmHooks   *ibchooks.WasmHooks
+	HooksICS4Wrapper ibchooks.ICS4Middleware
 
 	EvidenceKeeper  evidencekeeper.Keeper
 	TransferKeeper  ibctransferkeeper.Keeper
 	FeeGrantKeeper  feegrantkeeper.Keeper
-	WasmKeeper      wasmkeeper.Keeper
+	WasmKeeper      *wasmkeeper.Keeper
 	DenomKeeper     *denomkeeper.Keeper
 	SchedulerKeeper schedulerkeeper.Keeper
 	OracleKeeper    oraclekeeper.Keeper
@@ -350,6 +360,7 @@ func New(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
+		ibchookstypes.StoreKey,
 
 		wasmtypes.StoreKey,
 		icahosttypes.StoreKey,
@@ -561,6 +572,12 @@ func New(
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
+	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
+		app.keys[ibchookstypes.StoreKey],
+	)
+	wasmHooks := ibchooks.NewWasmHooks(&app.IBCHooksKeeper, nil, AccountAddressPrefix) // The contract keeper needs to be set later
+	app.Ics20WasmHooks = &wasmHooks
+
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
@@ -621,7 +638,7 @@ func New(
 		*app.DenomKeeper,
 	), wasmOpts...)
 
-	app.WasmKeeper = wasmkeeper.NewKeeper(
+	wasmKeeper := wasmkeeper.NewKeeper(
 		appCodec,
 		keys[wasmtypes.StoreKey],
 		app.AccountKeeper,
@@ -640,6 +657,13 @@ func New(
 		availableCapabilities,
 		authority,
 		wasmOpts...,
+	)
+	app.WasmKeeper = &wasmKeeper
+
+	app.Ics20WasmHooks.ContractKeeper = app.WasmKeeper
+	app.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
+		app.IBCKeeper.ChannelKeeper,
+		app.Ics20WasmHooks,
 	)
 
 	// Register the proposal types
@@ -687,6 +711,7 @@ func New(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+	transferStack = ibchooks.NewIBCMiddleware(transferStack, &app.HooksICS4Wrapper)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -830,7 +855,7 @@ func New(
 
 		wasm.NewAppModule(
 			appCodec,
-			&app.WasmKeeper,
+			app.WasmKeeper,
 			app.StakingKeeper,
 			app.AccountKeeper,
 			app.BankKeeper,
@@ -905,6 +930,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		ibchookstypes.ModuleName,
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
@@ -935,6 +961,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		ibchookstypes.ModuleName,
 
 		wasmtypes.ModuleName,
 		denomtypes.ModuleName,
@@ -973,6 +1000,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		ibchookstypes.ModuleName,
 
 		denomtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -1033,7 +1061,7 @@ func New(
 	// see cmd/wasmd/root.go: 206 - 214 approx
 	if manager := app.SnapshotManager(); manager != nil {
 		err := manager.RegisterExtensions(
-			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), app.WasmKeeper),
 		)
 		if err != nil {
 			panic(fmt.Errorf("failed to register snapshot extension: %s", err))
