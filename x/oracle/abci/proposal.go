@@ -255,7 +255,7 @@ func (h *ProposalHandler) GetBallotByDenom(ci abci.ExtendedCommitInfo, validator
 					types.NewVoteForTally(
 						price,
 						base,
-						v.Validator.Address,
+						valAddr,
 						tmpPower,
 					),
 				)
