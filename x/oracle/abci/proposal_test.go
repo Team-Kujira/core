@@ -168,6 +168,10 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 	voteExt2Bytes, err := json.Marshal(voteExt2)
 	require.NoError(t, err)
 
+	params := types.DefaultParams()
+	params.RequiredDenoms = []string{"BTC", "ETH"}
+	input.OracleKeeper.SetParams(ctx, params)
+
 	stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(input.Ctx, cometabci.ExtendedCommitInfo{
 		Votes: []cometabci.ExtendedVoteInfo{
 			{
@@ -191,5 +195,5 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 	require.Equal(t, math.LegacyNewDec(25000).String(), stakeWeightedPrices["BTC"].String())
 	require.Nil(t, missMap[ValAddrs[0].String()])
 	require.Nil(t, missMap[ValAddrs[1].String()])
-	require.Nil(t, missMap[ValAddrs[2].String()])
+	require.NotNil(t, missMap[ValAddrs[2].String()])
 }
