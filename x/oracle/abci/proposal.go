@@ -121,12 +121,12 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 			}
 
 			// compare stakeWeightedPrices
-			if err := compareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
+			if err := CompareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
 				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
 			}
 
 			// compare missMap
-			if err := compareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
+			if err := CompareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
 				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
 			}
 
@@ -197,15 +197,15 @@ func IsPeriodLastBlock(ctx sdk.Context, blocksPerPeriod uint64) bool {
 	return (uint64(ctx.BlockHeight())+1)%blocksPerPeriod == 0
 }
 
-func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
+func CompareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
 	for denom, p := range p1 {
-		if !p2[denom].Equal(p) {
+		if p2[denom].IsNil() || !p.Equal(p2[denom]) {
 			return errors.New("oracle prices mismatch")
 		}
 	}
 
 	for denom, p := range p2 {
-		if !p1[denom].Equal(p) {
+		if p1[denom].IsNil() || !p.Equal(p1[denom]) {
 			return errors.New("oracle prices mismatch")
 		}
 	}
@@ -213,16 +213,22 @@ func compareOraclePrices(p1, p2 map[string]math.LegacyDec) error {
 	return nil
 }
 
-func compareMissMap(m1, m2 map[string]sdk.ValAddress) error {
-	for valAddr := range m1 {
-		if _, ok := m2[valAddr]; !ok {
+func CompareMissMap(m1, m2 map[string]sdk.ValAddress) error {
+	for valAddrStr, valAddr := range m1 {
+		if _, ok := m2[valAddrStr]; !ok {
 			return errors.New("oracle missMap mismatch")
+		}
+		if valAddr.String() != valAddrStr {
+			return errors.New("invalid oracle missMap")
 		}
 	}
 
-	for valAddr := range m2 {
-		if _, ok := m1[valAddr]; !ok {
+	for valAddrStr, valAddr := range m2 {
+		if _, ok := m1[valAddrStr]; !ok {
 			return errors.New("oracle missMap mismatch")
+		}
+		if valAddr.String() != valAddrStr {
+			return errors.New("invalid oracle missMap")
 		}
 	}
 

@@ -2,6 +2,7 @@ package abci_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 	"testing"
 
@@ -196,4 +197,180 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 	require.Nil(t, missMap[ValAddrs[0].String()])
 	require.Nil(t, missMap[ValAddrs[1].String()])
 	require.NotNil(t, missMap[ValAddrs[2].String()])
+}
+
+func TestCompareOraclePrices(t *testing.T) {
+	testCases := []struct {
+		p1       map[string]math.LegacyDec
+		p2       map[string]math.LegacyDec
+		expEqual bool
+	}{
+		{
+			p1: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			p2: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			expEqual: true,
+		},
+		{
+			p1: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			p2: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2200),
+			},
+			expEqual: false,
+		},
+		{
+			p1: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			p2: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+				"BTC":  math.LegacyNewDec(43000),
+			},
+			expEqual: false,
+		},
+		{
+			p1: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+				"BTC":  math.LegacyNewDec(43000),
+			},
+			p2: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			expEqual: false,
+		},
+		{
+			p1: nil,
+			p2: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			expEqual: false,
+		},
+		{
+			p1: map[string]math.LegacyDec{
+				"ATOM": math.LegacyNewDec(10),
+				"ETH":  math.LegacyNewDec(2300),
+			},
+			p2:       nil,
+			expEqual: false,
+		},
+		{
+			p1:       nil,
+			p2:       nil,
+			expEqual: true,
+		},
+	}
+
+	for i, tc := range testCases {
+		t.Run(fmt.Sprintf("Case %d", i), func(t *testing.T) {
+			err := abci.CompareOraclePrices(tc.p1, tc.p2)
+			if tc.expEqual {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+			}
+		})
+	}
+}
+
+func TestCompareMissMap(t *testing.T) {
+	testCases := []struct {
+		m1       map[string]sdk.ValAddress
+		m2       map[string]sdk.ValAddress
+		expEqual bool
+	}{
+		{
+			m1: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			m2: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			expEqual: true,
+		},
+		{
+			m1: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			m2: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[2].String(): ValAddrs[2],
+			},
+			expEqual: false,
+		},
+		{
+			m1: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			m2: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[2],
+			},
+			expEqual: false,
+		},
+		{
+			m1: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			m2: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[2].String(): ValAddrs[1],
+			},
+			expEqual: false,
+		},
+		{
+			m1: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			m2: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+			},
+			expEqual: false,
+		},
+		{
+			m1: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+			},
+			m2: map[string]sdk.ValAddress{
+				ValAddrs[0].String(): ValAddrs[0],
+				ValAddrs[1].String(): ValAddrs[1],
+			},
+			expEqual: false,
+		},
+		{
+			m1:       map[string]sdk.ValAddress{},
+			m2:       nil,
+			expEqual: true,
+		},
+	}
+
+	for i, tc := range testCases {
+		t.Run(fmt.Sprintf("Case %d", i), func(t *testing.T) {
+			err := abci.CompareMissMap(tc.m1, tc.m2)
+			if tc.expEqual {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+			}
+		})
+	}
 }
