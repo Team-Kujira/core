@@ -1,6 +1,7 @@
 package abci_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -14,12 +15,28 @@ import (
 	"github.com/Team-Kujira/core/x/oracle/abci"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	protoio "github.com/cosmos/gogoproto/io"
+	"github.com/cosmos/gogoproto/proto"
 )
 
 var ValAddrs = keeper.ValAddrs
-var ValPubKeys = keeper.ValPubKeys
+var ValPubKeys []cryptotypes.PubKey
+var ValPrivKeys []*ed25519.PrivKey
+
+func init() {
+	for i := 0; i < 5; i++ {
+		privKey := ed25519.GenPrivKey()
+		ValPrivKeys = append(ValPrivKeys, privKey)
+		pubKey := &ed25519.PubKey{Key: privKey.PubKey().Bytes()}
+		ValPubKeys = append(ValPubKeys, pubKey)
+	}
+}
 
 func TestGetBallotByDenom(t *testing.T) {
 	input := keeper.CreateTestInput(t)
@@ -373,4 +390,176 @@ func TestCompareMissMap(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPrepareProposal(t *testing.T) {
+	input := keeper.CreateTestInput(t)
+
+	power := int64(100)
+	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
+	ctx := input.Ctx
+
+	// Validator created
+	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
+	require.NoError(t, err)
+	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[1], ValPubKeys[1], amt))
+	require.NoError(t, err)
+	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
+	require.NoError(t, err)
+	input.StakingKeeper.EndBlocker(ctx)
+
+	h := abci.NewProposalHandler(
+		input.Ctx.Logger(),
+		input.OracleKeeper,
+		input.StakingKeeper,
+		nil, // module manager
+		nil, // mempool
+		nil, // bApp
+	)
+
+	params := types.DefaultParams()
+	params.RequiredDenoms = []string{"BTC", "ETH"}
+	input.OracleKeeper.SetParams(ctx, params)
+
+	handler := h.PrepareProposal()
+
+	consParams := input.Ctx.ConsensusParams()
+	consParams.Abci = &tmproto.ABCIParams{
+		VoteExtensionsEnableHeight: 2,
+	}
+	input.Ctx = input.Ctx.WithConsensusParams(consParams)
+
+	// Handler before vote extension enable
+	res, err := handler(input.Ctx, &cometabci.RequestPrepareProposal{
+		Height:          1,
+		Txs:             [][]byte{},
+		LocalLastCommit: cometabci.ExtendedCommitInfo{},
+	})
+	require.NoError(t, err)
+	require.Len(t, res.Txs, 0)
+
+	// Invalid vote extension data
+	invalidLocalLastCommit := cometabci.ExtendedCommitInfo{
+		Votes: []cometabci.ExtendedVoteInfo{
+			{
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[0].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension: []byte{},
+			},
+			{
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[1].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension: []byte{},
+			},
+		},
+	}
+	_, err = handler(input.Ctx, &cometabci.RequestPrepareProposal{
+		Height:          2,
+		Txs:             [][]byte{},
+		LocalLastCommit: invalidLocalLastCommit,
+	})
+	require.Error(t, err)
+
+	// Valid vote extension data
+	voteExt1 := abci.OracleVoteExtension{
+		Height: 1,
+		Prices: map[string]math.LegacyDec{
+			"BTC": math.LegacyNewDec(25000),
+			"ETH": math.LegacyNewDec(2200),
+		},
+	}
+	voteExt2 := abci.OracleVoteExtension{
+		Height: 1,
+		Prices: map[string]math.LegacyDec{
+			"BTC": math.LegacyNewDec(25030),
+			"ETH": math.LegacyNewDec(2180),
+		},
+	}
+	voteExt1Bytes, err := json.Marshal(voteExt1)
+	require.NoError(t, err)
+	voteExt2Bytes, err := json.Marshal(voteExt2)
+	require.NoError(t, err)
+	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
+		var buf bytes.Buffer
+		if err := protoio.NewDelimitedWriter(&buf).WriteMsg(msg); err != nil {
+			return nil, err
+		}
+
+		return buf.Bytes(), nil
+	}
+
+	cve := cmtproto.CanonicalVoteExtension{
+		Extension: voteExt1Bytes,
+		Height:    3 - 1, // the vote extension was signed in the previous height
+		Round:     1,
+		ChainId:   input.Ctx.ChainID(),
+	}
+
+	ext1SignBytes, err := marshalDelimitedFn(&cve)
+	require.NoError(t, err)
+
+	signature1, err := ValPrivKeys[0].Sign(ext1SignBytes)
+	require.NoError(t, err)
+
+	cve = cmtproto.CanonicalVoteExtension{
+		Extension: voteExt2Bytes,
+		Height:    3 - 1, // the vote extension was signed in the previous height
+		Round:     1,
+		ChainId:   input.Ctx.ChainID(),
+	}
+
+	ext2SignBytes, err := marshalDelimitedFn(&cve)
+	require.NoError(t, err)
+
+	signature2, err := ValPrivKeys[1].Sign(ext2SignBytes)
+	require.NoError(t, err)
+
+	localLastCommit := cometabci.ExtendedCommitInfo{
+		Round: 1,
+		Votes: []cometabci.ExtendedVoteInfo{
+			{
+				BlockIdFlag: cmtproto.BlockIDFlagCommit,
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[0].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension:      voteExt1Bytes,
+				ExtensionSignature: signature1,
+			},
+			{
+				BlockIdFlag: cmtproto.BlockIDFlagCommit,
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[1].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension:      voteExt2Bytes,
+				ExtensionSignature: signature2,
+			},
+		},
+	}
+	res, err = handler(input.Ctx, &cometabci.RequestPrepareProposal{
+		Height:          3,
+		Txs:             [][]byte{},
+		LocalLastCommit: localLastCommit,
+	})
+	require.NoError(t, err)
+	require.Len(t, res.Txs, 1) // Check injectedVoteExtTx
+	injectedVoteExtTx := abci.StakeWeightedPrices{
+		StakeWeightedPrices: map[string]math.LegacyDec{
+			"ETH": math.LegacyNewDec(2180),
+			"BTC": math.LegacyNewDec(25000),
+		},
+		ExtendedCommitInfo: localLastCommit,
+		MissCounter: map[string]sdk.ValAddress{
+			ValAddrs[2].String(): ValAddrs[2],
+		},
+	}
+	injectedBytes, err := json.Marshal(injectedVoteExtTx)
+	require.NoError(t, err)
+	require.Equal(t, string(injectedBytes), string(res.Txs[0]))
 }
