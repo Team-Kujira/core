@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	protoio "github.com/cosmos/gogoproto/io"
 	"github.com/cosmos/gogoproto/proto"
@@ -789,4 +790,167 @@ func TestProcessProposal(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, res.Status, cometabci.ResponseProcessProposal_ACCEPT)
+}
+
+func TestPreBlocker(t *testing.T) {
+	input := keeper.CreateTestInput(t)
+
+	power := int64(100)
+	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
+	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
+	ctx := input.Ctx
+	mm := module.NewManager()
+
+	// Validator created
+	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
+	require.NoError(t, err)
+	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[1], ValPubKeys[1], amt))
+	require.NoError(t, err)
+	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
+	require.NoError(t, err)
+	input.StakingKeeper.EndBlocker(ctx)
+
+	h := abci.NewProposalHandler(
+		input.Ctx.Logger(),
+		input.OracleKeeper,
+		input.StakingKeeper,
+		mm,  // module manager
+		nil, // mempool
+		nil, // bApp
+	)
+
+	params := types.DefaultParams()
+	params.RequiredDenoms = []string{"BTC", "ETH"}
+	input.OracleKeeper.SetParams(ctx, params)
+
+	input.OracleKeeper.SetOraclePrices(input.Ctx, map[string]math.LegacyDec{
+		"LTC": math.LegacyNewDec(100),
+	})
+	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx, "LTC")
+	require.NoError(t, err)
+
+	consParams := input.Ctx.ConsensusParams()
+	consParams.Abci = &tmproto.ABCIParams{
+		VoteExtensionsEnableHeight: 2,
+	}
+	input.Ctx = input.Ctx.WithConsensusParams(consParams)
+
+	// Valid vote extension data
+	voteExt1 := abci.OracleVoteExtension{
+		Height: 1,
+		Prices: map[string]math.LegacyDec{
+			"BTC": math.LegacyNewDec(25000),
+			"ETH": math.LegacyNewDec(2200),
+		},
+	}
+	voteExt2 := abci.OracleVoteExtension{
+		Height: 1,
+		Prices: map[string]math.LegacyDec{
+			"BTC": math.LegacyNewDec(25030),
+			"ETH": math.LegacyNewDec(2180),
+		},
+	}
+	voteExt1Bytes, err := json.Marshal(voteExt1)
+	require.NoError(t, err)
+	voteExt2Bytes, err := json.Marshal(voteExt2)
+	require.NoError(t, err)
+	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
+		var buf bytes.Buffer
+		if err := protoio.NewDelimitedWriter(&buf).WriteMsg(msg); err != nil {
+			return nil, err
+		}
+
+		return buf.Bytes(), nil
+	}
+
+	cve := cmtproto.CanonicalVoteExtension{
+		Extension: voteExt1Bytes,
+		Height:    3 - 1, // the vote extension was signed in the previous height
+		Round:     1,
+		ChainId:   input.Ctx.ChainID(),
+	}
+
+	ext1SignBytes, err := marshalDelimitedFn(&cve)
+	require.NoError(t, err)
+
+	signature1, err := ValPrivKeys[0].Sign(ext1SignBytes)
+	require.NoError(t, err)
+
+	cve = cmtproto.CanonicalVoteExtension{
+		Extension: voteExt2Bytes,
+		Height:    3 - 1, // the vote extension was signed in the previous height
+		Round:     1,
+		ChainId:   input.Ctx.ChainID(),
+	}
+
+	ext2SignBytes, err := marshalDelimitedFn(&cve)
+	require.NoError(t, err)
+
+	signature2, err := ValPrivKeys[1].Sign(ext2SignBytes)
+	require.NoError(t, err)
+
+	localLastCommit := cometabci.ExtendedCommitInfo{
+		Round: 1,
+		Votes: []cometabci.ExtendedVoteInfo{
+			{
+				BlockIdFlag: cmtproto.BlockIDFlagCommit,
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[0].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension:      voteExt1Bytes,
+				ExtensionSignature: signature1,
+			},
+			{
+				BlockIdFlag: cmtproto.BlockIDFlagCommit,
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[1].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension:      voteExt2Bytes,
+				ExtensionSignature: signature2,
+			},
+		},
+	}
+
+	// Accurate vote extension
+	injectedVoteExtTx := abci.StakeWeightedPrices{
+		StakeWeightedPrices: map[string]math.LegacyDec{
+			"ETH": math.LegacyNewDec(2180),
+			"BTC": math.LegacyNewDec(25000),
+		},
+		ExtendedCommitInfo: localLastCommit,
+		MissCounter: map[string]sdk.ValAddress{
+			ValAddrs[2].String(): ValAddrs[2],
+		},
+	}
+	injectedBytes, err := json.Marshal(injectedVoteExtTx)
+	require.NoError(t, err)
+
+	res, err := h.PreBlocker(input.Ctx, &cometabci.RequestFinalizeBlock{
+		Txs:                [][]byte{injectedBytes},
+		DecidedLastCommit:  cometabci.CommitInfo{},
+		Misbehavior:        []cometabci.Misbehavior{},
+		Hash:               []byte{},
+		Height:             3,
+		Time:               time.Time{},
+		NextValidatorsHash: []byte{},
+		ProposerAddress:    []byte{},
+	})
+	require.NoError(t, err)
+	require.Equal(t, res.ConsensusParamsChanged, false)
+
+	ethPrice, err := input.OracleKeeper.GetExchangeRate(input.Ctx, "ETH")
+	require.Equal(t, ethPrice.String(), injectedVoteExtTx.StakeWeightedPrices["ETH"].String())
+	btcPrice, err := input.OracleKeeper.GetExchangeRate(input.Ctx, "BTC")
+	require.Equal(t, btcPrice.String(), injectedVoteExtTx.StakeWeightedPrices["BTC"].String())
+	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx, "LTC")
+	require.Error(t, err)
+
+	val0MissCount := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[0])
+	require.Equal(t, val0MissCount, uint64(0))
+	val1MissCount := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[1])
+	require.Equal(t, val1MissCount, uint64(0))
+	val2MissCount := input.OracleKeeper.GetMissCounter(input.Ctx, ValAddrs[2])
+	require.Equal(t, val2MissCount, uint64(1))
 }
