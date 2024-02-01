@@ -105,33 +105,35 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
 		reReq := *req
 		var injectedVoteExtTx StakeWeightedPrices
-		lastTx := req.Txs[len(req.Txs)-1]
-		if err := json.Unmarshal(lastTx, &injectedVoteExtTx); err == nil {
-			h.logger.Debug("handling injected vote extension tx")
-			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
-			if err != nil {
-				return nil, err
-			}
+		if len(req.Txs) > 0 {
+			lastTx := req.Txs[len(req.Txs)-1]
+			if err := json.Unmarshal(lastTx, &injectedVoteExtTx); err == nil {
+				h.logger.Debug("handling injected vote extension tx")
+				err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
+				if err != nil {
+					return nil, err
+				}
 
-			// Verify the proposer's stake-weighted oracle prices & miss counter by computing the same
-			// calculation and comparing the results.
-			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, injectedVoteExtTx.ExtendedCommitInfo)
-			if err != nil {
-				return nil, errors.New("failed to compute stake-weighted oracle prices")
-			}
+				// Verify the proposer's stake-weighted oracle prices & miss counter by computing the same
+				// calculation and comparing the results.
+				stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, injectedVoteExtTx.ExtendedCommitInfo)
+				if err != nil {
+					return nil, errors.New("failed to compute stake-weighted oracle prices")
+				}
 
-			// compare stakeWeightedPrices
-			if err := CompareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
-				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-			}
+				// compare stakeWeightedPrices
+				if err := CompareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
+					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
+				}
 
-			// compare missMap
-			if err := CompareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
-				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-			}
+				// compare missMap
+				if err := CompareMissMap(injectedVoteExtTx.MissCounter, missMap); err != nil {
+					return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
+				}
 
-			// Exclude last tx if it's vote extension tx
-			reReq.Txs = reReq.Txs[:len(reReq.Txs)-1]
+				// Exclude last tx if it's vote extension tx
+				reReq.Txs = reReq.Txs[:len(reReq.Txs)-1]
+			}
 		}
 
 		defaultHandler := h.DefaultProposalHandler.ProcessProposalHandler()
