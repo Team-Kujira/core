@@ -40,13 +40,14 @@ func init() {
 	}
 }
 
-func TestGetBallotByDenom(t *testing.T) {
+func SetupTest(t *testing.T) (keeper.TestInput, *abci.ProposalHandler) {
 	input := keeper.CreateTestInput(t)
 
 	power := int64(100)
 	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
 	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
 	ctx := input.Ctx
+	mm := module.NewManager()
 
 	// Validator created
 	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
@@ -61,10 +62,21 @@ func TestGetBallotByDenom(t *testing.T) {
 		input.Ctx.Logger(),
 		input.OracleKeeper,
 		input.StakingKeeper,
-		nil, // module manager
+		mm,  // module manager
 		nil, // mempool
 		nil, // bApp
 	)
+
+	params := types.DefaultParams()
+	params.RequiredDenoms = []string{"BTC", "ETH"}
+	input.OracleKeeper.SetParams(ctx, params)
+
+	return input, h
+}
+
+func TestGetBallotByDenom(t *testing.T) {
+	_, h := SetupTest(t)
+	power := int64(100)
 
 	// organize votes by denom
 	voteExt1 := abci.OracleVoteExtension{
@@ -143,30 +155,7 @@ func TestGetBallotByDenom(t *testing.T) {
 }
 
 func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
-	input := keeper.CreateTestInput(t)
-
-	power := int64(100)
-	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
-	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
-	ctx := input.Ctx
-
-	// Validator created
-	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[1], ValPubKeys[1], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
-	require.NoError(t, err)
-	input.StakingKeeper.EndBlocker(ctx)
-
-	h := abci.NewProposalHandler(
-		input.Ctx.Logger(),
-		input.OracleKeeper,
-		input.StakingKeeper,
-		nil, // module manager
-		nil, // mempool
-		nil, // bApp
-	)
+	input, h := SetupTest(t)
 
 	// organize votes by denom
 	voteExt1 := abci.OracleVoteExtension{
@@ -190,7 +179,7 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 
 	params := types.DefaultParams()
 	params.RequiredDenoms = []string{"BTC", "ETH"}
-	input.OracleKeeper.SetParams(ctx, params)
+	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(input.Ctx, cometabci.ExtendedCommitInfo{
 		Votes: []cometabci.ExtendedVoteInfo{
@@ -395,34 +384,11 @@ func TestCompareMissMap(t *testing.T) {
 }
 
 func TestPrepareProposal(t *testing.T) {
-	input := keeper.CreateTestInput(t)
-
-	power := int64(100)
-	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
-	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
-	ctx := input.Ctx
-
-	// Validator created
-	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[1], ValPubKeys[1], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
-	require.NoError(t, err)
-	input.StakingKeeper.EndBlocker(ctx)
-
-	h := abci.NewProposalHandler(
-		input.Ctx.Logger(),
-		input.OracleKeeper,
-		input.StakingKeeper,
-		nil, // module manager
-		nil, // mempool
-		nil, // bApp
-	)
+	input, h := SetupTest(t)
 
 	params := types.DefaultParams()
 	params.RequiredDenoms = []string{"BTC", "ETH"}
-	input.OracleKeeper.SetParams(ctx, params)
+	input.OracleKeeper.SetParams(input.Ctx, params)
 
 	handler := h.PrepareProposal()
 
@@ -567,34 +533,7 @@ func TestPrepareProposal(t *testing.T) {
 }
 
 func TestProcessProposal(t *testing.T) {
-	input := keeper.CreateTestInput(t)
-
-	power := int64(100)
-	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
-	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
-	ctx := input.Ctx
-
-	// Validator created
-	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[1], ValPubKeys[1], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
-	require.NoError(t, err)
-	input.StakingKeeper.EndBlocker(ctx)
-
-	h := abci.NewProposalHandler(
-		input.Ctx.Logger(),
-		input.OracleKeeper,
-		input.StakingKeeper,
-		nil, // module manager
-		nil, // mempool
-		nil, // bApp
-	)
-
-	params := types.DefaultParams()
-	params.RequiredDenoms = []string{"BTC", "ETH"}
-	input.OracleKeeper.SetParams(ctx, params)
+	input, h := SetupTest(t)
 
 	handler := h.ProcessProposal()
 
@@ -793,40 +732,12 @@ func TestProcessProposal(t *testing.T) {
 }
 
 func TestPreBlocker(t *testing.T) {
-	input := keeper.CreateTestInput(t)
-
-	power := int64(100)
-	amt := sdk.TokensFromConsensusPower(power, sdk.DefaultPowerReduction)
-	sh := stakingkeeper.NewMsgServerImpl(&input.StakingKeeper)
-	ctx := input.Ctx
-	mm := module.NewManager()
-
-	// Validator created
-	_, err := sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[0], ValPubKeys[0], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[1], ValPubKeys[1], amt))
-	require.NoError(t, err)
-	_, err = sh.CreateValidator(ctx, keeper.NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], amt))
-	require.NoError(t, err)
-	input.StakingKeeper.EndBlocker(ctx)
-
-	h := abci.NewProposalHandler(
-		input.Ctx.Logger(),
-		input.OracleKeeper,
-		input.StakingKeeper,
-		mm,  // module manager
-		nil, // mempool
-		nil, // bApp
-	)
-
-	params := types.DefaultParams()
-	params.RequiredDenoms = []string{"BTC", "ETH"}
-	input.OracleKeeper.SetParams(ctx, params)
+	input, h := SetupTest(t)
 
 	input.OracleKeeper.SetOraclePrices(input.Ctx, map[string]math.LegacyDec{
 		"LTC": math.LegacyNewDec(100),
 	})
-	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx, "LTC")
+	_, err := input.OracleKeeper.GetExchangeRate(input.Ctx, "LTC")
 	require.NoError(t, err)
 
 	consParams := input.Ctx.ConsensusParams()
