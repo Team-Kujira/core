@@ -530,6 +530,37 @@ func TestPrepareProposal(t *testing.T) {
 	injectedBytes, err := json.Marshal(injectedVoteExtTx)
 	require.NoError(t, err)
 	require.Equal(t, string(injectedBytes), string(res.Txs[0]))
+
+	// Threshold check
+	localLastCommit = cometabci.ExtendedCommitInfo{
+		Round: 1,
+		Votes: []cometabci.ExtendedVoteInfo{
+			{
+				BlockIdFlag: cmtproto.BlockIDFlagCommit,
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[0].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension:      voteExt1Bytes,
+				ExtensionSignature: signature1,
+			},
+			{
+				BlockIdFlag: cmtproto.BlockIDFlagAbsent,
+				Validator: cometabci.Validator{
+					Address: ValPubKeys[1].Address().Bytes(),
+					Power:   1,
+				},
+				VoteExtension:      []byte{},
+				ExtensionSignature: []byte{},
+			},
+		},
+	}
+	_, err = handler(input.Ctx, &cometabci.RequestPrepareProposal{
+		Height:          3,
+		Txs:             [][]byte{},
+		LocalLastCommit: localLastCommit,
+	})
+	require.Error(t, err)
 }
 
 func TestProcessProposal(t *testing.T) {
