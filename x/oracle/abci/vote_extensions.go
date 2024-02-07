@@ -90,6 +90,10 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVo
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
 		var voteExt OracleVoteExtension
 
+		if len(req.VoteExtension) == 0 {
+			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
+		}
+
 		err := json.Unmarshal(req.VoteExtension, &voteExt)
 		if err != nil {
 			// NOTE: It is safe to return an error as the Cosmos SDK will capture all
