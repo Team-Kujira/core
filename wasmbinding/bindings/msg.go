@@ -7,7 +7,8 @@ import (
 )
 
 type CosmosMsg struct {
-	Denom *denom.DenomMsg
-	Batch *batch.BatchMsg
-	CwIca *cwica.CwIcaMsg `json:"ica,omitempty"`
+	Denom    *denom.DenomMsg
+	Batch    *batch.BatchMsg
+	CwIca    *cwica.CwIcaMsg `json:"ica,omitempty"`
+	Alliance *AllianceMsg
 }

@@ -18,6 +18,7 @@ import (
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	alliancekeeper "github.com/terra-money/alliance/x/alliance/keeper"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages
@@ -39,12 +40,13 @@ func CustomMessageDecorator(
 }
 
 type CustomMessenger struct {
-	wrapped wasmkeeper.Messenger
-	bank    bankkeeper.Keeper
-	denom   denomkeeper.Keeper
-	cwica   cwicakeeper.Keeper
-	ica     icacontrollerkeeper.Keeper
-	batch   batchkeeper.Keeper
+	wrapped  wasmkeeper.Messenger
+	bank     bankkeeper.Keeper
+	denom    denomkeeper.Keeper
+	cwica    cwicakeeper.Keeper
+	ica      icacontrollerkeeper.Keeper
+	batch    batchkeeper.Keeper
+	alliance alliancekeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -74,6 +76,10 @@ func (m *CustomMessenger) DispatchMsg(
 
 		if contractMsg.CwIca != nil {
 			return cwica.HandleMsg(ctx, m.cwica, m.ica, contractAddr, contractMsg.CwIca)
+		}
+
+		if contractMsg.Alliance != nil {
+			return bindings.HandleAllianceMsg(ctx, m.alliance, contractAddr, contractMsg.Alliance)
 		}
 
 		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
