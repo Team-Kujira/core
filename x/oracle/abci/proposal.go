@@ -63,36 +63,38 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		// Note: Upgrade height should be equal to vote extension enable height
 		cp := ctx.ConsensusParams()
 		extsEnabled := cp.Abci != nil && req.Height > cp.Abci.VoteExtensionsEnableHeight && cp.Abci.VoteExtensionsEnableHeight != 0
-		if extsEnabled {
-			err = baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
-			if err != nil {
-				return nil, err
-			}
-
-			stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, req.LocalLastCommit)
-			if err != nil {
-				return nil, errors.New("failed to compute stake-weighted oracle prices")
-			}
-
-			injectedVoteExtTx := StakeWeightedPrices{
-				StakeWeightedPrices: stakeWeightedPrices,
-				ExtendedCommitInfo:  req.LocalLastCommit,
-				MissCounter:         missMap,
-			}
-
-			// Encode vote extension to bytes
-			bz, err := json.Marshal(injectedVoteExtTx)
-			if err != nil {
-				h.logger.Error("failed to encode injected vote extension tx", "err", err)
-				return nil, errors.New("failed to encode injected vote extension tx")
-			}
-
-			// Inject vote extension tx into the proposal s.t. validators can decode, verify,
-			// and store the canonical stake-weighted average prices.
-			proposalTxs = append(proposalTxs, bz)
+		if !extsEnabled {
+			return &abci.ResponsePrepareProposal{
+				Txs: proposalTxs,
+			}, nil
 		}
 
-		// proceed with normal block proposal construction, e.g. POB, normal txs, etc...
+		err = baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
+		if err != nil {
+			return nil, err
+		}
+
+		stakeWeightedPrices, missMap, err := h.ComputeStakeWeightedPricesAndMissMap(ctx, req.LocalLastCommit)
+		if err != nil {
+			return nil, errors.New("failed to compute stake-weighted oracle prices")
+		}
+
+		injectedVoteExtTx := StakeWeightedPrices{
+			StakeWeightedPrices: stakeWeightedPrices,
+			ExtendedCommitInfo:  req.LocalLastCommit,
+			MissCounter:         missMap,
+		}
+
+		// Encode vote extension to bytes
+		bz, err := json.Marshal(injectedVoteExtTx)
+		if err != nil {
+			h.logger.Error("failed to encode injected vote extension tx", "err", err)
+			return nil, errors.New("failed to encode injected vote extension tx")
+		}
+
+		// Inject vote extension tx into the proposal s.t. validators can decode, verify,
+		// and store the canonical stake-weighted average prices.
+		proposalTxs = append(proposalTxs, bz)
 		return &abci.ResponsePrepareProposal{
 			Txs: proposalTxs,
 		}, nil
