@@ -49,21 +49,35 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 		h.logger.Info("computing oracle prices for vote extension", "height", req.Height, "time", h.lastPriceSyncTS, "endpoint", oracleConfig.Endpoint)
 
+		emptyVoteExt := OracleVoteExtension{
+			Height: req.Height,
+			Prices: map[string]math.LegacyDec{},
+		}
+
+		// Encode vote extension to bytes
+		emptyVoteExtBz, err := json.Marshal(emptyVoteExt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
+		}
+
 		res, err := http.Get(oracleConfig.Endpoint)
 		if err != nil {
-			return nil, err
+			h.logger.Error("failed to query endpoint", err)
+			return &abci.ResponseExtendVote{VoteExtension: emptyVoteExtBz}, nil
 		}
 		defer res.Body.Close()
 
 		resBody, err := io.ReadAll(res.Body)
 		if err != nil {
-			return nil, err
+			h.logger.Error("failed to read response body", err)
+			return &abci.ResponseExtendVote{VoteExtension: emptyVoteExtBz}, nil
 		}
 
 		prices := PricesResponse{}
 		err = json.Unmarshal(resBody, &prices)
 		if err != nil {
-			return nil, err
+			h.logger.Error("failed to unmarshal prices", err)
+			return &abci.ResponseExtendVote{VoteExtension: emptyVoteExtBz}, nil
 		}
 
 		computedPrices := prices.Prices
