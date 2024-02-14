@@ -61,7 +61,9 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		proposalTxs := defaultResponse.Txs
 
 		// Note: Upgrade height should be equal to vote extension enable height
-		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
+		cp := ctx.ConsensusParams()
+		extsEnabled := cp.Abci != nil && req.Height > cp.Abci.VoteExtensionsEnableHeight && cp.Abci.VoteExtensionsEnableHeight != 0
+		if extsEnabled {
 			err = baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
 			if err != nil {
 				return nil, err
