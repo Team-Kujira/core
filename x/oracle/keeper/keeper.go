@@ -179,11 +179,10 @@ func (k Keeper) GetSubspace() paramstypes.Subspace {
 	return k.paramSpace
 }
 
-func (k Keeper) SetOraclePrices(ctx sdk.Context, prices map[string]math.LegacyDec) error {
+func (k Keeper) SetOraclePrices(ctx sdk.Context, prices map[string]math.LegacyDec) {
 	for b, q := range prices {
 		k.SetExchangeRateWithEvent(ctx, b, q)
 	}
-	return nil
 }
 
 type (

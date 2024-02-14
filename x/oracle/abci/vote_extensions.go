@@ -106,8 +106,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVo
 		}
 
 		// Verify incoming prices from a validator are valid. Note, verification during
-		// VerifyVoteExtensionHandler MUST be deterministic. For brevity and demo
-		// purposes, we omit implementation.
+		// VerifyVoteExtensionHandler MUST be deterministic.
 		if err := h.verifyOraclePrices(ctx, voteExt.Prices); err != nil {
 			return nil, fmt.Errorf("failed to verify oracle prices from validator %X: %w", req.ValidatorAddress, err)
 		}

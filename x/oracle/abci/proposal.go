@@ -178,9 +178,7 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 		}
 
 		// set oracle prices using the passed in context, which will make these prices available in the current block
-		if err := h.keeper.SetOraclePrices(ctx, injectedVoteExtTx.StakeWeightedPrices); err != nil {
-			return nil, err
-		}
+		h.keeper.SetOraclePrices(ctx, injectedVoteExtTx.StakeWeightedPrices)
 
 		// Do slash who did miss voting over threshold and
 		// reset miss counters of all validators at the last block of slash window
