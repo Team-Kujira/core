@@ -394,7 +394,7 @@ func TestPrepareProposal(t *testing.T) {
 
 	consParams := input.Ctx.ConsensusParams()
 	consParams.Abci = &tmproto.ABCIParams{
-		VoteExtensionsEnableHeight: 2,
+		VoteExtensionsEnableHeight: 1,
 	}
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
 
