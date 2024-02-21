@@ -53,8 +53,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-	bank "github.com/cosmos/cosmos-sdk/x/bank"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+
+	// bank "github.com/cosmos/cosmos-sdk/x/bank"
+	// bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
@@ -91,12 +92,11 @@ import (
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	ibctestingtypes "github.com/cosmos/ibc-go/v8/testing/types"
 
-	// bank "github.com/terra-money/alliance/custom/bank"
-	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
-	// alliancemodule "github.com/terra-money/alliance/x/alliance"
-	// alliancemoduleclient "github.com/terra-money/alliance/x/alliance/client"
-	// alliancemodulekeeper "github.com/terra-money/alliance/x/alliance/keeper"
-	// alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
+	bank "github.com/terra-money/alliance/custom/bank"
+	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	alliancemodule "github.com/terra-money/alliance/x/alliance"
+	alliancemodulekeeper "github.com/terra-money/alliance/x/alliance/keeper"
+	alliancemoduletypes "github.com/terra-money/alliance/x/alliance/types"
 
 	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
@@ -176,23 +176,23 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:     nil,
-		distrtypes.ModuleName:          nil,
-		minttypes.ModuleName:           {authtypes.Minter},
-		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:            {authtypes.Burner},
-		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		ibcfeetypes.ModuleName:         nil,
-		icatypes.ModuleName:            nil,
-		wasmtypes.ModuleName:           {authtypes.Burner},
-		denomtypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		batchtypes.ModuleName:          nil,
-		schedulertypes.ModuleName:      nil,
-		oracletypes.ModuleName:         nil,
-		// alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		// alliancemoduletypes.RewardsPoolName: nil,
-		cwicatypes.ModuleName: nil,
+		authtypes.FeeCollectorName:          nil,
+		distrtypes.ModuleName:               nil,
+		minttypes.ModuleName:                {authtypes.Minter},
+		stakingtypes.BondedPoolName:         {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:                 {authtypes.Burner},
+		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		ibcfeetypes.ModuleName:              nil,
+		icatypes.ModuleName:                 nil,
+		wasmtypes.ModuleName:                {authtypes.Burner},
+		denomtypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		batchtypes.ModuleName:               nil,
+		schedulertypes.ModuleName:           nil,
+		oracletypes.ModuleName:              nil,
+		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		alliancemoduletypes.RewardsPoolName: nil,
+		cwicatypes.ModuleName:               nil,
 	}
 )
 
@@ -254,7 +254,7 @@ type App struct {
 	SchedulerKeeper schedulerkeeper.Keeper
 	OracleKeeper    oraclekeeper.Keeper
 	CwICAKeeper     cwicakeeper.Keeper
-	// AllianceKeeper  alliancemodulekeeper.Keeper
+	AllianceKeeper  alliancemodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -340,7 +340,7 @@ func New(
 		schedulertypes.StoreKey,
 		oracletypes.StoreKey,
 		batchtypes.StoreKey,
-		// AllianceStoreKey,
+		AllianceStoreKey,
 		cwicatypes.StoreKey,
 	)
 
@@ -445,18 +445,18 @@ func New(
 		authority,
 	)
 
-	// app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
-	// 	appCodec,
-	// 	keys[AllianceStoreKey],
-	// 	app.AccountKeeper,
-	// 	app.BankKeeper,
-	// 	app.StakingKeeper,
-	// 	app.DistrKeeper,
-	// 	authtypes.FeeCollectorName,
-	// 	authority,
-	// )
+	app.AllianceKeeper = alliancemodulekeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[AllianceStoreKey]),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.StakingKeeper,
+		app.DistrKeeper,
+		authtypes.FeeCollectorName,
+		authority,
+	)
 
-	// app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
+	app.BankKeeper.RegisterKeepers(app.AllianceKeeper, app.StakingKeeper)
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
@@ -500,8 +500,10 @@ func New(
 
 	// register the staking hooks
 	app.StakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()), // app.AllianceKeeper.StakingHooks(),
-
+		stakingtypes.NewMultiStakingHooks(
+			app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(),
+			app.AllianceKeeper.StakingHooks(),
+		),
 	)
 
 	// ... other modules keepers
@@ -684,8 +686,8 @@ func New(
 	// See: https://docs.cosmos.network/main/modules/gov#proposal-messages
 	govRouter := govtypesv1beta1.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper))
-		// AddRoute(alliancemoduletypes.RouterKey, alliancemodule.NewAllianceProposalHandler(app.AllianceKeeper))
+		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(alliancemoduletypes.RouterKey, alliancemodule.NewAllianceProposalHandler(app.AllianceKeeper))
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -910,15 +912,15 @@ func New(
 			app.BankKeeper,
 		),
 
-		// alliancemodule.NewAppModule(
-		// 	appCodec,
-		// 	app.AllianceKeeper,
-		// 	app.StakingKeeper,
-		// 	app.AccountKeeper,
-		// 	app.BankKeeper,
-		// 	app.interfaceRegistry,
-		// 	app.GetSubspace(alliancemoduletypes.ModuleName),
-		// ),
+		alliancemodule.NewAppModule(
+			appCodec,
+			app.AllianceKeeper,
+			app.StakingKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			app.interfaceRegistry,
+			app.GetSubspace(alliancemoduletypes.ModuleName),
+		),
 
 		cwica.NewAppModule(appCodec, app.CwICAKeeper),
 
@@ -982,7 +984,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		cwicatypes.ModuleName,
-		// alliancemoduletypes.ModuleName,
+		alliancemoduletypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -1014,7 +1016,7 @@ func New(
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
 		cwicatypes.ModuleName,
-		// alliancemoduletypes.ModuleName,
+		alliancemoduletypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1051,7 +1053,7 @@ func New(
 		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
 		oracletypes.ModuleName,
-		// alliancemoduletypes.ModuleName,
+		alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		cwicatypes.ModuleName,
 	)
@@ -1188,7 +1190,7 @@ func BlockedAddresses() map[string]bool {
 
 	// allow the following addresses to receive funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
-	// delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
+	delete(modAccAddrs, authtypes.NewModuleAddress(alliancemoduletypes.ModuleName).String())
 	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
 
 	return modAccAddrs
@@ -1411,7 +1413,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(schedulertypes.ModuleName)
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(batchtypes.ModuleName)
-	// paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
 
 	return paramsKeeper
 }
