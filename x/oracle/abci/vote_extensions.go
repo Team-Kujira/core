@@ -43,7 +43,7 @@ type PricesResponse struct {
 }
 
 func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.ExtendVoteHandler {
-	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
+	return func(_ sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
 		h.currentBlock = req.Height
 		h.lastPriceSyncTS = time.Now()
 

@@ -17,7 +17,6 @@ import (
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,9 +26,11 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 )
 
-var ValAddrs = keeper.ValAddrs
-var ValPubKeys []cryptotypes.PubKey
-var ValPrivKeys []*ed25519.PrivKey
+var (
+	ValAddrs    = keeper.ValAddrs
+	ValPubKeys  []cryptotypes.PubKey
+	ValPrivKeys []*ed25519.PrivKey
+)
 
 func init() {
 	for i := 0; i < 5; i++ {
@@ -199,7 +200,7 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 			},
 		},
 	})
-
+	require.NoError(t, err)
 	require.Equal(t, math.LegacyNewDec(2180).String(), stakeWeightedPrices["ETH"].String())
 	require.Equal(t, math.LegacyNewDec(25000).String(), stakeWeightedPrices["BTC"].String())
 	require.Nil(t, missMap[ValAddrs[0].String()])
@@ -393,7 +394,7 @@ func TestPrepareProposal(t *testing.T) {
 	handler := h.PrepareProposal()
 
 	consParams := input.Ctx.ConsensusParams()
-	consParams.Abci = &tmproto.ABCIParams{
+	consParams.Abci = &cmtproto.ABCIParams{
 		VoteExtensionsEnableHeight: 1,
 	}
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
@@ -569,7 +570,7 @@ func TestProcessProposal(t *testing.T) {
 	handler := h.ProcessProposal()
 
 	consParams := input.Ctx.ConsensusParams()
-	consParams.Abci = &tmproto.ABCIParams{
+	consParams.Abci = &cmtproto.ABCIParams{
 		VoteExtensionsEnableHeight: 2,
 	}
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
@@ -772,7 +773,7 @@ func TestPreBlocker(t *testing.T) {
 	require.NoError(t, err)
 
 	consParams := input.Ctx.ConsensusParams()
-	consParams.Abci = &tmproto.ABCIParams{
+	consParams.Abci = &cmtproto.ABCIParams{
 		VoteExtensionsEnableHeight: 2,
 	}
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
@@ -883,8 +884,10 @@ func TestPreBlocker(t *testing.T) {
 	require.Equal(t, res.ConsensusParamsChanged, false)
 
 	ethPrice, err := input.OracleKeeper.GetExchangeRate(input.Ctx, "ETH")
+	require.NoError(t, err)
 	require.Equal(t, ethPrice.String(), injectedVoteExtTx.StakeWeightedPrices["ETH"].String())
 	btcPrice, err := input.OracleKeeper.GetExchangeRate(input.Ctx, "BTC")
+	require.NoError(t, err)
 	require.Equal(t, btcPrice.String(), injectedVoteExtTx.StakeWeightedPrices["BTC"].String())
 	_, err = input.OracleKeeper.GetExchangeRate(input.Ctx, "LTC")
 	require.Error(t, err)
