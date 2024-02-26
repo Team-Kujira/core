@@ -122,15 +122,21 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
+	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
+
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmos "github.com/cometbft/cometbft/libs/os"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/spf13/cast"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	wasmvm "github.com/CosmWasm/wasmvm"
 
 	"github.com/Team-Kujira/core/app/openapiconsole"
 	"github.com/Team-Kujira/core/wasmbinding"
@@ -245,16 +251,17 @@ type App struct {
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
 
-	EvidenceKeeper  evidencekeeper.Keeper
-	TransferKeeper  ibctransferkeeper.Keeper
-	FeeGrantKeeper  feegrantkeeper.Keeper
-	WasmKeeper      wasmkeeper.Keeper
-	DenomKeeper     *denomkeeper.Keeper
-	BatchKeeper     batchkeeper.Keeper
-	SchedulerKeeper schedulerkeeper.Keeper
-	OracleKeeper    oraclekeeper.Keeper
-	CwICAKeeper     cwicakeeper.Keeper
-	AllianceKeeper  alliancemodulekeeper.Keeper
+	EvidenceKeeper   evidencekeeper.Keeper
+	TransferKeeper   ibctransferkeeper.Keeper
+	FeeGrantKeeper   feegrantkeeper.Keeper
+	WasmKeeper       wasmkeeper.Keeper
+	DenomKeeper      *denomkeeper.Keeper
+	BatchKeeper      batchkeeper.Keeper
+	SchedulerKeeper  schedulerkeeper.Keeper
+	OracleKeeper     oraclekeeper.Keeper
+	AllianceKeeper   alliancemodulekeeper.Keeper
+	CwICAKeeper      cwicakeeper.Keeper
+	WasmClientKeeper ibcwasmkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -332,6 +339,7 @@ func New(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
+		ibcwasmtypes.StoreKey,
 
 		wasmtypes.StoreKey,
 		icahosttypes.StoreKey,
@@ -648,7 +656,19 @@ func New(
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	availableCapabilities := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2"
+	availableCapabilities := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2,cosmwasm_1_3,cosmwasm_1_4"
+
+	wasmer, err := wasmvm.NewVM(
+		filepath.Join(wasmDir, "wasm"),
+		availableCapabilities,
+		32, // wasmkeeper.contractMemoryLimit,
+		wasmConfig.ContractDebugMode,
+		wasmConfig.MemoryCacheSize,
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(
 		app.BankKeeper,
 		app.OracleKeeper,
@@ -658,6 +678,8 @@ func New(
 		app.ICAControllerKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
+
+	wasmOpts = append(wasmOpts, wasmkeeper.WithWasmEngine(wasmer))
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
@@ -720,6 +742,15 @@ func New(
 		govtypes.NewMultiGovHooks(
 		// register the governance hooks
 		),
+	)
+
+	app.WasmClientKeeper = ibcwasmkeeper.NewKeeperWithVM(
+		appCodec,
+		runtime.NewKVStoreService(keys[ibcwasmtypes.StoreKey]),
+		app.IBCKeeper.ClientKeeper,
+		authority,
+		wasmer,
+		app.GRPCQueryRouter(),
 	)
 
 	// Create Transfer Stack
@@ -929,6 +960,8 @@ func New(
 			skipGenesisInvariants,
 			app.GetSubspace(crisistypes.ModuleName),
 		),
+
+		ibcwasm.NewAppModule(app.WasmClientKeeper),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -985,6 +1018,7 @@ func New(
 		oracletypes.ModuleName,
 		cwicatypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -1017,6 +1051,7 @@ func New(
 		oracletypes.ModuleName,
 		cwicatypes.ModuleName,
 		alliancemoduletypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1049,6 +1084,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 		denomtypes.ModuleName,
 		batchtypes.ModuleName,
 		schedulertypes.ModuleName,
@@ -1128,6 +1164,7 @@ func New(
 	if manager := app.SnapshotManager(); manager != nil {
 		err := manager.RegisterExtensions(
 			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
+			ibcwasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmClientKeeper),
 		)
 		if err != nil {
 			panic(fmt.Errorf("failed to register snapshot extension: %s", err))
@@ -1157,6 +1194,13 @@ func New(
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
+		}
+
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+
+		// Initialize pinned codes in wasmvm as they are not persisted there
+		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			panic(fmt.Sprintf("failed initialize pinned codes %s", err))
 		}
 	}
 
