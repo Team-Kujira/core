@@ -27,10 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryExchangeRates(),
 		GetCmdQueryActives(),
 		GetCmdQueryParams(),
-		GetCmdQueryFeederDelegation(),
 		GetCmdQueryMissCounter(),
-		GetCmdQueryAggregatePrevote(),
-		GetCmdQueryAggregateVote(),
 	)
 
 	return oracleQueryCmd
@@ -96,7 +93,7 @@ Query the active list of assets recognized by the types.
 
 $ kujirad query oracle actives
 `),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -122,7 +119,7 @@ func GetCmdQueryParams() *cobra.Command {
 		Use:   "params",
 		Args:  cobra.NoArgs,
 		Short: "Query the current Oracle params",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -130,46 +127,6 @@ func GetCmdQueryParams() *cobra.Command {
 			queryClient := types.NewQueryClient(clientCtx)
 
 			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-// GetCmdQueryFeederDelegation implements the query feeder delegation command
-func GetCmdQueryFeederDelegation() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "feeder [validator]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Query the oracle feeder delegate account",
-		Long: strings.TrimSpace(`
-Query the account the validator's oracle voting right is delegated to.
-
-$ kujirad query oracle feeder kujiravaloper...
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
-			if err != nil {
-				return err
-			}
-
-			res, err := queryClient.FeederDelegation(
-				context.Background(),
-				&types.QueryFeederDelegationRequest{ValidatorAddr: validator.String()},
-			)
 			if err != nil {
 				return err
 			}
@@ -209,118 +166,6 @@ $ kujirad query oracle miss kujiravaloper...
 			res, err := queryClient.MissCounter(
 				context.Background(),
 				&types.QueryMissCounterRequest{ValidatorAddr: validator.String()},
-			)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-// GetCmdQueryAggregatePrevote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregatePrevote() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "aggregate-prevotes [validator]",
-		Args:  cobra.RangeArgs(0, 1),
-		Short: "Query outstanding oracle aggregate prevotes.",
-		Long: strings.TrimSpace(`
-Query outstanding oracle aggregate prevotes.
-
-$ kujirad query oracle aggregate-prevotes
-
-Or, can filter with voter address
-
-$ kujirad query oracle aggregate-prevotes kujiravaloper...
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			if len(args) == 0 {
-				res, err := queryClient.AggregatePrevotes(
-					context.Background(),
-					&types.QueryAggregatePrevotesRequest{},
-				)
-				if err != nil {
-					return err
-				}
-
-				return clientCtx.PrintProto(res)
-			}
-
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
-			if err != nil {
-				return err
-			}
-
-			res, err := queryClient.AggregatePrevote(
-				context.Background(),
-				&types.QueryAggregatePrevoteRequest{ValidatorAddr: validator.String()},
-			)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-// GetCmdQueryAggregateVote implements the query aggregate prevote of the validator command
-func GetCmdQueryAggregateVote() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "aggregate-votes [validator]",
-		Args:  cobra.RangeArgs(0, 1),
-		Short: "Query outstanding oracle aggregate votes.",
-		Long: strings.TrimSpace(`
-Query outstanding oracle aggregate vote.
-
-$ kujirad query oracle aggregate-votes 
-
-Or, can filter with voter address
-
-$ kujirad query oracle aggregate-votes kujiravaloper...
-`),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			if len(args) == 0 {
-				res, err := queryClient.AggregateVotes(
-					context.Background(),
-					&types.QueryAggregateVotesRequest{},
-				)
-				if err != nil {
-					return err
-				}
-
-				return clientCtx.PrintProto(res)
-			}
-
-			valString := args[0]
-			validator, err := sdk.ValAddressFromBech32(valString)
-			if err != nil {
-				return err
-			}
-
-			res, err := queryClient.AggregateVote(
-				context.Background(),
-				&types.QueryAggregateVoteRequest{ValidatorAddr: validator.String()},
 			)
 			if err != nil {
 				return err

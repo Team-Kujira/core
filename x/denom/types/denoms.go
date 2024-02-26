@@ -60,7 +60,7 @@ func DeconstructDenom(denom string) (creator string, nonce string, err error) {
 // NewdenomDenomMintCoinsRestriction creates and returns a BankMintingRestrictionFn that only allows minting of
 // valid denom denoms
 func NewdenomDenomMintCoinsRestriction() banktypes.MintingRestrictionFn {
-	return func(ctx context.Context, coinsToMint sdk.Coins) error {
+	return func(_ context.Context, coinsToMint sdk.Coins) error {
 		for _, coin := range coinsToMint {
 			_, _, err := DeconstructDenom(coin.Denom)
 			if err != nil {

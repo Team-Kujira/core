@@ -37,6 +37,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/mempool"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -119,6 +120,7 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -147,6 +149,7 @@ import (
 	schedulertypes "github.com/Team-Kujira/core/x/scheduler/types"
 
 	"github.com/Team-Kujira/core/x/oracle"
+	oracleabci "github.com/Team-Kujira/core/x/oracle/abci"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	oracletypes "github.com/Team-Kujira/core/x/oracle/types"
 
@@ -283,6 +286,8 @@ func New(
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	baseAppOptions = append(baseAppOptions, baseapp.SetOptimisticExecution())
+
 	interfaceRegistry, _ := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
 		ProtoFiles: proto.HybridResolver,
 		SigningOptions: signing.Options{
@@ -301,39 +306,6 @@ func New(
 
 	std.RegisterLegacyAminoCodec(legacyAmino)
 	std.RegisterInterfaces(interfaceRegistry)
-
-	// Below we could construct and set an application specific mempool and
-	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are
-	// already set in the SDK's BaseApp, this shows an example of how to override
-	// them.
-	//
-	// Example:
-	//
-	// bApp := baseapp.NewBaseApp(...)
-	// nonceMempool := mempool.NewSenderNonceMempool()
-	// abciPropHandler := NewDefaultProposalHandler(nonceMempool, bApp)
-	//
-	// bApp.SetMempool(nonceMempool)
-	// bApp.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
-	// bApp.SetProcessProposal(abciPropHandler.ProcessProposalHandler())
-	//
-	// Alternatively, you can construct BaseApp options, append those to
-	// baseAppOptions and pass them to NewBaseApp.
-	//
-	// Example:
-	//
-	// prepareOpt = func(app *baseapp.BaseApp) {
-	// 	abciPropHandler := baseapp.NewDefaultProposalHandler(nonceMempool, app)
-	// 	app.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
-	// }
-	// baseAppOptions = append(baseAppOptions, prepareOpt)
-
-	// create and set dummy vote extension handler
-	voteExtOp := func(bApp *baseapp.BaseApp) {
-		voteExtHandler := NewVoteExtensionHandler()
-		voteExtHandler.SetHandlers(bApp)
-	}
-	baseAppOptions = append(baseAppOptions, voteExtOp)
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -634,6 +606,19 @@ func New(
 		authority,
 	)
 
+	voteExtHandler := oracleabci.NewVoteExtHandler(
+		logger,
+		app.OracleKeeper,
+	)
+
+	oracleConfig, err := oracleabci.ReadOracleConfig(appOpts)
+	if err != nil {
+		panic(fmt.Sprintf("error while reading oracle config: %s", err))
+	}
+
+	bApp.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler(oracleConfig))
+	bApp.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler(oracleConfig))
+
 	denomKeeper := denomkeeper.NewKeeper(
 		appCodec,
 		keys[denomtypes.StoreKey],
@@ -878,6 +863,7 @@ func New(
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
+		ibctm.NewAppModule(),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 
@@ -1121,6 +1107,20 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+
+	nonceMempool := mempool.NewSenderNonceMempool()
+	propHandler := oracleabci.NewProposalHandler(
+		logger,
+		app.OracleKeeper,
+		app.StakingKeeper,
+		app.ModuleManager,
+		nonceMempool,
+		bApp,
+	)
+	bApp.SetMempool(nonceMempool)
+	bApp.SetPrepareProposal(propHandler.PrepareProposal())
+	bApp.SetProcessProposal(propHandler.ProcessProposal())
+	bApp.SetPreBlocker(propHandler.PreBlocker)
 
 	// must be before Loading version
 	// requires the snapshot store to be created and registered as a BaseAppOption

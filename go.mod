@@ -5,7 +5,6 @@ go 1.21
 require (
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/math v1.2.0
-	cosmossdk.io/simapp v0.0.0-20231107193120-9814f684b9dd
 	cosmossdk.io/store v1.0.2
 	// cosmossdk.io/tools/rosetta v0.2.1
 	// cosmossdk.io/x/upgrade v0.0.0
@@ -22,7 +21,7 @@ require (
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/pkg/errors v0.9.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.17.0
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.8.0

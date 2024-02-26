@@ -13,7 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // Keeper of the oracle store
@@ -125,44 +124,6 @@ func (k Keeper) IterateExchangeRates(ctx sdk.Context, handler func(denom string,
 }
 
 //-----------------------------------
-// Oracle delegation logic
-
-// GetFeederDelegation gets the account address that the validator operator delegated oracle vote rights to
-func (k Keeper) GetFeederDelegation(ctx sdk.Context, operator sdk.ValAddress) sdk.AccAddress {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetFeederDelegationKey(operator))
-	if bz == nil {
-		// By default the right is delegated to the validator itself
-		return sdk.AccAddress(operator)
-	}
-
-	return sdk.AccAddress(bz)
-}
-
-// SetFeederDelegation sets the account address that the validator operator delegated oracle vote rights to
-func (k Keeper) SetFeederDelegation(ctx sdk.Context, operator sdk.ValAddress, delegatedFeeder sdk.AccAddress) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetFeederDelegationKey(operator), delegatedFeeder.Bytes())
-}
-
-// IterateFeederDelegations iterates over the feed delegates and performs a callback function.
-func (k Keeper) IterateFeederDelegations(ctx sdk.Context,
-	handler func(delegator sdk.ValAddress, delegate sdk.AccAddress) (stop bool),
-) {
-	store := ctx.KVStore(k.storeKey)
-	iter := storetypes.KVStorePrefixIterator(store, types.FeederDelegationKey)
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		delegator := sdk.ValAddress(iter.Key()[2:])
-		delegate := sdk.AccAddress(iter.Value())
-
-		if handler(delegator, delegate) {
-			break
-		}
-	}
-}
-
-//-----------------------------------
 // Miss counter logic
 
 // GetMissCounter retrieves the # of vote periods missed in this oracle slash window
@@ -212,120 +173,25 @@ func (k Keeper) IterateMissCounters(ctx sdk.Context,
 }
 
 //-----------------------------------
-// AggregateExchangeRatePrevote logic
-
-// GetAggregateExchangeRatePrevote retrieves an oracle prevote from the store
-func (k Keeper) GetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAddress) (aggregatePrevote types.AggregateExchangeRatePrevote, err error) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetAggregateExchangeRatePrevoteKey(voter))
-	if b == nil {
-		err = errors.Wrap(types.ErrNoAggregatePrevote, voter.String())
-		return
-	}
-	k.cdc.MustUnmarshal(b, &aggregatePrevote)
-	return
-}
-
-// SetAggregateExchangeRatePrevote set an oracle aggregate prevote to the store
-func (k Keeper) SetAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAddress, prevote types.AggregateExchangeRatePrevote) {
-	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&prevote)
-
-	store.Set(types.GetAggregateExchangeRatePrevoteKey(voter), bz)
-}
-
-// DeleteAggregateExchangeRatePrevote deletes an oracle prevote from the store
-func (k Keeper) DeleteAggregateExchangeRatePrevote(ctx sdk.Context, voter sdk.ValAddress) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.GetAggregateExchangeRatePrevoteKey(voter))
-}
-
-// IterateAggregateExchangeRatePrevotes iterates rate over prevotes in the store
-func (k Keeper) IterateAggregateExchangeRatePrevotes(ctx sdk.Context, handler func(voterAddr sdk.ValAddress, aggregatePrevote types.AggregateExchangeRatePrevote) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := storetypes.KVStorePrefixIterator(store, types.AggregateExchangeRatePrevoteKey)
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		voterAddr := sdk.ValAddress(iter.Key()[2:])
-
-		var aggregatePrevote types.AggregateExchangeRatePrevote
-		k.cdc.MustUnmarshal(iter.Value(), &aggregatePrevote)
-		if handler(voterAddr, aggregatePrevote) {
-			break
-		}
-	}
-}
-
-//-----------------------------------
 // AggregateExchangeRateVote logic
-
-// GetAggregateExchangeRateVote retrieves an oracle prevote from the store
-func (k Keeper) GetAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddress) (aggregateVote types.AggregateExchangeRateVote, err error) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.GetAggregateExchangeRateVoteKey(voter))
-	if b == nil {
-		err = errors.Wrap(types.ErrNoAggregateVote, voter.String())
-		return
-	}
-	k.cdc.MustUnmarshal(b, &aggregateVote)
-	return
-}
-
-// SetAggregateExchangeRateVote adds an oracle aggregate prevote to the store
-func (k Keeper) SetAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddress, vote types.AggregateExchangeRateVote) {
-	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&vote)
-	store.Set(types.GetAggregateExchangeRateVoteKey(voter), bz)
-}
-
-// DeleteAggregateExchangeRateVote deletes an oracle prevote from the store
-func (k Keeper) DeleteAggregateExchangeRateVote(ctx sdk.Context, voter sdk.ValAddress) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.GetAggregateExchangeRateVoteKey(voter))
-}
-
-// IterateAggregateExchangeRateVotes iterates rate over prevotes in the store
-func (k Keeper) IterateAggregateExchangeRateVotes(ctx sdk.Context, handler func(voterAddr sdk.ValAddress, aggregateVote types.AggregateExchangeRateVote) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
-	iter := storetypes.KVStorePrefixIterator(store, types.AggregateExchangeRateVoteKey)
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		voterAddr := sdk.ValAddress(iter.Key()[2:])
-
-		var aggregateVote types.AggregateExchangeRateVote
-		k.cdc.MustUnmarshal(iter.Value(), &aggregateVote)
-		if handler(voterAddr, aggregateVote) {
-			break
-		}
-	}
-}
-
-// ValidateFeeder return the given feeder is allowed to feed the message or not
-func (k Keeper) ValidateFeeder(ctx sdk.Context, feederAddr sdk.AccAddress, validatorAddr sdk.ValAddress) error {
-	if !feederAddr.Equals(validatorAddr) {
-		delegate := k.GetFeederDelegation(ctx, validatorAddr)
-		if !delegate.Equals(feederAddr) {
-			return errors.Wrap(types.ErrNoVotingPermission, feederAddr.String())
-		}
-	}
-
-	// Check that the given validator exists
-	val, err := k.StakingKeeper.Validator(ctx, validatorAddr)
-	if err != nil {
-		return err
-	}
-
-	if val == nil || !val.IsBonded() {
-		return errors.Wrapf(stakingtypes.ErrNoValidatorFound, "validator %s is not active set", validatorAddr.String())
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func (k Keeper) GetSubspace() paramstypes.Subspace {
 	return k.paramSpace
+}
+
+func (k Keeper) SetOraclePrices(ctx sdk.Context, prices map[string]math.LegacyDec) {
+	for b, q := range prices {
+		k.SetExchangeRateWithEvent(ctx, b, q)
+	}
+}
+
+type (
+	CurrencyPair struct {
+		Base  string
+		Quote string
+	}
+)
+
+func (cp CurrencyPair) String() string {
+	return cp.Base + cp.Quote
 }

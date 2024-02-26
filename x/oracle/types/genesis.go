@@ -7,17 +7,12 @@ import (
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(
 	params Params, rates []ExchangeRateTuple,
-	feederDelegations []FeederDelegation, missCounters []MissCounter,
-	aggregateExchangeRatePrevotes []AggregateExchangeRatePrevote,
-	aggregateExchangeRateVotes []AggregateExchangeRateVote,
+	missCounters []MissCounter,
 ) *GenesisState {
 	return &GenesisState{
-		Params:                        params,
-		ExchangeRates:                 rates,
-		FeederDelegations:             feederDelegations,
-		MissCounters:                  missCounters,
-		AggregateExchangeRatePrevotes: aggregateExchangeRatePrevotes,
-		AggregateExchangeRateVotes:    aggregateExchangeRateVotes,
+		Params:        params,
+		ExchangeRates: rates,
+		MissCounters:  missCounters,
 	}
 }
 
@@ -25,10 +20,7 @@ func NewGenesisState(
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(DefaultParams(),
 		[]ExchangeRateTuple{},
-		[]FeederDelegation{},
-		[]MissCounter{},
-		[]AggregateExchangeRatePrevote{},
-		[]AggregateExchangeRateVote{})
+		[]MissCounter{})
 }
 
 // ValidateGenesis validates the oracle genesis state
