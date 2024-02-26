@@ -44,7 +44,7 @@ require (
 	cosmossdk.io/x/upgrade v0.1.1
 	github.com/cosmos/cosmos-db v1.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.0.0-20240223182843-3b0ddc66bc9d
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.1.1-0.20231213092650-57fcdb9a9a9d
 	github.com/hashicorp/go-metrics v0.5.3
 )
 

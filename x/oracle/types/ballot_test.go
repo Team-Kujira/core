@@ -201,7 +201,7 @@ func TestPBStandardDeviation(t *testing.T) {
 			[]float64{1.0, 2.0, 10.0, 100000.0},
 			[]int64{1, 1, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.MustNewDecFromStr("49995.000362536252310906"),
+			sdkmath.LegacyMustNewDecFromStr("49995.000362536252310906"),
 		},
 		{
 			// Adding fake validator doesn't change outcome
