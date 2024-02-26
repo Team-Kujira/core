@@ -23,7 +23,7 @@ func (k Keeper) HookAll(c context.Context, req *types.QueryAllHookRequest) (*typ
 	store := ctx.KVStore(k.storeKey)
 	hookStore := prefix.NewStore(store, types.KeyPrefix(types.HookKey))
 
-	pageRes, err := query.Paginate(hookStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(hookStore, req.Pagination, func(_ []byte, value []byte) error {
 		var hook types.Hook
 		if err := k.cdc.Unmarshal(value, &hook); err != nil {
 			return err
