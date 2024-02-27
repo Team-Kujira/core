@@ -26,7 +26,7 @@ require (
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
-	github.com/terra-money/alliance v0.3.4-0.20240219082352-93675c5a81f3
+	github.com/terra-money/alliance v0.4.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80
 	google.golang.org/grpc v1.62.0
 	gopkg.in/yaml.v2 v2.4.0
