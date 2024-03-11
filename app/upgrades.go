@@ -2,6 +2,7 @@ package app
 
 import (
 	batchtypes "github.com/Team-Kujira/core/x/batch/types"
+	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -22,6 +23,7 @@ func (app App) RegisterUpgradeHandlers() {
 			Added: []string{
 				ibcwasmtypes.ModuleName,
 				batchtypes.ModuleName,
+				cwicatypes.ModuleName,
 			},
 		}
 
