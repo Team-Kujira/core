@@ -31,6 +31,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	ibcwasmcli "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/client/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -229,6 +230,7 @@ func txCommand() *cobra.Command {
 	)
 
 	app.ModuleBasics.AddTxCommands(cmd)
+	cmd.AddCommand(ibcwasmcli.NewTxCmd())
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
