@@ -70,7 +70,7 @@ func (q querier) Actives(c context.Context, _ *types.QueryActivesRequest) (*type
 	ctx := sdk.UnwrapSDKContext(c)
 
 	denoms := []string{}
-	q.IterateExchangeRates(ctx, func(denom string, rate sdk.Dec) (stop bool) {
+	q.IterateExchangeRates(ctx, func(denom string, _ sdk.Dec) (stop bool) {
 		denoms = append(denoms, denom)
 		return false
 	})
