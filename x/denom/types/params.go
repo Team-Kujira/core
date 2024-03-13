@@ -9,7 +9,8 @@ import (
 
 // Parameter store keys.
 var (
-	KeyCreationFee = []byte("CreationFee")
+	KeyCreationFee   = []byte("CreationFee")
+	KeyNoFeeAccounts = []byte("NoFeeAccounts")
 )
 
 // ParamTable for gamm module.
@@ -17,28 +18,35 @@ func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-func NewParams(creationFee sdk.Coins) Params {
+func NewParams(creationFee sdk.Coins, noFeeAccounts []string) Params {
 	return Params{
-		CreationFee: creationFee,
+		CreationFee:   creationFee,
+		NoFeeAccounts: noFeeAccounts,
 	}
 }
 
 // default gamm module parameters.
 func DefaultParams() Params {
 	return Params{
-		CreationFee: sdk.NewCoins(sdk.NewInt64Coin("ukuji", 10_000_000)),
+		CreationFee:   sdk.NewCoins(sdk.NewInt64Coin("ukuji", 10_000_000)),
+		NoFeeAccounts: []string{},
 	}
 }
 
 // validate params.
 func (p Params) Validate() error {
-	return validateCreationFee(p.CreationFee)
+	err := validateCreationFee(p.CreationFee)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Implements params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreationFee, &p.CreationFee, validateCreationFee),
+		paramtypes.NewParamSetPair(KeyNoFeeAccounts, &p.NoFeeAccounts, validateNoFeeAccounts),
 	}
 }
 
@@ -50,6 +58,15 @@ func validateCreationFee(i interface{}) error {
 
 	if v.Validate() != nil {
 		return fmt.Errorf("invalid denom creation fee: %+v", i)
+	}
+
+	return nil
+}
+
+func validateNoFeeAccounts(i interface{}) error {
+	_, ok := i.([]string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	return nil
