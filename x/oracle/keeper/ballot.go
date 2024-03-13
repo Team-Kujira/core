@@ -63,7 +63,7 @@ func (k Keeper) ClearBallots(ctx sdk.Context, votePeriod uint64) {
 	})
 
 	// Clear all aggregate votes
-	k.IterateAggregateExchangeRateVotes(ctx, func(voterAddr sdk.ValAddress, aggregateVote types.AggregateExchangeRateVote) (stop bool) {
+	k.IterateAggregateExchangeRateVotes(ctx, func(voterAddr sdk.ValAddress, _ types.AggregateExchangeRateVote) (stop bool) {
 		k.DeleteAggregateExchangeRateVote(ctx, voterAddr)
 		return false
 	})

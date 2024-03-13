@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package kujira.cwica;
+
+option go_package = "github.com/Team-Kujira/core/x/cw-ica/types";
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+message CallbackData {
+  string port_id = 1;
+  string channel_id = 2;
+  uint64 sequence = 3;
+  string contract = 4;
+  string connection_id = 5;
+  string account_id = 6;
+  bytes  callback = 7;
+}
