@@ -1246,22 +1246,6 @@ func (app *App) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
-// LegacyAmino returns SimApp's amino codec.
-//
-// NOTE: This is solely to be used for testing purposes as it may be desirable
-// for modules to register their own custom testing types.
-func (app *App) LegacyAmino() *codec.LegacyAmino {
-	return app.cdc
-}
-
-// AppCodec returns an app codec.
-//
-// NOTE: This is solely to be used for testing purposes as it may be desirable
-// for modules to register their own custom testing types.
-func (app *App) AppCodec() codec.Codec {
-	return app.appCodec
-}
-
 // InterfaceRegistry returns an InterfaceRegistry
 func (app *App) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
@@ -1275,35 +1259,6 @@ func (app *App) TxConfig() client.TxConfig {
 // DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
 func (app *App) DefaultGenesis() map[string]json.RawMessage {
 	return ModuleBasics.DefaultGenesis(app.appCodec)
-}
-
-// GetKey returns the KVStoreKey for the provided store key.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *App) GetKey(storeKey string) *storetypes.KVStoreKey {
-	return app.keys[storeKey]
-}
-
-// GetTKey returns the TransientStoreKey for the provided store key.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *App) GetTKey(storeKey string) *storetypes.TransientStoreKey {
-	return app.tkeys[storeKey]
-}
-
-// GetMemKey returns the MemStoreKey for the provided mem key.
-//
-// NOTE: This is solely used for testing purposes.
-func (app *App) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
-	return app.memKeys[storeKey]
-}
-
-// GetSubspace returns a param subspace for a given module name.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
-	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
-	return subspace
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
