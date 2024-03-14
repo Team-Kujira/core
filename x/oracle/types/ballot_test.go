@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/crypto/secp256k1"
@@ -25,19 +26,19 @@ func TestToMap(t *testing.T) {
 			{
 				Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
 				Denom:        types.TestDenomC,
-				ExchangeRate: sdk.NewDec(1600),
+				ExchangeRate: sdkmath.LegacyNewDec(1600),
 				Power:        100,
 			},
 			{
 				Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
 				Denom:        types.TestDenomC,
-				ExchangeRate: sdk.ZeroDec(),
+				ExchangeRate: sdkmath.LegacyZeroDec(),
 				Power:        100,
 			},
 			{
 				Voter:        sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address()),
 				Denom:        types.TestDenomC,
-				ExchangeRate: sdk.NewDec(1500),
+				ExchangeRate: sdkmath.LegacyNewDec(1500),
 				Power:        100,
 			},
 		},
@@ -58,15 +59,15 @@ func TestToMap(t *testing.T) {
 }
 
 func TestSqrt(t *testing.T) {
-	num := sdk.NewDecWithPrec(144, 4)
+	num := sdkmath.LegacyNewDecWithPrec(144, 4)
 	floatNum, err := strconv.ParseFloat(num.String(), 64)
 	require.NoError(t, err)
 
 	floatNum = math.Sqrt(floatNum)
-	num, err = sdk.NewDecFromStr(fmt.Sprintf("%f", floatNum))
+	num, err = sdkmath.LegacyNewDecFromStr(fmt.Sprintf("%f", floatNum))
 	require.NoError(t, err)
 
-	require.Equal(t, sdk.NewDecWithPrec(12, 2), num)
+	require.Equal(t, sdkmath.LegacyNewDecWithPrec(12, 2), num)
 }
 
 func TestPBPower(t *testing.T) {
@@ -76,9 +77,10 @@ func TestPBPower(t *testing.T) {
 	ballotPower := int64(0)
 
 	for i := 0; i < len(sk.Validators()); i++ {
-		power := sk.Validator(ctx, valAccAddrs[i]).GetConsensusPower(sdk.DefaultPowerReduction)
+		val, _ := sk.Validator(ctx, valAccAddrs[i])
+		power := val.GetConsensusPower(sdk.DefaultPowerReduction)
 		vote := types.NewVoteForTally(
-			sdk.ZeroDec(),
+			sdkmath.LegacyZeroDec(),
 			types.TestDenomD,
 			valAccAddrs[i],
 			power,
@@ -97,7 +99,7 @@ func TestPBPower(t *testing.T) {
 	pubKey := secp256k1.GenPrivKey().PubKey()
 	faceValAddr := sdk.ValAddress(pubKey.Address())
 	fakeVote := types.NewVoteForTally(
-		sdk.OneDec(),
+		sdkmath.LegacyOneDec(),
 		types.TestDenomD,
 		faceValAddr,
 		0,
@@ -112,7 +114,7 @@ func TestPBWeightedMedian(t *testing.T) {
 		inputs      []int64
 		weights     []int64
 		isValidator []bool
-		median      sdk.Dec
+		median      sdkmath.LegacyDec
 		panic       bool
 	}{
 		{
@@ -120,7 +122,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			[]int64{1, 2, 10, 100000},
 			[]int64{1, 1, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.NewDec(10),
+			sdkmath.LegacyNewDec(10),
 			false,
 		},
 		{
@@ -128,7 +130,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			[]int64{1, 2, 10, 100000, 10000000000},
 			[]int64{1, 1, 100, 1, 10000},
 			[]bool{true, true, true, true, false},
-			sdk.NewDec(10),
+			sdkmath.LegacyNewDec(10),
 			false,
 		},
 		{
@@ -136,7 +138,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			[]int64{1, 2, 3, 4},
 			[]int64{1, 100, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.NewDec(2),
+			sdkmath.LegacyNewDec(2),
 			false,
 		},
 		{
@@ -144,7 +146,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			[]int64{},
 			[]int64{},
 			[]bool{true, true, true, true},
-			sdk.NewDec(0),
+			sdkmath.LegacyNewDec(0),
 			false,
 		},
 		{
@@ -152,7 +154,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			[]int64{2, 1, 10, 100000},
 			[]int64{1, 1, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.NewDec(10),
+			sdkmath.LegacyNewDec(10),
 			true,
 		},
 	}
@@ -168,7 +170,7 @@ func TestPBWeightedMedian(t *testing.T) {
 			}
 
 			vote := types.NewVoteForTally(
-				sdk.NewDec(int64(input)),
+				sdkmath.LegacyNewDec(int64(input)),
 				types.TestDenomD,
 				valAddr,
 				power,
@@ -192,35 +194,35 @@ func TestPBStandardDeviation(t *testing.T) {
 		inputs            []float64
 		weights           []int64
 		isValidator       []bool
-		standardDeviation sdk.Dec
+		standardDeviation sdkmath.LegacyDec
 	}{
 		{
 			// Supermajority one number
 			[]float64{1.0, 2.0, 10.0, 100000.0},
 			[]int64{1, 1, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.MustNewDecFromStr("49995.000362536252310906"),
+			sdkmath.LegacyMustNewDecFromStr("49995.000362536252310906"),
 		},
 		{
 			// Adding fake validator doesn't change outcome
 			[]float64{1.0, 2.0, 10.0, 100000.0, 10000000000},
 			[]int64{1, 1, 100, 1, 10000},
 			[]bool{true, true, true, true, false},
-			sdk.MustNewDecFromStr("4472135950.751005519905537611"),
+			sdkmath.LegacyMustNewDecFromStr("4472135950.751005519905537611"),
 		},
 		{
 			// Tie votes
 			[]float64{1.0, 2.0, 3.0, 4.0},
 			[]int64{1, 100, 100, 1},
 			[]bool{true, true, true, true},
-			sdk.MustNewDecFromStr("1.224744871391589049"),
+			sdkmath.LegacyMustNewDecFromStr("1.224744871391589049"),
 		},
 		{
 			// No votes
 			[]float64{},
 			[]int64{},
 			[]bool{true, true, true, true},
-			sdk.NewDecWithPrec(0, 0),
+			sdkmath.LegacyNewDecWithPrec(0, 0),
 		},
 	}
 
@@ -236,7 +238,7 @@ func TestPBStandardDeviation(t *testing.T) {
 			}
 
 			vote := types.NewVoteForTally(
-				sdk.NewDecWithPrec(int64(input*base), int64(types.OracleDecPrecision)),
+				sdkmath.LegacyNewDecWithPrec(int64(input*base), int64(types.OracleDecPrecision)),
 				types.TestDenomD,
 				valAddr,
 				power,
@@ -251,11 +253,11 @@ func TestPBStandardDeviation(t *testing.T) {
 
 func TestPBStandardDeviationOverflow(t *testing.T) {
 	valAddr := sdk.ValAddress(secp256k1.GenPrivKey().PubKey().Address())
-	exchangeRate, err := sdk.NewDecFromStr("100000000000000000000000000000000000000000000000000000000.0")
+	exchangeRate, err := sdkmath.LegacyNewDecFromStr("100000000000000000000000000000000000000000000000000000000.0")
 	require.NoError(t, err)
 
 	pb := types.ExchangeRateBallot{types.NewVoteForTally(
-		sdk.ZeroDec(),
+		sdkmath.LegacyZeroDec(),
 		types.TestDenomD,
 		valAddr,
 		2,
@@ -267,7 +269,7 @@ func TestPBStandardDeviationOverflow(t *testing.T) {
 	)}
 
 	sd, _ := pb.StandardDeviation()
-	require.Equal(t, sdk.ZeroDec(), sd)
+	require.Equal(t, sdkmath.LegacyZeroDec(), sd)
 }
 
 func TestNewClaim(t *testing.T) {

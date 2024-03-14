@@ -1,0 +1,82 @@
+syntax = "proto3";
+package kujira.scheduler;
+
+import "gogoproto/gogo.proto";
+import "kujira/scheduler/hook.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/scheduler/types";
+
+// Msg defines the scheduler Msg service.
+service Msg {
+  // CreateHook adds a new hook to the scheduler
+  rpc CreateHook(MsgCreateHook) returns (MsgCreateHookResponse);
+
+  // UpdateHook updates an existing hook
+  rpc UpdateHook(MsgUpdateHook) returns (MsgUpdateHookResponse);
+
+  // DeleteHook removes a hook from the scheduler
+  rpc DeleteHook(MsgDeleteHook) returns (MsgDeleteHookResponse);
+
+}
+
+message MsgCreateHook {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  
+  // The account that will execute the msg on the schedule
+  string executor = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // The contract that the msg is called on
+  string contract = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  bytes msg = 4  [ 
+    (gogoproto.casttype) = "github.com/CosmWasm/wasmd/x/wasm/types.RawContractMessage"
+  ];
+  int64 frequency = 5 [(gogoproto.moretags) = "yaml:\"frequency\""];
+  repeated cosmos.base.v1beta1.Coin funds = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+}
+message MsgCreateHookResponse {}
+
+message MsgUpdateHook {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+  string executor = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string contract = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  bytes msg = 5 [ (gogoproto.casttype) = "github.com/CosmWasm/wasmd/x/wasm/types.RawContractMessage" ];
+  int64 frequency = 6;
+  repeated cosmos.base.v1beta1.Coin funds = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgUpdateHookResponse {}
+
+
+message MsgDeleteHook {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];  
+  uint64 id = 2;
+}
+
+message MsgDeleteHookResponse {}

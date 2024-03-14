@@ -4,42 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"cosmossdk.io/math"
 	"gopkg.in/yaml.v2"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// NewAggregateExchangeRatePrevote returns AggregateExchangeRatePrevote object
-func NewAggregateExchangeRatePrevote(hash AggregateVoteHash, voter sdk.ValAddress, submitBlock uint64) AggregateExchangeRatePrevote {
-	return AggregateExchangeRatePrevote{
-		Hash:        hash.String(),
-		Voter:       voter.String(),
-		SubmitBlock: submitBlock,
-	}
-}
-
-// String implement stringify
-func (v AggregateExchangeRatePrevote) String() string {
-	out, _ := yaml.Marshal(v)
-	return string(out)
-}
-
-// NewAggregateExchangeRateVote creates a AggregateExchangeRateVote instance
-func NewAggregateExchangeRateVote(exchangeRateTuples ExchangeRateTuples, voter sdk.ValAddress) AggregateExchangeRateVote {
-	return AggregateExchangeRateVote{
-		ExchangeRateTuples: exchangeRateTuples,
-		Voter:              voter.String(),
-	}
-}
-
-// String implement stringify
-func (v AggregateExchangeRateVote) String() string {
-	out, _ := yaml.Marshal(v)
-	return string(out)
-}
-
 // NewExchangeRateTuple creates a ExchangeRateTuple instance
-func NewExchangeRateTuple(denom string, exchangeRate sdk.Dec) ExchangeRateTuple {
+func NewExchangeRateTuple(denom string, exchangeRate math.LegacyDec) ExchangeRateTuple {
 	return ExchangeRateTuple{
 		denom,
 		exchangeRate,

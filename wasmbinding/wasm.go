@@ -1,16 +1,17 @@
 package wasmbinding
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
 func RegisterCustomPlugins(

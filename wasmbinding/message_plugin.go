@@ -7,7 +7,9 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
 
@@ -17,7 +19,7 @@ import (
 	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages

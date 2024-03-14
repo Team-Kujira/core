@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"cosmossdk.io/core/appmodule"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -23,8 +24,9 @@ import (
 )
 
 var (
-	_ module.AppModule      = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModule        = AppModule{}
+	_ module.AppModuleBasic   = AppModuleBasic{}
+	_ appmodule.HasEndBlocker = AppModule{}
 )
 
 // ----------------------------------------------------------------------------
@@ -126,6 +128,12 @@ func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (AppModule) IsAppModule() {}
+
 // QuerierRoute returns the capability module's query routing key.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
@@ -159,25 +167,9 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 // ConsensusVersion implements ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
-// BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
-func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
-
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It
 // returns no validator updates.
-func (am AppModule) EndBlock(ctx sdk.Context, block abci.RequestEndBlock) []abci.ValidatorUpdate {
-	hooks := am.keeper.GetAllHook(ctx)
-	for _, hook := range hooks {
-		if hook.Frequency == 0 || block.Height%hook.Frequency == 0 {
-			am.keeper.Logger(ctx).Info(fmt.Sprintf("scheduled hook %d: %s %s", hook.Id, hook.Contract, string(hook.Msg)))
-			// These have been validated already in types/proposal.go
-			contract, _ := sdk.AccAddressFromBech32(hook.Contract)
-			executor, _ := sdk.AccAddressFromBech32(hook.Executor)
-			_, err := am.wasmKeeper.Execute(ctx, contract, executor, []byte(hook.Msg), hook.Funds)
-			if err != nil {
-				am.keeper.Logger(ctx).Error(err.Error())
-			}
-		}
-	}
-
-	return []abci.ValidatorUpdate{}
+func (am AppModule) EndBlock(ctx context.Context) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	return am.keeper.EndBlocker(sdkCtx, am.wasmKeeper)
 }

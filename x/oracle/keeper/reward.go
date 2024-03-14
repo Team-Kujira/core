@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"fmt"
-
+	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
@@ -18,7 +18,7 @@ func (k Keeper) RewardBallotWinners(
 	rewardDistributionWindow int64,
 	voteTargets []string,
 	ballotWinners map[string]types.Claim,
-) {
+) error {
 	rewardDenoms := voteTargets
 
 	// Sum weight of the claims
@@ -29,11 +29,11 @@ func (k Keeper) RewardBallotWinners(
 
 	// Exit if the ballot is empty
 	if ballotPowerSum == 0 {
-		return
+		return nil
 	}
 
 	// The Reward distributionRatio = votePeriod/rewardDistributionWindow
-	distributionRatio := sdk.NewDec(votePeriod).QuoInt64(rewardDistributionWindow)
+	distributionRatio := math.LegacyNewDec(votePeriod).QuoInt64(rewardDistributionWindow)
 
 	var periodRewards sdk.DecCoins
 	for _, denom := range rewardDenoms {
@@ -46,21 +46,27 @@ func (k Keeper) RewardBallotWinners(
 
 		periodRewards = periodRewards.Add(sdk.NewDecCoinFromDec(
 			denom,
-			sdk.NewDecFromInt(rewardPool.Amount).Mul(distributionRatio),
+			math.LegacyNewDecFromInt(rewardPool.Amount).Mul(distributionRatio),
 		))
 	}
 
 	// Dole out rewards
 	var distributedReward sdk.Coins
 	for _, winner := range ballotWinners {
-		receiverVal := k.StakingKeeper.Validator(ctx, winner.Recipient)
+		receiverVal, err := k.StakingKeeper.Validator(ctx, winner.Recipient)
+		if err != nil {
+			return err
+		}
 
 		// Reflects contribution
-		rewardCoins, _ := periodRewards.MulDec(sdk.NewDec(winner.Weight).QuoInt64(ballotPowerSum)).TruncateDecimal()
+		rewardCoins, _ := periodRewards.MulDec(math.LegacyNewDec(winner.Weight).QuoInt64(ballotPowerSum)).TruncateDecimal()
 
 		// In case absence of the validator, we just skip distribution
 		if receiverVal != nil && !rewardCoins.IsZero() {
-			k.distrKeeper.AllocateTokensToValidator(ctx, receiverVal, sdk.NewDecCoinsFromCoins(rewardCoins...))
+			err = k.distrKeeper.AllocateTokensToValidator(ctx, receiverVal, sdk.NewDecCoinsFromCoins(rewardCoins...))
+			if err != nil {
+				return err
+			}
 			distributedReward = distributedReward.Add(rewardCoins...)
 		}
 	}
@@ -68,6 +74,8 @@ func (k Keeper) RewardBallotWinners(
 	// Move distributed reward to distribution module
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.distrName, distributedReward)
 	if err != nil {
-		panic(fmt.Sprintf("[oracle] Failed to send coins to distribution module %s", err.Error()))
+		return errors.Wrap(err, "[oracle] Failed to send coins to distribution module")
 	}
+
+	return nil
 }

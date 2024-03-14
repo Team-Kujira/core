@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+.PHONY: proto
+
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 
@@ -43,7 +45,7 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 # process linker flags
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=kujira \
-		  -X github.com/cosmos/cosmos-sdk/version.ServerName=kujirad \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=kujirad \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
@@ -60,7 +62,7 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 check-go-version:
 	@if ! go version | grep -Eq "go1.21.8"; then \
-		echo "\033[0;31mERROR:\033[0m Go version 1.20.8 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
+		echo "\033[0;31mERROR:\033[0m Go version 1.21.8 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
 		exit 1; \
 	fi
 

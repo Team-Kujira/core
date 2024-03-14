@@ -3,10 +3,10 @@ package keeper
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -25,20 +25,23 @@ func TestSlashAndResetMissCounters(t *testing.T) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(ctx, NewTestMsgCreateValidator(addr1, val1, amt))
 	require.NoError(t, err)
-	staking.EndBlocker(ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(ctx)
 
+	stakingParams, _ := input.StakingKeeper.GetParams(ctx)
 	require.Equal(
 		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr)),
-		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
+		sdk.NewCoins(sdk.NewCoin(stakingParams.BondDenom, InitTokens.Sub(amt))),
 	)
-	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr).GetBondedTokens())
+	validatorI, _ := input.StakingKeeper.Validator(ctx, addr)
+	require.Equal(t, amt, validatorI.GetBondedTokens())
 	require.Equal(
 		t, input.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr1)),
-		sdk.NewCoins(sdk.NewCoin(input.StakingKeeper.GetParams(ctx).BondDenom, InitTokens.Sub(amt))),
+		sdk.NewCoins(sdk.NewCoin(stakingParams.BondDenom, InitTokens.Sub(amt))),
 	)
-	require.Equal(t, amt, input.StakingKeeper.Validator(ctx, addr1).GetBondedTokens())
+	validatorI1, _ := input.StakingKeeper.Validator(ctx, addr)
+	require.Equal(t, amt, validatorI1.GetBondedTokens())
 
-	votePeriodsPerWindow := sdk.NewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).
+	votePeriodsPerWindow := math.LegacyNewDec(int64(input.OracleKeeper.SlashWindow(input.Ctx))).
 		QuoInt64(int64(input.OracleKeeper.VotePeriod(input.Ctx))).
 		TruncateInt64()
 
@@ -50,7 +53,7 @@ func TestSlashAndResetMissCounters(t *testing.T) {
 		uint64(votePeriodsPerWindow-minValidVotes-1),
 	)
 	input.OracleKeeper.SlashAndResetMissCounters(input.Ctx)
-	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
+	input.StakingKeeper.EndBlocker(input.Ctx)
 
 	validator, _ := input.StakingKeeper.GetValidator(input.Ctx, ValAddrs[0])
 	require.Equal(t, amt, validator.GetBondedTokens())

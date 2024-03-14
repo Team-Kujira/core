@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/armon/go-metrics"
+	"github.com/hashicorp/go-metrics"
 
 	"github.com/Team-Kujira/core/x/batch/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"

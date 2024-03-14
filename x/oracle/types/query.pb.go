@@ -5,6 +5,7 @@ package types
 
 import (
 	context "context"
+	cosmossdk_io_math "cosmossdk.io/math"
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
@@ -74,7 +75,7 @@ var xxx_messageInfo_QueryExchangeRateRequest proto.InternalMessageInfo
 // Query/ExchangeRate RPC method.
 type QueryExchangeRateResponse struct {
 	// exchange_rate defines the exchange rate of whitelisted assets
-	ExchangeRate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=exchange_rate,json=exchangeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"exchange_rate"`
+	ExchangeRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,1,opt,name=exchange_rate,json=exchangeRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"exchange_rate"`
 }
 
 func (m *QueryExchangeRateResponse) Reset()         { *m = QueryExchangeRateResponse{} }
@@ -363,92 +364,6 @@ func (m *QueryVoteTargetsResponse) GetVoteTargets() []string {
 	return nil
 }
 
-// QueryFeederDelegationRequest is the request type for the Query/FeederDelegation RPC method.
-type QueryFeederDelegationRequest struct {
-	// validator defines the validator address to query for.
-	ValidatorAddr string `protobuf:"bytes,1,opt,name=validator_addr,json=validatorAddr,proto3" json:"validator_addr,omitempty"`
-}
-
-func (m *QueryFeederDelegationRequest) Reset()         { *m = QueryFeederDelegationRequest{} }
-func (m *QueryFeederDelegationRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryFeederDelegationRequest) ProtoMessage()    {}
-func (*QueryFeederDelegationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{8}
-}
-func (m *QueryFeederDelegationRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryFeederDelegationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryFeederDelegationRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryFeederDelegationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryFeederDelegationRequest.Merge(m, src)
-}
-func (m *QueryFeederDelegationRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryFeederDelegationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryFeederDelegationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryFeederDelegationRequest proto.InternalMessageInfo
-
-// QueryFeederDelegationResponse is response type for the
-// Query/FeederDelegation RPC method.
-type QueryFeederDelegationResponse struct {
-	// feeder_addr defines the feeder delegation of a validator
-	FeederAddr string `protobuf:"bytes,1,opt,name=feeder_addr,json=feederAddr,proto3" json:"feeder_addr,omitempty"`
-}
-
-func (m *QueryFeederDelegationResponse) Reset()         { *m = QueryFeederDelegationResponse{} }
-func (m *QueryFeederDelegationResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryFeederDelegationResponse) ProtoMessage()    {}
-func (*QueryFeederDelegationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{9}
-}
-func (m *QueryFeederDelegationResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryFeederDelegationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryFeederDelegationResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryFeederDelegationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryFeederDelegationResponse.Merge(m, src)
-}
-func (m *QueryFeederDelegationResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryFeederDelegationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryFeederDelegationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryFeederDelegationResponse proto.InternalMessageInfo
-
-func (m *QueryFeederDelegationResponse) GetFeederAddr() string {
-	if m != nil {
-		return m.FeederAddr
-	}
-	return ""
-}
-
 // QueryMissCounterRequest is the request type for the Query/MissCounter RPC method.
 type QueryMissCounterRequest struct {
 	// validator defines the validator address to query for.
@@ -459,7 +374,7 @@ func (m *QueryMissCounterRequest) Reset()         { *m = QueryMissCounterRequest
 func (m *QueryMissCounterRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryMissCounterRequest) ProtoMessage()    {}
 func (*QueryMissCounterRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{10}
+	return fileDescriptor_b180a0d90a2c8cf7, []int{8}
 }
 func (m *QueryMissCounterRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -499,7 +414,7 @@ func (m *QueryMissCounterResponse) Reset()         { *m = QueryMissCounterRespon
 func (m *QueryMissCounterResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryMissCounterResponse) ProtoMessage()    {}
 func (*QueryMissCounterResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{11}
+	return fileDescriptor_b180a0d90a2c8cf7, []int{9}
 }
 func (m *QueryMissCounterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -535,346 +450,6 @@ func (m *QueryMissCounterResponse) GetMissCounter() uint64 {
 	return 0
 }
 
-// QueryAggregatePrevoteRequest is the request type for the Query/AggregatePrevote RPC method.
-type QueryAggregatePrevoteRequest struct {
-	// validator defines the validator address to query for.
-	ValidatorAddr string `protobuf:"bytes,1,opt,name=validator_addr,json=validatorAddr,proto3" json:"validator_addr,omitempty"`
-}
-
-func (m *QueryAggregatePrevoteRequest) Reset()         { *m = QueryAggregatePrevoteRequest{} }
-func (m *QueryAggregatePrevoteRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregatePrevoteRequest) ProtoMessage()    {}
-func (*QueryAggregatePrevoteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{12}
-}
-func (m *QueryAggregatePrevoteRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregatePrevoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregatePrevoteRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregatePrevoteRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregatePrevoteRequest.Merge(m, src)
-}
-func (m *QueryAggregatePrevoteRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregatePrevoteRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregatePrevoteRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregatePrevoteRequest proto.InternalMessageInfo
-
-// QueryAggregatePrevoteResponse is response type for the
-// Query/AggregatePrevote RPC method.
-type QueryAggregatePrevoteResponse struct {
-	// aggregate_prevote defines oracle aggregate prevote submitted by a validator in the current vote period
-	AggregatePrevote AggregateExchangeRatePrevote `protobuf:"bytes,1,opt,name=aggregate_prevote,json=aggregatePrevote,proto3" json:"aggregate_prevote"`
-}
-
-func (m *QueryAggregatePrevoteResponse) Reset()         { *m = QueryAggregatePrevoteResponse{} }
-func (m *QueryAggregatePrevoteResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregatePrevoteResponse) ProtoMessage()    {}
-func (*QueryAggregatePrevoteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{13}
-}
-func (m *QueryAggregatePrevoteResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregatePrevoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregatePrevoteResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregatePrevoteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregatePrevoteResponse.Merge(m, src)
-}
-func (m *QueryAggregatePrevoteResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregatePrevoteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregatePrevoteResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregatePrevoteResponse proto.InternalMessageInfo
-
-func (m *QueryAggregatePrevoteResponse) GetAggregatePrevote() AggregateExchangeRatePrevote {
-	if m != nil {
-		return m.AggregatePrevote
-	}
-	return AggregateExchangeRatePrevote{}
-}
-
-// QueryAggregatePrevotesRequest is the request type for the Query/AggregatePrevotes RPC method.
-type QueryAggregatePrevotesRequest struct {
-}
-
-func (m *QueryAggregatePrevotesRequest) Reset()         { *m = QueryAggregatePrevotesRequest{} }
-func (m *QueryAggregatePrevotesRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregatePrevotesRequest) ProtoMessage()    {}
-func (*QueryAggregatePrevotesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{14}
-}
-func (m *QueryAggregatePrevotesRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregatePrevotesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregatePrevotesRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregatePrevotesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregatePrevotesRequest.Merge(m, src)
-}
-func (m *QueryAggregatePrevotesRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregatePrevotesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregatePrevotesRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregatePrevotesRequest proto.InternalMessageInfo
-
-// QueryAggregatePrevotesResponse is response type for the
-// Query/AggregatePrevotes RPC method.
-type QueryAggregatePrevotesResponse struct {
-	// aggregate_prevotes defines all oracle aggregate prevotes submitted in the current vote period
-	AggregatePrevotes []AggregateExchangeRatePrevote `protobuf:"bytes,1,rep,name=aggregate_prevotes,json=aggregatePrevotes,proto3" json:"aggregate_prevotes"`
-}
-
-func (m *QueryAggregatePrevotesResponse) Reset()         { *m = QueryAggregatePrevotesResponse{} }
-func (m *QueryAggregatePrevotesResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregatePrevotesResponse) ProtoMessage()    {}
-func (*QueryAggregatePrevotesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{15}
-}
-func (m *QueryAggregatePrevotesResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregatePrevotesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregatePrevotesResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregatePrevotesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregatePrevotesResponse.Merge(m, src)
-}
-func (m *QueryAggregatePrevotesResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregatePrevotesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregatePrevotesResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregatePrevotesResponse proto.InternalMessageInfo
-
-func (m *QueryAggregatePrevotesResponse) GetAggregatePrevotes() []AggregateExchangeRatePrevote {
-	if m != nil {
-		return m.AggregatePrevotes
-	}
-	return nil
-}
-
-// QueryAggregateVoteRequest is the request type for the Query/AggregateVote RPC method.
-type QueryAggregateVoteRequest struct {
-	// validator defines the validator address to query for.
-	ValidatorAddr string `protobuf:"bytes,1,opt,name=validator_addr,json=validatorAddr,proto3" json:"validator_addr,omitempty"`
-}
-
-func (m *QueryAggregateVoteRequest) Reset()         { *m = QueryAggregateVoteRequest{} }
-func (m *QueryAggregateVoteRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregateVoteRequest) ProtoMessage()    {}
-func (*QueryAggregateVoteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{16}
-}
-func (m *QueryAggregateVoteRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregateVoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregateVoteRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregateVoteRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregateVoteRequest.Merge(m, src)
-}
-func (m *QueryAggregateVoteRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregateVoteRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregateVoteRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregateVoteRequest proto.InternalMessageInfo
-
-// QueryAggregateVoteResponse is response type for the
-// Query/AggregateVote RPC method.
-type QueryAggregateVoteResponse struct {
-	// aggregate_vote defines oracle aggregate vote submitted by a validator in the current vote period
-	AggregateVote AggregateExchangeRateVote `protobuf:"bytes,1,opt,name=aggregate_vote,json=aggregateVote,proto3" json:"aggregate_vote"`
-}
-
-func (m *QueryAggregateVoteResponse) Reset()         { *m = QueryAggregateVoteResponse{} }
-func (m *QueryAggregateVoteResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregateVoteResponse) ProtoMessage()    {}
-func (*QueryAggregateVoteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{17}
-}
-func (m *QueryAggregateVoteResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregateVoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregateVoteResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregateVoteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregateVoteResponse.Merge(m, src)
-}
-func (m *QueryAggregateVoteResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregateVoteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregateVoteResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregateVoteResponse proto.InternalMessageInfo
-
-func (m *QueryAggregateVoteResponse) GetAggregateVote() AggregateExchangeRateVote {
-	if m != nil {
-		return m.AggregateVote
-	}
-	return AggregateExchangeRateVote{}
-}
-
-// QueryAggregateVotesRequest is the request type for the Query/AggregateVotes RPC method.
-type QueryAggregateVotesRequest struct {
-}
-
-func (m *QueryAggregateVotesRequest) Reset()         { *m = QueryAggregateVotesRequest{} }
-func (m *QueryAggregateVotesRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregateVotesRequest) ProtoMessage()    {}
-func (*QueryAggregateVotesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{18}
-}
-func (m *QueryAggregateVotesRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregateVotesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregateVotesRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregateVotesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregateVotesRequest.Merge(m, src)
-}
-func (m *QueryAggregateVotesRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregateVotesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregateVotesRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregateVotesRequest proto.InternalMessageInfo
-
-// QueryAggregateVotesResponse is response type for the
-// Query/AggregateVotes RPC method.
-type QueryAggregateVotesResponse struct {
-	// aggregate_votes defines all oracle aggregate votes submitted in the current vote period
-	AggregateVotes []AggregateExchangeRateVote `protobuf:"bytes,1,rep,name=aggregate_votes,json=aggregateVotes,proto3" json:"aggregate_votes"`
-}
-
-func (m *QueryAggregateVotesResponse) Reset()         { *m = QueryAggregateVotesResponse{} }
-func (m *QueryAggregateVotesResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAggregateVotesResponse) ProtoMessage()    {}
-func (*QueryAggregateVotesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{19}
-}
-func (m *QueryAggregateVotesResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAggregateVotesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAggregateVotesResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAggregateVotesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAggregateVotesResponse.Merge(m, src)
-}
-func (m *QueryAggregateVotesResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAggregateVotesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAggregateVotesResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAggregateVotesResponse proto.InternalMessageInfo
-
-func (m *QueryAggregateVotesResponse) GetAggregateVotes() []AggregateExchangeRateVote {
-	if m != nil {
-		return m.AggregateVotes
-	}
-	return nil
-}
-
 // QueryParamsRequest is the request type for the Query/Params RPC method.
 type QueryParamsRequest struct {
 }
@@ -883,7 +458,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{20}
+	return fileDescriptor_b180a0d90a2c8cf7, []int{10}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -922,7 +497,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b180a0d90a2c8cf7, []int{21}
+	return fileDescriptor_b180a0d90a2c8cf7, []int{11}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -967,18 +542,8 @@ func init() {
 	proto.RegisterType((*QueryActivesResponse)(nil), "kujira.oracle.QueryActivesResponse")
 	proto.RegisterType((*QueryVoteTargetsRequest)(nil), "kujira.oracle.QueryVoteTargetsRequest")
 	proto.RegisterType((*QueryVoteTargetsResponse)(nil), "kujira.oracle.QueryVoteTargetsResponse")
-	proto.RegisterType((*QueryFeederDelegationRequest)(nil), "kujira.oracle.QueryFeederDelegationRequest")
-	proto.RegisterType((*QueryFeederDelegationResponse)(nil), "kujira.oracle.QueryFeederDelegationResponse")
 	proto.RegisterType((*QueryMissCounterRequest)(nil), "kujira.oracle.QueryMissCounterRequest")
 	proto.RegisterType((*QueryMissCounterResponse)(nil), "kujira.oracle.QueryMissCounterResponse")
-	proto.RegisterType((*QueryAggregatePrevoteRequest)(nil), "kujira.oracle.QueryAggregatePrevoteRequest")
-	proto.RegisterType((*QueryAggregatePrevoteResponse)(nil), "kujira.oracle.QueryAggregatePrevoteResponse")
-	proto.RegisterType((*QueryAggregatePrevotesRequest)(nil), "kujira.oracle.QueryAggregatePrevotesRequest")
-	proto.RegisterType((*QueryAggregatePrevotesResponse)(nil), "kujira.oracle.QueryAggregatePrevotesResponse")
-	proto.RegisterType((*QueryAggregateVoteRequest)(nil), "kujira.oracle.QueryAggregateVoteRequest")
-	proto.RegisterType((*QueryAggregateVoteResponse)(nil), "kujira.oracle.QueryAggregateVoteResponse")
-	proto.RegisterType((*QueryAggregateVotesRequest)(nil), "kujira.oracle.QueryAggregateVotesRequest")
-	proto.RegisterType((*QueryAggregateVotesResponse)(nil), "kujira.oracle.QueryAggregateVotesResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "kujira.oracle.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "kujira.oracle.QueryParamsResponse")
 }
@@ -986,73 +551,53 @@ func init() {
 func init() { proto.RegisterFile("kujira/oracle/query.proto", fileDescriptor_b180a0d90a2c8cf7) }
 
 var fileDescriptor_b180a0d90a2c8cf7 = []byte{
-	// 1045 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x97, 0x41, 0x6f, 0x1b, 0x45,
-	0x14, 0xc7, 0xbd, 0xd0, 0xa6, 0xf4, 0x39, 0x36, 0xc9, 0x90, 0x16, 0x67, 0x9b, 0xda, 0xed, 0xd0,
-	0x24, 0xc6, 0x49, 0x76, 0x5b, 0x07, 0x84, 0x14, 0xa9, 0x12, 0x49, 0x03, 0x87, 0x02, 0xa2, 0x98,
-	0x12, 0x24, 0x0e, 0x98, 0x89, 0x3d, 0x6c, 0x97, 0xc6, 0x1e, 0x77, 0x67, 0x6d, 0xa5, 0xaa, 0x2a,
-	0xa4, 0x9e, 0x90, 0x38, 0x50, 0xa9, 0x12, 0x57, 0xc2, 0x15, 0xf1, 0x35, 0x90, 0x7a, 0xac, 0xc4,
-	0x05, 0x71, 0x28, 0x28, 0xe1, 0xc0, 0xc7, 0x40, 0x3b, 0xf3, 0x76, 0xbd, 0x6b, 0xaf, 0x63, 0x93,
-	0x9e, 0x36, 0x9e, 0xf7, 0xf6, 0xff, 0x7e, 0xf3, 0xcf, 0xcc, 0x7b, 0x36, 0xcc, 0xdf, 0xed, 0x7e,
-	0xe3, 0x7a, 0xcc, 0x16, 0x1e, 0x6b, 0xec, 0x71, 0xfb, 0x5e, 0x97, 0x7b, 0xf7, 0xad, 0x8e, 0x27,
-	0x7c, 0x41, 0x72, 0x3a, 0x64, 0xe9, 0x90, 0x39, 0xe7, 0x08, 0x47, 0xa8, 0x88, 0x1d, 0xfc, 0xa5,
-	0x93, 0xcc, 0x05, 0x47, 0x08, 0x67, 0x8f, 0xdb, 0xac, 0xe3, 0xda, 0xac, 0xdd, 0x16, 0x3e, 0xf3,
-	0x5d, 0xd1, 0x96, 0x18, 0x35, 0x93, 0xea, 0xfa, 0x81, 0xb1, 0x62, 0x43, 0xc8, 0x96, 0x90, 0xf6,
-	0x2e, 0x93, 0xdc, 0xee, 0x5d, 0xdb, 0xe5, 0x3e, 0xbb, 0x66, 0x37, 0x84, 0xdb, 0xd6, 0x71, 0xba,
-	0x01, 0x85, 0x4f, 0x02, 0x9a, 0xf7, 0xf6, 0x1b, 0x77, 0x58, 0xdb, 0xe1, 0x35, 0xe6, 0xf3, 0x1a,
-	0xbf, 0xd7, 0xe5, 0xd2, 0x27, 0x73, 0x70, 0xba, 0xc9, 0xdb, 0xa2, 0x55, 0x30, 0x2e, 0x19, 0xe5,
-	0xb3, 0x35, 0xfd, 0x61, 0xe3, 0x95, 0xef, 0x0e, 0x4a, 0x99, 0x7f, 0x0f, 0x4a, 0x19, 0xda, 0x81,
-	0xf9, 0x94, 0x77, 0x65, 0x47, 0xb4, 0x25, 0x27, 0x9f, 0x42, 0x8e, 0xe3, 0x7a, 0xdd, 0x63, 0x3e,
-	0xd7, 0x22, 0x5b, 0xd6, 0xd3, 0xe7, 0xa5, 0xcc, 0x9f, 0xcf, 0x4b, 0x4b, 0x8e, 0xeb, 0xdf, 0xe9,
-	0xee, 0x5a, 0x0d, 0xd1, 0xb2, 0x11, 0x51, 0x3f, 0xd6, 0x64, 0xf3, 0xae, 0xed, 0xdf, 0xef, 0x70,
-	0x69, 0x6d, 0xf3, 0x46, 0x6d, 0x9a, 0xc7, 0xc4, 0xe9, 0x85, 0x94, 0x8a, 0x12, 0x71, 0xe9, 0x8f,
-	0x06, 0x98, 0x69, 0x51, 0x04, 0xda, 0x87, 0x7c, 0x02, 0x48, 0x16, 0x8c, 0x4b, 0x2f, 0x97, 0xb3,
-	0xd5, 0x05, 0x4b, 0x17, 0xb6, 0x02, 0x8b, 0x2c, 0xb4, 0x28, 0xa8, 0x7d, 0x43, 0xb8, 0xed, 0xad,
-	0xf5, 0x80, 0xf7, 0x97, 0xbf, 0x4a, 0x2b, 0x93, 0xf1, 0x06, 0xef, 0xc8, 0x5a, 0x2e, 0x0e, 0x2d,
-	0xe9, 0x39, 0x78, 0x4d, 0x71, 0x6d, 0x36, 0x7c, 0xb7, 0xd7, 0xe7, 0xbd, 0x0a, 0x73, 0xc9, 0x65,
-	0x04, 0x2d, 0xc0, 0x19, 0xa6, 0x97, 0x14, 0xe1, 0xd9, 0x5a, 0xf8, 0x91, 0xce, 0xc3, 0xeb, 0xea,
-	0x8d, 0x1d, 0xe1, 0xf3, 0xdb, 0xcc, 0x73, 0xb8, 0x1f, 0x89, 0x5d, 0xc7, 0xff, 0x63, 0x22, 0x84,
-	0x82, 0x97, 0x61, 0xba, 0x27, 0x7c, 0x5e, 0xf7, 0xf5, 0x3a, 0xaa, 0x66, 0x7b, 0xfd, 0x54, 0xfa,
-	0x31, 0x2c, 0xa8, 0xd7, 0xdf, 0xe7, 0xbc, 0xc9, 0xbd, 0x6d, 0xbe, 0xc7, 0x1d, 0x75, 0xc4, 0xc2,
-	0xa3, 0xb0, 0x08, 0xf9, 0x1e, 0xdb, 0x73, 0x9b, 0xcc, 0x17, 0x5e, 0x9d, 0x35, 0x9b, 0x1e, 0x9e,
-	0x89, 0x5c, 0xb4, 0xba, 0xd9, 0x6c, 0x7a, 0xb1, 0xb3, 0xf1, 0x2e, 0x5c, 0x1c, 0x21, 0x88, 0x50,
-	0x25, 0xc8, 0x7e, 0xad, 0x62, 0x71, 0x39, 0xd0, 0x4b, 0x81, 0x16, 0xbd, 0x89, 0x9b, 0xfd, 0xc8,
-	0x95, 0xf2, 0x86, 0xe8, 0xb6, 0x7d, 0xee, 0x9d, 0x98, 0x26, 0x74, 0x27, 0xa1, 0xd5, 0x77, 0xa7,
-	0xe5, 0x4a, 0x59, 0x6f, 0xe8, 0x75, 0x25, 0x75, 0xaa, 0x96, 0x6d, 0xf5, 0x53, 0x23, 0x77, 0x36,
-	0x1d, 0xc7, 0x0b, 0xf6, 0xc1, 0x6f, 0x79, 0x3c, 0x70, 0xef, 0xc4, 0x3c, 0xdf, 0xa2, 0x3b, 0xc3,
-	0x82, 0x08, 0xf5, 0x25, 0xcc, 0xb2, 0x30, 0x56, 0xef, 0xe8, 0xa0, 0x12, 0xcd, 0x56, 0x57, 0xac,
-	0x44, 0xc7, 0xb0, 0x22, 0x8d, 0xf8, 0xb1, 0x47, 0xbd, 0xad, 0x53, 0xc1, 0xf1, 0xad, 0xcd, 0xb0,
-	0x81, 0x3a, 0xb4, 0x34, 0x02, 0x20, 0x3a, 0x4f, 0x8f, 0x0c, 0x28, 0x8e, 0xca, 0x40, 0xc6, 0xaf,
-	0x80, 0x0c, 0x31, 0x86, 0x97, 0xea, 0x04, 0x90, 0xb3, 0x83, 0x90, 0x92, 0x7e, 0x88, 0xd7, 0x3d,
-	0x7a, 0x7b, 0xe7, 0x45, 0x4c, 0x97, 0xd8, 0x1e, 0x06, 0xd4, 0x70, 0x37, 0x9f, 0x41, 0xbe, 0xbf,
-	0x9b, 0x98, 0xdd, 0xe5, 0x49, 0x76, 0xb2, 0xd3, 0xdf, 0x46, 0x8e, 0xc5, 0xe5, 0xe9, 0x42, 0x5a,
-	0xd1, 0xc8, 0xe5, 0x1e, 0x5c, 0x48, 0x8d, 0x22, 0xd3, 0xe7, 0xf0, 0x6a, 0x92, 0x29, 0xb4, 0xf7,
-	0xff, 0x42, 0xe5, 0x13, 0x50, 0x92, 0xce, 0x01, 0x51, 0x75, 0x6f, 0x31, 0x8f, 0xb5, 0x22, 0x9a,
-	0x9b, 0xd8, 0xa7, 0xc2, 0x55, 0xa4, 0x58, 0x87, 0xa9, 0x8e, 0x5a, 0x41, 0x47, 0xce, 0x0d, 0x14,
-	0xd7, 0xe9, 0x58, 0x09, 0x53, 0xab, 0xbf, 0x65, 0xe1, 0xb4, 0x12, 0x23, 0x3f, 0x18, 0x30, 0x1d,
-	0xc7, 0x22, 0xcb, 0x03, 0xef, 0x8f, 0x9a, 0x3f, 0x66, 0x79, 0x7c, 0xa2, 0x46, 0xa4, 0xab, 0x8f,
-	0x7e, 0xff, 0xe7, 0xc9, 0x4b, 0x4b, 0xe4, 0x4a, 0x38, 0x03, 0xd5, 0xa8, 0x92, 0xf6, 0x03, 0xf5,
-	0x7c, 0x68, 0x27, 0x1a, 0x3f, 0xf9, 0xde, 0x80, 0x5c, 0x62, 0x46, 0x90, 0xb1, 0x95, 0x42, 0x8f,
-	0xcc, 0x37, 0x27, 0xc8, 0x44, 0xa8, 0x45, 0x05, 0x55, 0x22, 0x17, 0x07, 0xa0, 0x92, 0x53, 0x88,
-	0x78, 0x70, 0x06, 0x27, 0x00, 0xa1, 0x69, 0xe2, 0xc9, 0xa9, 0x61, 0xbe, 0x71, 0x6c, 0x0e, 0x96,
-	0x2e, 0xaa, 0xd2, 0x05, 0x72, 0x7e, 0xa0, 0x34, 0x0e, 0x12, 0xf2, 0xb3, 0x01, 0x33, 0x83, 0x9d,
-	0x99, 0xac, 0xa4, 0x29, 0x8f, 0x18, 0x08, 0xe6, 0xea, 0x64, 0xc9, 0xc8, 0x53, 0x55, 0x3c, 0xab,
-	0xa4, 0x12, 0xf2, 0x44, 0x77, 0x54, 0xda, 0x0f, 0x92, 0xb7, 0xf8, 0xa1, 0xad, 0x67, 0x00, 0x79,
-	0x6c, 0x40, 0x36, 0xd6, 0xaf, 0xc9, 0x52, 0x5a, 0xc5, 0xe1, 0xe1, 0x60, 0x2e, 0x8f, 0xcd, 0x43,
-	0xa8, 0xab, 0x0a, 0xaa, 0x42, 0xca, 0x93, 0x40, 0x05, 0xe3, 0x80, 0xfc, 0x6a, 0xc0, 0xcc, 0x60,
-	0x3f, 0x4c, 0xb7, 0x6d, 0xc4, 0xa4, 0x48, 0xb7, 0x6d, 0xd4, 0x14, 0xa0, 0xd7, 0x15, 0xe1, 0x3b,
-	0xe4, 0xed, 0x49, 0x08, 0x87, 0x7a, 0x31, 0xf9, 0xc9, 0x80, 0xd9, 0xa1, 0xf6, 0x4d, 0x26, 0x42,
-	0x88, 0x8e, 0xdb, 0xda, 0x84, 0xd9, 0x48, 0xbc, 0xa6, 0x88, 0x97, 0xc9, 0x62, 0x0a, 0xf1, 0xf0,
-	0xb0, 0x20, 0x07, 0x06, 0xe4, 0x12, 0xbd, 0x2f, 0xfd, 0x26, 0xa6, 0xf5, 0xff, 0xf4, 0x9b, 0x98,
-	0xda, 0xdb, 0xe9, 0x86, 0xa2, 0x7a, 0x8b, 0x54, 0x63, 0x54, 0x4d, 0x77, 0xac, 0x8f, 0xca, 0xc4,
-	0x27, 0x06, 0xe4, 0x93, 0xed, 0x99, 0x8c, 0xaf, 0x1c, 0xd9, 0x57, 0x99, 0x24, 0x15, 0x29, 0x2b,
-	0x8a, 0xf2, 0x0a, 0xa1, 0xc7, 0x7a, 0xa7, 0x8d, 0x73, 0x60, 0x4a, 0xb7, 0x5d, 0x72, 0x39, 0xad,
-	0x42, 0xa2, 0xaf, 0x9b, 0xf4, 0xb8, 0x14, 0x2c, 0x7e, 0x5e, 0x15, 0x9f, 0x21, 0xf9, 0xb0, 0xb8,
-	0xee, 0xe3, 0x5b, 0xdb, 0x4f, 0x0f, 0x8b, 0xc6, 0xb3, 0xc3, 0xa2, 0xf1, 0xf7, 0x61, 0xd1, 0x78,
-	0x7c, 0x54, 0xcc, 0x3c, 0x3b, 0x2a, 0x66, 0xfe, 0x38, 0x2a, 0x66, 0xbe, 0xa8, 0xc4, 0xbe, 0x11,
-	0xdf, 0xe6, 0xac, 0xb5, 0xf6, 0x81, 0xfe, 0x15, 0xd2, 0x10, 0x1e, 0xb7, 0xf7, 0x43, 0x19, 0xf5,
-	0xcd, 0x78, 0x77, 0x4a, 0xfd, 0xd8, 0x58, 0xff, 0x2f, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x7b, 0x5e,
-	0xf5, 0x08, 0x0d, 0x00, 0x00,
+	// 729 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x94, 0x4f, 0x4f, 0x13, 0x4f,
+	0x18, 0xc7, 0xbb, 0xbf, 0x1f, 0x7f, 0x64, 0x4a, 0x89, 0x19, 0x0b, 0x96, 0x05, 0xb7, 0xb0, 0x08,
+	0x54, 0x94, 0x1d, 0xfe, 0xdc, 0x48, 0x3c, 0x50, 0x30, 0x31, 0xa8, 0x89, 0x6e, 0x88, 0x07, 0x2f,
+	0xcd, 0x74, 0x77, 0xb2, 0xac, 0xb0, 0x3b, 0x65, 0x66, 0xda, 0x40, 0x08, 0x17, 0x4f, 0x26, 0x1e,
+	0x24, 0x31, 0xd1, 0x2b, 0x67, 0x5f, 0x09, 0x47, 0x12, 0x2f, 0xc6, 0x03, 0x1a, 0xf0, 0xe0, 0xcb,
+	0x30, 0x9d, 0x99, 0x6d, 0xbb, 0x58, 0xc1, 0xd3, 0x74, 0x9f, 0xe7, 0x99, 0xef, 0xf3, 0xe9, 0xcc,
+	0xf7, 0x19, 0x30, 0xba, 0x5d, 0x7f, 0x1d, 0x32, 0x8c, 0x28, 0xc3, 0xde, 0x0e, 0x41, 0xbb, 0x75,
+	0xc2, 0xf6, 0x9d, 0x1a, 0xa3, 0x82, 0xc2, 0x9c, 0x4a, 0x39, 0x2a, 0x65, 0xe6, 0x03, 0x1a, 0x50,
+	0x99, 0x41, 0xcd, 0x5f, 0xaa, 0xc8, 0x1c, 0x0f, 0x28, 0x0d, 0x76, 0x08, 0xc2, 0xb5, 0x10, 0xe1,
+	0x38, 0xa6, 0x02, 0x8b, 0x90, 0xc6, 0x5c, 0x67, 0xcd, 0xb4, 0xba, 0x5a, 0x74, 0xce, 0xf2, 0x28,
+	0x8f, 0x28, 0x47, 0x55, 0xcc, 0x09, 0x6a, 0x2c, 0x56, 0x89, 0xc0, 0x8b, 0xc8, 0xa3, 0x61, 0xac,
+	0xf2, 0xf6, 0x0a, 0x28, 0xbc, 0x68, 0xd2, 0x3c, 0xda, 0xf3, 0xb6, 0x70, 0x1c, 0x10, 0x17, 0x0b,
+	0xe2, 0x92, 0xdd, 0x3a, 0xe1, 0x02, 0xe6, 0x41, 0xaf, 0x4f, 0x62, 0x1a, 0x15, 0x8c, 0x09, 0xa3,
+	0x34, 0xe0, 0xaa, 0x8f, 0x95, 0x1b, 0x6f, 0x8f, 0x8b, 0x99, 0x5f, 0xc7, 0xc5, 0x8c, 0x4d, 0xc0,
+	0x68, 0x97, 0xbd, 0xbc, 0x46, 0x63, 0x4e, 0xe0, 0x63, 0x90, 0x23, 0x3a, 0x5e, 0x61, 0x58, 0x10,
+	0x25, 0x52, 0x9e, 0x3a, 0x39, 0x2b, 0x66, 0xbe, 0x9d, 0x15, 0xc7, 0x14, 0x17, 0xf7, 0xb7, 0x9d,
+	0x90, 0xa2, 0x08, 0x8b, 0x2d, 0xe7, 0x29, 0x09, 0xb0, 0xb7, 0xbf, 0x4e, 0x3c, 0x77, 0x90, 0x74,
+	0x28, 0xda, 0x63, 0x5d, 0xda, 0x70, 0xcd, 0x68, 0x7f, 0x34, 0x80, 0xd9, 0x2d, 0xab, 0x29, 0xf6,
+	0xc0, 0x50, 0x8a, 0x82, 0x17, 0x8c, 0x89, 0xff, 0x4b, 0xd9, 0xa5, 0x71, 0x47, 0xf5, 0x77, 0x9a,
+	0xe7, 0xe2, 0xe8, 0x73, 0x71, 0xd6, 0x89, 0xb7, 0x46, 0xc3, 0xb8, 0xbc, 0xdc, 0x84, 0xfc, 0xfc,
+	0xbd, 0x78, 0x3f, 0x08, 0xc5, 0x56, 0xbd, 0xea, 0x78, 0x34, 0x42, 0xfa, 0x1c, 0xd5, 0x32, 0xcf,
+	0xfd, 0x6d, 0x24, 0xf6, 0x6b, 0x84, 0x27, 0x7b, 0xb8, 0x9b, 0xeb, 0x84, 0xe6, 0xf6, 0x30, 0xb8,
+	0x25, 0xb9, 0x56, 0x3d, 0x11, 0x36, 0xda, 0xbc, 0x0b, 0x20, 0x9f, 0x0e, 0x6b, 0xd0, 0x02, 0xe8,
+	0xc7, 0x2a, 0x24, 0x09, 0x07, 0xdc, 0xe4, 0xd3, 0x1e, 0x05, 0xb7, 0xe5, 0x8e, 0x97, 0x54, 0x90,
+	0x4d, 0xcc, 0x02, 0x22, 0x5a, 0x62, 0x0f, 0xf5, 0xe5, 0xa5, 0x52, 0x5a, 0x70, 0x12, 0x0c, 0x36,
+	0xa8, 0x20, 0x15, 0xa1, 0xe2, 0x5a, 0x35, 0xdb, 0x68, 0x97, 0xda, 0x1b, 0x5a, 0xf9, 0x59, 0xc8,
+	0xf9, 0x1a, 0xad, 0xc7, 0x82, 0xb0, 0xe4, 0xea, 0xa7, 0xc1, 0x50, 0x03, 0xef, 0x84, 0x3e, 0x16,
+	0x94, 0x55, 0xb0, 0xef, 0x33, 0xed, 0x81, 0x5c, 0x2b, 0xba, 0xea, 0xfb, 0xac, 0xc3, 0x0b, 0x09,
+	0x4a, 0x4a, 0xab, 0x8d, 0x12, 0x85, 0x9c, 0x57, 0x3c, 0x15, 0x97, 0x52, 0x3d, 0x6e, 0x36, 0x6a,
+	0x97, 0xda, 0x79, 0x00, 0xe5, 0xf6, 0xe7, 0x98, 0xe1, 0xa8, 0xf5, 0xff, 0x36, 0xf4, 0x19, 0x26,
+	0x51, 0xad, 0xb7, 0x0c, 0xfa, 0x6a, 0x32, 0x22, 0x95, 0xb2, 0x4b, 0xc3, 0x4e, 0x6a, 0x86, 0x1c,
+	0x55, 0x5e, 0xee, 0x69, 0xde, 0xa2, 0xab, 0x4b, 0x97, 0x3e, 0xf5, 0x82, 0x5e, 0x29, 0x06, 0xdf,
+	0x1b, 0x60, 0xb0, 0xd3, 0x2d, 0x70, 0xf6, 0xd2, 0xfe, 0xbf, 0x0d, 0x84, 0x59, 0xba, 0xbe, 0x50,
+	0x21, 0xda, 0x0f, 0xde, 0x7c, 0xf9, 0xf9, 0xe1, 0xbf, 0x19, 0x78, 0x37, 0x19, 0x4a, 0x39, 0x3b,
+	0x1c, 0x1d, 0xc8, 0xf5, 0x10, 0xa5, 0x4c, 0x09, 0xdf, 0x19, 0x20, 0x97, 0xf2, 0x2f, 0xbc, 0xb6,
+	0x53, 0x72, 0x46, 0xe6, 0xbd, 0x7f, 0xa8, 0xd4, 0x50, 0xd3, 0x12, 0xaa, 0x08, 0xef, 0x5c, 0x82,
+	0x4a, 0x4f, 0x08, 0x64, 0xa0, 0x5f, 0xbb, 0x13, 0xda, 0xdd, 0xc4, 0xd3, 0x8e, 0x36, 0xa7, 0xae,
+	0xac, 0xd1, 0xad, 0x2d, 0xd9, 0xba, 0x00, 0x47, 0x2e, 0xb5, 0xd6, 0x26, 0x87, 0x47, 0x06, 0xc8,
+	0x76, 0x58, 0x07, 0xce, 0x74, 0x13, 0xfd, 0xd3, 0xa7, 0xe6, 0xec, 0xb5, 0x75, 0x1a, 0x60, 0x41,
+	0x02, 0xcc, 0xc1, 0x52, 0x02, 0xd0, 0x32, 0x32, 0x47, 0x07, 0x69, 0xab, 0x1f, 0xa2, 0xa6, 0x33,
+	0x61, 0x00, 0xfa, 0x94, 0x91, 0xe0, 0x64, 0xb7, 0x26, 0x29, 0xa7, 0x9a, 0xf6, 0x55, 0x25, 0x1a,
+	0x61, 0x44, 0x22, 0xdc, 0x84, 0x43, 0x09, 0x82, 0x72, 0x66, 0x79, 0xfd, 0xe4, 0xdc, 0x32, 0x4e,
+	0xcf, 0x2d, 0xe3, 0xc7, 0xb9, 0x65, 0x1c, 0x5d, 0x58, 0x99, 0xd3, 0x0b, 0x2b, 0xf3, 0xf5, 0xc2,
+	0xca, 0xbc, 0x9a, 0xeb, 0x78, 0x7f, 0x36, 0x09, 0x8e, 0xe6, 0x9f, 0xa8, 0x87, 0xde, 0xa3, 0x8c,
+	0xa0, 0xbd, 0x44, 0x46, 0xbe, 0x43, 0xd5, 0x3e, 0xf9, 0x9e, 0x2f, 0xff, 0x0e, 0x00, 0x00, 0xff,
+	0xff, 0x91, 0x18, 0x7c, 0x6b, 0x6b, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1073,18 +618,8 @@ type QueryClient interface {
 	ExchangeRates(ctx context.Context, in *QueryExchangeRatesRequest, opts ...grpc.CallOption) (*QueryExchangeRatesResponse, error)
 	// Actives returns all active denoms
 	Actives(ctx context.Context, in *QueryActivesRequest, opts ...grpc.CallOption) (*QueryActivesResponse, error)
-	// FeederDelegation returns feeder delegation of a validator
-	FeederDelegation(ctx context.Context, in *QueryFeederDelegationRequest, opts ...grpc.CallOption) (*QueryFeederDelegationResponse, error)
 	// MissCounter returns oracle miss counter of a validator
 	MissCounter(ctx context.Context, in *QueryMissCounterRequest, opts ...grpc.CallOption) (*QueryMissCounterResponse, error)
-	// AggregatePrevote returns an aggregate prevote of a validator
-	AggregatePrevote(ctx context.Context, in *QueryAggregatePrevoteRequest, opts ...grpc.CallOption) (*QueryAggregatePrevoteResponse, error)
-	// AggregatePrevotes returns aggregate prevotes of all validators
-	AggregatePrevotes(ctx context.Context, in *QueryAggregatePrevotesRequest, opts ...grpc.CallOption) (*QueryAggregatePrevotesResponse, error)
-	// AggregateVote returns an aggregate vote of a validator
-	AggregateVote(ctx context.Context, in *QueryAggregateVoteRequest, opts ...grpc.CallOption) (*QueryAggregateVoteResponse, error)
-	// AggregateVotes returns aggregate votes of all validators
-	AggregateVotes(ctx context.Context, in *QueryAggregateVotesRequest, opts ...grpc.CallOption) (*QueryAggregateVotesResponse, error)
 	// Params queries all parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
@@ -1124,54 +659,9 @@ func (c *queryClient) Actives(ctx context.Context, in *QueryActivesRequest, opts
 	return out, nil
 }
 
-func (c *queryClient) FeederDelegation(ctx context.Context, in *QueryFeederDelegationRequest, opts ...grpc.CallOption) (*QueryFeederDelegationResponse, error) {
-	out := new(QueryFeederDelegationResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/FeederDelegation", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) MissCounter(ctx context.Context, in *QueryMissCounterRequest, opts ...grpc.CallOption) (*QueryMissCounterResponse, error) {
 	out := new(QueryMissCounterResponse)
 	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/MissCounter", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AggregatePrevote(ctx context.Context, in *QueryAggregatePrevoteRequest, opts ...grpc.CallOption) (*QueryAggregatePrevoteResponse, error) {
-	out := new(QueryAggregatePrevoteResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregatePrevote", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AggregatePrevotes(ctx context.Context, in *QueryAggregatePrevotesRequest, opts ...grpc.CallOption) (*QueryAggregatePrevotesResponse, error) {
-	out := new(QueryAggregatePrevotesResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregatePrevotes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AggregateVote(ctx context.Context, in *QueryAggregateVoteRequest, opts ...grpc.CallOption) (*QueryAggregateVoteResponse, error) {
-	out := new(QueryAggregateVoteResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregateVote", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AggregateVotes(ctx context.Context, in *QueryAggregateVotesRequest, opts ...grpc.CallOption) (*QueryAggregateVotesResponse, error) {
-	out := new(QueryAggregateVotesResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Query/AggregateVotes", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1195,18 +685,8 @@ type QueryServer interface {
 	ExchangeRates(context.Context, *QueryExchangeRatesRequest) (*QueryExchangeRatesResponse, error)
 	// Actives returns all active denoms
 	Actives(context.Context, *QueryActivesRequest) (*QueryActivesResponse, error)
-	// FeederDelegation returns feeder delegation of a validator
-	FeederDelegation(context.Context, *QueryFeederDelegationRequest) (*QueryFeederDelegationResponse, error)
 	// MissCounter returns oracle miss counter of a validator
 	MissCounter(context.Context, *QueryMissCounterRequest) (*QueryMissCounterResponse, error)
-	// AggregatePrevote returns an aggregate prevote of a validator
-	AggregatePrevote(context.Context, *QueryAggregatePrevoteRequest) (*QueryAggregatePrevoteResponse, error)
-	// AggregatePrevotes returns aggregate prevotes of all validators
-	AggregatePrevotes(context.Context, *QueryAggregatePrevotesRequest) (*QueryAggregatePrevotesResponse, error)
-	// AggregateVote returns an aggregate vote of a validator
-	AggregateVote(context.Context, *QueryAggregateVoteRequest) (*QueryAggregateVoteResponse, error)
-	// AggregateVotes returns aggregate votes of all validators
-	AggregateVotes(context.Context, *QueryAggregateVotesRequest) (*QueryAggregateVotesResponse, error)
 	// Params queries all parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
@@ -1224,23 +704,8 @@ func (*UnimplementedQueryServer) ExchangeRates(ctx context.Context, req *QueryEx
 func (*UnimplementedQueryServer) Actives(ctx context.Context, req *QueryActivesRequest) (*QueryActivesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Actives not implemented")
 }
-func (*UnimplementedQueryServer) FeederDelegation(ctx context.Context, req *QueryFeederDelegationRequest) (*QueryFeederDelegationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FeederDelegation not implemented")
-}
 func (*UnimplementedQueryServer) MissCounter(ctx context.Context, req *QueryMissCounterRequest) (*QueryMissCounterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MissCounter not implemented")
-}
-func (*UnimplementedQueryServer) AggregatePrevote(ctx context.Context, req *QueryAggregatePrevoteRequest) (*QueryAggregatePrevoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AggregatePrevote not implemented")
-}
-func (*UnimplementedQueryServer) AggregatePrevotes(ctx context.Context, req *QueryAggregatePrevotesRequest) (*QueryAggregatePrevotesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AggregatePrevotes not implemented")
-}
-func (*UnimplementedQueryServer) AggregateVote(ctx context.Context, req *QueryAggregateVoteRequest) (*QueryAggregateVoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AggregateVote not implemented")
-}
-func (*UnimplementedQueryServer) AggregateVotes(ctx context.Context, req *QueryAggregateVotesRequest) (*QueryAggregateVotesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AggregateVotes not implemented")
 }
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
@@ -1304,24 +769,6 @@ func _Query_Actives_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_FeederDelegation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryFeederDelegationRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).FeederDelegation(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/kujira.oracle.Query/FeederDelegation",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).FeederDelegation(ctx, req.(*QueryFeederDelegationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_MissCounter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryMissCounterRequest)
 	if err := dec(in); err != nil {
@@ -1336,78 +783,6 @@ func _Query_MissCounter_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).MissCounter(ctx, req.(*QueryMissCounterRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AggregatePrevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAggregatePrevoteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AggregatePrevote(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/kujira.oracle.Query/AggregatePrevote",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AggregatePrevote(ctx, req.(*QueryAggregatePrevoteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AggregatePrevotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAggregatePrevotesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AggregatePrevotes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/kujira.oracle.Query/AggregatePrevotes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AggregatePrevotes(ctx, req.(*QueryAggregatePrevotesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AggregateVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAggregateVoteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AggregateVote(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/kujira.oracle.Query/AggregateVote",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AggregateVote(ctx, req.(*QueryAggregateVoteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AggregateVotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAggregateVotesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AggregateVotes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/kujira.oracle.Query/AggregateVotes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AggregateVotes(ctx, req.(*QueryAggregateVotesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1447,28 +822,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Actives_Handler,
 		},
 		{
-			MethodName: "FeederDelegation",
-			Handler:    _Query_FeederDelegation_Handler,
-		},
-		{
 			MethodName: "MissCounter",
 			Handler:    _Query_MissCounter_Handler,
-		},
-		{
-			MethodName: "AggregatePrevote",
-			Handler:    _Query_AggregatePrevote_Handler,
-		},
-		{
-			MethodName: "AggregatePrevotes",
-			Handler:    _Query_AggregatePrevotes_Handler,
-		},
-		{
-			MethodName: "AggregateVote",
-			Handler:    _Query_AggregateVote_Handler,
-		},
-		{
-			MethodName: "AggregateVotes",
-			Handler:    _Query_AggregateVotes_Handler,
 		},
 		{
 			MethodName: "Params",
@@ -1712,66 +1067,6 @@ func (m *QueryVoteTargetsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryFeederDelegationRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryFeederDelegationRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryFeederDelegationRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.ValidatorAddr) > 0 {
-		i -= len(m.ValidatorAddr)
-		copy(dAtA[i:], m.ValidatorAddr)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.ValidatorAddr)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryFeederDelegationResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryFeederDelegationResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryFeederDelegationResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.FeederAddr) > 0 {
-		i -= len(m.FeederAddr)
-		copy(dAtA[i:], m.FeederAddr)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.FeederAddr)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *QueryMissCounterRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1826,252 +1121,6 @@ func (m *QueryMissCounterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 		i = encodeVarintQuery(dAtA, i, uint64(m.MissCounter))
 		i--
 		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregatePrevoteRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregatePrevoteRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregatePrevoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.ValidatorAddr) > 0 {
-		i -= len(m.ValidatorAddr)
-		copy(dAtA[i:], m.ValidatorAddr)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.ValidatorAddr)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregatePrevoteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregatePrevoteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregatePrevoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.AggregatePrevote.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregatePrevotesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregatePrevotesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregatePrevotesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregatePrevotesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregatePrevotesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregatePrevotesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AggregatePrevotes) > 0 {
-		for iNdEx := len(m.AggregatePrevotes) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AggregatePrevotes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregateVoteRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregateVoteRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregateVoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.ValidatorAddr) > 0 {
-		i -= len(m.ValidatorAddr)
-		copy(dAtA[i:], m.ValidatorAddr)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.ValidatorAddr)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregateVoteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregateVoteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregateVoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.AggregateVote.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregateVotesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregateVotesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregateVotesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAggregateVotesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAggregateVotesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAggregateVotesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AggregateVotes) > 0 {
-		for iNdEx := len(m.AggregateVotes) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AggregateVotes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -2239,32 +1288,6 @@ func (m *QueryVoteTargetsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryFeederDelegationRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.ValidatorAddr)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryFeederDelegationResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.FeederAddr)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
 func (m *QueryMissCounterRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2286,102 +1309,6 @@ func (m *QueryMissCounterResponse) Size() (n int) {
 	_ = l
 	if m.MissCounter != 0 {
 		n += 1 + sovQuery(uint64(m.MissCounter))
-	}
-	return n
-}
-
-func (m *QueryAggregatePrevoteRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.ValidatorAddr)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryAggregatePrevoteResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.AggregatePrevote.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryAggregatePrevotesRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryAggregatePrevotesResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.AggregatePrevotes) > 0 {
-		for _, e := range m.AggregatePrevotes {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *QueryAggregateVoteRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.ValidatorAddr)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryAggregateVoteResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.AggregateVote.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryAggregateVotesRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryAggregateVotesResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.AggregateVotes) > 0 {
-		for _, e := range m.AggregateVotes {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
 	}
 	return n
 }
@@ -2976,170 +1903,6 @@ func (m *QueryVoteTargetsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryFeederDelegationRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryFeederDelegationRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryFeederDelegationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddr", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ValidatorAddr = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryFeederDelegationResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryFeederDelegationResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryFeederDelegationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field FeederAddr", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.FeederAddr = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *QueryMissCounterRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3270,604 +2033,6 @@ func (m *QueryMissCounterResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregatePrevoteRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregatePrevoteRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregatePrevoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddr", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ValidatorAddr = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregatePrevoteResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregatePrevoteResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregatePrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AggregatePrevote", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.AggregatePrevote.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregatePrevotesRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregatePrevotesRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregatePrevotesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregatePrevotesResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregatePrevotesResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregatePrevotesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AggregatePrevotes", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AggregatePrevotes = append(m.AggregatePrevotes, AggregateExchangeRatePrevote{})
-			if err := m.AggregatePrevotes[len(m.AggregatePrevotes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregateVoteRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregateVoteRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregateVoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddr", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ValidatorAddr = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregateVoteResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregateVoteResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregateVoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AggregateVote", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.AggregateVote.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregateVotesRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregateVotesRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregateVotesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAggregateVotesResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAggregateVotesResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAggregateVotesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AggregateVotes", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AggregateVotes = append(m.AggregateVotes, AggregateExchangeRateVote{})
-			if err := m.AggregateVotes[len(m.AggregateVotes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

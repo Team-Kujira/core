@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/errors"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 
 	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
 	"github.com/Team-Kujira/core/x/cw-ica/types"
@@ -77,7 +77,7 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 	}
 
 	res, err := msgServer.RegisterInterchainAccount(
-		sdk.WrapSDKContext(ctx),
+		ctx,
 		msgRegister,
 	)
 	if err != nil {
@@ -142,7 +142,7 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 	msgServer := icacontrollerkeeper.NewMsgServerImpl(&f)
 
 	owner := contractAddr.String() + "-" + submitTx.AccountID
-	res, err := msgServer.SendTx(sdk.WrapSDKContext(ctx), icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionID, submitTx.Timeout, packetData))
+	res, err := msgServer.SendTx(ctx, icacontrollertypes.NewMsgSendTx(owner, submitTx.ConnectionID, submitTx.Timeout, packetData))
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting txs")
 	}

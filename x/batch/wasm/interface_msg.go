@@ -34,7 +34,7 @@ func PerformWithdrawAllDelegatorRewards(bk batchkeeper.Keeper, ctx sdk.Context, 
 	}
 
 	_, err := msgServer.WithdrawAllDelegatorRewards(
-		sdk.WrapSDKContext(ctx),
+		ctx,
 		msgWithdrawAllDelegatorRewards,
 	)
 	if err != nil {

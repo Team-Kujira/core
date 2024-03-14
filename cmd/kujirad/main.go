@@ -3,21 +3,17 @@ package main
 import (
 	"os"
 
+	"cosmossdk.io/log"
 	"github.com/Team-Kujira/core/app"
 	"github.com/Team-Kujira/core/cmd/kujirad/cmd"
-	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )
 
 func main() {
-	rootCmd, _ := cmd.NewRootCmd()
-	if err := svrcmd.Execute(rootCmd, "", app.DefaultNodeHome); err != nil {
-		switch e := err.(type) {
-		case server.ErrorCode:
-			os.Exit(e.Code)
+	rootCmd := cmd.NewRootCmd()
 
-		default:
-			os.Exit(1)
-		}
+	if err := svrcmd.Execute(rootCmd, "", app.DefaultNodeHome); err != nil {
+		log.NewLogger(rootCmd.OutOrStderr()).Error("failure when running app", "err", err)
+		os.Exit(1)
 	}
 }

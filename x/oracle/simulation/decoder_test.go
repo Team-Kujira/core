@@ -4,15 +4,19 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
 	gogotypes "github.com/cosmos/gogoproto/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/Team-Kujira/core/x/oracle/keeper"
 	sim "github.com/Team-Kujira/core/x/oracle/simulation"
 	"github.com/Team-Kujira/core/x/oracle/types"
 )
@@ -26,25 +30,21 @@ var (
 )
 
 func TestDecodeDistributionStore(t *testing.T) {
-	cdc := keeper.MakeTestCodec(t)
+	interfaceRegistry := codectypes.NewInterfaceRegistry()
+	std.RegisterInterfaces(interfaceRegistry)
+	authtypes.RegisterInterfaces(interfaceRegistry)
+
+	cdc := codec.NewProtoCodec(interfaceRegistry)
 	dec := sim.NewDecodeStore(cdc)
 
-	exchangeRate := sdk.NewDecWithPrec(1234, 1)
+	exchangeRate := math.LegacyNewDecWithPrec(1234, 1)
 	missCounter := uint64(23)
-
-	aggregatePrevote := types.NewAggregateExchangeRatePrevote(types.AggregateVoteHash([]byte("12345")), valAddr, 123)
-	aggregateVote := types.NewAggregateExchangeRateVote(types.ExchangeRateTuples{
-		{Denom: denomA, ExchangeRate: sdk.NewDecWithPrec(1234, 1)},
-		{Denom: denomB, ExchangeRate: sdk.NewDecWithPrec(4321, 1)},
-	}, valAddr)
 
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{
 			{Key: types.ExchangeRateKey, Value: cdc.MustMarshal(&sdk.DecProto{Dec: exchangeRate})},
 			{Key: types.FeederDelegationKey, Value: feederAddr.Bytes()},
 			{Key: types.MissCounterKey, Value: cdc.MustMarshal(&gogotypes.UInt64Value{Value: missCounter})},
-			{Key: types.AggregateExchangeRatePrevoteKey, Value: cdc.MustMarshal(&aggregatePrevote)},
-			{Key: types.AggregateExchangeRateVoteKey, Value: cdc.MustMarshal(&aggregateVote)},
 			{Key: []byte{0x99}, Value: []byte{0x99}},
 		},
 	}
@@ -56,8 +56,6 @@ func TestDecodeDistributionStore(t *testing.T) {
 		{"ExchangeRate", fmt.Sprintf("%v\n%v", exchangeRate, exchangeRate)},
 		{"FeederDelegation", fmt.Sprintf("%v\n%v", feederAddr, feederAddr)},
 		{"MissCounter", fmt.Sprintf("%v\n%v", missCounter, missCounter)},
-		{"AggregatePrevote", fmt.Sprintf("%v\n%v", aggregatePrevote, aggregatePrevote)},
-		{"AggregateVote", fmt.Sprintf("%v\n%v", aggregateVote, aggregateVote)},
 		{"other", ""},
 	}
 

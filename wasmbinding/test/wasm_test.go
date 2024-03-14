@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/Team-Kujira/core/x/oracle/wasm"
@@ -23,12 +23,12 @@ import (
 
 func TestQueryExchangeRates(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	ctx := app.BaseApp.NewContextLegacy(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
-	ExchangeRateC := sdk.NewDec(1700)
-	ExchangeRateB := sdk.NewDecWithPrec(17, 1)
-	ExchangeRateD := sdk.NewDecWithPrec(19, 1)
-	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomA, sdk.NewDec(1))
+	ExchangeRateC := math.LegacyNewDec(1700)
+	ExchangeRateB := math.LegacyNewDecWithPrec(17, 1)
+	ExchangeRateD := math.LegacyNewDecWithPrec(19, 1)
+	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomA, math.LegacyNewDec(1))
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomC, ExchangeRateC)
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomB, ExchangeRateB)
 	app.OracleKeeper.SetExchangeRate(ctx, types.TestDenomD, ExchangeRateD)
@@ -95,7 +95,7 @@ func TestQueryExchangeRates(t *testing.T) {
 
 func TestSupply(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	ctx := app.BaseApp.NewContextLegacy(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 
 	plugin := wasmbinding.NewQueryPlugin(app.BankKeeper, app.OracleKeeper, *app.DenomKeeper, *app.IBCKeeper, app.CwICAKeeper, app.GetKey(ibcexported.StoreKey))
 	querier := wasmbinding.CustomQuerier(plugin)
@@ -125,7 +125,8 @@ func TestSupply(t *testing.T) {
 
 func TestVerifyMembership(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	now := time.Now()
+	ctx := app.BaseApp.NewContext(false).WithBlockTime(now)
 
 	var err error
 	contractAddr, _ := SetupContract(t, ctx, app)
@@ -150,7 +151,8 @@ func TestVerifyMembership(t *testing.T) {
 
 func TestVerifyNonMembership(t *testing.T) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	now := time.Now()
+	ctx := app.BaseApp.NewContext(false).WithBlockTime(now)
 
 	var err error
 	contractAddr, _ := SetupContract(t, ctx, app)

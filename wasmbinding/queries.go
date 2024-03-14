@@ -1,12 +1,12 @@
 package wasmbinding
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 )
 
 type QueryPlugin struct {

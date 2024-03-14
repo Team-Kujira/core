@@ -2,7 +2,9 @@ syntax = "proto3";
 package kujira.denom;
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "kujira/denom/params.proto";
 
 option go_package = "github.com/Team-Kujira/core/x/denom/types";
 
@@ -15,12 +17,17 @@ service Msg {
   // cases rpc ForceTransfer(MsgForceTransfer) returns
   // (MsgForceTransferResponse);
   rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
+
+  // UpdateParams sets new module params
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgCreateDenom is the sdk.Msg type for allowing an account to create
 // a new denom.  It requires a sender address and a unique nonce
 // (to allow accounts to create multiple denoms)
 message MsgCreateDenom {
+  option (cosmos.msg.v1.signer) = "sender";
+
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string nonce = 2 [ (gogoproto.moretags) = "yaml:\"nonce\"" ];
 }
@@ -35,6 +42,8 @@ message MsgCreateDenomResponse {
 // MsgMint is the sdk.Msg type for allowing an admin account to mint
 // more of a token. 
 message MsgMint {
+  option (cosmos.msg.v1.signer) = "sender";
+
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.moretags) = "yaml:\"amount\"",
@@ -48,6 +57,8 @@ message MsgMintResponse {}
 // MsgBurn is the sdk.Msg type for allowing an admin account to burn
 // a token.  For now, we only support burning from the sender account.
 message MsgBurn {
+  option (cosmos.msg.v1.signer) = "sender";
+
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.moretags) = "yaml:\"amount\"",
@@ -75,9 +86,21 @@ message MsgBurnResponse {}
 // MsgChangeAdmin is the sdk.Msg type for allowing an admin account to reassign
 // adminship of a denom to a new account
 message MsgChangeAdmin {
+  option (cosmos.msg.v1.signer) = "sender";
+
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string denom = 2 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
   string newAdmin = 3 [ (gogoproto.moretags) = "yaml:\"new_admin\"" ];
 }
 
 message MsgChangeAdminResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
+  Params params = 2 [(gogoproto.moretags) = "yaml:\"params\""];
+}
+
+// MsgUpdateParamsResponse defines the Msg/UpdateParams response type.
+message MsgUpdateParamsResponse {}

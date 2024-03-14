@@ -1,12 +1,14 @@
 package app
 
 import (
+	"context"
+
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	batchtypes "github.com/Team-Kujira/core/x/batch/types"
 	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 )
 
@@ -33,7 +35,7 @@ func (app App) RegisterUpgradeHandlers() {
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		UpgradeName,
-		func(ctx sdk.Context,
+		func(ctx context.Context,
 			_ upgradetypes.Plan,
 			fromVM module.VersionMap,
 		) (module.VersionMap, error) {

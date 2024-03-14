@@ -8,8 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/Team-Kujira/core/x/cw-ica/types"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
 
 const (
@@ -19,10 +20,10 @@ const (
 
 func (k *Keeper) outOfGasRecovery(
 	ctx sdk.Context,
-	gasMeter sdk.GasMeter,
+	gasMeter storetypes.GasMeter,
 ) {
 	if r := recover(); r != nil {
-		_, ok := r.(sdk.ErrorOutOfGas)
+		_, ok := r.(storetypes.ErrorOutOfGas)
 		if !ok || !gasMeter.IsOutOfGas() {
 			panic(r)
 		}
@@ -33,7 +34,7 @@ func (k *Keeper) outOfGasRecovery(
 
 // createCachedContext creates a cached context for handling Sudo calls to CosmWasm smart-contracts.
 // If there is an error during Sudo call, we can safely revert changes made in cached context.
-func (k *Keeper) createCachedContext(ctx sdk.Context) (sdk.Context, func(), sdk.GasMeter) {
+func (k *Keeper) createCachedContext(ctx sdk.Context) (sdk.Context, func(), storetypes.GasMeter) {
 	gasMeter := ctx.GasMeter()
 	// determines type of gas meter by its prefix:
 	// * BasicGasMeter - basic gas meter which is used for processing tx directly in block;
@@ -62,7 +63,7 @@ func (k *Keeper) createCachedContext(ctx sdk.Context) (sdk.Context, func(), sdk.
 			newLimit = gasLeft - GasReserve
 		}
 
-		gasMeter = sdk.NewGasMeter(newLimit)
+		gasMeter = storetypes.NewGasMeter(newLimit)
 	}
 
 	cacheCtx = cacheCtx.WithGasMeter(gasMeter)
