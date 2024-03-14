@@ -7,7 +7,6 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	batchtypes "github.com/Team-Kujira/core/x/batch/types"
 	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
