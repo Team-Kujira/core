@@ -6,9 +6,7 @@ require (
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/math v1.2.0
 	cosmossdk.io/store v1.0.2
-	// cosmossdk.io/tools/rosetta v0.2.1
-	// cosmossdk.io/x/upgrade v0.0.0
-
+	cosmossdk.io/tools/rosetta v0.50.4
 	github.com/CosmWasm/wasmd v0.50.0
 	github.com/CosmWasm/wasmvm v1.5.2
 	github.com/cometbft/cometbft v0.38.5
