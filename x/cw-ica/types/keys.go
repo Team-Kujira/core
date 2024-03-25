@@ -19,6 +19,10 @@ const (
 	CallbackDataKeyPrefix = "CallbackData/"
 )
 
+var (
+	ParamsKey = []byte{0x01} // prefix for parameters for module x/cw-ica
+)
+
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }

@@ -1,0 +1,12 @@
+syntax = "proto3";
+package kujira.cwica;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/cw-ica/types";
+
+// Params holds parameters for the cwica module
+message Params {
+    uint64 min_gas_amount_per_ack = 1;
+}
+

@@ -6,7 +6,16 @@ option go_package = "github.com/Team-Kujira/core/x/cw-ica/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
+import "kujira/cwica/params.proto";
 
 // Msg defines the cwica Msg service.
 service Msg {
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
+
+message MsgUpdateParams {
+  string authority = 1;
+  Params params = 2 [ (gogoproto.nullable) = false ];
+}
+
+message MsgUpdateParamsResponse {}

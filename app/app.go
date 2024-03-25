@@ -594,6 +594,7 @@ func New(
 		app.ICAControllerKeeper,
 		scopedCwICAKeeper,
 		&app.WasmKeeper,
+		authority,
 	)
 
 	// Create Transfer Keepers

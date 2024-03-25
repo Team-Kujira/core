@@ -23,9 +23,17 @@ type Keeper struct {
 	scopedKeeper        capabilitykeeper.ScopedKeeper
 	icaControllerKeeper icacontrollerkeeper.Keeper
 	wasmKeeper          *wasmkeeper.Keeper
+	authority           string
 }
 
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, iaKeeper icacontrollerkeeper.Keeper, scopedKeeper capabilitykeeper.ScopedKeeper, wasmKeeper *wasmkeeper.Keeper) Keeper {
+func NewKeeper(
+	cdc codec.Codec,
+	storeKey storetypes.StoreKey,
+	iaKeeper icacontrollerkeeper.Keeper,
+	scopedKeeper capabilitykeeper.ScopedKeeper,
+	wasmKeeper *wasmkeeper.Keeper,
+	authority string,
+) Keeper {
 	return Keeper{
 		Codec:    cdc,
 		storeKey: storeKey,
@@ -33,6 +41,7 @@ func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, iaKeeper icacontro
 		scopedKeeper:        scopedKeeper,
 		icaControllerKeeper: iaKeeper,
 		wasmKeeper:          wasmKeeper,
+		authority:           authority,
 	}
 }
 

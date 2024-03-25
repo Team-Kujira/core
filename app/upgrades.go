@@ -37,6 +37,10 @@ func (app App) RegisterUpgradeHandlers() {
 			_ upgradetypes.Plan,
 			fromVM module.VersionMap,
 		) (module.VersionMap, error) {
+			err := app.CwICAKeeper.SetParams(ctx, cwicatypes.DefaultParams())
+			if err != nil {
+				return fromVM, err
+			}
 			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
 		},
 	)
