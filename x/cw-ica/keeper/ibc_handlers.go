@@ -81,6 +81,10 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Pack
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
 	defer k.outOfGasRecovery(ctx, newGasMeter)
+	params := k.GetParams(ctx)
+	if newGasMeter.GasRemaining() < params.MinGasAmountPerAck {
+		return types.ErrLowerThanMinGasAmountPerAck
+	}
 
 	// Actually we have only one kind of error returned from acknowledgement
 	// maybe later we'll retrieve actual errors from events
@@ -119,6 +123,10 @@ func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, _ sd
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
 	defer k.outOfGasRecovery(ctx, newGasMeter)
+	params := k.GetParams(ctx)
+	if newGasMeter.GasRemaining() < params.MinGasAmountPerAck {
+		return types.ErrLowerThanMinGasAmountPerAck
+	}
 
 	err := k.CallRegisteredICATxCallback(ctx, packet, types.IcaCallbackResult{
 		Timeout: &types.IcaCallbackTimeout{},
@@ -157,6 +165,10 @@ func (k *Keeper) HandleChanOpenAck(
 
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
 	defer k.outOfGasRecovery(ctx, newGasMeter)
+	params := k.GetParams(ctx)
+	if newGasMeter.GasRemaining() < params.MinGasAmountPerAck {
+		return types.ErrLowerThanMinGasAmountPerAck
+	}
 
 	// If there's an associated callback function, execute it
 	_, err := k.SudoIcaRegisterCallback(cacheCtx, callbackData, types.IcaCallbackResult{
