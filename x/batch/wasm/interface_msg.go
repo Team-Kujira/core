@@ -10,7 +10,7 @@ import (
 
 type BatchMsg struct {
 	// Contracts can withdraw all rewards for the delegations from the contract.
-	WithdrawAllDelegatorRewards *WithdrawAllDelegatorRewards `json:"withdrawAllDelegatorRewards,omitempty"`
+	WithdrawAllDelegatorRewards *WithdrawAllDelegatorRewards `json:"withdraw_all_delegator_rewards,omitempty"`
 }
 
 type WithdrawAllDelegatorRewards struct{}
