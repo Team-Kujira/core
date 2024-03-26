@@ -10,7 +10,7 @@ import (
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 )
 
-const UpgradeName = "v1.0.0"
+const UpgradeName = "v1.0.2"
 
 func (app App) RegisterUpgradeHandlers() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
