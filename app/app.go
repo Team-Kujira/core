@@ -674,6 +674,7 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		app.BatchKeeper,
 		*app.IBCKeeper,
 		app.CwICAKeeper,
 		app.ICAControllerKeeper,

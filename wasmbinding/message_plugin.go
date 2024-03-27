@@ -24,6 +24,7 @@ import (
 func CustomMessageDecorator(
 	bank bankkeeper.Keeper,
 	denom denomkeeper.Keeper,
+	batch batchkeeper.Keeper,
 	cwica cwicakeeper.Keeper,
 	ica icacontrollerkeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
@@ -34,6 +35,7 @@ func CustomMessageDecorator(
 			denom:   denom,
 			cwica:   cwica,
 			ica:     ica,
+			batch:   batch,
 		}
 	}
 }

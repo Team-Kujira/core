@@ -1,6 +1,7 @@
 package wasmbinding
 
 import (
+	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	oraclekeeper "github.com/Team-Kujira/core/x/oracle/keeper"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -17,6 +18,7 @@ func RegisterCustomPlugins(
 	bank bankkeeper.Keeper,
 	oracle oraclekeeper.Keeper,
 	denom denomkeeper.Keeper,
+	batch batchkeeper.Keeper,
 	ibc ibckeeper.Keeper,
 	cwica cwicakeeper.Keeper,
 	ica icacontrollerkeeper.Keeper,
@@ -29,7 +31,7 @@ func RegisterCustomPlugins(
 	})
 
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(bank, denom, cwica, ica),
+		CustomMessageDecorator(bank, denom, batch, cwica, ica),
 	)
 
 	return []wasmkeeper.Option{
