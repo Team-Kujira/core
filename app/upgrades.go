@@ -18,7 +18,7 @@ func (app App) RegisterUpgradeHandlers() {
 		panic(err)
 	}
 
-	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) && upgradeInfo.Info != "skip-store-upgrades" {
 		storeUpgrades := storetypes.StoreUpgrades{
 			Added: []string{
 				ibcwasmtypes.ModuleName,
