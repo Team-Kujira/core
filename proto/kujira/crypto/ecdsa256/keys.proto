@@ -15,11 +15,3 @@ message PubKey {
 
   bytes key = 1;
 }
-
-// PrivKey defines a ecdsa256 private key.
-message PrivKey {
-  option (amino.name) = "tendermint/PrivKeyEcdsa256";
-  option (amino.message_encoding) = "key_field";
-
-  bytes key = 1;
-}
