@@ -12,7 +12,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"math/big"
 
 	secp256k1 "github.com/btcsuite/btcd/btcec/v2"
@@ -36,8 +35,6 @@ func (privKey *PrivKey) Sign(msg []byte) ([]byte, error) {
 // VerifyBytes verifies a signature of the form R || S.
 // It rejects signatures which are not in lower-S form.
 func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
-	fmt.Println("msg.HEX", hex.EncodeToString(msg))
-	fmt.Println("VerifySignature", string(sigStr[:]))
 	// return false
 	type CBORSignature struct {
 		AuthenticatorData string `json:"authenticatorData"`
@@ -51,15 +48,6 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 		return false
 	}
 
-	fmt.Println("CBORSignature", cborSig)
-
-	// "clientDataJParsed": {
-	//   "type": "webauthn.get",
-	//   "challenge": "CpMBCpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKLWt1amlyYTF2NDJzZnBjY2RhbnUwdmZ3eDB1eWt0NzVrYXY3eHR0dXZhejlwcRIta3VqaXJhMWsydHVsYXU3d3o2ZGE2aGZseXZtNWF1YXE4NGQ1eXB3bHQ0eGdnGhAKBXN0YWtlEgcxMDAwMDAwEnYKbgpkCh4va3VqaXJhLmNyeXB0by5lY2RzYTI1Ni5QdWJLZXkSQgpAFgGQ-0-aPaRoZOR1E712MLHeCytGYb16r70oS5x59-IlR_DXS_Emq5xotXVL28STYOVShgjII6P5o4dF0Y6MzBIECgIIARgBEgQQwJoMGghrdWppcmEtMSAC",
-	//   "origin": "https://blue.kujira.network",
-	//   "crossOrigin": false
-	// }
-
 	clientDataJSON, err := hex.DecodeString(cborSig.ClientDataJSON)
 	if err != nil {
 		return false
@@ -67,39 +55,25 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 
 	clientData := make(map[string]interface{})
 	err = json.Unmarshal(clientDataJSON, &clientData)
-	fmt.Println("clientDataErr", err)
 	if err != nil {
 		return false
 	}
-	fmt.Println("clientData", clientData)
 
 	challenge, err := base64.RawURLEncoding.DecodeString(clientData["challenge"].(string))
-	fmt.Println("clientData['challenge'].(string)", clientData["challenge"].(string))
-	fmt.Println("err", err)
 	if err != nil {
 		return false
 	}
-	fmt.Println("challenge", hex.EncodeToString(challenge))
 
 	// Check challenge == msg
 	if !bytes.Equal(challenge, msg) {
 		return false
 	}
 
-	// publicKey := &cecdsa.PublicKey{
-	// 	Curve: elliptic.P256(),
-	// 	X:     big.NewInt(0).SetBytes(pubKey.Key[:32]),
-	// 	Y:     big.NewInt(0).SetBytes(pubKey.Key[32:64]),
-	// }
-
 	publicKey := &cecdsa.PublicKey{Curve: elliptic.P256()}
 	publicKey.X, publicKey.Y = elliptic.UnmarshalCompressed(elliptic.P256(), pubKey.Key)
 	if publicKey.X == nil || publicKey.Y == nil {
-		fmt.Println("Wrong pubkey bytes", publicKey.X, publicKey.Y)
 		return false
 	}
-	fmt.Println("X", hex.EncodeToString(publicKey.X.Bytes()))
-	fmt.Println("Y", hex.EncodeToString(publicKey.Y.Bytes()))
 
 	type ECDSASignature struct {
 		R, S *big.Int
@@ -122,10 +96,7 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 	}
 
 	clientDataHash := sha256.Sum256(clientDataJSON)
-	fmt.Println("clientDataHash", hex.EncodeToString(clientDataHash[:]))
-
 	payload := append(authenticatorData, clientDataHash[:]...)
-	fmt.Println("payload", hex.EncodeToString(payload[:]))
 
 	h := crypto.SHA256.New()
 	h.Write(payload)

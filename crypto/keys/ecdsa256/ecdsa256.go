@@ -157,11 +157,6 @@ func (pubKey *PubKey) Address() crypto.Address {
 		panic("length of pubkey is incorrect")
 	}
 
-	fmt.Println("proto.MessageName", proto.MessageName(pubKey))
-	// sha := sha256.Sum256(pubKey.Key)
-	// hasherRIPEMD160 := ripemd160.New()
-	// hasherRIPEMD160.Write(sha[:]) // does not error
-	// return crypto.Address(hasherRIPEMD160.Sum(nil))
 	return address.Hash(proto.MessageName(pubKey), pubKey.Key)
 }
 
