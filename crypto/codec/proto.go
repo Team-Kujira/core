@@ -10,7 +10,4 @@ import (
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	var pk *cryptotypes.PubKey
 	registry.RegisterImplementations(pk, &ecdsa256.PubKey{})
-
-	var priv *cryptotypes.PrivKey
-	registry.RegisterImplementations(priv, &ecdsa256.PrivKey{})
 }
