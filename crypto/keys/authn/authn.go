@@ -1,4 +1,4 @@
-package ecdsa256
+package authn
 
 import (
 	"bytes"
@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	keyType    = "ecdsa256"
-	PubKeyName = "tendermint/PubKeyEcdsa256"
+	keyType    = "authn"
+	PubKeyName = "tendermint/PubKeyAuthn"
 )
 
 var (
@@ -43,7 +43,7 @@ func (pubKey *PubKey) Bytes() []byte {
 }
 
 func (pubKey *PubKey) String() string {
-	return fmt.Sprintf("PubKeyEcdsa256{%X}", pubKey.Key)
+	return fmt.Sprintf("PubKeyAuthn{%X}", pubKey.Key)
 }
 
 func (pubKey *PubKey) Type() string {

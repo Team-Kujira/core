@@ -1,0 +1,18 @@
+syntax = "proto3";
+package kujira.crypto.authn;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/Team-Kujira/core/crypto/keys/authn";
+
+// PubKey defines a authn public key
+message PubKey {
+  option (amino.name) = "tendermint/PubKeyAuthn";
+
+  option (amino.message_encoding) = "key_field";
+  option (gogoproto.goproto_stringer) = false;
+
+  string key_id = 1;
+  bytes key = 2;
+}

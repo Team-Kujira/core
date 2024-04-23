@@ -1,4 +1,4 @@
-package ecdsa256
+package authn
 
 import (
 	// "bytes"

@@ -1,7 +1,7 @@
 package codec
 
 import (
-	"github.com/Team-Kujira/core/crypto/keys/ecdsa256"
+	authn "github.com/Team-Kujira/core/crypto/keys/authn"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 )
@@ -9,5 +9,5 @@ import (
 // RegisterInterfaces registers the sdk.Tx interface.
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	var pk *cryptotypes.PubKey
-	registry.RegisterImplementations(pk, &ecdsa256.PubKey{})
+	registry.RegisterImplementations(pk, &authn.PubKey{})
 }

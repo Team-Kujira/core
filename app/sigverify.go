@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 
-	"github.com/Team-Kujira/core/crypto/keys/ecdsa256"
+	authn "github.com/Team-Kujira/core/crypto/keys/authn"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256r1"
@@ -35,8 +35,8 @@ func SigVerificationGasConsumer(
 		meter.ConsumeGas(params.SigVerifyCostSecp256r1(), "ante verify: secp256r1")
 		return nil
 
-	case *ecdsa256.PubKey:
-		meter.ConsumeGas(params.SigVerifyCostSecp256r1(), "ante verify: ecdsa256")
+	case *authn.PubKey:
+		meter.ConsumeGas(params.SigVerifyCostSecp256r1(), "ante verify: authn")
 		return nil
 
 	case multisig.PubKey:
