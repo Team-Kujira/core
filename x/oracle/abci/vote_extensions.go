@@ -10,6 +10,7 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -32,12 +33,6 @@ func NewVoteExtHandler(
 	}
 }
 
-// OracleVoteExtension defines the canonical vote extension structure.
-type OracleVoteExtension struct {
-	Height int64
-	Prices map[string]math.LegacyDec
-}
-
 type PricesResponse struct {
 	Prices map[string]math.LegacyDec `json:"prices"`
 }
@@ -49,13 +44,13 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 		h.logger.Info("computing oracle prices for vote extension", "height", req.Height, "time", h.lastPriceSyncTS, "endpoint", oracleConfig.Endpoint)
 
-		emptyVoteExt := OracleVoteExtension{
+		emptyVoteExt := types.VoteExtension{
 			Height: req.Height,
-			Prices: map[string]math.LegacyDec{},
+			Prices: []types.ExchangeRateTuple{},
 		}
 
 		// Encode vote extension to bytes
-		emptyVoteExtBz, err := json.Marshal(emptyVoteExt)
+		emptyVoteExtBz, err := emptyVoteExt.Marshal()
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
 		}
@@ -80,10 +75,16 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 			return &abci.ResponseExtendVote{VoteExtension: emptyVoteExtBz}, nil
 		}
 
-		computedPrices := prices.Prices
+		computedPrices := []types.ExchangeRateTuple{}
+		for denom, rate := range prices.Prices {
+			computedPrices = append(computedPrices, types.ExchangeRateTuple{
+				Denom:        denom,
+				ExchangeRate: rate,
+			})
+		}
 
 		// produce a canonical vote extension
-		voteExt := OracleVoteExtension{
+		voteExt := types.VoteExtension{
 			Height: req.Height,
 			Prices: computedPrices,
 		}
@@ -91,7 +92,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 		h.logger.Info("computed prices", "prices", computedPrices)
 
 		// Encode vote extension to bytes
-		bz, err := json.Marshal(voteExt)
+		bz, err := voteExt.Marshal()
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
 		}
@@ -102,13 +103,13 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
-		var voteExt OracleVoteExtension
+		var voteExt types.VoteExtension
 
 		if len(req.VoteExtension) == 0 {
 			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 		}
 
-		err := json.Unmarshal(req.VoteExtension, &voteExt)
+		err := voteExt.Unmarshal(req.VoteExtension)
 		if err != nil {
 			// NOTE: It is safe to return an error as the Cosmos SDK will capture all
 			// errors, log them, and reject the proposal.
@@ -129,6 +130,6 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVo
 	}
 }
 
-func (h *VoteExtHandler) verifyOraclePrices(_ sdk.Context, _ map[string]math.LegacyDec) error {
+func (h *VoteExtHandler) verifyOraclePrices(_ sdk.Context, _ []types.ExchangeRateTuple) error {
 	return nil
 }

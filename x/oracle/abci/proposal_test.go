@@ -80,23 +80,35 @@ func TestGetBallotByDenom(t *testing.T) {
 	power := int64(100)
 
 	// organize votes by denom
-	voteExt1 := abci.OracleVoteExtension{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25000),
-			"ETH": math.LegacyNewDec(2200),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25000),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2200),
+			},
 		},
 	}
-	voteExt2 := abci.OracleVoteExtension{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25030),
-			"ETH": math.LegacyNewDec(2180),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25030),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2180),
+			},
 		},
 	}
-	voteExt1Bytes, err := json.Marshal(voteExt1)
+	voteExt1Bytes, err := voteExt1.Marshal()
 	require.NoError(t, err)
-	voteExt2Bytes, err := json.Marshal(voteExt2)
+	voteExt2Bytes, err := voteExt2.Marshal()
 	require.NoError(t, err)
 
 	consAddrMap := map[string]sdk.ValAddress{
@@ -159,23 +171,35 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 	input, h := SetupTest(t)
 
 	// organize votes by denom
-	voteExt1 := abci.OracleVoteExtension{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25000),
-			"ETH": math.LegacyNewDec(2200),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25000),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2200),
+			},
 		},
 	}
-	voteExt2 := abci.OracleVoteExtension{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25030),
-			"ETH": math.LegacyNewDec(2180),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25030),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2180),
+			},
 		},
 	}
-	voteExt1Bytes, err := json.Marshal(voteExt1)
+	voteExt1Bytes, err := voteExt1.Marshal()
 	require.NoError(t, err)
-	voteExt2Bytes, err := json.Marshal(voteExt2)
+	voteExt2Bytes, err := voteExt2.Marshal()
 	require.NoError(t, err)
 
 	params := types.DefaultParams()
@@ -435,23 +459,35 @@ func TestPrepareProposal(t *testing.T) {
 	require.Error(t, err)
 
 	// Valid vote extension data
-	voteExt1 := abci.OracleVoteExtension{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25000),
-			"ETH": math.LegacyNewDec(2200),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25000),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2200),
+			},
 		},
 	}
-	voteExt2 := abci.OracleVoteExtension{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25030),
-			"ETH": math.LegacyNewDec(2180),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25030),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2180),
+			},
 		},
 	}
-	voteExt1Bytes, err := json.Marshal(voteExt1)
+	voteExt1Bytes, err := voteExt1.Marshal()
 	require.NoError(t, err)
-	voteExt2Bytes, err := json.Marshal(voteExt2)
+	voteExt2Bytes, err := voteExt2.Marshal()
 	require.NoError(t, err)
 	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
 		var buf bytes.Buffer
@@ -576,23 +612,35 @@ func TestProcessProposal(t *testing.T) {
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
 
 	// Valid vote extension data
-	voteExt1 := abci.OracleVoteExtension{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25000),
-			"ETH": math.LegacyNewDec(2200),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25000),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2200),
+			},
 		},
 	}
-	voteExt2 := abci.OracleVoteExtension{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25030),
-			"ETH": math.LegacyNewDec(2180),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25030),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2180),
+			},
 		},
 	}
-	voteExt1Bytes, err := json.Marshal(voteExt1)
+	voteExt1Bytes, err := voteExt1.Marshal()
 	require.NoError(t, err)
-	voteExt2Bytes, err := json.Marshal(voteExt2)
+	voteExt2Bytes, err := voteExt2.Marshal()
 	require.NoError(t, err)
 	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
 		var buf bytes.Buffer
@@ -779,23 +827,35 @@ func TestPreBlocker(t *testing.T) {
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
 
 	// Valid vote extension data
-	voteExt1 := abci.OracleVoteExtension{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25000),
-			"ETH": math.LegacyNewDec(2200),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25000),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2200),
+			},
 		},
 	}
-	voteExt2 := abci.OracleVoteExtension{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
-		Prices: map[string]math.LegacyDec{
-			"BTC": math.LegacyNewDec(25030),
-			"ETH": math.LegacyNewDec(2180),
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyNewDec(25030),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyNewDec(2180),
+			},
 		},
 	}
-	voteExt1Bytes, err := json.Marshal(voteExt1)
+	voteExt1Bytes, err := voteExt1.Marshal()
 	require.NoError(t, err)
-	voteExt2Bytes, err := json.Marshal(voteExt2)
+	voteExt2Bytes, err := voteExt2.Marshal()
 	require.NoError(t, err)
 	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
 		var buf bytes.Buffer

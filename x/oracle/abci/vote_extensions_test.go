@@ -7,8 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/Team-Kujira/core/x/oracle/abci"
 	"github.com/Team-Kujira/core/x/oracle/keeper"
+	"github.com/Team-Kujira/core/x/oracle/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
 )
@@ -44,7 +46,17 @@ func TestExtendVoteHandler(t *testing.T) {
 		ProposerAddress:    []byte{},
 	})
 	require.NoError(t, err)
-	require.Equal(t, string(res.VoteExtension), `{"Height":3,"Prices":{"BTC":"47375.706652541026694000","ETH":"2649.328939436595054949","USDT":"1.000661260343873178"}}`)
+	voteExt := types.VoteExtension{}
+	err = voteExt.Unmarshal(res.VoteExtension)
+	require.NoError(t, err)
+	require.Equal(t, voteExt.Height, int64(3))
+	require.Len(t, voteExt.Prices, 3)
+	require.Equal(t, voteExt.Prices[0].Denom, "BTC")
+	require.Equal(t, voteExt.Prices[0].ExchangeRate.String(), "47375.706652541026694000")
+	require.Equal(t, voteExt.Prices[1].Denom, "ETH")
+	require.Equal(t, voteExt.Prices[1].ExchangeRate.String(), "2649.328939436595054949")
+	require.Equal(t, voteExt.Prices[2].Denom, "USDT")
+	require.Equal(t, voteExt.Prices[2].ExchangeRate.String(), "1.000661260343873178")
 }
 
 func TestVerifyVoteExtensionHandler(t *testing.T) {
@@ -61,11 +73,30 @@ func TestVerifyVoteExtensionHandler(t *testing.T) {
 		Endpoint: testServer.URL,
 	})
 
+	voteExt := types.VoteExtension{
+		Height: 3,
+		Prices: []types.ExchangeRateTuple{
+			{
+				Denom:        "BTC",
+				ExchangeRate: math.LegacyMustNewDecFromStr("47375.706652541026694000"),
+			},
+			{
+				Denom:        "ETH",
+				ExchangeRate: math.LegacyMustNewDecFromStr("2649.328939436595054949"),
+			},
+			{
+				Denom:        "USDT",
+				ExchangeRate: math.LegacyMustNewDecFromStr("1.000661260343873178"),
+			},
+		},
+	}
+	voteExtBz, err := voteExt.Marshal()
+	require.NoError(t, err)
 	// Height's same
 	res, err := handler(input.Ctx, &cometabci.RequestVerifyVoteExtension{
 		Hash:             []byte{},
 		Height:           3,
-		VoteExtension:    []byte(`{"Height":3,"Prices":{"BTC":"47375.706652541026694000","ETH":"2649.328939436595054949","USDT":"1.000661260343873178"}}`),
+		VoteExtension:    voteExtBz,
 		ValidatorAddress: []byte{},
 	})
 	require.NoError(t, err)
@@ -75,7 +106,7 @@ func TestVerifyVoteExtensionHandler(t *testing.T) {
 	_, err = handler(input.Ctx, &cometabci.RequestVerifyVoteExtension{
 		Hash:             []byte{},
 		Height:           2,
-		VoteExtension:    []byte(`{"Height":3,"Prices":{"BTC":"47375.706652541026694000","ETH":"2649.328939436595054949","USDT":"1.000661260343873178"}}`),
+		VoteExtension:    voteExtBz,
 		ValidatorAddress: []byte{},
 	})
 	require.Error(t, err)

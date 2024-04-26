@@ -248,13 +248,15 @@ func (h *ProposalHandler) GetBallotByDenom(ci abci.ExtendedCommitInfo, validator
 		if ok {
 			power := claim.Power
 
-			var voteExt OracleVoteExtension
-			if err := json.Unmarshal(v.VoteExtension, &voteExt); err != nil {
+			var voteExt types.VoteExtension
+			if err := voteExt.Unmarshal(v.VoteExtension); err != nil {
 				h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
 				return votes
 			}
 
-			for base, price := range voteExt.Prices {
+			for _, tuple := range voteExt.Prices {
+				base := tuple.Denom
+				price := tuple.ExchangeRate
 				tmpPower := power
 				if !price.IsPositive() {
 					// Make the power of abstain vote zero
