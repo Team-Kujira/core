@@ -26,6 +26,10 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data *types.GenesisState
 		keeper.SetMissCounter(ctx, operator, mc.MissCounter)
 	}
 
+	for _, r := range data.HistoricalExchangeRates {
+		keeper.SetHistoricalExchangeRate(ctx, r)
+	}
+
 	err := keeper.SetParams(ctx, data.Params)
 	if err != nil {
 		panic(err)
@@ -50,6 +54,12 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 		return false
 	})
 
+	historicalRates := []types.HistoricalExchangeRate{}
+	keeper.IterateHistoricalExchangeRate(ctx, func(rate types.HistoricalExchangeRate) (stop bool) {
+		historicalRates = append(historicalRates, rate)
+		return false
+	})
+
 	missCounters := []types.MissCounter{}
 	keeper.IterateMissCounters(ctx, func(operator sdk.ValAddress, missCounter uint64) (stop bool) {
 		missCounters = append(missCounters, types.MissCounter{
@@ -59,7 +69,10 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 		return false
 	})
 
-	return types.NewGenesisState(params,
+	return types.NewGenesisState(
+		params,
 		exchangeRates,
-		missCounters)
+		missCounters,
+		historicalRates,
+	)
 }

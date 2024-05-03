@@ -109,6 +109,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		},
 		[]types.ExchangeRateTuple{},
 		[]types.MissCounter{},
+		[]types.HistoricalExchangeRate{},
 	)
 
 	bz, err := json.MarshalIndent(&oracleGenesis.Params, "", " ")

@@ -42,7 +42,16 @@ var (
 	AggregateExchangeRateVoteKey    = []byte{0x05} // prefix for each key to a aggregate vote
 	ParamsKey                       = []byte{0x06}
 	WhitelistKey                    = []byte{0x07}
+	HistoricalExchangeRateKey       = []byte{0x08}
 )
+
+func GetHistoricalExchangeRatePrefix(epoch string, denom string) []byte {
+	return append(append(HistoricalExchangeRateKey, []byte(epoch)...), []byte(denom)...)
+}
+
+func GetHistoricalExchangeRateKey(epoch string, denom string, timestamp int64) []byte {
+	return append(GetHistoricalExchangeRatePrefix(epoch, denom), sdk.Uint64ToBigEndian(uint64(timestamp))...)
+}
 
 // GetExchangeRateKey - stored by *denom*
 func GetExchangeRateKey(denom string) []byte {
