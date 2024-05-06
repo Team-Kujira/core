@@ -4,8 +4,6 @@ import (
 	// "bytes"
 	"bytes"
 	"crypto"
-
-	cecdsa "crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/sha256"
 	"encoding/asn1"
@@ -13,6 +11,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"math/big"
+
+	cecdsa "crypto/ecdsa"
 )
 
 // VerifyBytes verifies a signature of the form R || S.
