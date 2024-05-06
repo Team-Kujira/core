@@ -156,7 +156,6 @@ message QueryAggregatePrevoteRequest {
 message QueryAggregatePrevoteResponse {
   // aggregate_prevote defines oracle aggregate prevote submitted by a validator in the current vote period
   AggregateExchangeRatePrevote aggregate_prevote = 1 [(gogoproto.nullable) = false];
-  ;
 }
 
 // QueryAggregatePrevotesRequest is the request type for the Query/AggregatePrevotes RPC method.
