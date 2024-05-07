@@ -18,7 +18,7 @@ func (k Keeper) EndBlocker(ctx sdk.Context) error {
 	for _, epoch := range params.ExchangeRateSnapEpochs {
 		for _, denom := range params.RequiredDenoms {
 			latestRate := k.LatestHistoricalExchangeRateByEpochDenom(ctx, epoch.Epoch, denom)
-			if latestRate.Timestamp == 0 || latestRate.Timestamp+epoch.Duration < ctx.BlockTime().Unix() {
+			if latestRate.Timestamp == 0 || latestRate.Timestamp+epoch.Duration <= ctx.BlockTime().Unix() {
 				rate, err := k.GetExchangeRate(ctx, denom)
 				if err == nil {
 					latestRate = types.HistoricalExchangeRate{
