@@ -28,6 +28,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryActives(),
 		GetCmdQueryParams(),
 		GetCmdQueryMissCounter(),
+		GetCmdQueryHistoricalExchangeRates(),
 	)
 
 	return oracleQueryCmd
