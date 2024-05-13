@@ -12,18 +12,18 @@ import (
 	"encoding/json"
 	"math/big"
 
-	cecdsa "crypto/ecdsa"
+	ecdsa "crypto/ecdsa"
 )
+
+type CBORSignature struct {
+	AuthenticatorData string `json:"authenticatorData"`
+	ClientDataJSON    string `json:"clientDataJSON"`
+	Signature         string `json:"signature"`
+}
 
 // VerifyBytes verifies a signature of the form R || S.
 // It rejects signatures which are not in lower-S form.
 func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
-	type CBORSignature struct {
-		AuthenticatorData string `json:"authenticatorData"`
-		ClientDataJSON    string `json:"clientDataJSON"`
-		Signature         string `json:"signature"`
-	}
-
 	cborSig := CBORSignature{}
 	err := json.Unmarshal(sigStr, &cborSig)
 	if err != nil {
@@ -51,7 +51,7 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 		return false
 	}
 
-	publicKey := &cecdsa.PublicKey{Curve: elliptic.P256()}
+	publicKey := &ecdsa.PublicKey{Curve: elliptic.P256()}
 	publicKey.X, publicKey.Y = elliptic.UnmarshalCompressed(elliptic.P256(), pubKey.Key)
 	if publicKey.X == nil || publicKey.Y == nil {
 		return false
@@ -83,5 +83,5 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 	h := crypto.SHA256.New()
 	h.Write(payload)
 
-	return cecdsa.Verify(publicKey, h.Sum(nil), e.R, e.S)
+	return ecdsa.Verify(publicKey, h.Sum(nil), e.R, e.S)
 }
