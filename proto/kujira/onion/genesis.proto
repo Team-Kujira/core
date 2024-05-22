@@ -1,0 +1,10 @@
+syntax = "proto3";
+package kujira.onion;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "kujira/onion/params.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/onion/types";
+
+message GenesisState { Params params = 1 [ (gogoproto.nullable) = false ]; }

@@ -87,6 +87,9 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	onion "github.com/Team-Kujira/core/x/onion"
+	onionkeeper "github.com/Team-Kujira/core/x/onion/keeper"
+	oniontypes "github.com/Team-Kujira/core/x/onion/types"
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm"
 	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
@@ -295,6 +298,9 @@ type App struct {
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	OnionKeeper           *onionkeeper.Keeper
+	Ics20WasmHooks        *onion.WasmHooks
+	HooksICS4Wrapper      onion.ICS4Middleware
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
@@ -383,6 +389,7 @@ func New(
 		batchtypes.StoreKey,
 		AllianceStoreKey,
 		cwicatypes.StoreKey,
+		oniontypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -546,6 +553,17 @@ func New(
 		scopedIBCKeeper,
 	)
 
+	// Configure the hooks keeper
+	hooksKeeper := onionkeeper.NewKeeper(
+		keys[oniontypes.StoreKey],
+		app.GetSubspace(oniontypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		nil,
+	)
+	app.OnionKeeper = hooksKeeper
+
+	app.WireICS20PreWasmKeeper(appCodec, bApp, app.OnionKeeper)
+
 	// IBC Fee Module keeper
 
 	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
@@ -704,6 +722,10 @@ func New(
 		wasmOpts...,
 	)
 
+	// Pass the contract keeper to all the structs (generally ICS4Wrappers for ibc middlewares) that need it
+	app.Ics20WasmHooks.ContractKeeper = &app.WasmKeeper
+	app.OnionKeeper.ContractKeeper = wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)
+
 	// Register the proposal types
 	// Deprecated: Avoid adding new handlers, instead use the new proposal flow
 	// by granting the governance module the right to execute the message.
@@ -758,6 +780,7 @@ func New(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+	transferStack = onion.NewIBCMiddleware(transferStack, &app.HooksICS4Wrapper)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -1176,6 +1199,22 @@ func New(
 	return app
 }
 
+// WireICS20PreWasmKeeper Create the IBC Transfer Stack from bottom to top:
+func (app *App) WireICS20PreWasmKeeper(
+	appCodec codec.Codec,
+	bApp *baseapp.BaseApp,
+	hooksKeeper *onionkeeper.Keeper,
+) {
+	// Setup the ICS4Wrapper used by the hooks middleware
+	addrPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
+	wasmHooks := onion.NewWasmHooks(hooksKeeper, nil, addrPrefix) // The contract keeper needs to be set later
+	app.Ics20WasmHooks = &wasmHooks
+	app.HooksICS4Wrapper = onion.NewICS4Middleware(
+		app.IBCKeeper.ChannelKeeper,
+		app.Ics20WasmHooks,
+	)
+}
+
 func (app *App) setPostHandler() {
 	postHandler, err := posthandler.NewPostHandler(
 		posthandler.HandlerOptions{},
@@ -1324,6 +1363,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(batchtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+	paramsKeeper.Subspace(oniontypes.ModuleName)
 
 	return paramsKeeper
 }

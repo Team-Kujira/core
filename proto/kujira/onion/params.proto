@@ -1,0 +1,13 @@
+syntax = "proto3";
+package kujira.onion;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/onion/types";
+
+message Params {
+  repeated string allowed_async_ack_contracts = 1
+      [ (gogoproto.moretags) = "yaml:\"allowed_async_ack_contracts\"" ];
+}
