@@ -8,6 +8,7 @@ import (
 
 	"github.com/Team-Kujira/core/x/cw-ica/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 )
 
 func (k Keeper) HasContractInfo(ctx sdk.Context, contractAddress sdk.AccAddress) bool {
@@ -89,4 +90,37 @@ func (k Keeper) SudoIcaTxCallback(
 	}
 
 	return resp, nil
+}
+
+func (k Keeper) SudoIbcTransferCallback(
+	ctx sdk.Context,
+	data transfertypes.FungibleTokenPacketData,
+	result types.IcaCallbackResult,
+) error {
+	contractAddr, err := sdk.AccAddressFromBech32(data.Sender)
+	if err != nil {
+		return err
+	}
+
+	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
+		return nil
+	}
+
+	x := types.MessageTransferCallback{}
+	x.TransferCallback.Receiver = data.Receiver
+	x.TransferCallback.Amount = data.Amount
+	x.TransferCallback.Memo = data.Memo
+	x.TransferCallback.Result = result
+
+	m, err := json.Marshal(x)
+	if err != nil {
+		k.Logger(ctx).Error("SudoCallback: failed to marshal MessageResponse message", "error", err, "contractAddress", contractAddr)
+		return err
+	}
+
+	_, err = k.wasmKeeper.Sudo(ctx, contractAddr, m)
+	if err != nil {
+		k.Logger(ctx).Debug("SudoResponse: failed to Sudo", "error", err, "contractAddress", contractAddr)
+	}
+	return err
 }

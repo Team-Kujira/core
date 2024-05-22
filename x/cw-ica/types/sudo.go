@@ -38,3 +38,14 @@ type IcaCallbackError struct {
 }
 
 type IcaCallbackTimeout struct{}
+
+type MessageTransferCallback struct {
+	TransferCallback TransferCallbackData `json:"transfer_callback"`
+}
+
+type TransferCallbackData struct {
+	Receiver string            `json:"receiver"`
+	Amount   string            `json:"amount"`
+	Memo     string            `json:"memo"`
+	Result   IcaCallbackResult `json:"result"`
+}
