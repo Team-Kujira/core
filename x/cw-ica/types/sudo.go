@@ -44,7 +44,11 @@ type MessageTransferCallback struct {
 }
 
 type TransferCallbackData struct {
+	Port     string            `json:"port"`
+	Channel  string            `json:"channel"`
+	Sequence uint64            `json:"sequence"`
 	Receiver string            `json:"receiver"`
+	Denom    string            `json:"denom"`
 	Amount   string            `json:"amount"`
 	Memo     string            `json:"memo"`
 	Result   IcaCallbackResult `json:"result"`

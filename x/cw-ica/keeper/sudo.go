@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/cw-ica/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 )
 
 func (k Keeper) HasContractInfo(ctx sdk.Context, contractAddress sdk.AccAddress) bool {
@@ -23,7 +23,7 @@ func (k Keeper) SudoIcaRegisterCallback(
 	contractAddr := sdk.MustAccAddressFromBech32(callbackData.Contract)
 
 	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
-		if callbackData.PortId == ibctransfertypes.PortID {
+		if callbackData.PortId == transfertypes.PortID {
 			// we want to allow non contract account to send the assets via IBC Transfer module
 			// we can determine the originating module by the source port of the request packet
 			return nil, nil
@@ -61,7 +61,7 @@ func (k Keeper) SudoIcaTxCallback(
 	contractAddr := sdk.MustAccAddressFromBech32(callbackData.Contract)
 
 	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
-		if callbackData.PortId == ibctransfertypes.PortID {
+		if callbackData.PortId == transfertypes.PortID {
 			// we want to allow non contract account to send the assets via IBC Transfer module
 			// we can determine the originating module by the source port of the request packet
 			return nil, nil
@@ -94,6 +94,7 @@ func (k Keeper) SudoIcaTxCallback(
 
 func (k Keeper) SudoIbcTransferCallback(
 	ctx sdk.Context,
+	packet channeltypes.Packet,
 	data transfertypes.FungibleTokenPacketData,
 	result types.IcaCallbackResult,
 ) error {
@@ -107,7 +108,11 @@ func (k Keeper) SudoIbcTransferCallback(
 	}
 
 	x := types.MessageTransferCallback{}
+	x.TransferCallback.Port = packet.SourcePort
+	x.TransferCallback.Channel = packet.SourceChannel
+	x.TransferCallback.Sequence = packet.Sequence
 	x.TransferCallback.Receiver = data.Receiver
+	x.TransferCallback.Denom = data.Denom
 	x.TransferCallback.Amount = data.Amount
 	x.TransferCallback.Memo = data.Memo
 	x.TransferCallback.Result = result
