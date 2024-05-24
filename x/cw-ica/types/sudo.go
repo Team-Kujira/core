@@ -53,3 +53,17 @@ type TransferCallbackData struct {
 	Memo     string            `json:"memo"`
 	Result   IcaCallbackResult `json:"result"`
 }
+
+type MessageTransferReceipt struct {
+	TransferReceipt TransferReceiptData `json:"transfer_receipt"`
+}
+
+type TransferReceiptData struct {
+	Port     string `json:"port"`
+	Channel  string `json:"channel"`
+	Sequence uint64 `json:"sequence"`
+	Sender   string `json:"sender"`
+	Denom    string `json:"denom"`
+	Amount   string `json:"amount"`
+	Memo     string `json:"memo"`
+}

@@ -98,7 +98,9 @@ func (im IBCMiddleware) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
-	return im.App.OnRecvPacket(ctx, packet, relayer)
+	ack := im.App.OnRecvPacket(ctx, packet, relayer)
+	im.keeper.HandleTransferReceipt(ctx, packet, relayer)
+	return ack
 }
 
 // OnAcknowledgementPacket implements the IBCMiddleware interface
@@ -108,9 +110,10 @@ func (im IBCMiddleware) OnAcknowledgementPacket(
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
 ) error {
-	im.keeper.HandleTransferAcknowledgement(ctx, packet, acknowledgement, relayer)
+	err := im.App.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer)
 
-	return im.App.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer)
+	im.keeper.HandleTransferAcknowledgement(ctx, packet, acknowledgement, relayer)
+	return err
 }
 
 // OnTimeoutPacket implements the IBCMiddleware interface

@@ -19,7 +19,7 @@ func (k *Keeper) HandleTransferAcknowledgement(ctx sdk.Context, packet channelty
 
 	var ack channeltypes.Acknowledgement
 	if err := channeltypes.SubModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-		k.Logger(ctx).Error("HandleAcknowledgement: cannot unmarshal IBC transfer packet acknowledgement", "error", err)
+		k.Logger(ctx).Error("HandleTransferAcknowledgement: cannot unmarshal IBC transfer packet acknowledgement", "error", err)
 		return
 	}
 
@@ -46,7 +46,7 @@ func (k *Keeper) HandleTransferAcknowledgement(ctx sdk.Context, packet channelty
 
 	if err != nil {
 		k.Logger(ctx).Debug(
-			"HandleAcknowledgement: failed to Sudo contract on transfer packet acknowledgement",
+			"HandleTransferAcknowledgement: failed to Sudo contract on transfer packet acknowledgement",
 			"source_port", packet.SourcePort,
 			"source_channel", packet.SourceChannel,
 			"sequence", packet.Sequence,
@@ -83,9 +83,44 @@ func (k *Keeper) HandleTransferTimeout(ctx sdk.Context, packet channeltypes.Pack
 	})
 	if err != nil {
 		k.Logger(ctx).Debug(
-			"HandleTimeout: failed to Sudo contract on transfer packet timeout",
+			"HandleTransferTimeout: failed to Sudo contract on transfer packet timeout",
 			"source_port", packet.SourcePort,
 			"source_channel", packet.SourceChannel,
+			"sequence", packet.Sequence,
+			"error", err)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeICATimeoutCallbackFailure,
+				sdk.NewAttribute(types.AttributePacketSourcePort, packet.SourcePort),
+				sdk.NewAttribute(types.AttributePacketSourceChannel, packet.SourceChannel),
+				sdk.NewAttribute(types.AttributePacketSequence, fmt.Sprintf("%d", packet.Sequence)),
+			),
+		})
+	} else {
+		ctx.EventManager().EmitEvents(cacheCtx.EventManager().Events())
+		writeFn()
+	}
+
+	ctx.GasMeter().ConsumeGas(newGasMeter.GasConsumed(), "consume from cached context")
+}
+
+func (k *Keeper) HandleTransferReceipt(ctx sdk.Context, packet channeltypes.Packet, _ sdk.AccAddress) {
+	k.Logger(ctx).Debug("Transfer Receipt")
+
+	var data transfertypes.FungibleTokenPacketData
+	if err := transfertypes.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		return
+	}
+
+	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
+	defer k.outOfGasRecovery(ctx, newGasMeter)
+
+	err := k.SudoIbcTransferReceipt(ctx, packet, data)
+	if err != nil {
+		k.Logger(ctx).Debug(
+			"HandleTransferReceipt: failed to Sudo contract on transfer receipt",
+			"destination_port", packet.DestinationPort,
+			"destination_channel", packet.DestinationChannel,
 			"sequence", packet.Sequence,
 			"error", err)
 		ctx.EventManager().EmitEvents(sdk.Events{

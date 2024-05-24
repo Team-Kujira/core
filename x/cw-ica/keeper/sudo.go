@@ -129,3 +129,49 @@ func (k Keeper) SudoIbcTransferCallback(
 	}
 	return err
 }
+
+func (k Keeper) SudoIbcTransferReceipt(
+	ctx sdk.Context,
+	packet channeltypes.Packet,
+	data transfertypes.FungibleTokenPacketData,
+) error {
+	contractAddr, err := sdk.AccAddressFromBech32(data.Receiver)
+	if err != nil {
+		return err
+	}
+
+	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
+		return nil
+	}
+
+	denom := ""
+	if transfertypes.ReceiverChainIsSource(packet.GetSourcePort(), packet.GetSourceChannel(), data.Denom) {
+		voucherPrefix := transfertypes.GetDenomPrefix(packet.GetSourcePort(), packet.GetSourceChannel())
+		denom = data.Denom[len(voucherPrefix):]
+	} else {
+		sourcePrefix := transfertypes.GetDenomPrefix(packet.GetDestPort(), packet.GetDestChannel())
+		prefixedDenom := sourcePrefix + data.Denom
+		denom = transfertypes.ParseDenomTrace(prefixedDenom).IBCDenom()
+	}
+
+	x := types.MessageTransferReceipt{}
+	x.TransferReceipt.Port = packet.DestinationPort
+	x.TransferReceipt.Channel = packet.DestinationChannel
+	x.TransferReceipt.Sequence = packet.Sequence
+	x.TransferReceipt.Sender = data.Sender
+	x.TransferReceipt.Denom = denom
+	x.TransferReceipt.Amount = data.Amount
+	x.TransferReceipt.Memo = data.Memo
+
+	m, err := json.Marshal(x)
+	if err != nil {
+		k.Logger(ctx).Error("SudoCallback: failed to marshal MessageResponse message", "error", err, "contractAddress", contractAddr)
+		return err
+	}
+
+	_, err = k.wasmKeeper.Sudo(ctx, contractAddr, m)
+	if err != nil {
+		k.Logger(ctx).Debug("SudoResponse: failed to Sudo", "error", err, "contractAddress", contractAddr)
+	}
+	return err
+}
