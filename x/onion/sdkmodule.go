@@ -65,7 +65,9 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {}
 
 // GetTxCmd returns no root tx command for the ibc-hooks module.
-func (AppModuleBasic) GetTxCmd() *cobra.Command { return nil }
+func (AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.NewTxCmd()
+}
 
 // GetQueryCmd returns the root query command for the ibc-hooks module.
 func (AppModuleBasic) GetQueryCmd() *cobra.Command {

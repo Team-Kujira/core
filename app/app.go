@@ -229,6 +229,7 @@ var (
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
 		cwica.AppModuleBasic{},
+		onion.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -984,6 +985,8 @@ func New(
 		),
 
 		ibcwasm.NewAppModule(app.WasmClientKeeper),
+
+		onion.NewAppModule(*app.OnionKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1021,6 +1024,7 @@ func New(
 		alliancemoduletypes.ModuleName,
 		cwicatypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		oniontypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -1054,6 +1058,7 @@ func New(
 		alliancemoduletypes.ModuleName,
 		cwicatypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		oniontypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1094,6 +1099,7 @@ func New(
 		alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		cwicatypes.ModuleName,
+		oniontypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
