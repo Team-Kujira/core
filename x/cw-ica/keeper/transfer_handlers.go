@@ -26,18 +26,21 @@ func (k *Keeper) HandleTransferAcknowledgement(ctx sdk.Context, packet channelty
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
 	defer k.outOfGasRecovery(ctx, newGasMeter)
 
+	callbackDataKey := types.PacketID(packet.GetSourcePort(), packet.GetSourceChannel(), packet.Sequence)
+	callbackData, found := k.GetCallbackData(ctx, callbackDataKey)
+
 	// Actually we have only one kind of error returned from acknowledgement
 	// maybe later we'll retrieve actual errors from events
 	errorText := ack.GetError()
 	var err error
 	if errorText != "" {
-		err = k.SudoIbcTransferCallback(cacheCtx, packet, data, types.IcaCallbackResult{
+		err = k.SudoIbcTransferCallback(cacheCtx, packet, data, callbackData, types.IcaCallbackResult{
 			Error: &types.IcaCallbackError{
 				Error: errorText,
 			},
 		})
 	} else {
-		err = k.SudoIbcTransferCallback(cacheCtx, packet, data, types.IcaCallbackResult{
+		err = k.SudoIbcTransferCallback(cacheCtx, packet, data, callbackData, types.IcaCallbackResult{
 			Success: &types.IcaCallbackSuccess{
 				Data: ack.GetResult(),
 			},
@@ -65,6 +68,11 @@ func (k *Keeper) HandleTransferAcknowledgement(ctx sdk.Context, packet channelty
 	}
 
 	ctx.GasMeter().ConsumeGas(newGasMeter.GasConsumed(), "consume from cached context")
+
+	// remove the callback data
+	if found {
+		k.RemoveCallbackData(ctx, callbackDataKey)
+	}
 }
 
 func (k *Keeper) HandleTransferTimeout(ctx sdk.Context, packet channeltypes.Packet, _ sdk.AccAddress) {
@@ -78,7 +86,9 @@ func (k *Keeper) HandleTransferTimeout(ctx sdk.Context, packet channeltypes.Pack
 	cacheCtx, writeFn, newGasMeter := k.createCachedContext(ctx)
 	defer k.outOfGasRecovery(ctx, newGasMeter)
 
-	err := k.SudoIbcTransferCallback(ctx, packet, data, types.IcaCallbackResult{
+	callbackDataKey := types.PacketID(packet.GetSourcePort(), packet.GetSourceChannel(), packet.Sequence)
+	callbackData, found := k.GetCallbackData(ctx, callbackDataKey)
+	err := k.SudoIbcTransferCallback(ctx, packet, data, callbackData, types.IcaCallbackResult{
 		Timeout: &types.IcaCallbackTimeout{},
 	})
 	if err != nil {
@@ -102,6 +112,11 @@ func (k *Keeper) HandleTransferTimeout(ctx sdk.Context, packet channeltypes.Pack
 	}
 
 	ctx.GasMeter().ConsumeGas(newGasMeter.GasConsumed(), "consume from cached context")
+
+	// remove the callback data
+	if found {
+		k.RemoveCallbackData(ctx, callbackDataKey)
+	}
 }
 
 func (k *Keeper) HandleTransferReceipt(ctx sdk.Context, packet channeltypes.Packet, _ sdk.AccAddress) {

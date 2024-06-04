@@ -52,6 +52,7 @@ type TransferCallbackData struct {
 	Amount   string            `json:"amount"`
 	Memo     string            `json:"memo"`
 	Result   IcaCallbackResult `json:"result"`
+	Callback []byte            `json:"callback"`
 }
 
 type MessageTransferReceipt struct {

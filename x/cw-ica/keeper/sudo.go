@@ -96,6 +96,7 @@ func (k Keeper) SudoIbcTransferCallback(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 	data transfertypes.FungibleTokenPacketData,
+	callbackData types.CallbackData,
 	result types.IcaCallbackResult,
 ) error {
 	contractAddr, err := sdk.AccAddressFromBech32(data.Sender)
@@ -107,6 +108,10 @@ func (k Keeper) SudoIbcTransferCallback(
 		return nil
 	}
 
+	if callbackData.Callback == nil {
+		callbackData.Callback = []byte{}
+	}
+
 	x := types.MessageTransferCallback{}
 	x.TransferCallback.Port = packet.SourcePort
 	x.TransferCallback.Channel = packet.SourceChannel
@@ -116,6 +121,7 @@ func (k Keeper) SudoIbcTransferCallback(
 	x.TransferCallback.Amount = data.Amount
 	x.TransferCallback.Memo = data.Memo
 	x.TransferCallback.Result = result
+	x.TransferCallback.Callback = callbackData.Callback
 
 	m, err := json.Marshal(x)
 	if err != nil {
