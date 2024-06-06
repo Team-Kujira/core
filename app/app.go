@@ -560,6 +560,7 @@ func New(
 		app.GetSubspace(oniontypes.ModuleName),
 		app.IBCKeeper.ChannelKeeper,
 		nil,
+		app.MsgServiceRouter(),
 	)
 	app.OnionKeeper = hooksKeeper
 
@@ -781,7 +782,7 @@ func New(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
-	transferStack = onion.NewIBCMiddleware(transferStack, &app.HooksICS4Wrapper)
+	transferStack = onion.NewIBCMiddleware(transferStack, &app.HooksICS4Wrapper, app.OnionKeeper, encodingConfig.TxConfig)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:

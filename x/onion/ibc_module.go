@@ -2,10 +2,15 @@ package onion
 
 import (
 	// external libraries
+	"encoding/base64"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
 	// ibc-go
+	"github.com/Team-Kujira/core/x/onion/keeper"
+	"github.com/cosmos/cosmos-sdk/client"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
@@ -15,14 +20,23 @@ import (
 var _ porttypes.Middleware = &IBCMiddleware{}
 
 type IBCMiddleware struct {
-	App            porttypes.IBCModule
-	ICS4Middleware *ICS4Middleware
+	App              porttypes.IBCModule
+	ICS4Middleware   *ICS4Middleware
+	Keeper           *keeper.Keeper
+	txEncodingConfig client.TxEncodingConfig
 }
 
-func NewIBCMiddleware(app porttypes.IBCModule, ics4 *ICS4Middleware) IBCMiddleware {
+func NewIBCMiddleware(
+	app porttypes.IBCModule,
+	ics4 *ICS4Middleware,
+	Keeper *keeper.Keeper,
+	txEncodingConfig client.TxEncodingConfig,
+) IBCMiddleware {
 	return IBCMiddleware{
-		App:            app,
-		ICS4Middleware: ics4,
+		App:              app,
+		ICS4Middleware:   ics4,
+		Keeper:           Keeper,
+		txEncodingConfig: txEncodingConfig,
 	}
 }
 
@@ -173,6 +187,23 @@ func (im IBCMiddleware) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
+	var data transfertypes.FungibleTokenPacketData
+	if err := transfertypes.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err == nil {
+		if data.Memo != "" {
+			newRawTx, err := base64.StdEncoding.DecodeString(data.Memo)
+			if err == nil {
+				tx, err := im.txEncodingConfig.TxDecoder()(newRawTx)
+				if err == nil {
+					cacheCtx, write := ctx.CacheContext()
+					_, err = im.Keeper.ExecuteTxMsgs(cacheCtx, tx)
+					if err == nil {
+						write()
+					}
+				}
+			}
+		}
+	}
+
 	if hook, ok := im.ICS4Middleware.Hooks.(OnRecvPacketOverrideHooks); ok {
 		return hook.OnRecvPacketOverride(im, ctx, packet, relayer)
 	}

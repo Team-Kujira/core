@@ -18,6 +18,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
@@ -28,6 +29,8 @@ type (
 
 		channelKeeper  types.ChannelKeeper
 		ContractKeeper *wasmkeeper.PermissionedKeeper
+
+		router *baseapp.MsgServiceRouter
 	}
 )
 
@@ -37,6 +40,7 @@ func NewKeeper(
 	paramSpace paramtypes.Subspace,
 	channelKeeper types.ChannelKeeper,
 	contractKeeper *wasmkeeper.PermissionedKeeper,
+	router *baseapp.MsgServiceRouter,
 ) *Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -46,6 +50,7 @@ func NewKeeper(
 		paramSpace:     paramSpace,
 		channelKeeper:  channelKeeper,
 		ContractKeeper: contractKeeper,
+		router:         router,
 	}
 }
 
