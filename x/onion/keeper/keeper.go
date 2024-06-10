@@ -7,19 +7,17 @@ import (
 	"strings"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	"github.com/Team-Kujira/core/x/onion/types"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	"github.com/cometbft/cometbft/libs/log"
-	"github.com/cosmos/cosmos-sdk/types/address"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
-
-	"github.com/Team-Kujira/core/x/onion/types"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 )
 
 type (
@@ -29,8 +27,10 @@ type (
 
 		channelKeeper  types.ChannelKeeper
 		ContractKeeper *wasmkeeper.PermissionedKeeper
+		accountKeeper  types.AccountKeeper
 
-		router *baseapp.MsgServiceRouter
+		router          *baseapp.MsgServiceRouter
+		signModeHandler authsigning.SignModeHandler
 	}
 )
 
@@ -41,16 +41,20 @@ func NewKeeper(
 	channelKeeper types.ChannelKeeper,
 	contractKeeper *wasmkeeper.PermissionedKeeper,
 	router *baseapp.MsgServiceRouter,
+	accountKeeper types.AccountKeeper,
+	signModeHandler authsigning.SignModeHandler,
 ) *Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
 	return &Keeper{
-		storeKey:       storeKey,
-		paramSpace:     paramSpace,
-		channelKeeper:  channelKeeper,
-		ContractKeeper: contractKeeper,
-		router:         router,
+		storeKey:        storeKey,
+		paramSpace:      paramSpace,
+		channelKeeper:   channelKeeper,
+		ContractKeeper:  contractKeeper,
+		router:          router,
+		accountKeeper:   accountKeeper,
+		signModeHandler: signModeHandler,
 	}
 }
 

@@ -561,6 +561,8 @@ func New(
 		app.IBCKeeper.ChannelKeeper,
 		nil,
 		app.MsgServiceRouter(),
+		app.AccountKeeper,
+		txConfig.SignModeHandler(),
 	)
 	app.OnionKeeper = hooksKeeper
 

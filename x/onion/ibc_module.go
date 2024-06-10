@@ -195,9 +195,12 @@ func (im IBCMiddleware) OnRecvPacket(
 				tx, err := im.txEncodingConfig.TxDecoder()(newRawTx)
 				if err == nil {
 					cacheCtx, write := ctx.CacheContext()
-					_, err = im.Keeper.ExecuteTxMsgs(cacheCtx, tx)
+					err = im.Keeper.ExecuteAnte(cacheCtx, tx)
 					if err == nil {
-						write()
+						_, err = im.Keeper.ExecuteTxMsgs(cacheCtx, tx)
+						if err == nil {
+							write()
+						}
 					}
 				}
 			}

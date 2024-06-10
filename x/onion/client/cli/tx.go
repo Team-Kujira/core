@@ -80,6 +80,11 @@ func WriteBase64Tx(clientCtx client.Context, flagSet *pflag.FlagSet, msgs ...sdk
 		return err
 	}
 
+	txf, err = txf.Prepare(clientCtx)
+	if err != nil {
+		return err
+	}
+
 	if txf.SimulateAndExecute() || clientCtx.Simulate {
 		if clientCtx.Offline {
 			return errors.New("cannot estimate gas in offline mode")
