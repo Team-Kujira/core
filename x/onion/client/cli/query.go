@@ -1,9 +1,11 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -39,6 +41,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		GetCmdWasmSender(),
+		GetCmdQuerySequence(),
 	)
 	return cmd
 }
@@ -73,5 +76,32 @@ $ %s query ibc-hooks wasm-hooks-sender channel-42 juno12smx2wdlyttvyzvzg54y2vnqw
 
 	flags.AddQueryFlagsToCmd(cmd)
 
+	return cmd
+}
+
+// GetCmdQuerySequence implements the query sequence command.
+func GetCmdQuerySequence() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "sequence [address]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query the onion sequence of an address",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.Sequence(context.Background(), &types.QuerySequenceRequest{
+				Address: args[0],
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

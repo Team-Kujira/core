@@ -14,4 +14,6 @@ const (
 	AttributePacketSequence = "sequence"
 
 	SenderPrefix = "ibc-wasm-hook-intermediary"
+
+	OnionSequencePrefix = "onion-sequence"
 )

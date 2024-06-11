@@ -81,11 +81,15 @@ func (k Keeper) SetParam(ctx sdk.Context, key []byte, value interface{}) {
 
 func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 	k.SetParams(ctx, genState.Params)
+	for _, seq := range genState.Sequences {
+		k.SetSequence(ctx, seq)
+	}
 }
 
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	return &types.GenesisState{
-		Params: k.GetParams(ctx),
+		Params:    k.GetParams(ctx),
+		Sequences: k.GetAllSequences(ctx),
 	}
 }
 

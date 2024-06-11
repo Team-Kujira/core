@@ -555,7 +555,7 @@ func New(
 	)
 
 	// Configure the hooks keeper
-	hooksKeeper := onionkeeper.NewKeeper(
+	app.OnionKeeper = onionkeeper.NewKeeper(
 		keys[oniontypes.StoreKey],
 		app.GetSubspace(oniontypes.ModuleName),
 		app.IBCKeeper.ChannelKeeper,
@@ -564,7 +564,6 @@ func New(
 		app.AccountKeeper,
 		txConfig.SignModeHandler(),
 	)
-	app.OnionKeeper = hooksKeeper
 
 	app.WireICS20PreWasmKeeper(appCodec, bApp, app.OnionKeeper)
 

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -84,6 +85,16 @@ func WriteBase64Tx(clientCtx client.Context, flagSet *pflag.FlagSet, msgs ...sdk
 	if err != nil {
 		return err
 	}
+
+	queryClient := types.NewQueryClient(clientCtx)
+	newSeq := uint64(0)
+	res, err := queryClient.Sequence(context.Background(), &types.QuerySequenceRequest{
+		Address: clientCtx.GetFromAddress().String(),
+	})
+	if err == nil {
+		newSeq = res.Seq.Sequence
+	}
+	txf = txf.WithSequence(newSeq)
 
 	if txf.SimulateAndExecute() || clientCtx.Simulate {
 		if clientCtx.Offline {

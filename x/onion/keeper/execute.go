@@ -135,10 +135,16 @@ func (k Keeper) ExecuteAnte(ctx sdk.Context, tx sdk.Tx) error {
 			return errorsmod.Wrap(sdkerrors.ErrInvalidPubKey, "pubkey on account is not set")
 		}
 
-		if sig.Sequence != acc.GetSequence() {
+		onionSeq := uint64(0)
+		seq, err := k.GetSequence(ctx, acc.GetAddress().String())
+		if err == nil {
+			onionSeq = seq.Sequence
+		}
+
+		if sig.Sequence != onionSeq {
 			return errorsmod.Wrapf(
 				sdkerrors.ErrWrongSequence,
-				"account sequence mismatch, expected %d, got %d", acc.GetSequence(), sig.Sequence,
+				"onion sequence mismatch, expected %d, got %d", onionSeq, sig.Sequence,
 			)
 		}
 
@@ -152,7 +158,7 @@ func (k Keeper) ExecuteAnte(ctx sdk.Context, tx sdk.Tx) error {
 			Address:       acc.GetAddress().String(),
 			ChainID:       chainID,
 			AccountNumber: accNum,
-			Sequence:      acc.GetSequence(),
+			Sequence:      onionSeq,
 			PubKey:        pubKey,
 		}
 
@@ -170,12 +176,19 @@ func (k Keeper) ExecuteAnte(ctx sdk.Context, tx sdk.Tx) error {
 
 	// IncrementSequenceDecorator
 	for _, addr := range sigTx.GetSigners() {
-		acc := k.accountKeeper.GetAccount(ctx, addr)
-		if err := acc.SetSequence(acc.GetSequence() + 1); err != nil {
-			panic(err)
+		seq, err := k.GetSequence(ctx, addr.String())
+		if err != nil {
+			seq = types.OnionSequence{
+				Address:  addr.String(),
+				Sequence: 0,
+			}
 		}
 
-		k.accountKeeper.SetAccount(ctx, acc)
+		seq.Sequence++
+		err = k.SetSequence(ctx, seq)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
