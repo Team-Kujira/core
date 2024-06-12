@@ -8,12 +8,10 @@ import (
 )
 
 func (k Keeper) GetCreationFee(ctx sdk.Context, creatorAddr string) sdk.Coins {
-	params := k.GetParams(ctx)
-	for _, acc := range params.NoFeeAccounts {
-		if acc == creatorAddr {
-			return sdk.Coins{}
-		}
+	if k.IsNoFeeAccount(ctx, creatorAddr) {
+		return sdk.Coins{}
 	}
+	params := k.GetParams(ctx)
 	return params.CreationFee
 }
 

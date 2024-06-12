@@ -14,4 +14,5 @@ const (
 	AttributeTransferToAddress   = "transfer_to_address"
 	AttributeDenom               = "denom"
 	AttributeNewAdmin            = "new_admin"
+	AttributeAddress             = "address"
 )

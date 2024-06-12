@@ -45,9 +45,7 @@ func (suite *KeeperTestSuite) TestMsgServerCreateDenom() {
 			sender := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 
 			if tc.whitelisted {
-				params := suite.App.DenomKeeper.GetParams(suite.Ctx)
-				params.NoFeeAccounts = []string{sender.String()}
-				suite.App.DenomKeeper.SetParams(suite.Ctx, params)
+				suite.App.DenomKeeper.SetNoFeeAccount(suite.Ctx, sender.String())
 			}
 
 			if tc.balance.IsAllPositive() {

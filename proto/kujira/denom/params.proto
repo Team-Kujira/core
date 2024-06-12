@@ -15,6 +15,4 @@ message Params {
     (gogoproto.moretags) = "yaml:\"creation_fee\"",
     (gogoproto.nullable) = false
   ];
-  // whitelisted accounts that do not require paying creation fees
-  repeated string no_fee_accounts = 2;
 }
