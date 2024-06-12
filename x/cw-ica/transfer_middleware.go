@@ -111,7 +111,6 @@ func (im IBCMiddleware) OnAcknowledgementPacket(
 	relayer sdk.AccAddress,
 ) error {
 	err := im.App.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer)
-
 	im.keeper.HandleTransferAcknowledgement(ctx, packet, acknowledgement, relayer)
 	return err
 }
@@ -122,9 +121,9 @@ func (im IBCMiddleware) OnTimeoutPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) error {
+	err := im.App.OnTimeoutPacket(ctx, packet, relayer)
 	im.keeper.HandleTransferTimeout(ctx, packet, relayer)
-
-	return im.App.OnTimeoutPacket(ctx, packet, relayer)
+	return err
 }
 
 // SendPacket implements the ICS4 Wrapper interface
