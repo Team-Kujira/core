@@ -34,6 +34,10 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/oracle/params";
   }
+
+  rpc HistoricalExchangeRates(QueryHistoricalExchangeRatesRequest) returns (QueryHistoricalExchangeRatesResponse) {
+    option (google.api.http).get = "/oracle/historical_exchange_rates";
+  }
 }
 
 // QueryExchangeRateRequest is the request type for the Query/ExchangeRate RPC method.
@@ -109,4 +113,13 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params defines the parameters of the module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryHistoricalExchangeRatesRequest {
+  string epoch = 1;
+  string denom = 2;
+}
+
+message QueryHistoricalExchangeRatesResponse {
+  repeated HistoricalExchangeRate historical_rates = 1 [ (gogoproto.nullable) = false ];
 }

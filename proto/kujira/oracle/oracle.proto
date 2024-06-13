@@ -47,6 +47,8 @@ message Params {
     (gogoproto.castrepeated) = "DenomList",
     (gogoproto.nullable)     = false
   ];
+  repeated PriceIntervalParam exchange_rate_snap_epochs = 10
+      [ (gogoproto.nullable) = false ];
 }
 
 // Denom - the object to hold configurations of each denom
@@ -75,6 +77,25 @@ message ExchangeRateTuple {
 message VoteExtension {
   int64 height = 1;
   repeated ExchangeRateTuple prices = 2 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+message PriceIntervalParam {
+  option (gogoproto.equal) = true;
+
+  string epoch = 1; // e.g. day
+  int64 duration = 2; // e.g. 86400
+  int64 max_count = 3; // e.g. 30
+}
+
+message HistoricalExchangeRate {
+  string epoch = 1;
+  int64 timestamp = 2;
+  string denom = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+  string exchange_rate = 4 [
+    (gogoproto.moretags) = "yaml:\"exchange_rate\"",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }

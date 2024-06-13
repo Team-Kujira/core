@@ -94,3 +94,20 @@ func (q querier) MissCounter(c context.Context, req *types.QueryMissCounterReque
 		MissCounter: q.GetMissCounter(ctx, valAddr),
 	}, nil
 }
+
+// HistoricalExchangeRates queries historical exchange rates by epoch and denom
+func (q querier) HistoricalExchangeRates(c context.Context, req *types.QueryHistoricalExchangeRatesRequest) (*types.QueryHistoricalExchangeRatesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+	historicalRates := []types.HistoricalExchangeRate{}
+	q.Keeper.IterateHistoricalExchangeRateByEpochDenom(ctx, req.Epoch, req.Denom, func(rate types.HistoricalExchangeRate) (stop bool) {
+		historicalRates = append(historicalRates, rate)
+		return false
+	})
+	return &types.QueryHistoricalExchangeRatesResponse{
+		HistoricalRates: historicalRates,
+	}, nil
+}

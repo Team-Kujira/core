@@ -8,19 +8,24 @@ import (
 func NewGenesisState(
 	params Params, rates []ExchangeRateTuple,
 	missCounters []MissCounter,
+	historicalRates []HistoricalExchangeRate,
 ) *GenesisState {
 	return &GenesisState{
-		Params:        params,
-		ExchangeRates: rates,
-		MissCounters:  missCounters,
+		Params:                  params,
+		ExchangeRates:           rates,
+		MissCounters:            missCounters,
+		HistoricalExchangeRates: historicalRates,
 	}
 }
 
 // DefaultGenesisState - default GenesisState used by columbus-2
 func DefaultGenesisState() *GenesisState {
-	return NewGenesisState(DefaultParams(),
+	return NewGenesisState(
+		DefaultParams(),
 		[]ExchangeRateTuple{},
-		[]MissCounter{})
+		[]MissCounter{},
+		[]HistoricalExchangeRate{},
+	)
 }
 
 // ValidateGenesis validates the oracle genesis state

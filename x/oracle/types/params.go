@@ -32,11 +32,12 @@ const (
 
 // Default parameter values
 var (
-	DefaultVoteThreshold     = math.LegacyNewDecWithPrec(50, 2) // 50%
-	DefaultMaxDeviation      = math.LegacyNewDecWithPrec(2, 1)  // 2% (-1, 1)
-	DefaultRequiredDenoms    = []string{}
-	DefaultSlashFraction     = math.LegacyNewDecWithPrec(1, 4) // 0.01%
-	DefaultMinValidPerWindow = math.LegacyNewDecWithPrec(5, 2) // 5%
+	DefaultVoteThreshold          = math.LegacyNewDecWithPrec(50, 2) // 50%
+	DefaultMaxDeviation           = math.LegacyNewDecWithPrec(2, 1)  // 2% (-1, 1)
+	DefaultRequiredDenoms         = []string{}
+	DefaultSlashFraction          = math.LegacyNewDecWithPrec(1, 4) // 0.01%
+	DefaultMinValidPerWindow      = math.LegacyNewDecWithPrec(5, 2) // 5%
+	DefaultExchangeRateSnapEpochs = []PriceIntervalParam{{Epoch: "min", Duration: 60, MaxCount: 3}}
 )
 
 var _ paramstypes.ParamSet = &Params{}
@@ -44,13 +45,14 @@ var _ paramstypes.ParamSet = &Params{}
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
 	return Params{
-		VotePeriod:        DefaultVotePeriod,
-		VoteThreshold:     DefaultVoteThreshold,
-		MaxDeviation:      DefaultMaxDeviation,
-		RequiredDenoms:    DefaultRequiredDenoms,
-		SlashFraction:     DefaultSlashFraction,
-		SlashWindow:       DefaultSlashWindow,
-		MinValidPerWindow: DefaultMinValidPerWindow,
+		VotePeriod:             DefaultVotePeriod,
+		VoteThreshold:          DefaultVoteThreshold,
+		MaxDeviation:           DefaultMaxDeviation,
+		RequiredDenoms:         DefaultRequiredDenoms,
+		SlashFraction:          DefaultSlashFraction,
+		SlashWindow:            DefaultSlashWindow,
+		MinValidPerWindow:      DefaultMinValidPerWindow,
+		ExchangeRateSnapEpochs: DefaultExchangeRateSnapEpochs,
 	}
 }
 

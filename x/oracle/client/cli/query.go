@@ -28,6 +28,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryActives(),
 		GetCmdQueryParams(),
 		GetCmdQueryMissCounter(),
+		GetCmdQueryHistoricalExchangeRates(),
 	)
 
 	return oracleQueryCmd
@@ -69,6 +70,51 @@ $ kujirad query oracle exchange-rates KUJI
 			res, err := queryClient.ExchangeRate(
 				context.Background(),
 				&types.QueryExchangeRateRequest{Denom: denom},
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func GetCmdQueryHistoricalExchangeRates() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "historical-exchange-rates [epoch] [denom]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Query the historical exchange rates of an asset by epoch",
+		Long: strings.TrimSpace(`
+Query the historical exchange rates of an asset by epoch. 
+
+$ kujirad query oracle exchange-rates day KUJI
+`),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			if len(args) == 0 {
+				res, err := queryClient.ExchangeRates(context.Background(), &types.QueryExchangeRatesRequest{})
+				if err != nil {
+					return err
+				}
+
+				return clientCtx.PrintProto(res)
+			}
+
+			res, err := queryClient.HistoricalExchangeRates(
+				context.Background(),
+				&types.QueryHistoricalExchangeRatesRequest{
+					Epoch: args[0],
+					Denom: args[1],
+				},
 			)
 			if err != nil {
 				return err
