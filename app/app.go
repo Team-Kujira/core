@@ -636,6 +636,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
 		app.DistrKeeper,
+		authority,
 	)
 
 	app.DenomKeeper = &denomKeeper

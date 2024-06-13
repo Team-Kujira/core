@@ -20,6 +20,52 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+func (server msgServer) AddNoFeeAccounts(goCtx context.Context, msg *types.MsgAddNoFeeAccounts) (*types.MsgAddNoFeeAccountsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if msg.Authority != server.authority {
+		return nil, types.ErrInvalidAuthority
+	}
+
+	for _, address := range msg.Accounts {
+		if server.IsNoFeeAccount(ctx, address) {
+			continue
+		}
+		server.SetNoFeeAccount(ctx, address)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.TypeMsgAddNoFeeAccounts,
+				sdk.NewAttribute(types.AttributeAddress, address),
+			),
+		})
+	}
+
+	return &types.MsgAddNoFeeAccountsResponse{}, nil
+}
+
+func (server msgServer) RemoveNoFeeAccounts(goCtx context.Context, msg *types.MsgRemoveNoFeeAccounts) (*types.MsgRemoveNoFeeAccountsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if msg.Authority != server.authority {
+		return nil, types.ErrInvalidAuthority
+	}
+
+	for _, address := range msg.Accounts {
+		if !server.IsNoFeeAccount(ctx, address) {
+			continue
+		}
+		server.RemoveNoFeeAccount(ctx, address)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.TypeMsgRemoveNoFeeAccounts,
+				sdk.NewAttribute(types.AttributeAddress, address),
+			),
+		})
+	}
+
+	return &types.MsgRemoveNoFeeAccountsResponse{}, nil
+}
+
 func (server msgServer) CreateDenom(goCtx context.Context, msg *types.MsgCreateDenom) (*types.MsgCreateDenomResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

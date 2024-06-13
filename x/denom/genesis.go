@@ -31,6 +31,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 			panic(err)
 		}
 	}
+
+	for _, addr := range genState.NoFeeAccounts {
+		k.SetNoFeeAccount(ctx, addr)
+	}
 }
 
 // ExportGenesis returns the denom module's exported genesis.
@@ -55,5 +59,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return &types.GenesisState{
 		FactoryDenoms: genDenoms,
 		Params:        k.GetParams(ctx),
+		NoFeeAccounts: k.GetNoFeeAccounts(ctx),
 	}
 }

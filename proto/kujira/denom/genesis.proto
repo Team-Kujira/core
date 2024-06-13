@@ -16,6 +16,9 @@ message GenesisState {
     (gogoproto.moretags) = "yaml:\"factory_denoms\"",
     (gogoproto.nullable) = false
   ];
+
+  // whitelisted accounts that do not require paying creation fees
+  repeated string no_fee_accounts = 3;
 }
 
 message GenesisDenom {
