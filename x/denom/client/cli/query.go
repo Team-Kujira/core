@@ -128,7 +128,7 @@ func GetCmdNoFeeAccounts() *cobra.Command {
 		Use:   "no-fee-accounts [flags]",
 		Short: "Returns a list of no fee accounts",
 		Args:  cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err

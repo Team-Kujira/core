@@ -34,7 +34,7 @@ func (k Keeper) DenomsFromCreator(ctx context.Context, req *types.QueryDenomsFro
 	return &types.QueryDenomsFromCreatorResponse{Denoms: denoms}, nil
 }
 
-func (k Keeper) NoFeeAccounts(ctx context.Context, req *types.QueryNoFeeAccountsRequest) (*types.QueryNoFeeAccountsResponse, error) {
+func (k Keeper) NoFeeAccounts(ctx context.Context, _ *types.QueryNoFeeAccountsRequest) (*types.QueryNoFeeAccountsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	return &types.QueryNoFeeAccountsResponse{
 		Accounts: k.GetNoFeeAccounts(sdkCtx),

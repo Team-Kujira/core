@@ -65,6 +65,7 @@ func (server msgServer) RemoveNoFeeAccounts(goCtx context.Context, msg *types.Ms
 
 	return &types.MsgRemoveNoFeeAccountsResponse{}, nil
 }
+
 func (server msgServer) CreateDenom(goCtx context.Context, msg *types.MsgCreateDenom) (*types.MsgCreateDenomResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
