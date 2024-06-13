@@ -2,15 +2,17 @@ package wasm
 
 import (
 	"cosmossdk.io/errors"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
+	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-
-	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
-	"github.com/Team-Kujira/core/x/cw-ica/types"
-	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object
@@ -26,6 +28,9 @@ type CwIcaMsg struct {
 	/// Contracts can submit transactions to the ICA
 	/// associated with the given information.
 	Submit *Submit `json:"submit,omitempty"`
+	/// Transfer submits ibc-transfer msg with
+	/// optional callback field
+	Transfer *Transfer `json:"transfer,omitempty"`
 }
 
 // / Register creates a new interchain account.
@@ -50,6 +55,14 @@ type Submit struct {
 	Memo         string        `json:"memo"`
 	Timeout      uint64        `json:"timeout"`
 	Callback     []byte        `json:"callback"`
+}
+
+type Transfer struct {
+	ChannelID string                 `json:"channel_id"`
+	ToAddress string                 `json:"to_address"`
+	Amount    wasmvmtypes.Coin       `json:"amount"`
+	Timeout   wasmvmtypes.IBCTimeout `json:"timeout"`
+	Callback  []byte                 `json:"callback"`
 }
 
 func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, cwicak cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
@@ -169,12 +182,60 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 	return res, nil
 }
 
-func HandleMsg(ctx sdk.Context, cwicak cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *CwIcaMsg) ([]sdk.Event, [][]byte, error) {
+func transfer(ctx sdk.Context, contractAddr sdk.AccAddress, transferTx *Transfer, cwicak cwicakeeper.Keeper, tk ibctransferkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
+	_, err := PerformTransfer(tk, cwicak, ctx, contractAddr, transferTx)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "perform submit txs")
+	}
+	return nil, nil, nil
+}
+
+// PerformTransfer is used to perform ibc transfer through wasmbinding.
+func PerformTransfer(f ibctransferkeeper.Keeper, cwicak cwicakeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, transferTx *Transfer) (*ibctransfertypes.MsgTransferResponse, error) {
+	if transferTx == nil {
+		return nil, wasmvmtypes.InvalidRequest{Err: "transfer txs null message"}
+	}
+
+	amount, err := wasmkeeper.ConvertWasmCoinToSdkCoin(transferTx.Amount)
+	if err != nil {
+		return nil, errors.Wrap(err, "amount")
+	}
+	msg := &ibctransfertypes.MsgTransfer{
+		SourcePort:       ibctransfertypes.PortID,
+		SourceChannel:    transferTx.ChannelID,
+		Token:            amount,
+		Sender:           contractAddr.String(),
+		Receiver:         transferTx.ToAddress,
+		TimeoutHeight:    wasmkeeper.ConvertWasmIBCTimeoutHeightToCosmosHeight(transferTx.Timeout.Block),
+		TimeoutTimestamp: transferTx.Timeout.Timestamp,
+	}
+
+	res, err := f.Transfer(sdk.WrapSDKContext(ctx), msg)
+	if err != nil {
+		return nil, errors.Wrap(err, "submitting transfer tx")
+	}
+
+	cwicak.SetCallbackData(ctx, types.CallbackData{
+		PortId:       msg.SourcePort,
+		ChannelId:    msg.SourceChannel,
+		Sequence:     res.Sequence,
+		Contract:     contractAddr.String(),
+		ConnectionId: "",
+		AccountId:    "",
+		Callback:     transferTx.Callback,
+	})
+	return res, nil
+}
+
+func HandleMsg(ctx sdk.Context, cwicak cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, transferk ibctransferkeeper.Keeper, contractAddr sdk.AccAddress, msg *CwIcaMsg) ([]sdk.Event, [][]byte, error) {
 	if msg.Register != nil {
 		return register(ctx, contractAddr, msg.Register, cwicak, icak)
 	}
 	if msg.Submit != nil {
 		return submit(ctx, contractAddr, msg.Submit, cwicak, icak)
+	}
+	if msg.Transfer != nil {
+		return transfer(ctx, contractAddr, msg.Transfer, cwicak, transferk)
 	}
 	return nil, nil, wasmvmtypes.InvalidRequest{Err: "unknown ICA Message variant"}
 }

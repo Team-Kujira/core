@@ -12,6 +12,7 @@ import (
 	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
 
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
 )
 
 func RegisterCustomPlugins(
@@ -22,6 +23,7 @@ func RegisterCustomPlugins(
 	ibc ibckeeper.Keeper,
 	cwica cwicakeeper.Keeper,
 	ica icacontrollerkeeper.Keeper,
+	transfer ibctransferkeeper.Keeper,
 	ibcStoreKey *storetypes.KVStoreKey,
 ) []wasmkeeper.Option {
 	wasmQueryPlugin := NewQueryPlugin(bank, oracle, denom, ibc, cwica, ibcStoreKey)
@@ -31,7 +33,7 @@ func RegisterCustomPlugins(
 	})
 
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(bank, denom, batch, cwica, ica),
+		CustomMessageDecorator(bank, denom, batch, cwica, ica, transfer),
 	)
 
 	return []wasmkeeper.Option{
