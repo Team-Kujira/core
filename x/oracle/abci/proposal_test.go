@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/core/comet"
+	"cosmossdk.io/core/header"
 	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
@@ -17,6 +19,7 @@ import (
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -408,6 +411,50 @@ func TestCompareMissMap(t *testing.T) {
 	}
 }
 
+type extendedVoteInfos []cometabci.ExtendedVoteInfo
+
+func (v extendedVoteInfos) Len() int {
+	return len(v)
+}
+
+func (v extendedVoteInfos) Less(i, j int) bool {
+	if v[i].Validator.Power == v[j].Validator.Power {
+		return bytes.Compare(v[i].Validator.Address, v[j].Validator.Address) == -1
+	}
+	return v[i].Validator.Power > v[j].Validator.Power
+}
+
+func (v extendedVoteInfos) Swap(i, j int) {
+	v[i], v[j] = v[j], v[i]
+}
+
+func extendedCommitToLastCommit(ec cometabci.ExtendedCommitInfo) (cometabci.ExtendedCommitInfo, comet.BlockInfo) {
+	// sort the extended commit info
+	sort.Sort(extendedVoteInfos(ec.Votes))
+
+	// convert the extended commit info to last commit info
+	lastCommit := cometabci.CommitInfo{
+		Round: ec.Round,
+		Votes: make([]cometabci.VoteInfo, len(ec.Votes)),
+	}
+
+	for i, vote := range ec.Votes {
+		lastCommit.Votes[i] = cometabci.VoteInfo{
+			Validator: cometabci.Validator{
+				Address: vote.Validator.Address,
+				Power:   vote.Validator.Power,
+			},
+		}
+	}
+
+	return ec, baseapp.NewBlockInfo(
+		nil,
+		nil,
+		nil,
+		lastCommit,
+	)
+}
+
 func TestPrepareProposal(t *testing.T) {
 	input, h := SetupTest(t)
 
@@ -422,6 +469,12 @@ func TestPrepareProposal(t *testing.T) {
 		VoteExtensionsEnableHeight: 1,
 	}
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
+	_, info := extendedCommitToLastCommit(cometabci.ExtendedCommitInfo{})
+	input.Ctx = input.Ctx.WithCometInfo(info)
+	input.Ctx = input.Ctx.WithHeaderInfo(header.Info{
+		ChainID: input.Ctx.ChainID(),
+		Height:  1,
+	})
 
 	// Handler before vote extension enable
 	res, err := handler(input.Ctx, &cometabci.RequestPrepareProposal{
@@ -547,6 +600,12 @@ func TestPrepareProposal(t *testing.T) {
 			},
 		},
 	}
+	_, info = extendedCommitToLastCommit(localLastCommit)
+	input.Ctx = input.Ctx.WithCometInfo(info)
+	input.Ctx = input.Ctx.WithHeaderInfo(header.Info{
+		ChainID: input.Ctx.ChainID(),
+		Height:  3,
+	})
 	res, err = handler(input.Ctx, &cometabci.RequestPrepareProposal{
 		Height:          3,
 		Txs:             [][]byte{},
@@ -610,6 +669,8 @@ func TestProcessProposal(t *testing.T) {
 		VoteExtensionsEnableHeight: 2,
 	}
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
+	_, info := extendedCommitToLastCommit(cometabci.ExtendedCommitInfo{})
+	input.Ctx = input.Ctx.WithCometInfo(info)
 
 	// Valid vote extension data
 	voteExt1 := types.VoteExtension{
@@ -700,6 +761,13 @@ func TestProcessProposal(t *testing.T) {
 			},
 		},
 	}
+
+	_, info = extendedCommitToLastCommit(localLastCommit)
+	input.Ctx = input.Ctx.WithCometInfo(info)
+	input.Ctx = input.Ctx.WithHeaderInfo(header.Info{
+		ChainID: input.Ctx.ChainID(),
+		Height:  3,
+	})
 
 	// Invalid missMap calculation
 	injectedVoteExtTx := abci.StakeWeightedPrices{

@@ -528,6 +528,7 @@ func New(
 		app.MsgServiceRouter(),
 		authority,
 	)
+	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
 	scopedICAControllerKeeper := app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
