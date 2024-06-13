@@ -51,12 +51,13 @@ func TestExtendVoteHandler(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, voteExt.Height, int64(3))
 	require.Len(t, voteExt.Prices, 3)
-	require.Equal(t, voteExt.Prices[0].Denom, "BTC")
-	require.Equal(t, voteExt.Prices[0].ExchangeRate.String(), "47375.706652541026694000")
-	require.Equal(t, voteExt.Prices[1].Denom, "ETH")
-	require.Equal(t, voteExt.Prices[1].ExchangeRate.String(), "2649.328939436595054949")
-	require.Equal(t, voteExt.Prices[2].Denom, "USDT")
-	require.Equal(t, voteExt.Prices[2].ExchangeRate.String(), "1.000661260343873178")
+	exchangeRates := make(map[string]string)
+	for _, price := range voteExt.Prices {
+		exchangeRates[price.Denom] = price.ExchangeRate.String()
+	}
+	require.Equal(t, exchangeRates["BTC"], "47375.706652541026694000")
+	require.Equal(t, exchangeRates["ETH"], "2649.328939436595054949")
+	require.Equal(t, exchangeRates["USDT"], "1.000661260343873178")
 }
 
 func TestVerifyVoteExtensionHandler(t *testing.T) {
