@@ -8,6 +8,8 @@ option go_package = "github.com/Team-Kujira/core/x/denom/types";
 
 // Msg defines the Msg service.
 service Msg {
+  rpc AddNoFeeAccounts(MsgAddNoFeeAccounts) returns (MsgAddNoFeeAccountsResponse);
+  rpc RemoveNoFeeAccounts(MsgRemoveNoFeeAccounts) returns (MsgRemoveNoFeeAccountsResponse);
   rpc CreateDenom(MsgCreateDenom) returns (MsgCreateDenomResponse);
   rpc Mint(MsgMint) returns (MsgMintResponse);
   rpc Burn(MsgBurn) returns (MsgBurnResponse);
@@ -16,6 +18,18 @@ service Msg {
   // (MsgForceTransferResponse);
   rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
 }
+
+message MsgAddNoFeeAccounts {
+  string authority = 1;
+  repeated string accounts = 2;
+}
+message MsgAddNoFeeAccountsResponse {}
+
+message MsgRemoveNoFeeAccounts {
+  string authority = 1;
+  repeated string accounts = 2;
+}
+message MsgRemoveNoFeeAccountsResponse {}
 
 // MsgCreateDenom is the sdk.Msg type for allowing an account to create
 // a new denom.  It requires a sender address and a unique nonce
