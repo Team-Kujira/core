@@ -23,6 +23,8 @@ type CBORSignature struct {
 
 // VerifyBytes verifies a signature of the form R || S.
 // It rejects signatures which are not in lower-S form.
+// See https://github.com/Team-Kujira/kujira.js/blob/master/src/authn/AuthnWebSigner.ts for a reference implementation
+// signing a transaction with the webauthn API
 func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 	cborSig := CBORSignature{}
 	err := json.Unmarshal(sigStr, &cborSig)
