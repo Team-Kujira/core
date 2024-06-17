@@ -71,3 +71,10 @@ message ExchangeRateTuple {
     (gogoproto.nullable)   = false
   ];
 }
+
+message VoteExtension {
+  int64 height = 1;
+  repeated ExchangeRateTuple prices = 2 [
+    (gogoproto.nullable) = false
+  ];
+}
