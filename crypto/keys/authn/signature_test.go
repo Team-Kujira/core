@@ -108,7 +108,7 @@ func TestVerifySignature(t *testing.T) {
 
 	// Mutate the message
 	msg[1] ^= byte(2)
-	require.False(t, pk.VerifySignature(msg, sig))
+	require.False(t, pk.VerifySignature(msg, sigBytes))
 }
 
 func TestVerifySignature_ChallengeStdEncoding(t *testing.T) {
