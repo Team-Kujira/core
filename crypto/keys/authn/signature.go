@@ -43,7 +43,11 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 		return false
 	}
 
-	challenge, err := base64.RawURLEncoding.DecodeString(clientData["challenge"].(string))
+	challengeBase64, ok := clientData["challenge"].(string)
+	if !ok {
+		return false
+	}
+	challenge, err := base64.RawURLEncoding.DecodeString(challengeBase64)
 	if err != nil {
 		return false
 	}
