@@ -147,7 +147,7 @@ func TestVerifySignature_ChallengeStdEncoding(t *testing.T) {
 	require.False(t, pk.VerifySignature(msg, sigBytes))
 }
 
-func VerifySignature_ChallengeHexEncoding(t *testing.T) {
+func TestVerifySignature_ChallengeHexEncoding(t *testing.T) {
 	privateKey, pk := GenerateAuthnKey(t)
 	authenticatorData := cometcrypto.CRandBytes(37)
 	msg := cometcrypto.CRandBytes(1000)
@@ -183,7 +183,7 @@ func VerifySignature_ChallengeHexEncoding(t *testing.T) {
 	require.False(t, pk.VerifySignature(msg, sigBytes))
 }
 
-func VerifySignature_ChallengeEmpty(t *testing.T) {
+func TestVerifySignature_ChallengeEmpty(t *testing.T) {
 	privateKey, pk := GenerateAuthnKey(t)
 	authenticatorData := cometcrypto.CRandBytes(37)
 	msg := cometcrypto.CRandBytes(1000)
@@ -219,7 +219,7 @@ func VerifySignature_ChallengeEmpty(t *testing.T) {
 	require.False(t, pk.VerifySignature(msg, sigBytes))
 }
 
-func VerifySignature_ChallengeNil(t *testing.T) {
+func TestVerifySignature_ChallengeNil(t *testing.T) {
 	privateKey, pk := GenerateAuthnKey(t)
 	authenticatorData := cometcrypto.CRandBytes(37)
 	msg := cometcrypto.CRandBytes(1000)
@@ -252,7 +252,7 @@ func VerifySignature_ChallengeNil(t *testing.T) {
 	require.False(t, pk.VerifySignature(msg, sigBytes))
 }
 
-func VerifySignature_ChallengeInteger(t *testing.T) {
+func TestVerifySignature_ChallengeInteger(t *testing.T) {
 	privateKey, pk := GenerateAuthnKey(t)
 	authenticatorData := cometcrypto.CRandBytes(37)
 	msg := cometcrypto.CRandBytes(1000)
@@ -286,7 +286,7 @@ func VerifySignature_ChallengeInteger(t *testing.T) {
 	require.False(t, pk.VerifySignature(msg, sigBytes))
 }
 
-func VerifySignature_ClientDataJSONEmpty(t *testing.T) {
+func TestVerifySignature_ClientDataJSONEmpty(t *testing.T) {
 	privateKey, pk := GenerateAuthnKey(t)
 	authenticatorData := cometcrypto.CRandBytes(37)
 	msg := cometcrypto.CRandBytes(1000)
