@@ -13,7 +13,7 @@ import (
 	ecdsa "crypto/ecdsa"
 )
 
-type CBORSignature struct {
+type Signature struct {
 	AuthenticatorData string `json:"authenticatorData"`
 	ClientDataJSON    string `json:"clientDataJSON"`
 	Signature         string `json:"signature"`
@@ -24,13 +24,13 @@ type CBORSignature struct {
 // See https://github.com/Team-Kujira/kujira.js/blob/master/src/authn/AuthnWebSigner.ts for a reference implementation
 // signing a transaction with the webauthn API
 func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
-	cborSig := CBORSignature{}
-	err := json.Unmarshal(sigStr, &cborSig)
+	sig := Signature{}
+	err := json.Unmarshal(sigStr, &sig)
 	if err != nil {
 		return false
 	}
 
-	clientDataJSON, err := hex.DecodeString(cborSig.ClientDataJSON)
+	clientDataJSON, err := hex.DecodeString(sig.ClientDataJSON)
 	if err != nil {
 		return false
 	}
@@ -61,12 +61,12 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 		return false
 	}
 
-	signatureBytes, err := hex.DecodeString(cborSig.Signature)
+	signatureBytes, err := hex.DecodeString(sig.Signature)
 	if err != nil {
 		return false
 	}
 
-	authenticatorData, err := hex.DecodeString(cborSig.AuthenticatorData)
+	authenticatorData, err := hex.DecodeString(sig.AuthenticatorData)
 	if err != nil {
 		return false
 	}

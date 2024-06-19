@@ -88,7 +88,7 @@ func TestVerifySignature(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -136,7 +136,7 @@ func TestVerifySignature_ChallengeStdEncoding(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -172,7 +172,7 @@ func TestVerifySignature_ChallengeHexEncoding(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -208,7 +208,7 @@ func TestVerifySignature_ChallengeEmpty(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -241,7 +241,7 @@ func TestVerifySignature_ChallengeNil(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -275,7 +275,7 @@ func TestVerifySignature_ChallengeInteger(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -337,7 +337,7 @@ func TestVerifySignature_UncompressedPubKey(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -366,7 +366,7 @@ func TestVerifySignature_AnotherPubKey(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -394,7 +394,7 @@ func TestVerifySignature_SignaureNotInASN1(t *testing.T) {
 	require.NoError(t, err)
 	sig := append(sigR.Bytes(), sigS.Bytes()...)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -421,7 +421,7 @@ func TestVerifySignature_EmptyAuthenticatorData(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: "",
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -449,7 +449,7 @@ func TestVerifySignature_SignatureEncodingInBase64(t *testing.T) {
 	require.NoError(t, err)
 	sig := append(sigR.Bytes(), sigS.Bytes()...)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         base64.StdEncoding.EncodeToString(sig),
@@ -476,7 +476,7 @@ func TestVerifySignature_ClientDataJSONEncodingInBase64(t *testing.T) {
 	require.NoError(t, err)
 	sig := append(sigR.Bytes(), sigS.Bytes()...)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    base64.StdEncoding.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
@@ -508,7 +508,7 @@ func TestVerifySignature_AuthenticatorDataLength(t *testing.T) {
 	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
 	require.NoError(t, err)
 
-	cborSig := CBORSignature{
+	cborSig := Signature{
 		AuthenticatorData: hex.EncodeToString(authenticatorData),
 		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
 		Signature:         hex.EncodeToString(sig),
