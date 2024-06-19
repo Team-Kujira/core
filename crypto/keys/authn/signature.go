@@ -83,6 +83,11 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 		return false
 	}
 
+	// check authenticatorData length
+	if len(authenticatorData) < 37 {
+		return false
+	}
+
 	clientDataHash := sha256.Sum256(clientDataJSON)
 	payload := append(authenticatorData, clientDataHash[:]...)
 

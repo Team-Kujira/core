@@ -492,3 +492,29 @@ func TestVerifySignature_EmptySignature(t *testing.T) {
 	msg := cometcrypto.CRandBytes(1000)
 	require.False(t, pk.VerifySignature(msg, []byte{}))
 }
+
+func TestVerifySignature_AuthenticatorDataLength(t *testing.T) {
+	privateKey, pk := GenerateAuthnKey(t)
+	authenticatorData := cometcrypto.CRandBytes(10)
+	msg := cometcrypto.CRandBytes(1000)
+	clientDataJSON := GenerateClientData(t, msg)
+	clientDataHash := sha256.Sum256(clientDataJSON)
+	payload := append(authenticatorData, clientDataHash[:]...)
+
+	h := crypto.SHA256.New()
+	h.Write(payload)
+	digest := h.Sum(nil)
+
+	sig, err := ecdsa.SignASN1(rand.Reader, privateKey, digest)
+	require.NoError(t, err)
+
+	cborSig := CBORSignature{
+		AuthenticatorData: hex.EncodeToString(authenticatorData),
+		ClientDataJSON:    hex.EncodeToString(clientDataJSON),
+		Signature:         hex.EncodeToString(sig),
+	}
+
+	sigBytes, err := json.Marshal(cborSig)
+	require.NoError(t, err)
+	require.False(t, pk.VerifySignature(msg, sigBytes))
+}
