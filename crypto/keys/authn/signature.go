@@ -6,11 +6,9 @@ import (
 	"crypto"
 	"crypto/elliptic"
 	"crypto/sha256"
-	"encoding/asn1"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"math/big"
 
 	ecdsa "crypto/ecdsa"
 )
@@ -63,17 +61,7 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 		return false
 	}
 
-	type ECDSASignature struct {
-		R, S *big.Int
-	}
-
 	signatureBytes, err := hex.DecodeString(cborSig.Signature)
-	if err != nil {
-		return false
-	}
-
-	e := &ECDSASignature{}
-	_, err = asn1.Unmarshal(signatureBytes, e)
 	if err != nil {
 		return false
 	}
@@ -94,5 +82,5 @@ func (pubKey *PubKey) VerifySignature(msg []byte, sigStr []byte) bool {
 	h := crypto.SHA256.New()
 	h.Write(payload)
 
-	return ecdsa.Verify(publicKey, h.Sum(nil), e.R, e.S)
+	return ecdsa.VerifyASN1(publicKey, h.Sum(nil), signatureBytes)
 }
