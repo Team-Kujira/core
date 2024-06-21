@@ -32,7 +32,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80
 	google.golang.org/grpc v1.62.1
 	gopkg.in/yaml.v2 v2.4.0
-
 )
 
 require (
@@ -214,4 +213,7 @@ replace (
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	// https://github.com/cosmos/cosmos-sdk/issues/14949
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+
+	// https://github.com/cosmos/cosmos-sdk/issues/20159
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
