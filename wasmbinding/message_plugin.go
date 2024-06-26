@@ -5,7 +5,8 @@ import (
 
 	"cosmossdk.io/errors"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
@@ -57,13 +58,13 @@ func (m *CustomMessenger) DispatchMsg(
 	contractAddr sdk.AccAddress,
 	contractIBCPortID string,
 	msg wasmvmtypes.CosmosMsg,
-) ([]sdk.Event, [][]byte, error) {
+) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {
 	if msg.Custom != nil {
 		// only handle the happy path where this is really creating / minting / swapping ...
 		// leave everything else for the wrapped version
 		var contractMsg bindings.CosmosMsg
 		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
-			return nil, nil, errors.Wrap(err, "kujira msg")
+			return nil, nil, nil, errors.Wrap(err, "kujira msg")
 		}
 
 		if contractMsg.Denom != nil {
@@ -78,7 +79,7 @@ func (m *CustomMessenger) DispatchMsg(
 			return cwica.HandleMsg(ctx, m.cwica, m.ica, contractAddr, contractMsg.CwIca)
 		}
 
-		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
+		return nil, nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }

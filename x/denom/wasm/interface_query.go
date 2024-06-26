@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"cosmossdk.io/errors"
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/denom/keeper"

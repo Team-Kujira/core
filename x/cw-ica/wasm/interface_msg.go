@@ -2,8 +2,10 @@ package wasm
 
 import (
 	"cosmossdk.io/errors"
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gogoproto/proto"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
@@ -52,16 +54,28 @@ type Submit struct {
 	Callback     []byte        `json:"callback"`
 }
 
-func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, cwicak cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	_, err := PerformRegisterICA(cwicak, ik, ctx, contractAddr, register)
+func register(
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	register *Register,
+	cwicak cwicakeeper.Keeper,
+	ik icacontrollerkeeper.Keeper,
+) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
+	res, err := PerformRegisterICA(cwicak, ik, ctx, contractAddr, register)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "perform register ICA")
+		return nil, errors.Wrap(err, "perform register ICA")
 	}
-	return nil, nil, nil
+	return res, nil
 }
 
 // PerformRegisterICA is used with register to validate the register message and register the ICA.
-func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, msg *Register) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
+func PerformRegisterICA(
+	cwicak cwicakeeper.Keeper,
+	f icacontrollerkeeper.Keeper,
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	msg *Register,
+) (*icacontrollertypes.MsgRegisterInterchainAccountResponse, error) {
 	if msg == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "register ICA null message"}
 	}
@@ -85,9 +99,6 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 	}
 
 	portID, err := icatypes.NewControllerPortID(owner)
-	if err != nil {
-		return nil, err
-	}
 
 	if err != nil {
 		return nil, errors.Wrap(err, "registering ICA")
@@ -108,16 +119,28 @@ func PerformRegisterICA(cwicak cwicakeeper.Keeper, f icacontrollerkeeper.Keeper,
 	return res, nil
 }
 
-func submit(ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit, cwicak cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	_, err := PerformSubmitTxs(ik, cwicak, ctx, contractAddr, submitTx)
+func submit(
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	submitTx *Submit,
+	cwicak cwicakeeper.Keeper,
+	ik icacontrollerkeeper.Keeper,
+) (*icacontrollertypes.MsgSendTxResponse, error) {
+	res, err := PerformSubmitTxs(ik, cwicak, ctx, contractAddr, submitTx)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "perform submit txs")
+		return nil, errors.Wrap(err, "perform submit txs")
 	}
-	return nil, nil, nil
+	return res, nil
 }
 
 // PerformSubmitTxs is used with submitTxs to validate the submitTxs message and submit the txs.
-func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, submitTx *Submit) (*icacontrollertypes.MsgSendTxResponse, error) {
+func PerformSubmitTxs(
+	f icacontrollerkeeper.Keeper,
+	cwicak cwicakeeper.Keeper,
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	submitTx *Submit,
+) (*icacontrollertypes.MsgSendTxResponse, error) {
 	if submitTx == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "submit txs null message"}
 	}
@@ -169,12 +192,38 @@ func PerformSubmitTxs(f icacontrollerkeeper.Keeper, cwicak cwicakeeper.Keeper, c
 	return res, nil
 }
 
-func HandleMsg(ctx sdk.Context, cwicak cwicakeeper.Keeper, icak icacontrollerkeeper.Keeper, contractAddr sdk.AccAddress, msg *CwIcaMsg) ([]sdk.Event, [][]byte, error) {
+func HandleMsg(
+	ctx sdk.Context,
+	cwicak cwicakeeper.Keeper,
+	icak icacontrollerkeeper.Keeper,
+	contractAddr sdk.AccAddress,
+	msg *CwIcaMsg,
+) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {
+
+	var res proto.Message
+	var err error
+
 	if msg.Register != nil {
-		return register(ctx, contractAddr, msg.Register, cwicak, icak)
+		res, err = register(ctx, contractAddr, msg.Register, cwicak, icak)
 	}
+
 	if msg.Submit != nil {
-		return submit(ctx, contractAddr, msg.Submit, cwicak, icak)
+		res, err = submit(ctx, contractAddr, msg.Submit, cwicak, icak)
 	}
-	return nil, nil, wasmvmtypes.InvalidRequest{Err: "unknown ICA Message variant"}
+
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	if res == nil {
+		return nil, nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
+	}
+
+	any, err := codectypes.NewAnyWithValue(res)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	msgResponses := [][]*codectypes.Any{{any}}
+
+	return nil, nil, msgResponses, err
 }

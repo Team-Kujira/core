@@ -2,10 +2,12 @@ package wasm
 
 import (
 	"cosmossdk.io/errors"
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
 	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
 	batchtypes "github.com/Team-Kujira/core/x/batch/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gogoproto/proto"
 )
 
 type BatchMsg struct {
@@ -16,38 +18,70 @@ type BatchMsg struct {
 type WithdrawAllDelegatorRewards struct{}
 
 // withdrawAllDelegatorRewards withdraw all delegation rewards for the delegations from the contract address
-func withdrawAllDelegatorRewards(ctx sdk.Context, contractAddr sdk.AccAddress, withdrawAllDelegatorRewards *WithdrawAllDelegatorRewards, bk batchkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	err := PerformWithdrawAllDelegatorRewards(bk, ctx, contractAddr, withdrawAllDelegatorRewards)
+func withdrawAllDelegatorRewards(
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	withdrawAllDelegatorRewards *WithdrawAllDelegatorRewards,
+	bk batchkeeper.Keeper,
+) (*batchtypes.MsgWithdrawAllDelegatorRewardsResponse, error) {
+	res, err := PerformWithdrawAllDelegatorRewards(bk, ctx, contractAddr, withdrawAllDelegatorRewards)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "perform withdrawAllDelegatorRewards")
+		return nil, errors.Wrap(err, "perform withdrawAllDelegatorRewards")
 	}
-	return nil, nil, nil
+	return res, nil
 }
 
 // PerformWithdrawAllDelegatorRewards is used to perform delegation rewards from the contract delegations
-func PerformWithdrawAllDelegatorRewards(bk batchkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, _ *WithdrawAllDelegatorRewards) error {
+func PerformWithdrawAllDelegatorRewards(
+	bk batchkeeper.Keeper,
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	_ *WithdrawAllDelegatorRewards,
+) (*batchtypes.MsgWithdrawAllDelegatorRewardsResponse, error) {
 	msgServer := batchkeeper.NewMsgServerImpl(bk)
 	msgWithdrawAllDelegatorRewards := batchtypes.NewMsgWithdrawAllDelegatorRewards(contractAddr)
 
 	if err := msgWithdrawAllDelegatorRewards.ValidateBasic(); err != nil {
-		return errors.Wrap(err, "failed validating MsgWithdrawAllDelegatorRewards")
+		return nil, errors.Wrap(err, "failed validating MsgWithdrawAllDelegatorRewards")
 	}
 
-	_, err := msgServer.WithdrawAllDelegatorRewards(
+	res, err := msgServer.WithdrawAllDelegatorRewards(
 		ctx,
 		msgWithdrawAllDelegatorRewards,
 	)
 	if err != nil {
-		return errors.Wrap(err, "batch claim")
+		return nil, errors.Wrap(err, "batch claim")
 	}
-	return nil
+	return res, nil
 }
 
 // QueryCustom implements custom msg interface
-func HandleMsg(dk batchkeeper.Keeper, contractAddr sdk.AccAddress, ctx sdk.Context, q *BatchMsg) ([]sdk.Event, [][]byte, error) {
+func HandleMsg(
+	dk batchkeeper.Keeper,
+	contractAddr sdk.AccAddress,
+	ctx sdk.Context,
+	q *BatchMsg,
+) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {
+	var res proto.Message
+	var err error
+
 	if q.WithdrawAllDelegatorRewards != nil {
-		return withdrawAllDelegatorRewards(ctx, contractAddr, q.WithdrawAllDelegatorRewards, dk)
+		res, err = withdrawAllDelegatorRewards(ctx, contractAddr, q.WithdrawAllDelegatorRewards, dk)
 	}
 
-	return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	if res == nil {
+		return nil, nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
+	}
+
+	any, err := codectypes.NewAnyWithValue(res)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	msgResponses := [][]*codectypes.Any{{any}}
+
+	return nil, nil, msgResponses, err
 }
