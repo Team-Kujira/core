@@ -5,14 +5,10 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	batchtypes "github.com/Team-Kujira/core/x/batch/types"
-	cwicatypes "github.com/Team-Kujira/core/x/cw-ica/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
-	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 )
 
-const UpgradeName = "v1.0.0"
+const UpgradeName = "v2.0.0"
 
 func (app App) RegisterUpgradeHandlers() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
@@ -22,10 +18,8 @@ func (app App) RegisterUpgradeHandlers() {
 
 	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{
-				ibcwasmtypes.ModuleName,
-				batchtypes.ModuleName,
-				cwicatypes.ModuleName,
+			Deleted: []string{
+				"alliance", "alliance2",
 			},
 		}
 
