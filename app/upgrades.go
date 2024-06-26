@@ -28,7 +28,6 @@ func (app App) RegisterUpgradeHandlers() {
 	// Set param key table for params module migration
 	for _, subspace := range app.ParamsKeeper.GetSubspaces() {
 		subspace := subspace
-		println(subspace.Name())
 
 		switch subspace.Name() {
 		case ibcexported.ModuleName:
