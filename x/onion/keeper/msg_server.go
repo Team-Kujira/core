@@ -1,11 +1,7 @@
 package keeper
 
 import (
-	"context"
-	"strconv"
-
 	"github.com/Team-Kujira/core/x/onion/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgServer struct {
@@ -19,23 +15,3 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 var _ types.MsgServer = msgServer{}
-
-func (m msgServer) EmitIBCAck(goCtx context.Context, msg *types.MsgEmitIBCAck) (*types.MsgEmitIBCAckResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.MsgEmitAckKey,
-			sdk.NewAttribute(types.AttributeSender, msg.Sender),
-			sdk.NewAttribute(types.AttributeChannel, msg.Channel),
-			sdk.NewAttribute(types.AttributePacketSequence, strconv.FormatUint(msg.PacketSequence, 10)),
-		),
-	)
-
-	ack, err := m.Keeper.EmitIBCAck(ctx, msg.Sender, msg.Channel, msg.PacketSequence)
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.MsgEmitIBCAckResponse{ContractResult: string(ack), IbcAck: string(ack)}, nil
-}
