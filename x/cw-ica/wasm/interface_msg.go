@@ -105,7 +105,6 @@ func PerformRegisterICA(
 	}
 
 	portID, err := icatypes.NewControllerPortID(owner)
-
 	if err != nil {
 		return nil, errors.Wrap(err, "registering ICA")
 	}
@@ -205,7 +204,6 @@ func HandleMsg(
 	contractAddr sdk.AccAddress,
 	msg *CwIcaMsg,
 ) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {
-
 	var res proto.Message
 	var err error
 
@@ -225,11 +223,11 @@ func HandleMsg(
 		return nil, nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 
-	any, err := codectypes.NewAnyWithValue(res)
+	x, err := codectypes.NewAnyWithValue(res)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	msgResponses := [][]*codectypes.Any{{any}}
+	msgResponses := [][]*codectypes.Any{{x}}
 
 	return nil, nil, msgResponses, err
 }

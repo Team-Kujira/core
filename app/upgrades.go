@@ -49,7 +49,6 @@ func (app App) RegisterUpgradeHandlers() {
 		if !subspace.HasKeyTable() {
 			subspace.WithKeyTable(keyTable)
 		}
-
 	}
 
 	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
