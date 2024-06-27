@@ -13,7 +13,6 @@ import (
 
 	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
 	"github.com/Team-Kujira/core/x/cw-ica/types"
-	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object
@@ -151,9 +150,9 @@ func PerformSubmitTxs(
 	if submitTx == nil {
 		return nil, wasmvmtypes.InvalidRequest{Err: "submit txs null message"}
 	}
-	msgs := []*cosmostypes.Any{}
+	msgs := []*codectypes.Any{}
 	for _, msg := range submitTx.Msgs {
-		msgs = append(msgs, &cosmostypes.Any{
+		msgs = append(msgs, &codectypes.Any{
 			TypeUrl: msg.TypeURL,
 			Value:   msg.Value,
 		})
