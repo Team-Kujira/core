@@ -9,6 +9,7 @@ import (
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	cwicakeeper "github.com/Team-Kujira/core/x/cw-ica/keeper"
 	"github.com/Team-Kujira/core/x/cw-ica/types"
@@ -37,10 +38,11 @@ type CwIcaMsg struct {
 // / The account is registered using (port, channel, sender, id)
 // / as the unique identifier.
 type Register struct {
-	ConnectionID string `json:"connection_id"`
-	AccountID    string `json:"account_id"`
-	Version      string `json:"version"`
-	Callback     []byte `json:"callback"`
+	ConnectionID string             `json:"connection_id"`
+	AccountID    string             `json:"account_id"`
+	Version      string             `json:"version"`
+	Ordering     channeltypes.Order `json:"ordering"`
+	Callback     []byte             `json:"callback"`
 }
 
 // / Submit submits transactions to the ICA
@@ -84,7 +86,12 @@ func PerformRegisterICA(
 
 	// format "{owner}-{id}"
 	owner := contractAddr.String() + "-" + msg.AccountID
-	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccount(msg.ConnectionID, owner, msg.Version)
+	msgRegister := icacontrollertypes.NewMsgRegisterInterchainAccountWithOrdering(
+		msg.ConnectionID,
+		owner,
+		msg.Version,
+		msg.Ordering,
+	)
 
 	if err := msgRegister.ValidateBasic(); err != nil {
 		return nil, errors.Wrap(err, "failed validating MsgRegisterInterchainAccount")
