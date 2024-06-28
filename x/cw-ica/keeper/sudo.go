@@ -7,7 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/cw-ica/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 )
 
 func (k Keeper) HasContractInfo(ctx sdk.Context, contractAddress sdk.AccAddress) bool {
@@ -22,7 +23,7 @@ func (k Keeper) SudoIcaRegisterCallback(
 	contractAddr := sdk.MustAccAddressFromBech32(callbackData.Contract)
 
 	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
-		if callbackData.PortId == ibctransfertypes.PortID {
+		if callbackData.PortId == transfertypes.PortID {
 			// we want to allow non contract account to send the assets via IBC Transfer module
 			// we can determine the originating module by the source port of the request packet
 			return nil, nil
@@ -60,7 +61,7 @@ func (k Keeper) SudoIcaTxCallback(
 	contractAddr := sdk.MustAccAddressFromBech32(callbackData.Contract)
 
 	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
-		if callbackData.PortId == ibctransfertypes.PortID {
+		if callbackData.PortId == transfertypes.PortID {
 			// we want to allow non contract account to send the assets via IBC Transfer module
 			// we can determine the originating module by the source port of the request packet
 			return nil, nil
@@ -89,4 +90,94 @@ func (k Keeper) SudoIcaTxCallback(
 	}
 
 	return resp, nil
+}
+
+func (k Keeper) SudoIbcTransferCallback(
+	ctx sdk.Context,
+	packet channeltypes.Packet,
+	data transfertypes.FungibleTokenPacketData,
+	callbackData types.CallbackData,
+	result types.IcaCallbackResult,
+) error {
+	contractAddr, err := sdk.AccAddressFromBech32(data.Sender)
+	if err != nil {
+		return err
+	}
+
+	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
+		return nil
+	}
+
+	if callbackData.Callback == nil {
+		callbackData.Callback = []byte{}
+	}
+
+	x := types.MessageTransferCallback{}
+	x.TransferCallback.Port = packet.SourcePort
+	x.TransferCallback.Channel = packet.SourceChannel
+	x.TransferCallback.Sequence = packet.Sequence
+	x.TransferCallback.Receiver = data.Receiver
+	x.TransferCallback.Denom = data.Denom
+	x.TransferCallback.Amount = data.Amount
+	x.TransferCallback.Memo = data.Memo
+	x.TransferCallback.Result = result
+	x.TransferCallback.Callback = callbackData.Callback
+
+	m, err := json.Marshal(x)
+	if err != nil {
+		k.Logger(ctx).Error("SudoCallback: failed to marshal MessageResponse message", "error", err, "contractAddress", contractAddr)
+		return err
+	}
+
+	_, err = k.wasmKeeper.Sudo(ctx, contractAddr, m)
+	if err != nil {
+		k.Logger(ctx).Debug("SudoResponse: failed to Sudo", "error", err, "contractAddress", contractAddr)
+	}
+	return err
+}
+
+func (k Keeper) SudoIbcTransferReceipt(
+	ctx sdk.Context,
+	packet channeltypes.Packet,
+	data transfertypes.FungibleTokenPacketData,
+) error {
+	contractAddr, err := sdk.AccAddressFromBech32(data.Receiver)
+	if err != nil {
+		return err
+	}
+
+	if !k.wasmKeeper.HasContractInfo(ctx, contractAddr) {
+		return nil
+	}
+
+	denom := ""
+	if transfertypes.ReceiverChainIsSource(packet.GetSourcePort(), packet.GetSourceChannel(), data.Denom) {
+		voucherPrefix := transfertypes.GetDenomPrefix(packet.GetSourcePort(), packet.GetSourceChannel())
+		denom = data.Denom[len(voucherPrefix):]
+	} else {
+		sourcePrefix := transfertypes.GetDenomPrefix(packet.GetDestPort(), packet.GetDestChannel())
+		prefixedDenom := sourcePrefix + data.Denom
+		denom = transfertypes.ParseDenomTrace(prefixedDenom).IBCDenom()
+	}
+
+	x := types.MessageTransferReceipt{}
+	x.TransferReceipt.Port = packet.DestinationPort
+	x.TransferReceipt.Channel = packet.DestinationChannel
+	x.TransferReceipt.Sequence = packet.Sequence
+	x.TransferReceipt.Sender = data.Sender
+	x.TransferReceipt.Denom = denom
+	x.TransferReceipt.Amount = data.Amount
+	x.TransferReceipt.Memo = data.Memo
+
+	m, err := json.Marshal(x)
+	if err != nil {
+		k.Logger(ctx).Error("SudoCallback: failed to marshal MessageResponse message", "error", err, "contractAddress", contractAddr)
+		return err
+	}
+
+	_, err = k.wasmKeeper.Sudo(ctx, contractAddr, m)
+	if err != nil {
+		k.Logger(ctx).Debug("SudoResponse: failed to Sudo", "error", err, "contractAddress", contractAddr)
+	}
+	return err
 }

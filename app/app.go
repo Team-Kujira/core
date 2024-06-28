@@ -588,6 +588,7 @@ func New(
 		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
+	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
 	scopedICAControllerKeeper := app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
@@ -652,6 +653,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper.WithMintCoinsRestriction(denomtypes.NewdenomDenomMintCoinsRestriction()),
 		app.DistrKeeper,
+		authority,
 	)
 
 	app.DenomKeeper = &denomKeeper
@@ -694,6 +696,7 @@ func New(
 		*app.IBCKeeper,
 		app.CwICAKeeper,
 		app.ICAControllerKeeper,
+		app.TransferKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
@@ -774,6 +777,7 @@ func New(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+	transferStack = cwica.NewIBCMiddleware(transferStack, app.CwICAKeeper, app.IBCKeeper.ChannelKeeper)
 	transferStack = onion.NewIBCModule(transferStack, app.OnionKeeper, encodingConfig.TxConfig)
 
 	// Create Interchain Accounts Stack

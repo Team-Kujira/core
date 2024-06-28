@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
@@ -88,6 +89,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 // return tmcfg.DefaultConfig if no custom configuration is required for the application.
 func initTendermintConfig() *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
+	cfg.Consensus.TimeoutCommit = time.Millisecond * 1500
 
 	cfg.P2P.Seeds = ""
 

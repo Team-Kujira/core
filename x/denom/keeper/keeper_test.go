@@ -1,34 +1,28 @@
 package keeper_test
 
-// import (
-// 	"testing"
+import (
+	"testing"
 
-// 	"github.com/Team-Kujira/core/x/denom/types"
+	app "github.com/Team-Kujira/core/app"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/suite"
+)
 
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	"github.com/stretchr/testify/suite"
-// )
+type KeeperTestSuite struct {
+	suite.Suite
 
-// type KeeperTestSuite struct {
-// 	apptesting.KeeperTestHelper
+	App *app.App
+	Ctx sdk.Context
+}
 
-// 	queryClient types.QueryClient
-// }
+func TestKeeperTestSuite(t *testing.T) {
+	suite.Run(t, new(KeeperTestSuite))
+}
 
-// func TestKeeperTestSuite(t *testing.T) {
-// 	suite.Run(t, new(KeeperTestSuite))
-// }
+func (suite *KeeperTestSuite) SetupTest() {
+	app := app.Setup(suite.T(), false)
 
-// func (suite *KeeperTestSuite) SetupTest() {
-// 	suite.Setup()
-
-// 	// Fund every TestAcc with 100 denom creation fees.
-// 	fundAccsAmount := sdk.NewCoins(sdk.NewCoin(types.DefaultParams().CreationFee[0].Denom, types.DefaultParams().CreationFee[0].Amount.MulRaw(100)))
-// 	for _, acc := range suite.TestAccs {
-// 		suite.FundAcc(acc, fundAccsAmount)
-// 	}
-
-// 	suite.Setupdenom()
-
-// 	suite.queryClient = types.NewQueryClient(suite.QueryHelper)
-// }
+	suite.Ctx = app.BaseApp.NewContext(false, tmproto.Header{})
+	suite.App = app
+}
