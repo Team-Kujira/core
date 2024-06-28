@@ -148,12 +148,8 @@ func (k Keeper) ExecuteAnte(ctx sdk.Context, tx sdk.Tx) error {
 			)
 		}
 
-		genesis := ctx.BlockHeight() == 0
 		chainID := ctx.ChainID()
-		var accNum uint64
-		if !genesis {
-			accNum = acc.GetAccountNumber()
-		}
+		accNum := types.AccountNumber
 		signerData := authsigning.SignerData{
 			Address:       acc.GetAddress().String(),
 			ChainID:       chainID,

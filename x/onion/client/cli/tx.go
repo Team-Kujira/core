@@ -95,6 +95,7 @@ func WriteBase64Tx(clientCtx client.Context, flagSet *pflag.FlagSet, msgs ...sdk
 		newSeq = res.Seq.Sequence
 	}
 	txf = txf.WithSequence(newSeq)
+	txf = txf.WithAccountNumber(types.AccountNumber)
 
 	if txf.SimulateAndExecute() || clientCtx.Simulate {
 		if clientCtx.Offline {

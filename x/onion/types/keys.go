@@ -17,3 +17,5 @@ const (
 
 	OnionSequencePrefix = "onion-sequence"
 )
+
+const AccountNumber = ^uint64(0)
