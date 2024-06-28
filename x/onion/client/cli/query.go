@@ -11,7 +11,7 @@ import (
 	"github.com/Team-Kujira/core/x/onion/types"
 )
 
-func indexRunCmd(cmd *cobra.Command, args []string) error {
+func indexRunCmd(cmd *cobra.Command, _ []string) error {
 	usageTemplate := `Usage:{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command]{{end}}
   

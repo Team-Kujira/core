@@ -555,7 +555,6 @@ func New(
 	app.OnionKeeper = onionkeeper.NewKeeper(
 		keys[oniontypes.StoreKey],
 		app.GetSubspace(oniontypes.ModuleName),
-		nil,
 		app.MsgServiceRouter(),
 		app.AccountKeeper,
 		txConfig.SignModeHandler(),

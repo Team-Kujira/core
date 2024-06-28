@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/Team-Kujira/core/x/onion/types"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -29,7 +28,6 @@ type (
 func NewKeeper(
 	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
-	contractKeeper *wasmkeeper.PermissionedKeeper,
 	router *baseapp.MsgServiceRouter,
 	accountKeeper types.AccountKeeper,
 	signModeHandler authsigning.SignModeHandler,
@@ -65,7 +63,9 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 	k.SetParams(ctx, genState.Params)
 	for _, seq := range genState.Sequences {
-		k.SetSequence(ctx, seq)
+		if err := k.SetSequence(ctx, seq); err != nil {
+			panic(err)
+		}
 	}
 }
 
