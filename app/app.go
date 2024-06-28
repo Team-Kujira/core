@@ -552,7 +552,6 @@ func New(
 		scopedIBCKeeper,
 	)
 
-	// Configure the hooks keeper
 	app.OnionKeeper = onionkeeper.NewKeeper(
 		keys[oniontypes.StoreKey],
 		app.GetSubspace(oniontypes.ModuleName),
