@@ -108,27 +108,38 @@ func (im IBCModule) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
+	ack := im.App.OnRecvPacket(ctx, packet, relayer)
+
 	var data transfertypes.FungibleTokenPacketData
-	if err := transfertypes.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err == nil {
-		if data.Memo != "" {
-			newRawTx, err := base64.StdEncoding.DecodeString(data.Memo)
-			if err == nil {
-				tx, err := im.txEncodingConfig.TxDecoder()(newRawTx)
-				if err == nil {
-					cacheCtx, write := ctx.CacheContext()
-					err = im.Keeper.ExecuteAnte(cacheCtx, tx)
-					if err == nil {
-						_, err = im.Keeper.ExecuteTxMsgs(cacheCtx, tx)
-						if err == nil {
-							write()
-						}
-					}
-				}
-			}
-		}
+	if err := transfertypes.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		return ack
 	}
 
-	return im.App.OnRecvPacket(ctx, packet, relayer)
+	if data.Memo == "" {
+		return ack
+	}
+
+	newRawTx, err := base64.StdEncoding.DecodeString(data.Memo)
+	if err != nil {
+		return ack
+	}
+
+	tx, err := im.txEncodingConfig.TxDecoder()(newRawTx)
+	if err != nil {
+		return ack
+	}
+
+	cacheCtx, write := ctx.CacheContext()
+	err = im.Keeper.ExecuteAnte(cacheCtx, tx)
+	if err != nil {
+		return ack
+	}
+
+	_, err = im.Keeper.ExecuteTxMsgs(cacheCtx, tx)
+	if err == nil {
+		write()
+	}
+	return ack
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface
