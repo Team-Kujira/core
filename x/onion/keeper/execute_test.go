@@ -47,20 +47,20 @@ func (s *KeeperTestSuite) TestExecuteTxMsgs() {
 		"empty messages execution": {
 			msgs:               []sdk.Msg{},
 			expErr:             false,
-			expSenderBalance:   sdk.Coins{},
+			expSenderBalance:   sdk.Coins{sdk.NewInt64Coin("test", 500)},
 			expReceiverBalance: sdk.Coins{},
 		},
 		"successful execution of a single message": {
 			msgs:               []sdk.Msg{msgSend1},
 			expErr:             false,
-			expSenderBalance:   sdk.Coins{},
-			expReceiverBalance: sdk.Coins{},
+			expSenderBalance:   sdk.Coins{sdk.NewInt64Coin("test", 400)},
+			expReceiverBalance: sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"successful execution of multiple messages": {
 			msgs:               []sdk.Msg{msgSend1, msgSend2},
 			expErr:             false,
-			expSenderBalance:   sdk.Coins{},
-			expReceiverBalance: sdk.Coins{},
+			expSenderBalance:   sdk.Coins{sdk.NewInt64Coin("test", 200)},
+			expReceiverBalance: sdk.Coins{sdk.NewInt64Coin("test", 300)},
 		},
 		"one execution failure in multiple messages": {
 			msgs:               []sdk.Msg{msgSend1, msgSend3},
@@ -86,6 +86,10 @@ func (s *KeeperTestSuite) TestExecuteTxMsgs() {
 			} else {
 				s.Require().NoError(err)
 				s.Require().Len(results, len(spec.msgs))
+				senderBalance := s.App.BankKeeper.GetAllBalances(s.Ctx, addr1)
+				s.Require().Equal(senderBalance.String(), spec.expSenderBalance.String())
+				receiverBalance := s.App.BankKeeper.GetAllBalances(s.Ctx, addr2)
+				s.Require().Equal(receiverBalance.String(), spec.expReceiverBalance.String())
 			}
 		})
 	}
