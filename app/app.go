@@ -87,6 +87,9 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	onion "github.com/Team-Kujira/core/x/onion"
+	onionkeeper "github.com/Team-Kujira/core/x/onion/keeper"
+	oniontypes "github.com/Team-Kujira/core/x/onion/types"
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm"
 	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
@@ -226,6 +229,7 @@ var (
 		oracle.AppModuleBasic{},
 		alliancemodule.AppModuleBasic{},
 		cwica.AppModuleBasic{},
+		onion.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -295,6 +299,7 @@ type App struct {
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	OnionKeeper           *onionkeeper.Keeper
 	IBCFeeKeeper          ibcfeekeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
@@ -383,6 +388,7 @@ func New(
 		batchtypes.StoreKey,
 		AllianceStoreKey,
 		cwicatypes.StoreKey,
+		oniontypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -544,6 +550,14 @@ func New(
 		app.StakingKeeper,
 		app.UpgradeKeeper,
 		scopedIBCKeeper,
+	)
+
+	app.OnionKeeper = onionkeeper.NewKeeper(
+		keys[oniontypes.StoreKey],
+		app.GetSubspace(oniontypes.ModuleName),
+		app.MsgServiceRouter(),
+		app.AccountKeeper,
+		txConfig.SignModeHandler(),
 	)
 
 	// IBC Fee Module keeper
@@ -762,6 +776,7 @@ func New(
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
 	transferStack = cwica.NewIBCMiddleware(transferStack, app.CwICAKeeper, app.IBCKeeper.ChannelKeeper)
+	transferStack = onion.NewIBCModule(transferStack, app.OnionKeeper, encodingConfig.TxConfig)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -965,6 +980,8 @@ func New(
 		),
 
 		ibcwasm.NewAppModule(app.WasmClientKeeper),
+
+		onion.NewAppModule(*app.OnionKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1002,6 +1019,7 @@ func New(
 		alliancemoduletypes.ModuleName,
 		cwicatypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		oniontypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -1035,6 +1053,7 @@ func New(
 		alliancemoduletypes.ModuleName,
 		cwicatypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		oniontypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1075,6 +1094,7 @@ func New(
 		alliancemoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		cwicatypes.ModuleName,
+		oniontypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -1328,6 +1348,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(oracletypes.ModuleName)
 	paramsKeeper.Subspace(batchtypes.ModuleName)
 	paramsKeeper.Subspace(alliancemoduletypes.ModuleName)
+	paramsKeeper.Subspace(oniontypes.ModuleName)
 
 	return paramsKeeper
 }
