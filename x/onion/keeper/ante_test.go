@@ -78,7 +78,7 @@ func (s *KeeperTestSuite) TestExecuteAnte() {
 				// check account set in account module
 				acc1 := s.App.AccountKeeper.GetAccount(s.Ctx, addr1)
 				s.Require().NotNil(acc1)
-				// check sequence increased
+				// check sequence increase
 				seq, err := s.App.OnionKeeper.GetSequence(s.Ctx, addr1.String())
 				s.Require().NoError(err)
 				s.Require().Equal(seq.Sequence, uint64(1))

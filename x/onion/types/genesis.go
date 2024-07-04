@@ -3,7 +3,8 @@ package types
 // DefaultGenesis returns the default GenesisState for the concentrated-liquidity module.
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
+		Params:    DefaultParams(),
+		Sequences: []OnionSequence{},
 	}
 }
 
