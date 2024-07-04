@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/Team-Kujira/core/x/onion/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -79,7 +80,7 @@ func (s *KeeperTestSuite) TestExecuteTxMsgs() {
 			err = s.App.BankKeeper.SendCoinsFromModuleToAccount(s.Ctx, minttypes.ModuleName, addr1, coins)
 			s.Require().NoError(err)
 
-			tx := newTx(s.T(), s.App.TxConfig(), spec.msgs)
+			tx := newTx(s.T(), s.App.TxConfig(), addr1, s.Ctx.ChainID(), types.AccountNumber, spec.msgs, 0, privKey1)
 			results, err := s.App.OnionKeeper.ExecuteTxMsgs(s.Ctx, tx)
 			if spec.expErr {
 				s.Require().Error(err)
@@ -95,24 +96,49 @@ func (s *KeeperTestSuite) TestExecuteTxMsgs() {
 	}
 }
 
-func newTx(t *testing.T, cfg client.TxConfig, msgs []sdk.Msg) signing.Tx {
+func newTx(t *testing.T, cfg client.TxConfig, addr sdk.AccAddress, chainId string, accountNumber uint64, msgs []sdk.Msg, nonce uint64, privKey *secp256k1.PrivKey) signing.Tx {
 	builder := cfg.NewTxBuilder()
 	builder.SetMsgs(msgs...)
-	nonce := uint64(1)
-	setTxSignature(t, builder, nonce)
+	if len(msgs) > 0 {
+		pubKey := privKey.PubKey()
+		signModeHandler := cfg.SignModeHandler()
+		err := builder.SetSignatures(
+			signingtypes.SignatureV2{
+				PubKey:   pubKey,
+				Sequence: nonce,
+				Data: &signingtypes.SingleSignatureData{
+					SignMode:  signModeHandler.DefaultMode(),
+					Signature: []byte{},
+				},
+			},
+		)
+		require.NoError(t, err)
+
+		signerData := signing.SignerData{
+			Address:       addr.String(),
+			ChainID:       chainId,
+			AccountNumber: accountNumber,
+			Sequence:      nonce,
+			PubKey:        pubKey,
+		}
+		tx := builder.GetTx()
+		signBytes, err := signModeHandler.GetSignBytes(signModeHandler.DefaultMode(), signerData, tx)
+		require.NoError(t, err)
+		sigBz, err := privKey.Sign(signBytes)
+		require.NoError(t, err)
+
+		err = builder.SetSignatures(
+			signingtypes.SignatureV2{
+				PubKey:   pubKey,
+				Sequence: nonce,
+				Data: &signingtypes.SingleSignatureData{
+					SignMode:  signModeHandler.DefaultMode(),
+					Signature: sigBz,
+				},
+			},
+		)
+		require.NoError(t, err)
+	}
 
 	return builder.GetTx()
-}
-
-func setTxSignature(t *testing.T, builder client.TxBuilder, nonce uint64) {
-	privKey := secp256k1.GenPrivKeyFromSecret([]byte("test"))
-	pubKey := privKey.PubKey()
-	err := builder.SetSignatures(
-		signingtypes.SignatureV2{
-			PubKey:   pubKey,
-			Sequence: nonce,
-			Data:     &signingtypes.SingleSignatureData{},
-		},
-	)
-	require.NoError(t, err)
 }

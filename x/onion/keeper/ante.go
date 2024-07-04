@@ -83,7 +83,8 @@ func (k Keeper) ExecuteAnte(ctx sdk.Context, tx sdk.Tx) error {
 
 		acc, err := GetSignerAcc(ctx, k.accountKeeper, signers[i])
 		if err != nil {
-			return err
+			acc = k.accountKeeper.NewAccountWithAddress(ctx, signers[i])
+			k.accountKeeper.SetAccount(ctx, acc)
 		}
 		if acc.GetPubKey() != nil {
 			continue
