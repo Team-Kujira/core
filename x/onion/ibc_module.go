@@ -2,15 +2,14 @@ package onion
 
 import (
 	// external libraries
-	"encoding/base64"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
 	// ibc-go
 	"github.com/Team-Kujira/core/x/onion/keeper"
 	"github.com/cosmos/cosmos-sdk/client"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
@@ -115,30 +114,10 @@ func (im IBCModule) OnRecvPacket(
 		return ack
 	}
 
-	if data.Memo == "" {
-		return ack
+	if data.Memo != "" {
+		im.Keeper.HandleTransferHook(ctx, data.Memo, im.txEncodingConfig)
 	}
 
-	newRawTx, err := base64.StdEncoding.DecodeString(data.Memo)
-	if err != nil {
-		return ack
-	}
-
-	tx, err := im.txEncodingConfig.TxDecoder()(newRawTx)
-	if err != nil {
-		return ack
-	}
-
-	cacheCtx, write := ctx.CacheContext()
-	err = im.Keeper.ExecuteAnte(cacheCtx, tx)
-	if err != nil {
-		return ack
-	}
-
-	_, err = im.Keeper.ExecuteTxMsgs(cacheCtx, tx)
-	if err == nil {
-		write()
-	}
 	return ack
 }
 
