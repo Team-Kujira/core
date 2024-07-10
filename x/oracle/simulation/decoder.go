@@ -23,8 +23,6 @@ func NewDecodeStore(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshal(kvA.Value, &exchangeRateA)
 			cdc.MustUnmarshal(kvB.Value, &exchangeRateB)
 			return fmt.Sprintf("%v\n%v", exchangeRateA, exchangeRateB)
-		case bytes.Equal(kvA.Key[:1], types.FeederDelegationKey):
-			return fmt.Sprintf("%v\n%v", sdk.AccAddress(kvA.Value), sdk.AccAddress(kvB.Value))
 		case bytes.Equal(kvA.Key[:1], types.MissCounterKey):
 			var counterA, counterB gogotypes.UInt64Value
 			cdc.MustUnmarshal(kvA.Value, &counterA)

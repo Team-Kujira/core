@@ -34,7 +34,7 @@ const (
 var (
 	DefaultVoteThreshold     = math.LegacyNewDecWithPrec(50, 2) // 50%
 	DefaultMaxDeviation      = math.LegacyNewDecWithPrec(2, 1)  // 2% (-1, 1)
-	DefaultRequiredDenoms    = []string{}
+	DefaultRequiredDenoms    = []Denom{}
 	DefaultSlashFraction     = math.LegacyNewDecWithPrec(1, 4) // 0.01%
 	DefaultMinValidPerWindow = math.LegacyNewDecWithPrec(5, 2) // 5%
 )
@@ -70,8 +70,6 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
 		paramstypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramstypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
-		paramstypes.NewParamSetPair(KeyRewardBand, &p.RewardBand, func(_ interface{}) error { return nil }),
-		paramstypes.NewParamSetPair(KeyWhitelist, &p.Whitelist, func(_ interface{}) error { return nil }),
 	}
 }
 
@@ -106,11 +104,10 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter MinValidPerWindow must be between [0, 1]")
 	}
 
-	for _, denom := range p.RequiredDenoms {
-		if len(denom) == 0 {
-			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
-		}
+	if err := validateRequiredDenoms(p.RequiredDenoms); err != nil {
+		return err
 	}
+
 	return nil
 }
 
@@ -162,15 +159,28 @@ func validateMaxDeviation(i interface{}) error {
 }
 
 func validateRequiredDenoms(i interface{}) error {
-	v, ok := i.([]string)
+	v, ok := i.([]Denom)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	for _, d := range v {
-		if len(d) == 0 {
+		if len(d.Denom) == 0 {
 			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
 		}
+	}
+
+	registeredDenoms := make(map[string]bool)
+	registeredDenomIds := make(map[uint32]bool)
+	for _, denom := range v {
+		if registeredDenoms[denom.Denom] {
+			return fmt.Errorf("oracle parameter denom should be unique")
+		}
+		if registeredDenomIds[denom.Id] {
+			return fmt.Errorf("oracle parameter denom id should be unique")
+		}
+		registeredDenoms[denom.Denom] = true
+		registeredDenomIds[denom.Id] = true
 	}
 
 	return nil

@@ -111,9 +111,9 @@ func TestParams(t *testing.T) {
 	slashFraction := math.LegacyNewDecWithPrec(1, 2)
 	slashWindow := uint64(1000)
 	minValidPerWindow := math.LegacyNewDecWithPrec(1, 4)
-	requiredDenoms := []string{
-		types.TestDenomD,
-		types.TestDenomC,
+	requiredDenoms := []types.Denom{
+		{Denom: types.TestDenomD, Id: 1},
+		{Denom: types.TestDenomC, Id: 2},
 	}
 
 	// Should really test validateParams, but skipping because obvious
@@ -125,8 +125,6 @@ func TestParams(t *testing.T) {
 		SlashFraction:     slashFraction,
 		SlashWindow:       slashWindow,
 		MinValidPerWindow: minValidPerWindow,
-		Whitelist:         nil,
-		RewardBand:        math.LegacyZeroDec(),
 	}
 	err := input.OracleKeeper.SetParams(input.Ctx, newParams)
 	require.NoError(t, err)

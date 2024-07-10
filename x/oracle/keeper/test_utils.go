@@ -243,6 +243,11 @@ func CreateTestInput(t *testing.T) TestInput {
 	)
 
 	defaults := types.DefaultParams()
+	defaults.RequiredDenoms = []types.Denom{
+		{Denom: "BTC", Id: 1},
+		{Denom: "ETH", Id: 2},
+		{Denom: "USDT", Id: 3},
+	}
 	keeper.SetParams(ctx, defaults)
 
 	return TestInput{ctx, legacyAmino, accountKeeper, bankKeeper, keeper, *stakingKeeper, distrKeeper}

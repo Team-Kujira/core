@@ -239,7 +239,7 @@ func CompareMissMap(m1, m2 map[string]sdk.ValAddress) error {
 	return nil
 }
 
-func (h *ProposalHandler) GetBallotByDenom(ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim, validatorConsensusAddrMap map[string]sdk.ValAddress) (votes map[string]types.ExchangeRateBallot) {
+func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedCommitInfo, validatorClaimMap map[string]types.Claim, validatorConsensusAddrMap map[string]sdk.ValAddress) (votes map[string]types.ExchangeRateBallot) {
 	votes = map[string]types.ExchangeRateBallot{}
 
 	for _, v := range ci.Votes {
@@ -248,15 +248,16 @@ func (h *ProposalHandler) GetBallotByDenom(ci abci.ExtendedCommitInfo, validator
 		if ok {
 			power := claim.Power
 
-			var voteExt types.VoteExtension
-			if err := voteExt.Unmarshal(v.VoteExtension); err != nil {
+			var voteExt types.VoteExtension2
+			if err := voteExt.Decompress(v.VoteExtension); err != nil {
 				h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
 				return votes
 			}
 
-			for _, tuple := range voteExt.Prices {
+			exchangeRates := ExchangeRatesFromVoteExtension2(h.keeper, ctx, voteExt)
+			for _, tuple := range exchangeRates {
 				base := tuple.Denom
-				price := tuple.ExchangeRate
+				price := tuple.Amount
 				tmpPower := power
 				if !price.IsPositive() {
 					// Make the power of abstain vote zero
@@ -331,7 +332,7 @@ func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, 
 		}
 	}
 
-	voteMap := h.GetBallotByDenom(ci, validatorClaimMap, validatorConsensusAddrMap)
+	voteMap := h.GetBallotByDenom(ctx, ci, validatorClaimMap, validatorConsensusAddrMap)
 
 	// Keep track, if a voter submitted a price deviating too much
 	missMap := map[string]sdk.ValAddress{}
@@ -364,7 +365,9 @@ func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, 
 	// Do miss counting & slashing
 	denomMap := map[string]map[string]struct{}{}
 	var voteTargets []string
-	voteTargets = append(voteTargets, params.RequiredDenoms...)
+	for _, denom := range params.RequiredDenoms {
+		voteTargets = append(voteTargets, denom.Denom)
+	}
 
 	for _, denom := range voteTargets {
 		denomMap[denom] = map[string]struct{}{}
