@@ -24,7 +24,8 @@ message MsgAddRequiredDenom {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
-  string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
+  string symbol = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint32 id = 3 [ (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
 // MsgAddRequiredDenomResponse defines the Msg/AddRequiredDenom response type.
@@ -35,7 +36,7 @@ message MsgRemoveRequiredDenom {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
-  string symbol = 2 [(gogoproto.moretags) = "yaml:\"symbol\""];
+  string symbol = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
 }
 
 // MsgRemoveRequiredDenomResponse defines the Msg/RemoveRequiredDenom response type.

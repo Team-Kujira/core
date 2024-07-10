@@ -22,8 +22,9 @@ message Params {
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-  repeated string required_denoms                  = 4 [
-    (gogoproto.moretags)     = "yaml:\"required_denoms\""
+  repeated Denom required_denoms = 4 [
+    (gogoproto.moretags) = "yaml:\"required_denoms\"",
+    (gogoproto.nullable) = false
   ];
   string slash_fraction = 5 [
     (gogoproto.moretags)   = "yaml:\"slash_fraction\"",
@@ -36,17 +37,6 @@ message Params {
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-  // Deprecated
-  string reward_band = 8 [
-    (gogoproto.moretags)   = "yaml:\"reward_band\"",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable)   = false
-  ];
-  repeated Denom whitelist   = 9 [
-    (gogoproto.moretags)     = "yaml:\"whitelist\"",
-    (gogoproto.castrepeated) = "DenomList",
-    (gogoproto.nullable)     = false
-  ];
 }
 
 // Denom - the object to hold configurations of each denom
@@ -55,7 +45,8 @@ message Denom {
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = false;
 
-  string name      = 1 [(gogoproto.moretags) = "yaml:\"name\""];
+  string denom = 1;
+  uint32 id = 2;
 }
 
 // ExchangeRateTuple - struct to store interpreted exchange rates data to store
@@ -72,9 +63,7 @@ message ExchangeRateTuple {
   ];
 }
 
-message VoteExtension {
+message VoteExtension2 {
   int64 height = 1;
-  repeated ExchangeRateTuple prices = 2 [
-    (gogoproto.nullable) = false
-  ];
+  map<uint32, bytes> prices = 2;
 }

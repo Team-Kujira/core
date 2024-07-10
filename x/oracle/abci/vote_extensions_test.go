@@ -46,18 +46,18 @@ func TestExtendVoteHandler(t *testing.T) {
 		ProposerAddress:    []byte{},
 	})
 	require.NoError(t, err)
-	voteExt := types.VoteExtension{}
-	err = voteExt.Unmarshal(res.VoteExtension)
+	voteExt := types.VoteExtension2{}
+	err = voteExt.Decompress(res.VoteExtension)
 	require.NoError(t, err)
 	require.Equal(t, voteExt.Height, int64(3))
-	require.Len(t, voteExt.Prices, 3)
-	exchangeRates := make(map[string]string)
-	for _, price := range voteExt.Prices {
-		exchangeRates[price.Denom] = price.ExchangeRate.String()
+	require.Equal(t, len(voteExt.Prices), 3)
+	exchangeRates := make(map[uint32]string)
+	for id, priceBz := range voteExt.Prices {
+		exchangeRates[id] = abci.DecompressDecimal(priceBz).String()
 	}
-	require.Equal(t, exchangeRates["BTC"], "47375.706652541026694000")
-	require.Equal(t, exchangeRates["ETH"], "2649.328939436595054949")
-	require.Equal(t, exchangeRates["USDT"], "1.000661260343873178")
+	require.Equal(t, exchangeRates[1], "47375.707000000000000000")
+	require.Equal(t, exchangeRates[2], "2649.328900000000000000")
+	require.Equal(t, exchangeRates[3], "1.000661300000000000")
 }
 
 func TestVerifyVoteExtensionHandler(t *testing.T) {
@@ -74,24 +74,15 @@ func TestVerifyVoteExtensionHandler(t *testing.T) {
 		Endpoint: testServer.URL,
 	})
 
-	voteExt := types.VoteExtension{
+	voteExt := types.VoteExtension2{
 		Height: 3,
-		Prices: []types.ExchangeRateTuple{
-			{
-				Denom:        "BTC",
-				ExchangeRate: math.LegacyMustNewDecFromStr("47375.706652541026694000"),
-			},
-			{
-				Denom:        "ETH",
-				ExchangeRate: math.LegacyMustNewDecFromStr("2649.328939436595054949"),
-			},
-			{
-				Denom:        "USDT",
-				ExchangeRate: math.LegacyMustNewDecFromStr("1.000661260343873178"),
-			},
+		Prices: map[uint32][]byte{
+			1: abci.CompressDecimal(math.LegacyMustNewDecFromStr("47375.706652541026694000"), 8),
+			2: abci.CompressDecimal(math.LegacyMustNewDecFromStr("2649.328939436595054949"), 8),
+			3: abci.CompressDecimal(math.LegacyMustNewDecFromStr("1.000661260343873178"), 8),
 		},
 	}
-	voteExtBz, err := voteExt.Marshal()
+	voteExtBz, err := voteExt.Compress()
 	require.NoError(t, err)
 	// Height's same
 	res, err := handler(input.Ctx, &cometabci.RequestVerifyVoteExtension{

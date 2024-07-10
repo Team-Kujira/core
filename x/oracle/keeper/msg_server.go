@@ -31,12 +31,18 @@ func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddReq
 
 	denoms := params.RequiredDenoms
 	for _, denom := range denoms {
-		if denom == msg.Symbol {
+		if denom.Denom == msg.Symbol {
 			return nil, fmt.Errorf("symbol '%s' already set as required denoms", msg.Symbol)
+		}
+		if denom.Id == msg.Id {
+			return nil, fmt.Errorf("id '%d' already set as required denoms", msg.Id)
 		}
 	}
 
-	denoms = append(denoms, msg.Symbol)
+	denoms = append(denoms, types.Denom{
+		Denom: msg.Symbol,
+		Id:    msg.Id,
+	})
 	params.RequiredDenoms = denoms
 	err := ms.SetParams(ctx, params)
 	if err != nil {
@@ -57,7 +63,7 @@ func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRem
 	denoms := params.RequiredDenoms
 	index := -1
 	for i, denom := range denoms {
-		if denom == msg.Symbol {
+		if denom.Denom == msg.Symbol {
 			index = i
 			break
 		}

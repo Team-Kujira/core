@@ -38,19 +38,19 @@ type PricesResponse struct {
 }
 
 func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.ExtendVoteHandler {
-	return func(_ sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
+	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
 		h.currentBlock = req.Height
 		h.lastPriceSyncTS = time.Now()
 
 		h.logger.Info("computing oracle prices for vote extension", "height", req.Height, "time", h.lastPriceSyncTS, "endpoint", oracleConfig.Endpoint)
 
-		emptyVoteExt := types.VoteExtension{
+		emptyVoteExt := types.VoteExtension2{
 			Height: req.Height,
-			Prices: []types.ExchangeRateTuple{},
+			Prices: make(map[uint32][]byte),
 		}
 
 		// Encode vote extension to bytes
-		emptyVoteExtBz, err := emptyVoteExt.Marshal()
+		emptyVoteExtBz, err := emptyVoteExt.Compress()
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
 		}
@@ -75,24 +75,18 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 			return &abci.ResponseExtendVote{VoteExtension: emptyVoteExtBz}, nil
 		}
 
-		computedPrices := []types.ExchangeRateTuple{}
+		computedPrices := sdk.DecCoins{}
 		for denom, rate := range prices.Prices {
-			computedPrices = append(computedPrices, types.ExchangeRateTuple{
-				Denom:        denom,
-				ExchangeRate: rate,
-			})
+			computedPrices = computedPrices.Add(sdk.NewDecCoinFromDec(denom, rate))
 		}
 
 		// produce a canonical vote extension
-		voteExt := types.VoteExtension{
-			Height: req.Height,
-			Prices: computedPrices,
-		}
+		voteExt := ComposeVoteExtension2(h.Keeper, ctx, req.Height, computedPrices)
 
 		h.logger.Info("computed prices", "prices", computedPrices)
 
 		// Encode vote extension to bytes
-		bz, err := voteExt.Marshal()
+		bz, err := voteExt.Compress()
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
 		}
@@ -103,13 +97,13 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
-		var voteExt types.VoteExtension
+		var voteExt types.VoteExtension2
 
 		if len(req.VoteExtension) == 0 {
 			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 		}
 
-		err := voteExt.Unmarshal(req.VoteExtension)
+		err := voteExt.Decompress(req.VoteExtension)
 		if err != nil {
 			// NOTE: It is safe to return an error as the Cosmos SDK will capture all
 			// errors, log them, and reject the proposal.
@@ -122,7 +116,8 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVo
 
 		// Verify incoming prices from a validator are valid. Note, verification during
 		// VerifyVoteExtensionHandler MUST be deterministic.
-		if err := h.verifyOraclePrices(ctx, voteExt.Prices); err != nil {
+		prices := ExchangeRatesFromVoteExtension2(h.Keeper, ctx, voteExt)
+		if err := h.verifyOraclePrices(ctx, prices); err != nil {
 			return nil, fmt.Errorf("failed to verify oracle prices from validator %X: %w", req.ValidatorAddress, err)
 		}
 
@@ -130,6 +125,6 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVo
 	}
 }
 
-func (h *VoteExtHandler) verifyOraclePrices(_ sdk.Context, _ []types.ExchangeRateTuple) error {
+func (h *VoteExtHandler) verifyOraclePrices(_ sdk.Context, _ sdk.DecCoins) error {
 	return nil
 }
