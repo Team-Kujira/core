@@ -89,6 +89,29 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Check id and denom mapping change
+	params := ms.GetParams(ctx)
+	idToDenom := make(map[uint32]string)
+	denomToId := make(map[string]uint32)
+	for _, denom := range params.RequiredDenoms {
+		idToDenom[denom.Id] = denom.Denom
+		denomToId[denom.Denom] = denom.Id
+	}
+
+	for _, denom := range msg.Params.RequiredDenoms {
+		if oldDenom, ok := idToDenom[denom.Id]; ok {
+			if oldDenom != denom.Denom {
+				return nil, types.ErrDenomAssociatedToIdChanged
+			}
+		}
+		if oldId, ok := denomToId[denom.Denom]; ok {
+			if oldId != denom.Id {
+				return nil, types.ErrIdAssociatedToDenomChanged
+			}
+		}
+	}
+
 	if err := ms.SetParams(ctx, *msg.Params); err != nil {
 		return nil, err
 	}

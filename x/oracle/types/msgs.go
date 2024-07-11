@@ -107,5 +107,5 @@ func (msg MsgUpdateParams) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
 	}
 
-	return nil
+	return msg.Params.Validate()
 }
