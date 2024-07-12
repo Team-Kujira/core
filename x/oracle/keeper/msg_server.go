@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +22,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddRequiredDenom) (*types.MsgAddRequiredDenomResponse, error) {
+func (ms msgServer) AddRequiredDenoms(goCtx context.Context, msg *types.MsgAddRequiredDenoms) (*types.MsgAddRequiredDenomsResponse, error) {
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
@@ -29,30 +30,31 @@ func (ms msgServer) AddRequiredDenom(goCtx context.Context, msg *types.MsgAddReq
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	params := ms.GetParams(ctx)
 
-	denoms := params.RequiredDenoms
-	for _, denom := range denoms {
-		if denom.Denom == msg.Symbol {
-			return nil, fmt.Errorf("symbol '%s' already set as required denoms", msg.Symbol)
-		}
-		if denom.Id == msg.Id {
-			return nil, fmt.Errorf("id '%d' already set as required denoms", msg.Id)
-		}
+	existingSymbols := make(map[string]bool)
+	for _, denom := range params.RequiredDenoms {
+		existingSymbols[denom.Denom] = true
 	}
 
-	denoms = append(denoms, types.Denom{
-		Denom: msg.Symbol,
-		Id:    msg.Id,
-	})
-	params.RequiredDenoms = denoms
+	for _, denom := range msg.Symbols {
+		if existingSymbols[denom] {
+			return nil, fmt.Errorf("symbol '%s' already set as required denoms", denom)
+		}
+		params.RequiredDenoms = append(params.RequiredDenoms, types.Denom{
+			Denom: denom,
+			Id:    params.LastDenomId + 1,
+		})
+		params.LastDenomId++
+	}
+
 	err := ms.SetParams(ctx, params)
 	if err != nil {
 		return nil, types.ErrSetParams
 	}
 
-	return &types.MsgAddRequiredDenomResponse{}, nil
+	return &types.MsgAddRequiredDenomsResponse{}, nil
 }
 
-func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRemoveRequiredDenom) (*types.MsgRemoveRequiredDenomResponse, error) {
+func (ms msgServer) RemoveRequiredDenoms(goCtx context.Context, msg *types.MsgRemoveRequiredDenoms) (*types.MsgRemoveRequiredDenomsResponse, error) {
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
@@ -60,27 +62,25 @@ func (ms msgServer) RemoveRequiredDenom(goCtx context.Context, msg *types.MsgRem
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	params := ms.GetParams(ctx)
 
-	denoms := params.RequiredDenoms
-	index := -1
-	for i, denom := range denoms {
-		if denom.Denom == msg.Symbol {
-			index = i
-			break
+	removingSymbols := make(map[string]bool)
+	for _, symbol := range msg.Symbols {
+		removingSymbols[symbol] = true
+	}
+
+	requiredDenoms := []types.Denom{}
+	for _, denom := range params.RequiredDenoms {
+		if !removingSymbols[denom.Denom] {
+			requiredDenoms = append(requiredDenoms, denom)
 		}
 	}
 
-	if index < 0 {
-		return nil, fmt.Errorf("symbol '%s' not found in required denoms", msg.Symbol)
-	}
-
-	denoms = append(denoms[:index], denoms[index+1:]...)
-	params.RequiredDenoms = denoms
+	params.RequiredDenoms = requiredDenoms
 	err := ms.SetParams(ctx, params)
 	if err != nil {
 		return nil, types.ErrSetParams
 	}
 
-	return &types.MsgRemoveRequiredDenomResponse{}, nil
+	return &types.MsgRemoveRequiredDenomsResponse{}, nil
 }
 
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
@@ -92,24 +92,8 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 
 	// Check id and denom mapping change
 	params := ms.GetParams(ctx)
-	idToDenom := make(map[uint32]string)
-	denomToId := make(map[string]uint32)
-	for _, denom := range params.RequiredDenoms {
-		idToDenom[denom.Id] = denom.Denom
-		denomToId[denom.Denom] = denom.Id
-	}
-
-	for _, denom := range msg.Params.RequiredDenoms {
-		if oldDenom, ok := idToDenom[denom.Id]; ok {
-			if oldDenom != denom.Denom {
-				return nil, types.ErrDenomAssociatedToIdChanged
-			}
-		}
-		if oldId, ok := denomToId[denom.Denom]; ok {
-			if oldId != denom.Id {
-				return nil, types.ErrIdAssociatedToDenomChanged
-			}
-		}
+	if !reflect.DeepEqual(params.RequiredDenoms, msg.Params.RequiredDenoms) {
+		return nil, types.ErrCanNotUpdateRequiredDenoms
 	}
 
 	if err := ms.SetParams(ctx, *msg.Params); err != nil {

@@ -53,7 +53,6 @@ func TestDecodeDistributionStore(t *testing.T) {
 		expectedLog string
 	}{
 		{"ExchangeRate", fmt.Sprintf("%v\n%v", exchangeRate, exchangeRate)},
-		{"FeederDelegation", fmt.Sprintf("%v\n%v", feederAddr, feederAddr)},
 		{"MissCounter", fmt.Sprintf("%v\n%v", missCounter, missCounter)},
 		{"other", ""},
 	}

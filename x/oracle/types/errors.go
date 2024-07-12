@@ -25,6 +25,5 @@ var (
 	ErrUnknownDenom               = errors.Register(ModuleName, 13, "unknown denom")
 	ErrBallotNotSorted            = errors.Register(ModuleName, 14, "ballot not sorted")
 	ErrSetParams                  = errors.Register(ModuleName, 15, "could not set params")
-	ErrDenomAssociatedToIdChanged = errors.Register(ModuleName, 16, "could not update denom associated to an id")
-	ErrIdAssociatedToDenomChanged = errors.Register(ModuleName, 17, "could not update id associated to a denom")
+	ErrCanNotUpdateRequiredDenoms = errors.Register(ModuleName, 16, "could not update required denoms")
 )
