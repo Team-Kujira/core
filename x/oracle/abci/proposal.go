@@ -248,13 +248,13 @@ func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedComm
 		if ok {
 			power := claim.Power
 
-			var voteExt types.VoteExtension2
+			var voteExt types.VoteExtension
 			if err := voteExt.Decompress(v.VoteExtension); err != nil {
 				h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", v.Validator.Address))
 				return votes
 			}
 
-			exchangeRates := ExchangeRatesFromVoteExtension2(h.keeper, ctx, voteExt)
+			exchangeRates := ExchangeRatesFromVoteExtension(h.keeper, ctx, voteExt)
 			for _, tuple := range exchangeRates {
 				base := tuple.Denom
 				price := tuple.Amount

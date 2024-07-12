@@ -86,14 +86,14 @@ func TestGetBallotByDenom(t *testing.T) {
 	power := int64(100)
 
 	// organize votes by denom
-	voteExt1 := types.VoteExtension2{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25000), 8),
 			2: abci.CompressDecimal(math.LegacyNewDec(2200), 8),
 		},
 	}
-	voteExt2 := types.VoteExtension2{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25030), 8),
@@ -165,14 +165,14 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 	input, h := SetupTest(t)
 
 	// organize votes by denom
-	voteExt1 := types.VoteExtension2{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25000), 8),
 			2: abci.CompressDecimal(math.LegacyNewDec(2200), 8),
 		},
 	}
-	voteExt2 := types.VoteExtension2{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25030), 8),
@@ -497,14 +497,14 @@ func TestPrepareProposal(t *testing.T) {
 	require.Error(t, err)
 
 	// Valid vote extension data
-	voteExt1 := types.VoteExtension2{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25000), 8),
 			2: abci.CompressDecimal(math.LegacyNewDec(2200), 8),
 		},
 	}
-	voteExt2 := types.VoteExtension2{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25030), 8),
@@ -646,14 +646,14 @@ func TestProcessProposal(t *testing.T) {
 	input.Ctx = input.Ctx.WithCometInfo(info)
 
 	// Valid vote extension data
-	voteExt1 := types.VoteExtension2{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25000), 8),
 			2: abci.CompressDecimal(math.LegacyNewDec(2200), 8),
 		},
 	}
-	voteExt2 := types.VoteExtension2{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25030), 8),
@@ -856,14 +856,14 @@ func TestPreBlocker(t *testing.T) {
 	input.Ctx = input.Ctx.WithConsensusParams(consParams)
 
 	// Valid vote extension data
-	voteExt1 := types.VoteExtension2{
+	voteExt1 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25000), 8),
 			2: abci.CompressDecimal(math.LegacyNewDec(2200), 8),
 		},
 	}
-	voteExt2 := types.VoteExtension2{
+	voteExt2 := types.VoteExtension{
 		Height: 1,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyNewDec(25030), 8),

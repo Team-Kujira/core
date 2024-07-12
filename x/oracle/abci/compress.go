@@ -35,7 +35,7 @@ func DecompressDecimal(bz []byte) math.LegacyDec {
 	return amountDec
 }
 
-func ComposeVoteExtension2(k keeper.Keeper, ctx sdk.Context, height int64, exchangeRates sdk.DecCoins) types.VoteExtension2 {
+func ComposeVoteExtension(k keeper.Keeper, ctx sdk.Context, height int64, exchangeRates sdk.DecCoins) types.VoteExtension {
 	params := k.GetParams(ctx)
 	symbolIDs := make(map[string]uint32)
 	for _, symbol := range params.RequiredSymbols {
@@ -49,13 +49,13 @@ func ComposeVoteExtension2(k keeper.Keeper, ctx sdk.Context, height int64, excha
 		}
 		prices[id] = CompressDecimal(rate.Amount, 8)
 	}
-	return types.VoteExtension2{
+	return types.VoteExtension{
 		Height: height,
 		Prices: prices,
 	}
 }
 
-func ExchangeRatesFromVoteExtension2(k keeper.Keeper, ctx sdk.Context, voteExt types.VoteExtension2) sdk.DecCoins {
+func ExchangeRatesFromVoteExtension(k keeper.Keeper, ctx sdk.Context, voteExt types.VoteExtension) sdk.DecCoins {
 	params := k.GetParams(ctx)
 	idToSymbol := make(map[uint32]string)
 	for _, symbol := range params.RequiredSymbols {
