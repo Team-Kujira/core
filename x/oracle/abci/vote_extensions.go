@@ -44,7 +44,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 		h.logger.Info("computing oracle prices for vote extension", "height", req.Height, "time", h.lastPriceSyncTS, "endpoint", oracleConfig.Endpoint)
 
-		emptyVoteExt := types.VoteExtension2{
+		emptyVoteExt := types.VoteExtension{
 			Height: req.Height,
 			Prices: make(map[uint32][]byte),
 		}
@@ -81,7 +81,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 		}
 
 		// produce a canonical vote extension
-		voteExt := ComposeVoteExtension2(h.Keeper, ctx, req.Height, computedPrices)
+		voteExt := ComposeVoteExtension(h.Keeper, ctx, req.Height, computedPrices)
 
 		h.logger.Info("computed prices", "prices", computedPrices)
 
@@ -97,7 +97,7 @@ func (h *VoteExtHandler) ExtendVoteHandler(oracleConfig OracleConfig) sdk.Extend
 
 func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
-		var voteExt types.VoteExtension2
+		var voteExt types.VoteExtension
 
 		if len(req.VoteExtension) == 0 {
 			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
@@ -116,7 +116,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler(_ OracleConfig) sdk.VerifyVo
 
 		// Verify incoming prices from a validator are valid. Note, verification during
 		// VerifyVoteExtensionHandler MUST be deterministic.
-		prices := ExchangeRatesFromVoteExtension2(h.Keeper, ctx, voteExt)
+		prices := ExchangeRatesFromVoteExtension(h.Keeper, ctx, voteExt)
 		if err := h.verifyOraclePrices(ctx, prices); err != nil {
 			return nil, fmt.Errorf("failed to verify oracle prices from validator %X: %w", req.ValidatorAddress, err)
 		}

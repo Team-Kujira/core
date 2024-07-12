@@ -46,7 +46,7 @@ func TestExtendVoteHandler(t *testing.T) {
 		ProposerAddress:    []byte{},
 	})
 	require.NoError(t, err)
-	voteExt := types.VoteExtension2{}
+	voteExt := types.VoteExtension{}
 	err = voteExt.Decompress(res.VoteExtension)
 	require.NoError(t, err)
 	require.Equal(t, voteExt.Height, int64(3))
@@ -74,7 +74,7 @@ func TestVerifyVoteExtensionHandler(t *testing.T) {
 		Endpoint: testServer.URL,
 	})
 
-	voteExt := types.VoteExtension2{
+	voteExt := types.VoteExtension{
 		Height: 3,
 		Prices: map[uint32][]byte{
 			1: abci.CompressDecimal(math.LegacyMustNewDecFromStr("47375.706652541026694000"), 8),

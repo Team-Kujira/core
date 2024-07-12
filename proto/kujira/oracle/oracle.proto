@@ -64,7 +64,7 @@ message ExchangeRateTuple {
   ];
 }
 
-message VoteExtension2 {
+message VoteExtension {
   int64 height = 1;
   map<uint32, bytes> prices = 2;
 }

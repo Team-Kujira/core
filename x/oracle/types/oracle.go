@@ -18,7 +18,7 @@ func DenomToID(denom string) (uint64, error) {
 	return binary.LittleEndian.Uint64(md), nil
 }
 
-func (m VoteExtension2) Compress() ([]byte, error) {
+func (m VoteExtension) Compress() ([]byte, error) {
 	// Encode vote extension to bytes
 	bz, err := m.Marshal()
 	if err != nil {
@@ -42,7 +42,7 @@ func (m VoteExtension2) Compress() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (m *VoteExtension2) Decompress(bz []byte) error {
+func (m *VoteExtension) Decompress(bz []byte) error {
 	if len(bz) == 0 {
 		return nil
 	}
