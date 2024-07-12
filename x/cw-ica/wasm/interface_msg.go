@@ -63,6 +63,7 @@ type Transfer struct {
 	Amount    wasmvmtypes.Coin       `json:"amount"`
 	Timeout   wasmvmtypes.IBCTimeout `json:"timeout"`
 	Callback  []byte                 `json:"callback"`
+	Memo      string                 `json:"memo"`
 }
 
 func register(ctx sdk.Context, contractAddr sdk.AccAddress, register *Register, cwicak cwicakeeper.Keeper, ik icacontrollerkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
@@ -208,6 +209,7 @@ func PerformTransfer(f ibctransferkeeper.Keeper, cwicak cwicakeeper.Keeper, ctx 
 		Receiver:         transferTx.ToAddress,
 		TimeoutHeight:    wasmkeeper.ConvertWasmIBCTimeoutHeightToCosmosHeight(transferTx.Timeout.Block),
 		TimeoutTimestamp: transferTx.Timeout.Timestamp,
+		Memo:             transferTx.Memo,
 	}
 
 	res, err := f.Transfer(sdk.WrapSDKContext(ctx), msg)
