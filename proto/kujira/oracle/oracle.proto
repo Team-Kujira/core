@@ -26,13 +26,14 @@ message Params {
     (gogoproto.moretags) = "yaml:\"required_denoms\"",
     (gogoproto.nullable) = false
   ];
-  string slash_fraction = 5 [
+  uint32 last_denom_id = 5;
+  string slash_fraction = 6 [
     (gogoproto.moretags)   = "yaml:\"slash_fraction\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-  uint64 slash_window         = 6 [(gogoproto.moretags) = "yaml:\"slash_window\""];
-  string min_valid_per_window = 7 [
+  uint64 slash_window         = 7 [(gogoproto.moretags) = "yaml:\"slash_window\""];
+  string min_valid_per_window = 8 [
     (gogoproto.moretags)   = "yaml:\"min_valid_per_window\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false

@@ -8,8 +8,8 @@ import (
 
 // ensure Msg interface compliance at compile time
 var (
-	_ sdk.Msg = &MsgAddRequiredDenom{}
-	_ sdk.Msg = &MsgRemoveRequiredDenom{}
+	_ sdk.Msg = &MsgAddRequiredDenoms{}
+	_ sdk.Msg = &MsgRemoveRequiredDenoms{}
 	_ sdk.Msg = &MsgUpdateParams{}
 )
 
@@ -24,26 +24,26 @@ const (
 //-------------------------------------------------
 
 // NewMsgAddRequiredDenom creates a MsgAddRequiredDenom instance
-func NewMsgAddRequiredDenom(symbol string) *MsgAddRequiredDenom {
-	return &MsgAddRequiredDenom{
-		Symbol: symbol,
+func NewMsgAddRequiredDenom(symbols []string) *MsgAddRequiredDenoms {
+	return &MsgAddRequiredDenoms{
+		Symbols: symbols,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgAddRequiredDenom) Route() string { return RouterKey }
+func (msg MsgAddRequiredDenoms) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgAddRequiredDenom) Type() string { return TypeMsgAddRequiredDenom }
+func (msg MsgAddRequiredDenoms) Type() string { return TypeMsgAddRequiredDenom }
 
 // GetSigners implements sdk.Msg
-func (msg MsgAddRequiredDenom) GetSigners() []sdk.AccAddress {
+func (msg MsgAddRequiredDenoms) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(msg.Authority)
 	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgAddRequiredDenom) ValidateBasic() error {
+func (msg MsgAddRequiredDenoms) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
@@ -53,26 +53,26 @@ func (msg MsgAddRequiredDenom) ValidateBasic() error {
 }
 
 // NewMsgRemoveRequiredDenom creates a MsgRemoveRequiredDenom instance
-func NewMsgRemoveRequiredDenom(symbol string) *MsgRemoveRequiredDenom {
-	return &MsgRemoveRequiredDenom{
-		Symbol: symbol,
+func NewMsgRemoveRequiredDenom(symbols []string) *MsgRemoveRequiredDenoms {
+	return &MsgRemoveRequiredDenoms{
+		Symbols: symbols,
 	}
 }
 
 // Route implements sdk.Msg
-func (msg MsgRemoveRequiredDenom) Route() string { return RouterKey }
+func (msg MsgRemoveRequiredDenoms) Route() string { return RouterKey }
 
 // Type implements sdk.Msg
-func (msg MsgRemoveRequiredDenom) Type() string { return TypeMsgRemoveRequiredDenom }
+func (msg MsgRemoveRequiredDenoms) Type() string { return TypeMsgRemoveRequiredDenom }
 
 // GetSigners implements sdk.Msg
-func (msg MsgRemoveRequiredDenom) GetSigners() []sdk.AccAddress {
+func (msg MsgRemoveRequiredDenoms) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(msg.Authority)
 	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic implements sdk.Msg
-func (msg MsgRemoveRequiredDenom) ValidateBasic() error {
+func (msg MsgRemoveRequiredDenoms) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid authority address (%s)", err)
