@@ -248,6 +248,7 @@ func CreateTestInput(t *testing.T) TestInput {
 		{Denom: "ETH", Id: 2},
 		{Denom: "USDT", Id: 3},
 	}
+	defaults.LastDenomId = 3
 	keeper.SetParams(ctx, defaults)
 
 	return TestInput{ctx, legacyAmino, accountKeeper, bankKeeper, keeper, *stakingKeeper, distrKeeper}
