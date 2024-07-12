@@ -363,32 +363,32 @@ func (h *ProposalHandler) ComputeStakeWeightedPricesAndMissMap(ctx sdk.Context, 
 
 	//---------------------------
 	// Do miss counting & slashing
-	denomMap := map[string]map[string]struct{}{}
+	symbolMap := map[string]map[string]struct{}{}
 	var voteTargets []string
-	for _, denom := range params.RequiredDenoms {
-		voteTargets = append(voteTargets, denom.Denom)
+	for _, symbol := range params.RequiredSymbols {
+		voteTargets = append(voteTargets, symbol.Symbol)
 	}
 
-	for _, denom := range voteTargets {
-		denomMap[denom] = map[string]struct{}{}
+	for _, symbol := range voteTargets {
+		symbolMap[symbol] = map[string]struct{}{}
 	}
 
 	for denom, votes := range voteMap {
 		for _, vote := range votes {
 			// ignore denoms, not requested in voteTargets
-			_, ok := denomMap[denom]
+			_, ok := symbolMap[denom]
 			if !ok {
 				continue
 			}
 
-			denomMap[denom][vote.Voter.String()] = struct{}{}
+			symbolMap[denom][vote.Voter.String()] = struct{}{}
 		}
 	}
 
 	// Check if each validator is missing a required denom price
 	for _, claim := range validatorClaimMap {
-		for _, denom := range voteTargets {
-			_, ok := denomMap[denom][claim.Recipient.String()]
+		for _, symbol := range voteTargets {
+			_, ok := symbolMap[symbol][claim.Recipient.String()]
 			if !ok {
 				missMap[claim.Recipient.String()] = claim.Recipient
 				break

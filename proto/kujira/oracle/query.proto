@@ -10,19 +10,19 @@ option go_package = "github.com/Team-Kujira/core/x/oracle/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  // ExchangeRate returns exchange rate of a denom
+  // ExchangeRate returns exchange rate of a symbol
   rpc ExchangeRate(QueryExchangeRateRequest) returns (QueryExchangeRateResponse) {
-    option (google.api.http).get = "/oracle/denoms/{denom}/exchange_rate";
+    option (google.api.http).get = "/oracle/symbols/{symbol}/exchange_rate";
   }
 
-  // ExchangeRates returns exchange rates of all denoms
+  // ExchangeRates returns exchange rates of all symbols
   rpc ExchangeRates(QueryExchangeRatesRequest) returns (QueryExchangeRatesResponse) {
-    option (google.api.http).get = "/oracle/denoms/exchange_rates";
+    option (google.api.http).get = "/oracle/symbols/exchange_rates";
   }
 
-  // Actives returns all active denoms
+  // Actives returns all active symbols
   rpc Actives(QueryActivesRequest) returns (QueryActivesResponse) {
-    option (google.api.http).get = "/oracle/denoms/actives";
+    option (google.api.http).get = "/oracle/symbols/actives";
   }
 
   // MissCounter returns oracle miss counter of a validator
@@ -41,8 +41,8 @@ message QueryExchangeRateRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  // denom defines the denomination to query for.
-  string denom = 1;
+  // symbol defines the symbol to query for.
+  string symbol = 1;
 }
 
 // QueryExchangeRateResponse is response type for the
@@ -59,7 +59,7 @@ message QueryExchangeRatesRequest {}
 // QueryExchangeRatesResponse is response type for the
 // Query/ExchangeRates RPC method.
 message QueryExchangeRatesResponse {
-  // exchange_rates defines a list of the exchange rate for all whitelisted denoms.
+  // exchange_rates defines a list of the exchange rate for all whitelisted symbols.
   repeated cosmos.base.v1beta1.DecCoin exchange_rates = 1
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins", (gogoproto.nullable) = false];
 }
@@ -70,7 +70,7 @@ message QueryActivesRequest {}
 // QueryActivesResponse is response type for the
 // Query/Actives RPC method.
 message QueryActivesResponse {
-  // actives defines a list of the denomination which oracle prices aggreed upon.
+  // actives defines a list of the symbols which oracle prices aggreed upon.
   repeated string actives = 1;
 }
 
@@ -80,7 +80,7 @@ message QueryVoteTargetsRequest {}
 // QueryVoteTargetsResponse is response type for the
 // Query/VoteTargets RPC method.
 message QueryVoteTargetsResponse {
-  // vote_targets defines a list of the denomination in which everyone
+  // vote_targets defines a list of the symbols in which everyone
   // should vote in the current vote period.
   repeated string vote_targets = 1;
 }

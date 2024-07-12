@@ -37,13 +37,13 @@ func DecompressDecimal(bz []byte) math.LegacyDec {
 
 func ComposeVoteExtension2(k keeper.Keeper, ctx sdk.Context, height int64, exchangeRates sdk.DecCoins) types.VoteExtension2 {
 	params := k.GetParams(ctx)
-	denomIDs := make(map[string]uint32)
-	for _, denom := range params.RequiredDenoms {
-		denomIDs[denom.Denom] = denom.Id
+	symbolIDs := make(map[string]uint32)
+	for _, symbol := range params.RequiredSymbols {
+		symbolIDs[symbol.Symbol] = symbol.Id
 	}
 	prices := make(map[uint32][]byte)
 	for _, rate := range exchangeRates {
-		id, ok := denomIDs[rate.Denom]
+		id, ok := symbolIDs[rate.Denom]
 		if !ok {
 			continue
 		}
@@ -57,19 +57,19 @@ func ComposeVoteExtension2(k keeper.Keeper, ctx sdk.Context, height int64, excha
 
 func ExchangeRatesFromVoteExtension2(k keeper.Keeper, ctx sdk.Context, voteExt types.VoteExtension2) sdk.DecCoins {
 	params := k.GetParams(ctx)
-	idToDenom := make(map[uint32]string)
-	for _, denom := range params.RequiredDenoms {
-		idToDenom[denom.Id] = denom.Denom
+	idToSymbol := make(map[uint32]string)
+	for _, symbol := range params.RequiredSymbols {
+		idToSymbol[symbol.Id] = symbol.Symbol
 	}
 
 	exchangeRates := sdk.DecCoins{}
 	for id, priceBytes := range voteExt.Prices {
-		denom, ok := idToDenom[id]
+		symbol, ok := idToSymbol[id]
 		if !ok {
 			continue
 		}
 
-		exchangeRates = exchangeRates.Add(sdk.NewDecCoinFromDec(denom, DecompressDecimal(priceBytes)))
+		exchangeRates = exchangeRates.Add(sdk.NewDecCoinFromDec(symbol, DecompressDecimal(priceBytes)))
 	}
 	return exchangeRates
 }

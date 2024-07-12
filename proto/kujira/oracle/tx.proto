@@ -9,37 +9,37 @@ option go_package = "github.com/Team-Kujira/core/x/oracle/types";
 
 // Msg defines the oracle Msg service.
 service Msg {
-  // AddRequiredDenom adds a new price to the required list of prices
-  rpc AddRequiredDenoms(MsgAddRequiredDenoms) returns (MsgAddRequiredDenomsResponse);
+  // AddRequiredSymbol adds a new price to the required list of prices
+  rpc AddRequiredSymbols(MsgAddRequiredSymbols) returns (MsgAddRequiredSymbolsResponse);
 
-  // RemoveRequiredDenom removes a price from the required list of prices
-  rpc RemoveRequiredDenoms(MsgRemoveRequiredDenoms) returns (MsgRemoveRequiredDenomsResponse);
+  // RemoveRequiredSymbol removes a price from the required list of prices
+  rpc RemoveRequiredSymbols(MsgRemoveRequiredSymbols) returns (MsgRemoveRequiredSymbolsResponse);
 
   // UpdateParams sets new module params
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
-// MsgAddRequiredDenom represents a message to add a denom to the whitelist
-message MsgAddRequiredDenoms {
+// MsgAddRequiredSymbol represents a message to add a symbol to the whitelist
+message MsgAddRequiredSymbols {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [(gogoproto.moretags) = "yaml:\"authority\""];
   repeated string symbols = 2 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
 }
 
-// MsgAddRequiredDenomResponse defines the Msg/AddRequiredDenom response type.
-message MsgAddRequiredDenomsResponse {}
+// MsgAddRequiredSymbolResponse defines the Msg/AddRequiredSymbol response type.
+message MsgAddRequiredSymbolsResponse {}
 
-// MsgRemoveRequiredDenom represents a message to remove a denom from the whitelist
-message MsgRemoveRequiredDenoms {
+// MsgRemoveRequiredSymbol represents a message to remove a symbol from the whitelist
+message MsgRemoveRequiredSymbols {
   option (cosmos.msg.v1.signer) = "authority";
 
   string authority = 1 [ (gogoproto.moretags) = "yaml:\"authority\"" ];
   repeated string symbols = 2 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
 }
 
-// MsgRemoveRequiredDenomResponse defines the Msg/RemoveRequiredDenom response type.
-message MsgRemoveRequiredDenomsResponse {}
+// MsgRemoveRequiredSymbolResponse defines the Msg/RemoveRequiredSymbol response type.
+message MsgRemoveRequiredSymbolsResponse {}
 
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";

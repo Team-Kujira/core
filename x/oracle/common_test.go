@@ -48,10 +48,10 @@ func setup(t *testing.T) (keeper.TestInput, types.MsgServer) {
 	params := input.OracleKeeper.GetParams(input.Ctx)
 	params.VotePeriod = 1
 	params.SlashWindow = 100
-	params.RequiredDenoms = []types.Denom{
-		{Denom: types.TestDenomA, Id: 1},
-		{Denom: types.TestDenomC, Id: 2},
-		{Denom: types.TestDenomD, Id: 3},
+	params.RequiredSymbols = []types.Symbol{
+		{Symbol: types.TestDenomA, Id: 1},
+		{Symbol: types.TestDenomC, Id: 2},
+		{Symbol: types.TestDenomD, Id: 3},
 	}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	h := keeper.NewMsgServerImpl(input.OracleKeeper)

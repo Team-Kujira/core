@@ -29,24 +29,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgAddRequiredDenom represents a message to add a denom to the whitelist
-type MsgAddRequiredDenoms struct {
+// MsgAddRequiredSymbol represents a message to add a symbol to the whitelist
+type MsgAddRequiredSymbols struct {
 	Authority string   `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
 	Symbols   []string `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty" yaml:"symbols"`
 }
 
-func (m *MsgAddRequiredDenoms) Reset()         { *m = MsgAddRequiredDenoms{} }
-func (m *MsgAddRequiredDenoms) String() string { return proto.CompactTextString(m) }
-func (*MsgAddRequiredDenoms) ProtoMessage()    {}
-func (*MsgAddRequiredDenoms) Descriptor() ([]byte, []int) {
+func (m *MsgAddRequiredSymbols) Reset()         { *m = MsgAddRequiredSymbols{} }
+func (m *MsgAddRequiredSymbols) String() string { return proto.CompactTextString(m) }
+func (*MsgAddRequiredSymbols) ProtoMessage()    {}
+func (*MsgAddRequiredSymbols) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{0}
 }
-func (m *MsgAddRequiredDenoms) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddRequiredSymbols) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddRequiredDenoms) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddRequiredSymbols) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddRequiredDenoms.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddRequiredSymbols.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -56,48 +56,48 @@ func (m *MsgAddRequiredDenoms) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgAddRequiredDenoms) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddRequiredDenoms.Merge(m, src)
+func (m *MsgAddRequiredSymbols) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddRequiredSymbols.Merge(m, src)
 }
-func (m *MsgAddRequiredDenoms) XXX_Size() int {
+func (m *MsgAddRequiredSymbols) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddRequiredDenoms) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddRequiredDenoms.DiscardUnknown(m)
+func (m *MsgAddRequiredSymbols) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddRequiredSymbols.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddRequiredDenoms proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddRequiredSymbols proto.InternalMessageInfo
 
-func (m *MsgAddRequiredDenoms) GetAuthority() string {
+func (m *MsgAddRequiredSymbols) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgAddRequiredDenoms) GetSymbols() []string {
+func (m *MsgAddRequiredSymbols) GetSymbols() []string {
 	if m != nil {
 		return m.Symbols
 	}
 	return nil
 }
 
-// MsgAddRequiredDenomResponse defines the Msg/AddRequiredDenom response type.
-type MsgAddRequiredDenomsResponse struct {
+// MsgAddRequiredSymbolResponse defines the Msg/AddRequiredSymbol response type.
+type MsgAddRequiredSymbolsResponse struct {
 }
 
-func (m *MsgAddRequiredDenomsResponse) Reset()         { *m = MsgAddRequiredDenomsResponse{} }
-func (m *MsgAddRequiredDenomsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddRequiredDenomsResponse) ProtoMessage()    {}
-func (*MsgAddRequiredDenomsResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAddRequiredSymbolsResponse) Reset()         { *m = MsgAddRequiredSymbolsResponse{} }
+func (m *MsgAddRequiredSymbolsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddRequiredSymbolsResponse) ProtoMessage()    {}
+func (*MsgAddRequiredSymbolsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{1}
 }
-func (m *MsgAddRequiredDenomsResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddRequiredSymbolsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddRequiredDenomsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddRequiredSymbolsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddRequiredDenomsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddRequiredSymbolsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -107,36 +107,36 @@ func (m *MsgAddRequiredDenomsResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgAddRequiredDenomsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddRequiredDenomsResponse.Merge(m, src)
+func (m *MsgAddRequiredSymbolsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddRequiredSymbolsResponse.Merge(m, src)
 }
-func (m *MsgAddRequiredDenomsResponse) XXX_Size() int {
+func (m *MsgAddRequiredSymbolsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddRequiredDenomsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddRequiredDenomsResponse.DiscardUnknown(m)
+func (m *MsgAddRequiredSymbolsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddRequiredSymbolsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddRequiredDenomsResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddRequiredSymbolsResponse proto.InternalMessageInfo
 
-// MsgRemoveRequiredDenom represents a message to remove a denom from the whitelist
-type MsgRemoveRequiredDenoms struct {
+// MsgRemoveRequiredSymbol represents a message to remove a symbol from the whitelist
+type MsgRemoveRequiredSymbols struct {
 	Authority string   `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
 	Symbols   []string `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty" yaml:"symbols"`
 }
 
-func (m *MsgRemoveRequiredDenoms) Reset()         { *m = MsgRemoveRequiredDenoms{} }
-func (m *MsgRemoveRequiredDenoms) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveRequiredDenoms) ProtoMessage()    {}
-func (*MsgRemoveRequiredDenoms) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveRequiredSymbols) Reset()         { *m = MsgRemoveRequiredSymbols{} }
+func (m *MsgRemoveRequiredSymbols) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveRequiredSymbols) ProtoMessage()    {}
+func (*MsgRemoveRequiredSymbols) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{2}
 }
-func (m *MsgRemoveRequiredDenoms) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveRequiredSymbols) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveRequiredDenoms) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveRequiredSymbols) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveRequiredDenoms.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveRequiredSymbols.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -146,48 +146,48 @@ func (m *MsgRemoveRequiredDenoms) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveRequiredDenoms) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveRequiredDenoms.Merge(m, src)
+func (m *MsgRemoveRequiredSymbols) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveRequiredSymbols.Merge(m, src)
 }
-func (m *MsgRemoveRequiredDenoms) XXX_Size() int {
+func (m *MsgRemoveRequiredSymbols) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveRequiredDenoms) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveRequiredDenoms.DiscardUnknown(m)
+func (m *MsgRemoveRequiredSymbols) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveRequiredSymbols.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveRequiredDenoms proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveRequiredSymbols proto.InternalMessageInfo
 
-func (m *MsgRemoveRequiredDenoms) GetAuthority() string {
+func (m *MsgRemoveRequiredSymbols) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgRemoveRequiredDenoms) GetSymbols() []string {
+func (m *MsgRemoveRequiredSymbols) GetSymbols() []string {
 	if m != nil {
 		return m.Symbols
 	}
 	return nil
 }
 
-// MsgRemoveRequiredDenomResponse defines the Msg/RemoveRequiredDenom response type.
-type MsgRemoveRequiredDenomsResponse struct {
+// MsgRemoveRequiredSymbolResponse defines the Msg/RemoveRequiredSymbol response type.
+type MsgRemoveRequiredSymbolsResponse struct {
 }
 
-func (m *MsgRemoveRequiredDenomsResponse) Reset()         { *m = MsgRemoveRequiredDenomsResponse{} }
-func (m *MsgRemoveRequiredDenomsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveRequiredDenomsResponse) ProtoMessage()    {}
-func (*MsgRemoveRequiredDenomsResponse) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveRequiredSymbolsResponse) Reset()         { *m = MsgRemoveRequiredSymbolsResponse{} }
+func (m *MsgRemoveRequiredSymbolsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveRequiredSymbolsResponse) ProtoMessage()    {}
+func (*MsgRemoveRequiredSymbolsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{3}
 }
-func (m *MsgRemoveRequiredDenomsResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveRequiredDenomsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveRequiredDenomsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveRequiredSymbolsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -197,17 +197,17 @@ func (m *MsgRemoveRequiredDenomsResponse) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveRequiredDenomsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveRequiredDenomsResponse.Merge(m, src)
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveRequiredSymbolsResponse.Merge(m, src)
 }
-func (m *MsgRemoveRequiredDenomsResponse) XXX_Size() int {
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveRequiredDenomsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveRequiredDenomsResponse.DiscardUnknown(m)
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveRequiredSymbolsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveRequiredDenomsResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveRequiredSymbolsResponse proto.InternalMessageInfo
 
 type MsgUpdateParams struct {
 	Authority string  `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
@@ -299,10 +299,10 @@ func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgAddRequiredDenoms)(nil), "kujira.oracle.MsgAddRequiredDenoms")
-	proto.RegisterType((*MsgAddRequiredDenomsResponse)(nil), "kujira.oracle.MsgAddRequiredDenomsResponse")
-	proto.RegisterType((*MsgRemoveRequiredDenoms)(nil), "kujira.oracle.MsgRemoveRequiredDenoms")
-	proto.RegisterType((*MsgRemoveRequiredDenomsResponse)(nil), "kujira.oracle.MsgRemoveRequiredDenomsResponse")
+	proto.RegisterType((*MsgAddRequiredSymbols)(nil), "kujira.oracle.MsgAddRequiredSymbols")
+	proto.RegisterType((*MsgAddRequiredSymbolsResponse)(nil), "kujira.oracle.MsgAddRequiredSymbolsResponse")
+	proto.RegisterType((*MsgRemoveRequiredSymbols)(nil), "kujira.oracle.MsgRemoveRequiredSymbols")
+	proto.RegisterType((*MsgRemoveRequiredSymbolsResponse)(nil), "kujira.oracle.MsgRemoveRequiredSymbolsResponse")
 	proto.RegisterType((*MsgUpdateParams)(nil), "kujira.oracle.MsgUpdateParams")
 	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "kujira.oracle.MsgUpdateParamsResponse")
 }
@@ -310,34 +310,34 @@ func init() {
 func init() { proto.RegisterFile("kujira/oracle/tx.proto", fileDescriptor_15c3977432059018) }
 
 var fileDescriptor_15c3977432059018 = []byte{
-	// 428 bytes of a gzipped FileDescriptorProto
+	// 426 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcb, 0x2e, 0xcd, 0xca,
 	0x2c, 0x4a, 0xd4, 0xcf, 0x2f, 0x4a, 0x4c, 0xce, 0x49, 0xd5, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca,
 	0x2f, 0xc9, 0x17, 0xe2, 0x85, 0x88, 0xeb, 0x41, 0xc4, 0xa5, 0x44, 0xd2, 0xf3, 0xd3, 0xf3, 0xc1,
 	0x32, 0xfa, 0x20, 0x16, 0x44, 0x91, 0x94, 0x78, 0x72, 0x7e, 0x71, 0x6e, 0x7e, 0xb1, 0x7e, 0x6e,
 	0x71, 0xba, 0x7e, 0x99, 0x21, 0x88, 0x82, 0x4a, 0x48, 0xa1, 0x9a, 0x0a, 0xa1, 0x20, 0x72, 0x4a,
-	0x1d, 0x8c, 0x5c, 0x22, 0xbe, 0xc5, 0xe9, 0x8e, 0x29, 0x29, 0x41, 0xa9, 0x85, 0xa5, 0x99, 0x45,
-	0xa9, 0x29, 0x2e, 0xa9, 0x79, 0xf9, 0xb9, 0xc5, 0x42, 0x46, 0x5c, 0x9c, 0x89, 0xa5, 0x25, 0x19,
-	0xf9, 0x45, 0x99, 0x25, 0x95, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x4e, 0x22, 0x9f, 0xee, 0xc9,
-	0x0b, 0x54, 0x26, 0xe6, 0xe6, 0x58, 0x29, 0xc1, 0xa5, 0x94, 0x82, 0x10, 0xca, 0x84, 0x74, 0xb8,
-	0xd8, 0x8b, 0x2b, 0x73, 0x93, 0xf2, 0x73, 0x8a, 0x25, 0x98, 0x14, 0x98, 0x35, 0x38, 0x9d, 0x84,
-	0x3e, 0xdd, 0x93, 0xe7, 0x83, 0xe8, 0x80, 0x4a, 0x28, 0x05, 0xc1, 0x94, 0x58, 0xf1, 0x35, 0x3d,
-	0xdf, 0xa0, 0x85, 0xd0, 0xad, 0x24, 0xc7, 0x25, 0x83, 0xcd, 0x25, 0x41, 0xa9, 0xc5, 0x05, 0xf9,
-	0x79, 0xc5, 0xa9, 0x4a, 0xdd, 0x8c, 0x5c, 0xe2, 0xbe, 0xc5, 0xe9, 0x41, 0xa9, 0xb9, 0xf9, 0x65,
-	0xa9, 0x03, 0xee, 0x5a, 0x45, 0x2e, 0x79, 0x1c, 0x8e, 0x81, 0x3b, 0x78, 0x3a, 0x23, 0x17, 0xbf,
-	0x6f, 0x71, 0x7a, 0x68, 0x41, 0x4a, 0x62, 0x49, 0x6a, 0x40, 0x62, 0x51, 0x22, 0x99, 0x0e, 0x75,
-	0xe0, 0x62, 0x2b, 0x00, 0xeb, 0x96, 0x60, 0x52, 0x60, 0xd4, 0xe0, 0x36, 0x12, 0xd5, 0x43, 0x49,
-	0x0e, 0x7a, 0x10, 0xa3, 0x9d, 0x04, 0x3f, 0xdd, 0x93, 0xe7, 0x85, 0x98, 0x03, 0x51, 0xae, 0x14,
-	0x04, 0xd5, 0x87, 0xe1, 0x78, 0x49, 0x70, 0x48, 0x22, 0x3b, 0x0c, 0xe6, 0x68, 0xa3, 0x2d, 0x4c,
-	0x5c, 0xcc, 0xbe, 0xc5, 0xe9, 0x42, 0xa9, 0x5c, 0x82, 0x98, 0x89, 0x42, 0x19, 0xcd, 0x66, 0x6c,
-	0xf1, 0x25, 0xa5, 0x4d, 0x84, 0x22, 0x98, 0x75, 0x42, 0x79, 0x5c, 0x22, 0x58, 0x23, 0x54, 0x0d,
-	0xd3, 0x10, 0x6c, 0xea, 0xa4, 0xf4, 0x88, 0x53, 0x07, 0xb7, 0x2f, 0x8c, 0x8b, 0x07, 0x25, 0x3e,
-	0xe4, 0x30, 0xf5, 0x23, 0xcb, 0x4b, 0xa9, 0xe1, 0x97, 0x87, 0x99, 0xeb, 0xe4, 0x72, 0xe2, 0x91,
-	0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1,
-	0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0x5a, 0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x7a,
-	0xc9, 0xf9, 0xb9, 0xfa, 0x21, 0xa9, 0x89, 0xb9, 0xba, 0xde, 0x90, 0xdc, 0x98, 0x9c, 0x5f, 0x94,
-	0xaa, 0x5f, 0x01, 0xcf, 0xea, 0x95, 0x05, 0xa9, 0xc5, 0x49, 0x6c, 0xe0, 0x4c, 0x69, 0x0c, 0x08,
-	0x00, 0x00, 0xff, 0xff, 0x78, 0x9d, 0xbf, 0xdf, 0x08, 0x04, 0x00, 0x00,
+	0x9d, 0x8c, 0x5c, 0xa2, 0xbe, 0xc5, 0xe9, 0x8e, 0x29, 0x29, 0x41, 0xa9, 0x85, 0xa5, 0x99, 0x45,
+	0xa9, 0x29, 0xc1, 0x95, 0xb9, 0x49, 0xf9, 0x39, 0xc5, 0x42, 0x46, 0x5c, 0x9c, 0x89, 0xa5, 0x25,
+	0x19, 0xf9, 0x45, 0x99, 0x25, 0x95, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x4e, 0x22, 0x9f, 0xee,
+	0xc9, 0x0b, 0x54, 0x26, 0xe6, 0xe6, 0x58, 0x29, 0xc1, 0xa5, 0x94, 0x82, 0x10, 0xca, 0x84, 0x74,
+	0xb8, 0xd8, 0x8b, 0x21, 0xda, 0x25, 0x98, 0x14, 0x98, 0x35, 0x38, 0x9d, 0x84, 0x3e, 0xdd, 0x93,
+	0xe7, 0x83, 0xe8, 0x80, 0x4a, 0x28, 0x05, 0xc1, 0x94, 0x58, 0xf1, 0x35, 0x3d, 0xdf, 0xa0, 0x85,
+	0xd0, 0xad, 0x24, 0xcf, 0x25, 0x8b, 0xd5, 0x29, 0x41, 0xa9, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9,
+	0x4a, 0x3d, 0x8c, 0x5c, 0x12, 0xbe, 0xc5, 0xe9, 0x41, 0xa9, 0xb9, 0xf9, 0x65, 0xa9, 0x03, 0xef,
+	0x5e, 0x25, 0x2e, 0x05, 0x5c, 0xae, 0x81, 0x3b, 0x79, 0x3a, 0x23, 0x17, 0xbf, 0x6f, 0x71, 0x7a,
+	0x68, 0x41, 0x4a, 0x62, 0x49, 0x6a, 0x40, 0x62, 0x51, 0x62, 0x2e, 0x79, 0x2e, 0x75, 0xe0, 0x62,
+	0x2b, 0x00, 0xeb, 0x96, 0x60, 0x52, 0x60, 0xd4, 0xe0, 0x36, 0x12, 0xd5, 0x43, 0x49, 0x12, 0x7a,
+	0x10, 0xa3, 0x9d, 0x04, 0x3f, 0xdd, 0x93, 0xe7, 0x85, 0x98, 0x03, 0x51, 0xae, 0x14, 0x04, 0xd5,
+	0x87, 0xe1, 0x7a, 0x49, 0x2e, 0x71, 0x34, 0x87, 0xc1, 0x1c, 0x6d, 0xb4, 0x8b, 0x89, 0x8b, 0xd9,
+	0xb7, 0x38, 0x5d, 0x28, 0x83, 0x4b, 0x08, 0x4b, 0xc2, 0x50, 0x41, 0xb3, 0x1a, 0x6b, 0x9c, 0x49,
+	0xe9, 0x10, 0xa3, 0x0a, 0x66, 0xa3, 0x50, 0x21, 0x97, 0x28, 0xf6, 0x58, 0x55, 0xc7, 0x34, 0x06,
+	0xab, 0x42, 0x29, 0x7d, 0x22, 0x15, 0xc2, 0xad, 0x0c, 0xe3, 0xe2, 0x41, 0x89, 0x15, 0x39, 0x4c,
+	0x03, 0x90, 0xe5, 0xa5, 0xd4, 0xf0, 0xcb, 0xc3, 0xcc, 0x75, 0x72, 0x39, 0xf1, 0x48, 0x8e, 0xf1,
+	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e,
+	0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xad, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc,
+	0x5c, 0xfd, 0x90, 0xd4, 0xc4, 0x5c, 0x5d, 0x6f, 0x48, 0xbe, 0x4c, 0xce, 0x2f, 0x4a, 0xd5, 0xaf,
+	0x80, 0x67, 0xfa, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0x70, 0xf6, 0x34, 0x06, 0x04, 0x00, 0x00,
+	0xff, 0xff, 0x41, 0x98, 0xb8, 0x5b, 0x12, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -352,10 +352,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// AddRequiredDenom adds a new price to the required list of prices
-	AddRequiredDenoms(ctx context.Context, in *MsgAddRequiredDenoms, opts ...grpc.CallOption) (*MsgAddRequiredDenomsResponse, error)
-	// RemoveRequiredDenom removes a price from the required list of prices
-	RemoveRequiredDenoms(ctx context.Context, in *MsgRemoveRequiredDenoms, opts ...grpc.CallOption) (*MsgRemoveRequiredDenomsResponse, error)
+	// AddRequiredSymbol adds a new price to the required list of prices
+	AddRequiredSymbols(ctx context.Context, in *MsgAddRequiredSymbols, opts ...grpc.CallOption) (*MsgAddRequiredSymbolsResponse, error)
+	// RemoveRequiredSymbol removes a price from the required list of prices
+	RemoveRequiredSymbols(ctx context.Context, in *MsgRemoveRequiredSymbols, opts ...grpc.CallOption) (*MsgRemoveRequiredSymbolsResponse, error)
 	// UpdateParams sets new module params
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 }
@@ -368,18 +368,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) AddRequiredDenoms(ctx context.Context, in *MsgAddRequiredDenoms, opts ...grpc.CallOption) (*MsgAddRequiredDenomsResponse, error) {
-	out := new(MsgAddRequiredDenomsResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AddRequiredDenoms", in, out, opts...)
+func (c *msgClient) AddRequiredSymbols(ctx context.Context, in *MsgAddRequiredSymbols, opts ...grpc.CallOption) (*MsgAddRequiredSymbolsResponse, error) {
+	out := new(MsgAddRequiredSymbolsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AddRequiredSymbols", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) RemoveRequiredDenoms(ctx context.Context, in *MsgRemoveRequiredDenoms, opts ...grpc.CallOption) (*MsgRemoveRequiredDenomsResponse, error) {
-	out := new(MsgRemoveRequiredDenomsResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/RemoveRequiredDenoms", in, out, opts...)
+func (c *msgClient) RemoveRequiredSymbols(ctx context.Context, in *MsgRemoveRequiredSymbols, opts ...grpc.CallOption) (*MsgRemoveRequiredSymbolsResponse, error) {
+	out := new(MsgRemoveRequiredSymbolsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/RemoveRequiredSymbols", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -397,10 +397,10 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// AddRequiredDenom adds a new price to the required list of prices
-	AddRequiredDenoms(context.Context, *MsgAddRequiredDenoms) (*MsgAddRequiredDenomsResponse, error)
-	// RemoveRequiredDenom removes a price from the required list of prices
-	RemoveRequiredDenoms(context.Context, *MsgRemoveRequiredDenoms) (*MsgRemoveRequiredDenomsResponse, error)
+	// AddRequiredSymbol adds a new price to the required list of prices
+	AddRequiredSymbols(context.Context, *MsgAddRequiredSymbols) (*MsgAddRequiredSymbolsResponse, error)
+	// RemoveRequiredSymbol removes a price from the required list of prices
+	RemoveRequiredSymbols(context.Context, *MsgRemoveRequiredSymbols) (*MsgRemoveRequiredSymbolsResponse, error)
 	// UpdateParams sets new module params
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 }
@@ -409,11 +409,11 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) AddRequiredDenoms(ctx context.Context, req *MsgAddRequiredDenoms) (*MsgAddRequiredDenomsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddRequiredDenoms not implemented")
+func (*UnimplementedMsgServer) AddRequiredSymbols(ctx context.Context, req *MsgAddRequiredSymbols) (*MsgAddRequiredSymbolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddRequiredSymbols not implemented")
 }
-func (*UnimplementedMsgServer) RemoveRequiredDenoms(ctx context.Context, req *MsgRemoveRequiredDenoms) (*MsgRemoveRequiredDenomsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveRequiredDenoms not implemented")
+func (*UnimplementedMsgServer) RemoveRequiredSymbols(ctx context.Context, req *MsgRemoveRequiredSymbols) (*MsgRemoveRequiredSymbolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveRequiredSymbols not implemented")
 }
 func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
@@ -423,38 +423,38 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_AddRequiredDenoms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddRequiredDenoms)
+func _Msg_AddRequiredSymbols_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddRequiredSymbols)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AddRequiredDenoms(ctx, in)
+		return srv.(MsgServer).AddRequiredSymbols(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/AddRequiredDenoms",
+		FullMethod: "/kujira.oracle.Msg/AddRequiredSymbols",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddRequiredDenoms(ctx, req.(*MsgAddRequiredDenoms))
+		return srv.(MsgServer).AddRequiredSymbols(ctx, req.(*MsgAddRequiredSymbols))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_RemoveRequiredDenoms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemoveRequiredDenoms)
+func _Msg_RemoveRequiredSymbols_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveRequiredSymbols)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RemoveRequiredDenoms(ctx, in)
+		return srv.(MsgServer).RemoveRequiredSymbols(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/RemoveRequiredDenoms",
+		FullMethod: "/kujira.oracle.Msg/RemoveRequiredSymbols",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemoveRequiredDenoms(ctx, req.(*MsgRemoveRequiredDenoms))
+		return srv.(MsgServer).RemoveRequiredSymbols(ctx, req.(*MsgRemoveRequiredSymbols))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -482,12 +482,12 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AddRequiredDenoms",
-			Handler:    _Msg_AddRequiredDenoms_Handler,
+			MethodName: "AddRequiredSymbols",
+			Handler:    _Msg_AddRequiredSymbols_Handler,
 		},
 		{
-			MethodName: "RemoveRequiredDenoms",
-			Handler:    _Msg_RemoveRequiredDenoms_Handler,
+			MethodName: "RemoveRequiredSymbols",
+			Handler:    _Msg_RemoveRequiredSymbols_Handler,
 		},
 		{
 			MethodName: "UpdateParams",
@@ -498,7 +498,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "kujira/oracle/tx.proto",
 }
 
-func (m *MsgAddRequiredDenoms) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddRequiredSymbols) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -508,12 +508,12 @@ func (m *MsgAddRequiredDenoms) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddRequiredDenoms) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbols) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddRequiredDenoms) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbols) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -537,7 +537,7 @@ func (m *MsgAddRequiredDenoms) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddRequiredDenomsResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddRequiredSymbolsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -547,12 +547,12 @@ func (m *MsgAddRequiredDenomsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddRequiredDenomsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbolsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddRequiredDenomsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbolsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -560,7 +560,7 @@ func (m *MsgAddRequiredDenomsResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveRequiredDenoms) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveRequiredSymbols) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -570,12 +570,12 @@ func (m *MsgRemoveRequiredDenoms) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveRequiredDenoms) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbols) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveRequiredDenoms) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbols) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -599,7 +599,7 @@ func (m *MsgRemoveRequiredDenoms) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveRequiredDenomsResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveRequiredSymbolsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -609,12 +609,12 @@ func (m *MsgRemoveRequiredDenomsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveRequiredDenomsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbolsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveRequiredDenomsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbolsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -698,7 +698,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgAddRequiredDenoms) Size() (n int) {
+func (m *MsgAddRequiredSymbols) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -717,7 +717,7 @@ func (m *MsgAddRequiredDenoms) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddRequiredDenomsResponse) Size() (n int) {
+func (m *MsgAddRequiredSymbolsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -726,7 +726,7 @@ func (m *MsgAddRequiredDenomsResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveRequiredDenoms) Size() (n int) {
+func (m *MsgRemoveRequiredSymbols) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -745,7 +745,7 @@ func (m *MsgRemoveRequiredDenoms) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveRequiredDenomsResponse) Size() (n int) {
+func (m *MsgRemoveRequiredSymbolsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -786,7 +786,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgAddRequiredDenoms) Unmarshal(dAtA []byte) error {
+func (m *MsgAddRequiredSymbols) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -809,10 +809,10 @@ func (m *MsgAddRequiredDenoms) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddRequiredDenoms: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddRequiredSymbols: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddRequiredDenoms: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddRequiredSymbols: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -900,7 +900,7 @@ func (m *MsgAddRequiredDenoms) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddRequiredDenomsResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddRequiredSymbolsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -923,10 +923,10 @@ func (m *MsgAddRequiredDenomsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddRequiredDenomsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddRequiredSymbolsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddRequiredDenomsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddRequiredSymbolsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -950,7 +950,7 @@ func (m *MsgAddRequiredDenomsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveRequiredDenoms) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveRequiredSymbols) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -973,10 +973,10 @@ func (m *MsgRemoveRequiredDenoms) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveRequiredDenoms: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbols: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveRequiredDenoms: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbols: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1064,7 +1064,7 @@ func (m *MsgRemoveRequiredDenoms) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveRequiredDenomsResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveRequiredSymbolsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1087,10 +1087,10 @@ func (m *MsgRemoveRequiredDenomsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveRequiredDenomsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbolsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveRequiredDenomsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbolsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

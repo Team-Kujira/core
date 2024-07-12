@@ -111,9 +111,9 @@ func TestParams(t *testing.T) {
 	slashFraction := math.LegacyNewDecWithPrec(1, 2)
 	slashWindow := uint64(1000)
 	minValidPerWindow := math.LegacyNewDecWithPrec(1, 4)
-	requiredDenoms := []types.Denom{
-		{Denom: types.TestDenomD, Id: 1},
-		{Denom: types.TestDenomC, Id: 2},
+	requiredSymbols := []types.Symbol{
+		{Symbol: types.TestDenomD, Id: 1},
+		{Symbol: types.TestDenomC, Id: 2},
 	}
 
 	// Should really test validateParams, but skipping because obvious
@@ -121,7 +121,7 @@ func TestParams(t *testing.T) {
 		VotePeriod:        votePeriod,
 		VoteThreshold:     voteThreshold,
 		MaxDeviation:      maxDeviation,
-		RequiredDenoms:    requiredDenoms,
+		RequiredSymbols:   requiredSymbols,
 		SlashFraction:     slashFraction,
 		SlashWindow:       slashWindow,
 		MinValidPerWindow: minValidPerWindow,

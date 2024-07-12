@@ -11,16 +11,16 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/oracle interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgAddRequiredDenoms{}, "oracle/MsgAddRequiredDenoms", nil)
-	cdc.RegisterConcrete(&MsgRemoveRequiredDenoms{}, "oracle/MsgRemoveRequiredDenoms", nil)
+	cdc.RegisterConcrete(&MsgAddRequiredSymbols{}, "oracle/MsgAddRequiredSymbols", nil)
+	cdc.RegisterConcrete(&MsgRemoveRequiredSymbols{}, "oracle/MsgRemoveRequiredSymbols", nil)
 	cdc.RegisterConcrete(&MsgUpdateParams{}, "oracle/MsgUpdateParams", nil)
 }
 
 // RegisterInterfaces registers the x/oracle interfaces types with the interface registry
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgAddRequiredDenoms{},
-		&MsgRemoveRequiredDenoms{},
+		&MsgAddRequiredSymbols{},
+		&MsgRemoveRequiredSymbols{},
 		&MsgUpdateParams{},
 	)
 

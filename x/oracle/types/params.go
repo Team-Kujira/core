@@ -14,7 +14,7 @@ var (
 	KeyVotePeriod        = []byte("VotePeriod")
 	KeyVoteThreshold     = []byte("VoteThreshold")
 	KeyMaxDeviation      = []byte("MaxDeviation")
-	KeyRequiredDenoms    = []byte("RequiredDenoms")
+	KeyRequiredSymbols   = []byte("RequiredSymbols")
 	KeySlashFraction     = []byte("SlashFraction")
 	KeySlashWindow       = []byte("SlashWindow")
 	KeyMinValidPerWindow = []byte("MinValidPerWindow")
@@ -34,7 +34,7 @@ const (
 var (
 	DefaultVoteThreshold     = math.LegacyNewDecWithPrec(50, 2) // 50%
 	DefaultMaxDeviation      = math.LegacyNewDecWithPrec(2, 1)  // 2% (-1, 1)
-	DefaultRequiredDenoms    = []Denom{}
+	DefaultRequiredSymbols   = []Symbol{}
 	DefaultSlashFraction     = math.LegacyNewDecWithPrec(1, 4) // 0.01%
 	DefaultMinValidPerWindow = math.LegacyNewDecWithPrec(5, 2) // 5%
 )
@@ -47,7 +47,7 @@ func DefaultParams() Params {
 		VotePeriod:        DefaultVotePeriod,
 		VoteThreshold:     DefaultVoteThreshold,
 		MaxDeviation:      DefaultMaxDeviation,
-		RequiredDenoms:    DefaultRequiredDenoms,
+		RequiredSymbols:   DefaultRequiredSymbols,
 		SlashFraction:     DefaultSlashFraction,
 		SlashWindow:       DefaultSlashWindow,
 		MinValidPerWindow: DefaultMinValidPerWindow,
@@ -66,7 +66,7 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramstypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
 		paramstypes.NewParamSetPair(KeyMaxDeviation, &p.MaxDeviation, validateMaxDeviation),
-		paramstypes.NewParamSetPair(KeyRequiredDenoms, &p.RequiredDenoms, validateRequiredDenoms),
+		paramstypes.NewParamSetPair(KeyRequiredSymbols, &p.RequiredSymbols, validateRequiredSymbols),
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
 		paramstypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramstypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
@@ -104,7 +104,7 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter MinValidPerWindow must be between [0, 1]")
 	}
 
-	if err := validateRequiredDenoms(p.RequiredDenoms); err != nil {
+	if err := validateRequiredSymbols(p.RequiredSymbols); err != nil {
 		return err
 	}
 
@@ -158,29 +158,29 @@ func validateMaxDeviation(i interface{}) error {
 	return nil
 }
 
-func validateRequiredDenoms(i interface{}) error {
-	v, ok := i.([]Denom)
+func validateRequiredSymbols(i interface{}) error {
+	v, ok := i.([]Symbol)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	for _, d := range v {
-		if len(d.Denom) == 0 {
-			return fmt.Errorf("oracle parameter RequiredDenoms Denom must not be ''")
+		if len(d.Symbol) == 0 {
+			return fmt.Errorf("oracle parameter RequiredSymbols Denom must not be ''")
 		}
 	}
 
-	registeredDenoms := make(map[string]bool)
-	registeredDenomIds := make(map[uint32]bool)
+	registeredSymbols := make(map[string]bool)
+	registeredSymbolIds := make(map[uint32]bool)
 	for _, denom := range v {
-		if registeredDenoms[denom.Denom] {
+		if registeredSymbols[denom.Symbol] {
 			return fmt.Errorf("oracle parameter denom should be unique")
 		}
-		if registeredDenomIds[denom.Id] {
+		if registeredSymbolIds[denom.Id] {
 			return fmt.Errorf("oracle parameter denom id should be unique")
 		}
-		registeredDenoms[denom.Denom] = true
-		registeredDenomIds[denom.Id] = true
+		registeredSymbols[denom.Symbol] = true
+		registeredSymbolIds[denom.Id] = true
 	}
 
 	return nil

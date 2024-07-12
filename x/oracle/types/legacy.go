@@ -7,18 +7,18 @@ import (
 )
 
 // String implements fmt.Stringer interface
-func (d Denom) String() string {
+func (d Symbol) String() string {
 	out, _ := yaml.Marshal(d)
 	return string(out)
 }
 
 // Equal implements equal interface
-func (d Denom) Equal(d1 *Denom) bool {
-	return d.Denom == d1.Denom
+func (d Symbol) Equal(d1 *Symbol) bool {
+	return d.Symbol == d1.Symbol
 }
 
 // DenomList is array of Denom
-type DenomList []Denom
+type DenomList []Symbol
 
 // String implements fmt.Stringer interface
 func (dl DenomList) String() (out string) {

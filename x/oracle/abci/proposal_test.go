@@ -72,9 +72,9 @@ func SetupTest(t *testing.T) (keeper.TestInput, *abci.ProposalHandler) {
 	)
 
 	params := types.DefaultParams()
-	params.RequiredDenoms = []types.Denom{
-		{Denom: "BTC", Id: 1},
-		{Denom: "ETH", Id: 2},
+	params.RequiredSymbols = []types.Symbol{
+		{Symbol: "BTC", Id: 1},
+		{Symbol: "ETH", Id: 2},
 	}
 	input.OracleKeeper.SetParams(ctx, params)
 
@@ -185,9 +185,9 @@ func TestComputeStakeWeightedPricesAndMissMap(t *testing.T) {
 	require.NoError(t, err)
 
 	params := types.DefaultParams()
-	params.RequiredDenoms = []types.Denom{
-		{Denom: "BTC", Id: 1},
-		{Denom: "ETH", Id: 2},
+	params.RequiredSymbols = []types.Symbol{
+		{Symbol: "BTC", Id: 1},
+		{Symbol: "ETH", Id: 2},
 	}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
@@ -441,9 +441,9 @@ func TestPrepareProposal(t *testing.T) {
 	input, h := SetupTest(t)
 
 	params := types.DefaultParams()
-	params.RequiredDenoms = []types.Denom{
-		{Denom: "BTC", Id: 1},
-		{Denom: "ETH", Id: 2},
+	params.RequiredSymbols = []types.Symbol{
+		{Symbol: "BTC", Id: 1},
+		{Symbol: "ETH", Id: 2},
 	}
 	input.OracleKeeper.SetParams(input.Ctx, params)
 
