@@ -77,10 +77,10 @@ func TestValidate(t *testing.T) {
 			require.Error(t, pair.ValidatorFn("invalid"))
 			require.Error(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(-1, 2)))
 			require.Error(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(101, 2)))
-		case bytes.Equal(types.KeyRequiredDenoms, pair.Key):
-			require.NoError(t, pair.ValidatorFn([]types.Denom{}))
+		case bytes.Equal(types.KeyRequiredSymbols, pair.Key):
+			require.NoError(t, pair.ValidatorFn([]types.Symbol{}))
 			require.Error(t, pair.ValidatorFn("invalid"))
-			require.NoError(t, pair.ValidatorFn([]types.Denom{}))
+			require.NoError(t, pair.ValidatorFn([]types.Symbol{}))
 		}
 	}
 }

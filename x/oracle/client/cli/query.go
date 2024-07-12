@@ -36,16 +36,16 @@ func GetQueryCmd() *cobra.Command {
 // GetCmdQueryExchangeRates implements the query rate command.
 func GetCmdQueryExchangeRates() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "exchange-rates [denom]",
+		Use:   "exchange-rates [symbol]",
 		Args:  cobra.RangeArgs(0, 1),
 		Short: "Query the current exchange rate of an asset",
 		Long: strings.TrimSpace(`
 Query the current exchange rate of USD with an asset. 
-You can find the current list of active denoms by running
+You can find the current list of active symbols by running
 
 $ kujirad query oracle exchange-rates 
 
-Or, can filter with denom
+Or, can filter with symbol
 
 $ kujirad query oracle exchange-rates KUJI
 `),
@@ -65,10 +65,9 @@ $ kujirad query oracle exchange-rates KUJI
 				return clientCtx.PrintProto(res)
 			}
 
-			denom := args[0]
 			res, err := queryClient.ExchangeRate(
 				context.Background(),
-				&types.QueryExchangeRateRequest{Denom: denom},
+				&types.QueryExchangeRateRequest{Symbol: args[0]},
 			)
 			if err != nil {
 				return err

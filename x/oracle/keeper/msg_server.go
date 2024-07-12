@@ -22,7 +22,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (ms msgServer) AddRequiredDenoms(goCtx context.Context, msg *types.MsgAddRequiredDenoms) (*types.MsgAddRequiredDenomsResponse, error) {
+func (ms msgServer) AddRequiredSymbols(goCtx context.Context, msg *types.MsgAddRequiredSymbols) (*types.MsgAddRequiredSymbolsResponse, error) {
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
@@ -31,19 +31,19 @@ func (ms msgServer) AddRequiredDenoms(goCtx context.Context, msg *types.MsgAddRe
 	params := ms.GetParams(ctx)
 
 	existingSymbols := make(map[string]bool)
-	for _, denom := range params.RequiredDenoms {
-		existingSymbols[denom.Denom] = true
+	for _, symbol := range params.RequiredSymbols {
+		existingSymbols[symbol.Symbol] = true
 	}
 
-	for _, denom := range msg.Symbols {
-		if existingSymbols[denom] {
-			return nil, fmt.Errorf("symbol '%s' already set as required denoms", denom)
+	for _, symbol := range msg.Symbols {
+		if existingSymbols[symbol] {
+			return nil, fmt.Errorf("symbol '%s' already set as required symbols", symbol)
 		}
-		params.RequiredDenoms = append(params.RequiredDenoms, types.Denom{
-			Denom: denom,
-			Id:    params.LastDenomId + 1,
+		params.RequiredSymbols = append(params.RequiredSymbols, types.Symbol{
+			Symbol: symbol,
+			Id:     params.LastSymbolId + 1,
 		})
-		params.LastDenomId++
+		params.LastSymbolId++
 	}
 
 	err := ms.SetParams(ctx, params)
@@ -51,10 +51,10 @@ func (ms msgServer) AddRequiredDenoms(goCtx context.Context, msg *types.MsgAddRe
 		return nil, types.ErrSetParams
 	}
 
-	return &types.MsgAddRequiredDenomsResponse{}, nil
+	return &types.MsgAddRequiredSymbolsResponse{}, nil
 }
 
-func (ms msgServer) RemoveRequiredDenoms(goCtx context.Context, msg *types.MsgRemoveRequiredDenoms) (*types.MsgRemoveRequiredDenomsResponse, error) {
+func (ms msgServer) RemoveRequiredSymbols(goCtx context.Context, msg *types.MsgRemoveRequiredSymbols) (*types.MsgRemoveRequiredSymbolsResponse, error) {
 	if ms.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, msg.Authority)
 	}
@@ -67,20 +67,20 @@ func (ms msgServer) RemoveRequiredDenoms(goCtx context.Context, msg *types.MsgRe
 		removingSymbols[symbol] = true
 	}
 
-	requiredDenoms := []types.Denom{}
-	for _, denom := range params.RequiredDenoms {
-		if !removingSymbols[denom.Denom] {
+	requiredDenoms := []types.Symbol{}
+	for _, denom := range params.RequiredSymbols {
+		if !removingSymbols[denom.Symbol] {
 			requiredDenoms = append(requiredDenoms, denom)
 		}
 	}
 
-	params.RequiredDenoms = requiredDenoms
+	params.RequiredSymbols = requiredDenoms
 	err := ms.SetParams(ctx, params)
 	if err != nil {
 		return nil, types.ErrSetParams
 	}
 
-	return &types.MsgRemoveRequiredDenomsResponse{}, nil
+	return &types.MsgRemoveRequiredSymbolsResponse{}, nil
 }
 
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
@@ -92,8 +92,8 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 
 	// Check id and denom mapping change
 	params := ms.GetParams(ctx)
-	if !reflect.DeepEqual(params.RequiredDenoms, msg.Params.RequiredDenoms) {
-		return nil, types.ErrCanNotUpdateRequiredDenoms
+	if !reflect.DeepEqual(params.RequiredSymbols, msg.Params.RequiredSymbols) {
+		return nil, types.ErrCanNotUpdateRequiredSymbols
 	}
 
 	if err := ms.SetParams(ctx, *msg.Params); err != nil {

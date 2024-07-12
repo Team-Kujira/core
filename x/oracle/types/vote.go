@@ -50,7 +50,7 @@ func ParseExchangeRateTuples(tuplesStr string) (ExchangeRateTuples, error) {
 		}
 
 		tuples[i] = ExchangeRateTuple{
-			Denom:        decCoin.Denom,
+			Symbol:       decCoin.Denom,
 			ExchangeRate: decCoin.Amount,
 		}
 

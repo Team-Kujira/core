@@ -22,16 +22,16 @@ func (k Keeper) MaxDeviation(ctx sdk.Context) (res math.LegacyDec) {
 	return k.GetParams(ctx).MaxDeviation
 }
 
-// RequiredDenoms returns the denom list that can be activated
-func (k Keeper) RequiredDenoms(ctx sdk.Context) (res []types.Denom) {
-	return k.GetParams(ctx).RequiredDenoms
+// RequiredSymbols returns the denom list that can be activated
+func (k Keeper) RequiredSymbols(ctx sdk.Context) (res []types.Symbol) {
+	return k.GetParams(ctx).RequiredSymbols
 }
 
-// // SetRequiredDenoms store new required denoms to param store
+// // SetRequiredSymbols store new required denoms to param store
 // // this function is only for test purpose
-// func (k Keeper) SetRequiredDenoms(ctx sdk.Context, denoms []string) {
+// func (k Keeper) SetRequiredSymbols(ctx sdk.Context, denoms []string) {
 // 	params := k.GetParams(ctx)
-// 	params.RequiredDenoms = denoms
+// 	params.RequiredSymbols = denoms
 // 	err := k.SetParams(ctx, params)
 // 	if err != nil {
 // 		return

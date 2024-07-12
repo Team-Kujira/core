@@ -33,11 +33,11 @@ func MigrateParams(
 	subspace.Get(ctx, []byte("SlashWindow"), &slashWindow)
 	subspace.Get(ctx, []byte("MinValidPerWindow"), &minValidPerWindow)
 
-	denoms := []oracletypes.Denom{}
+	symbols := []oracletypes.Symbol{}
 	for id, denom := range whitelist {
-		denoms = append(denoms, oracletypes.Denom{
-			Id:    uint32(id + 1),
-			Denom: denom.Denom,
+		symbols = append(symbols, oracletypes.Symbol{
+			Id:     uint32(id + 1),
+			Symbol: denom.Symbol,
 		})
 	}
 
@@ -45,7 +45,7 @@ func MigrateParams(
 		VotePeriod:        votePeriod,
 		VoteThreshold:     voteThreshold,
 		MaxDeviation:      rewardBand,
-		RequiredDenoms:    denoms,
+		RequiredSymbols:   symbols,
 		SlashFraction:     slashFraction,
 		SlashWindow:       slashWindow,
 		MinValidPerWindow: minValidPerWindow,

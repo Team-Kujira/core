@@ -14,7 +14,7 @@ import (
 // and the keeper's address to pubkey map
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data *types.GenesisState) {
 	for _, ex := range data.ExchangeRates {
-		keeper.SetExchangeRate(ctx, ex.Denom, ex.ExchangeRate)
+		keeper.SetExchangeRate(ctx, ex.Symbol, ex.ExchangeRate)
 	}
 
 	for _, mc := range data.MissCounters {
@@ -46,7 +46,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 
 	exchangeRates := []types.ExchangeRateTuple{}
 	keeper.IterateExchangeRates(ctx, func(denom string, rate math.LegacyDec) (stop bool) {
-		exchangeRates = append(exchangeRates, types.ExchangeRateTuple{Denom: denom, ExchangeRate: rate})
+		exchangeRates = append(exchangeRates, types.ExchangeRateTuple{Symbol: denom, ExchangeRate: rate})
 		return false
 	})
 
