@@ -12,6 +12,7 @@ import (
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	cmttypes "github.com/cometbft/cometbft/types"
 	dbm "github.com/cosmos/cosmos-db"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -26,6 +27,7 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	db := dbm.NewMemDB()
 	var wasmOpts []wasmkeeper.Option
 	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = "/tmp/" + t.Name()
 
 	app := New(
 		log.NewNopLogger(),
