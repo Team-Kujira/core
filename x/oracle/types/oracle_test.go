@@ -18,8 +18,6 @@ func TestVoteExtensionCompress(t *testing.T) {
 	prices := make(map[uint32][]byte)
 	for index, rate := range exchangeRates {
 		id := uint32(index)
-		// id, err := types.SymbolToID(rate.Denom)
-		// require.NoError(t, err)
 		count := 0
 		newAmount := rate.Amount
 		for !newAmount.IsZero() {
@@ -30,9 +28,6 @@ func TestVoteExtensionCompress(t *testing.T) {
 		for i := 0; i < cuttingDecimals; i++ {
 			rate.Amount = rate.Amount.QuoInt64(10)
 		}
-		// for i := 0; i < cuttingDecimals; i++ {
-		// 	rate.Amount = rate.Amount.MulInt64(10)
-		// }
 		prices[id] = append(rate.Amount.BigInt().Bytes(), byte(cuttingDecimals))
 	}
 	voteExt := types.VoteExtension{
@@ -42,12 +37,8 @@ func TestVoteExtensionCompress(t *testing.T) {
 	bz, err := voteExt.Marshal()
 	require.NoError(t, err)
 	_ = bz
-	// require.Len(t, bz, 1241)
-	// require.Len(t, bz, 776)
 
 	compressed, err := voteExt.Compress()
 	require.NoError(t, err)
 	_ = compressed
-	// require.Len(t, compressed, 1205)
-	// require.Len(t, compressed, 733)
 }
