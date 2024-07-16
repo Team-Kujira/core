@@ -171,16 +171,16 @@ func validateRequiredSymbols(i interface{}) error {
 	}
 
 	registeredSymbols := make(map[string]bool)
-	registeredSymbolIds := make(map[uint32]bool)
+	registeredIDs := make(map[uint32]bool)
 	for _, denom := range v {
 		if registeredSymbols[denom.Symbol] {
 			return fmt.Errorf("oracle parameter denom should be unique")
 		}
-		if registeredSymbolIds[denom.Id] {
+		if registeredIDs[denom.Id] {
 			return fmt.Errorf("oracle parameter denom id should be unique")
 		}
 		registeredSymbols[denom.Symbol] = true
-		registeredSymbolIds[denom.Id] = true
+		registeredIDs[denom.Id] = true
 	}
 
 	return nil
