@@ -1,0 +1,20 @@
+syntax = "proto3";
+package kujira.onion;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "kujira/onion/genesis.proto";
+
+option go_package = "github.com/Team-Kujira/core/x/onion/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  rpc Sequence(QuerySequenceRequest) returns (QuerySequenceResponse) {
+    option (google.api.http).get = "/kujira/onion/sequence/{address}";
+  }
+}
+
+message QuerySequenceRequest { string address = 1; }
+message QuerySequenceResponse {
+  OnionSequence seq = 1 [ (gogoproto.nullable) = false ];
+}
