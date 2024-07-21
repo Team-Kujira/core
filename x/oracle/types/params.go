@@ -62,6 +62,8 @@ func ParamKeyTable() paramstypes.KeyTable {
 // ParamSetPairs implements the ParamSet interface and returns all the key/value pairs
 // pairs of oracle module's parameters.
 func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
+	rewardBand := math.LegacyDec{}
+	whitelist := DenomList{}
 	return paramstypes.ParamSetPairs{
 		paramstypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramstypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
@@ -70,6 +72,8 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
 		paramstypes.NewParamSetPair(KeySlashWindow, &p.SlashWindow, validateSlashWindow),
 		paramstypes.NewParamSetPair(KeyMinValidPerWindow, &p.MinValidPerWindow, validateMinValidPerWindow),
+		paramstypes.NewParamSetPair(KeyRewardBand, &rewardBand, validateRewardBand),
+		paramstypes.NewParamSetPair(KeyWhitelist, &whitelist, validateWhitelist),
 	}
 }
 
@@ -228,6 +232,38 @@ func validateMinValidPerWindow(i interface{}) error {
 
 	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("min valid per window is too large: %s", v)
+	}
+
+	return nil
+}
+
+func validateRewardBand(i interface{}) error {
+	v, ok := i.(math.LegacyDec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.IsNegative() {
+		return fmt.Errorf("reward band must be positive: %s", v)
+	}
+
+	if v.GT(math.LegacyOneDec()) {
+		return fmt.Errorf("reward band is too large: %s", v)
+	}
+
+	return nil
+}
+
+func validateWhitelist(i interface{}) error {
+	v, ok := i.(DenomList)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	for _, d := range v {
+		if len(d.Name) == 0 {
+			return fmt.Errorf("oracle parameter Whitelist Denom must have name")
+		}
 	}
 
 	return nil

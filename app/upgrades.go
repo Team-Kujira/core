@@ -5,6 +5,7 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
@@ -65,9 +66,21 @@ func (app App) RegisterUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		UpgradeName,
 		func(ctx context.Context,
-			_ upgradetypes.Plan,
+			plan upgradetypes.Plan,
 			fromVM module.VersionMap,
 		) (module.VersionMap, error) {
+			params, err := app.ConsensusParamsKeeper.ParamsStore.Get(ctx)
+			if err != nil {
+				return fromVM, err
+			}
+			params.Abci = &tmproto.ABCIParams{
+				VoteExtensionsEnableHeight: plan.Height + 1,
+			}
+			err = app.ConsensusParamsKeeper.ParamsStore.Set(ctx, params)
+			if err != nil {
+				return fromVM, err
+			}
+
 			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
 		},
 	)

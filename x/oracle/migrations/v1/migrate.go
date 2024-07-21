@@ -37,7 +37,7 @@ func MigrateParams(
 	for id, denom := range whitelist {
 		symbols = append(symbols, oracletypes.Symbol{
 			Id:     uint32(id + 1),
-			Symbol: denom.Symbol,
+			Symbol: denom.Name,
 		})
 	}
 
