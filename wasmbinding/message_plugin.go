@@ -13,7 +13,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 
 	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
 	batch "github.com/Team-Kujira/core/x/batch/wasm"
