@@ -20,7 +20,7 @@ type VerifyMembershipQuery struct {
 	Proof          []byte `json:"proof"`
 	Value          []byte `json:"value"`
 	PathPrefix     string `json:"path_prefix"`
-	PathKey        string `json:"path_key"`
+	PathKey        []byte `json:"path_key"`
 }
 
 type VerifyNonMembershipQuery struct {
@@ -29,7 +29,7 @@ type VerifyNonMembershipQuery struct {
 	RevisionHeight uint64 `json:"revision_height"`
 	Proof          []byte `json:"proof"`
 	PathPrefix     string `json:"path_prefix"`
-	PathKey        string `json:"path_key"`
+	PathKey        []byte `json:"path_key"`
 }
 
 type IbcVerifyResponse struct{}
@@ -119,7 +119,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 		}
 
 		height := clienttypes.NewHeight(q.VerifyMembership.RevisionNumber, q.VerifyMembership.RevisionHeight)
-		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, q.VerifyMembership.PathKey)
+		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, string(q.VerifyMembership.PathKey))
 		if err != nil {
 			return err
 		}
@@ -148,7 +148,7 @@ func HandleIBCQuery(ctx sdk.Context, keeper ibckeeper.Keeper, ibcStoreKey *store
 		}
 
 		height := clienttypes.NewHeight(q.VerifyNonMembership.RevisionNumber, q.VerifyNonMembership.RevisionHeight)
-		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, q.VerifyMembership.PathKey)
+		consState, merklePath, err := getConsStateAndMerklePath(keeper, clientState, clientStore, height, q.VerifyMembership.PathPrefix, string(q.VerifyMembership.PathKey))
 		if err != nil {
 			return err
 		}

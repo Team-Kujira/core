@@ -14,6 +14,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	// cdc.RegisterConcrete(&MsgForceTransfer{}, "github.com/Team-Kujira/core/denom/force-transfer", nil)
 	cdc.RegisterConcrete(&MsgChangeAdmin{}, "github.com/Team-Kujira/core/denom/change-admin", nil)
 	cdc.RegisterConcrete(&MsgUpdateParams{}, "github.com/Team-Kujira/core/denom/update-params", nil)
+	cdc.RegisterConcrete(&MsgAddNoFeeAccounts{}, "github.com/Team-Kujira/core/denom/add-no-fee-accounts", nil)
+	cdc.RegisterConcrete(&MsgRemoveNoFeeAccounts{}, "github.com/Team-Kujira/core/denom/remove-no-fee-accounts", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -25,6 +27,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		// &MsgForceTransfer{},
 		&MsgChangeAdmin{},
 		&MsgUpdateParams{},
+		&MsgAddNoFeeAccounts{},
+		&MsgRemoveNoFeeAccounts{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

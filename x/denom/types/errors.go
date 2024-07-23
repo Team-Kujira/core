@@ -14,4 +14,5 @@ var (
 	ErrInvalidCreator           = errors.Register(ModuleName, 5, "invalid creator")
 	ErrInvalidAuthorityMetadata = errors.Register(ModuleName, 6, "invalid authority metadata")
 	ErrInvalidGenesis           = errors.Register(ModuleName, 7, "invalid genesis")
+	ErrInvalidAuthority         = errors.Register(ModuleName, 8, "not a governance address")
 )

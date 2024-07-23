@@ -30,6 +30,182 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type MsgAddNoFeeAccounts struct {
+	Authority string   `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	Accounts  []string `protobuf:"bytes,2,rep,name=accounts,proto3" json:"accounts,omitempty"`
+}
+
+func (m *MsgAddNoFeeAccounts) Reset()         { *m = MsgAddNoFeeAccounts{} }
+func (m *MsgAddNoFeeAccounts) String() string { return proto.CompactTextString(m) }
+func (*MsgAddNoFeeAccounts) ProtoMessage()    {}
+func (*MsgAddNoFeeAccounts) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4060456503c2ab45, []int{0}
+}
+func (m *MsgAddNoFeeAccounts) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddNoFeeAccounts) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddNoFeeAccounts.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddNoFeeAccounts) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddNoFeeAccounts.Merge(m, src)
+}
+func (m *MsgAddNoFeeAccounts) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddNoFeeAccounts) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddNoFeeAccounts.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddNoFeeAccounts proto.InternalMessageInfo
+
+func (m *MsgAddNoFeeAccounts) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgAddNoFeeAccounts) GetAccounts() []string {
+	if m != nil {
+		return m.Accounts
+	}
+	return nil
+}
+
+type MsgAddNoFeeAccountsResponse struct {
+}
+
+func (m *MsgAddNoFeeAccountsResponse) Reset()         { *m = MsgAddNoFeeAccountsResponse{} }
+func (m *MsgAddNoFeeAccountsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddNoFeeAccountsResponse) ProtoMessage()    {}
+func (*MsgAddNoFeeAccountsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4060456503c2ab45, []int{1}
+}
+func (m *MsgAddNoFeeAccountsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddNoFeeAccountsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddNoFeeAccountsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddNoFeeAccountsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddNoFeeAccountsResponse.Merge(m, src)
+}
+func (m *MsgAddNoFeeAccountsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddNoFeeAccountsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddNoFeeAccountsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddNoFeeAccountsResponse proto.InternalMessageInfo
+
+type MsgRemoveNoFeeAccounts struct {
+	Authority string   `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	Accounts  []string `protobuf:"bytes,2,rep,name=accounts,proto3" json:"accounts,omitempty"`
+}
+
+func (m *MsgRemoveNoFeeAccounts) Reset()         { *m = MsgRemoveNoFeeAccounts{} }
+func (m *MsgRemoveNoFeeAccounts) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveNoFeeAccounts) ProtoMessage()    {}
+func (*MsgRemoveNoFeeAccounts) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4060456503c2ab45, []int{2}
+}
+func (m *MsgRemoveNoFeeAccounts) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveNoFeeAccounts) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveNoFeeAccounts.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveNoFeeAccounts) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveNoFeeAccounts.Merge(m, src)
+}
+func (m *MsgRemoveNoFeeAccounts) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveNoFeeAccounts) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveNoFeeAccounts.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveNoFeeAccounts proto.InternalMessageInfo
+
+func (m *MsgRemoveNoFeeAccounts) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgRemoveNoFeeAccounts) GetAccounts() []string {
+	if m != nil {
+		return m.Accounts
+	}
+	return nil
+}
+
+type MsgRemoveNoFeeAccountsResponse struct {
+}
+
+func (m *MsgRemoveNoFeeAccountsResponse) Reset()         { *m = MsgRemoveNoFeeAccountsResponse{} }
+func (m *MsgRemoveNoFeeAccountsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveNoFeeAccountsResponse) ProtoMessage()    {}
+func (*MsgRemoveNoFeeAccountsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4060456503c2ab45, []int{3}
+}
+func (m *MsgRemoveNoFeeAccountsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveNoFeeAccountsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveNoFeeAccountsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveNoFeeAccountsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveNoFeeAccountsResponse.Merge(m, src)
+}
+func (m *MsgRemoveNoFeeAccountsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveNoFeeAccountsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveNoFeeAccountsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveNoFeeAccountsResponse proto.InternalMessageInfo
+
 // MsgCreateDenom is the sdk.Msg type for allowing an account to create
 // a new denom.  It requires a sender address and a unique nonce
 // (to allow accounts to create multiple denoms)
@@ -42,7 +218,7 @@ func (m *MsgCreateDenom) Reset()         { *m = MsgCreateDenom{} }
 func (m *MsgCreateDenom) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateDenom) ProtoMessage()    {}
 func (*MsgCreateDenom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{0}
+	return fileDescriptor_4060456503c2ab45, []int{4}
 }
 func (m *MsgCreateDenom) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -95,7 +271,7 @@ func (m *MsgCreateDenomResponse) Reset()         { *m = MsgCreateDenomResponse{}
 func (m *MsgCreateDenomResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateDenomResponse) ProtoMessage()    {}
 func (*MsgCreateDenomResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{1}
+	return fileDescriptor_4060456503c2ab45, []int{5}
 }
 func (m *MsgCreateDenomResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -143,7 +319,7 @@ func (m *MsgMint) Reset()         { *m = MsgMint{} }
 func (m *MsgMint) String() string { return proto.CompactTextString(m) }
 func (*MsgMint) ProtoMessage()    {}
 func (*MsgMint) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{2}
+	return fileDescriptor_4060456503c2ab45, []int{6}
 }
 func (m *MsgMint) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -200,7 +376,7 @@ func (m *MsgMintResponse) Reset()         { *m = MsgMintResponse{} }
 func (m *MsgMintResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgMintResponse) ProtoMessage()    {}
 func (*MsgMintResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{3}
+	return fileDescriptor_4060456503c2ab45, []int{7}
 }
 func (m *MsgMintResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -240,7 +416,7 @@ func (m *MsgBurn) Reset()         { *m = MsgBurn{} }
 func (m *MsgBurn) String() string { return proto.CompactTextString(m) }
 func (*MsgBurn) ProtoMessage()    {}
 func (*MsgBurn) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{4}
+	return fileDescriptor_4060456503c2ab45, []int{8}
 }
 func (m *MsgBurn) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -290,7 +466,7 @@ func (m *MsgBurnResponse) Reset()         { *m = MsgBurnResponse{} }
 func (m *MsgBurnResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgBurnResponse) ProtoMessage()    {}
 func (*MsgBurnResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{5}
+	return fileDescriptor_4060456503c2ab45, []int{9}
 }
 func (m *MsgBurnResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -331,7 +507,7 @@ func (m *MsgChangeAdmin) Reset()         { *m = MsgChangeAdmin{} }
 func (m *MsgChangeAdmin) String() string { return proto.CompactTextString(m) }
 func (*MsgChangeAdmin) ProtoMessage()    {}
 func (*MsgChangeAdmin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{6}
+	return fileDescriptor_4060456503c2ab45, []int{10}
 }
 func (m *MsgChangeAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -388,7 +564,7 @@ func (m *MsgChangeAdminResponse) Reset()         { *m = MsgChangeAdminResponse{}
 func (m *MsgChangeAdminResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgChangeAdminResponse) ProtoMessage()    {}
 func (*MsgChangeAdminResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{7}
+	return fileDescriptor_4060456503c2ab45, []int{11}
 }
 func (m *MsgChangeAdminResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -426,7 +602,7 @@ func (m *MsgUpdateParams) Reset()         { *m = MsgUpdateParams{} }
 func (m *MsgUpdateParams) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateParams) ProtoMessage()    {}
 func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{8}
+	return fileDescriptor_4060456503c2ab45, []int{12}
 }
 func (m *MsgUpdateParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -477,7 +653,7 @@ func (m *MsgUpdateParamsResponse) Reset()         { *m = MsgUpdateParamsResponse
 func (m *MsgUpdateParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateParamsResponse) ProtoMessage()    {}
 func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4060456503c2ab45, []int{9}
+	return fileDescriptor_4060456503c2ab45, []int{13}
 }
 func (m *MsgUpdateParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -507,6 +683,10 @@ func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
 
 func init() {
+	proto.RegisterType((*MsgAddNoFeeAccounts)(nil), "kujira.denom.MsgAddNoFeeAccounts")
+	proto.RegisterType((*MsgAddNoFeeAccountsResponse)(nil), "kujira.denom.MsgAddNoFeeAccountsResponse")
+	proto.RegisterType((*MsgRemoveNoFeeAccounts)(nil), "kujira.denom.MsgRemoveNoFeeAccounts")
+	proto.RegisterType((*MsgRemoveNoFeeAccountsResponse)(nil), "kujira.denom.MsgRemoveNoFeeAccountsResponse")
 	proto.RegisterType((*MsgCreateDenom)(nil), "kujira.denom.MsgCreateDenom")
 	proto.RegisterType((*MsgCreateDenomResponse)(nil), "kujira.denom.MsgCreateDenomResponse")
 	proto.RegisterType((*MsgMint)(nil), "kujira.denom.MsgMint")
@@ -522,47 +702,53 @@ func init() {
 func init() { proto.RegisterFile("kujira/denom/tx.proto", fileDescriptor_4060456503c2ab45) }
 
 var fileDescriptor_4060456503c2ab45 = []byte{
-	// 629 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0x4d, 0x6b, 0x13, 0x41,
-	0x18, 0xce, 0xb6, 0x1a, 0xed, 0xf4, 0x7b, 0xe9, 0x47, 0xba, 0xe8, 0x46, 0x06, 0x15, 0x2b, 0xb8,
-	0x6b, 0xeb, 0xad, 0x08, 0x62, 0xe2, 0x41, 0x90, 0x80, 0x2e, 0xf1, 0x22, 0x42, 0x99, 0x6c, 0x86,
-	0xcd, 0x5a, 0x77, 0x66, 0xd9, 0x99, 0x34, 0xcd, 0xd5, 0xab, 0x17, 0x4f, 0xfe, 0x00, 0x7f, 0x81,
-	0xff, 0xc0, 0x6b, 0x8f, 0x3d, 0x7a, 0x0a, 0x92, 0x1c, 0xbc, 0xe7, 0x2e, 0xc8, 0x7c, 0x64, 0x3f,
-	0xdc, 0x50, 0xe8, 0xc9, 0x53, 0xc2, 0xfb, 0x3c, 0xef, 0x3b, 0xcf, 0xf3, 0x7e, 0x2c, 0xd8, 0x3e,
-	0xe9, 0x7f, 0x08, 0x13, 0xe4, 0x76, 0x31, 0xa1, 0x91, 0xcb, 0xcf, 0x9c, 0x38, 0xa1, 0x9c, 0x9a,
-	0x2b, 0x2a, 0xec, 0xc8, 0xb0, 0xb5, 0x15, 0xd0, 0x80, 0x4a, 0xc0, 0x15, 0xff, 0x14, 0xc7, 0xda,
-	0xf5, 0x29, 0x8b, 0x28, 0x73, 0x23, 0x16, 0xb8, 0xa7, 0x07, 0xe2, 0x47, 0x03, 0xb6, 0x06, 0x3a,
-	0x88, 0x61, 0xf7, 0xf4, 0xa0, 0x83, 0x39, 0x3a, 0x70, 0x7d, 0x1a, 0x12, 0x8d, 0xef, 0x15, 0xde,
-	0x8c, 0x51, 0x82, 0x22, 0xa6, 0x20, 0x18, 0x83, 0xb5, 0x16, 0x0b, 0x9a, 0x09, 0x46, 0x1c, 0xbf,
-	0x10, 0xb0, 0xb9, 0x0f, 0xaa, 0x0c, 0x93, 0x2e, 0x4e, 0x6a, 0xc6, 0x1d, 0xe3, 0xc1, 0x52, 0x63,
-	0x73, 0x3a, 0xaa, 0xaf, 0x0e, 0x51, 0xf4, 0xf1, 0x08, 0xaa, 0x38, 0xf4, 0x34, 0xc1, 0xbc, 0x0f,
-	0xae, 0x13, 0x4a, 0x7c, 0x5c, 0x5b, 0x90, 0xcc, 0x8d, 0xe9, 0xa8, 0xbe, 0xa2, 0x98, 0x32, 0x0c,
-	0x3d, 0x05, 0x1f, 0x2d, 0x7f, 0xfa, 0xfd, 0xfd, 0xa1, 0x4e, 0x82, 0xef, 0xc1, 0x4e, 0xf1, 0x45,
-	0x0f, 0xb3, 0x98, 0x12, 0x86, 0xcd, 0x06, 0x58, 0x27, 0x78, 0x70, 0xcc, 0xe9, 0x09, 0x26, 0xc7,
-	0x52, 0xab, 0x96, 0x60, 0x4d, 0x47, 0xf5, 0x1d, 0x5d, 0xb8, 0x48, 0x80, 0xde, 0x2a, 0xc1, 0x83,
-	0xb6, 0x08, 0xc8, 0x5a, 0xf0, 0x87, 0x01, 0x6e, 0xb4, 0x58, 0xd0, 0x0a, 0x09, 0xbf, 0x8a, 0x93,
-	0x97, 0xa0, 0x8a, 0x22, 0xda, 0x27, 0x5c, 0x5a, 0x59, 0x3e, 0xdc, 0x73, 0x54, 0x4b, 0x1d, 0xd1,
-	0x52, 0x47, 0xb7, 0xd4, 0x69, 0xd2, 0x90, 0x34, 0xb6, 0xcf, 0x47, 0xf5, 0x4a, 0x56, 0x49, 0xa5,
-	0x41, 0x4f, 0xe7, 0x9b, 0x87, 0x60, 0x29, 0xc1, 0x7e, 0x18, 0x87, 0x98, 0xf0, 0xda, 0xa2, 0x7c,
-	0x77, 0x6b, 0x3a, 0xaa, 0x6f, 0x28, 0x76, 0x0a, 0x41, 0x2f, 0xa3, 0x15, 0xfb, 0xb3, 0x09, 0xd6,
-	0xb5, 0x81, 0x59, 0x63, 0xe0, 0x67, 0x65, 0xaa, 0xd1, 0x4f, 0xc8, 0x7f, 0x31, 0x35, 0x4f, 0xa0,
-	0x10, 0x93, 0x0a, 0xfc, 0x66, 0xa8, 0x35, 0xea, 0x21, 0x12, 0xe0, 0xe7, 0xdd, 0x28, 0x24, 0x57,
-	0x5c, 0x23, 0x35, 0xed, 0xd2, 0x1a, 0xe9, 0x19, 0x2b, 0xd8, 0x7c, 0x0c, 0x6e, 0x12, 0x3c, 0x90,
-	0xe5, 0xcb, 0x9d, 0x15, 0x8b, 0x81, 0x04, 0x04, 0xbd, 0x94, 0x55, 0xd4, 0x5d, 0x53, 0x8b, 0x97,
-	0x69, 0x4c, 0xe5, 0x7f, 0x35, 0xa4, 0xa5, 0xb7, 0x71, 0x17, 0x71, 0xfc, 0x5a, 0x9e, 0x87, 0x98,
-	0x23, 0xea, 0xf3, 0x1e, 0x4d, 0x42, 0x3e, 0xd4, 0x16, 0x72, 0xaf, 0xa5, 0x10, 0xf4, 0x32, 0x9a,
-	0xf9, 0x0c, 0x54, 0xd5, 0x71, 0xe9, 0x86, 0x6f, 0x39, 0xf9, 0xab, 0x76, 0x54, 0xe5, 0x7c, 0x27,
-	0x14, 0x1b, 0x7a, 0x3a, 0xed, 0x68, 0x4d, 0xe8, 0xcd, 0x0a, 0xc2, 0x3d, 0xb0, 0xfb, 0x8f, 0xae,
-	0x99, 0xe6, 0xc3, 0x3f, 0x0b, 0x60, 0xb1, 0xc5, 0x02, 0xf3, 0x0d, 0x58, 0xce, 0x5f, 0xef, 0xad,
-	0xe2, 0x93, 0xc5, 0x4b, 0xb3, 0xee, 0x5e, 0x86, 0xa6, 0x77, 0xf8, 0x14, 0x5c, 0x93, 0xf7, 0xb3,
-	0x5d, 0x62, 0x8b, 0xb0, 0x75, 0x7b, 0x6e, 0x38, 0x9f, 0x2d, 0x17, 0xb5, 0x9c, 0x2d, 0xc2, 0x73,
-	0xb2, 0xf3, 0x9b, 0x24, 0xed, 0xe4, 0xb6, 0x68, 0x8e, 0x9d, 0x0c, 0x9d, 0x67, 0xa7, 0x3c, 0x5d,
-	0xb3, 0x0d, 0x56, 0x0a, 0x93, 0x2d, 0x2b, 0xc8, 0xc3, 0xd6, 0xbd, 0x4b, 0xe1, 0x59, 0xd5, 0x46,
-	0xf3, 0x7c, 0x6c, 0x1b, 0x17, 0x63, 0xdb, 0xf8, 0x35, 0xb6, 0x8d, 0x2f, 0x13, 0xbb, 0x72, 0x31,
-	0xb1, 0x2b, 0x3f, 0x27, 0x76, 0xe5, 0xdd, 0x7e, 0x10, 0xf2, 0x5e, 0xbf, 0xe3, 0xf8, 0x34, 0x72,
-	0xdb, 0x18, 0x45, 0x8f, 0x5e, 0xa9, 0xaf, 0xaf, 0x4f, 0x13, 0xec, 0x9e, 0xcd, 0x3e, 0xfc, 0xc3,
-	0x18, 0xb3, 0x4e, 0x55, 0x7e, 0x84, 0x9f, 0xfc, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xdd, 0x5d, 0x27,
-	0x25, 0x15, 0x06, 0x00, 0x00,
+	// 736 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x55, 0x4b, 0x6f, 0xd3, 0x4e,
+	0x10, 0x8f, 0xdb, 0xfe, 0xf3, 0x6f, 0xb6, 0x6f, 0xf7, 0x95, 0x9a, 0xd6, 0x29, 0xab, 0x82, 0x5a,
+	0x04, 0x36, 0x2d, 0xb7, 0x0a, 0x09, 0x35, 0x45, 0x08, 0x09, 0x85, 0x87, 0x55, 0x2e, 0x08, 0xa9,
+	0x6c, 0x9c, 0x95, 0x6b, 0x8a, 0x77, 0x2d, 0xaf, 0xd3, 0xc7, 0x95, 0x2b, 0x17, 0x4e, 0x7c, 0x00,
+	0x3e, 0x01, 0xdf, 0x80, 0x6b, 0xc5, 0xa9, 0x47, 0x4e, 0x11, 0x6a, 0x0f, 0xdc, 0xf3, 0x09, 0xd0,
+	0x3e, 0xe2, 0xd8, 0xb5, 0x55, 0xa8, 0x84, 0xc4, 0xa9, 0xcd, 0xfc, 0x7e, 0x33, 0xf3, 0x9b, 0xd9,
+	0x99, 0x31, 0x98, 0xdd, 0x6f, 0xbf, 0xf5, 0x23, 0x64, 0xb7, 0x30, 0xa1, 0x81, 0x1d, 0x1f, 0x59,
+	0x61, 0x44, 0x63, 0xaa, 0x8f, 0x4a, 0xb3, 0x25, 0xcc, 0xc6, 0x8c, 0x47, 0x3d, 0x2a, 0x00, 0x9b,
+	0xff, 0x27, 0x39, 0xc6, 0xbc, 0x4b, 0x59, 0x40, 0x99, 0x1d, 0x30, 0xcf, 0x3e, 0x58, 0xe7, 0x7f,
+	0x14, 0x60, 0x2a, 0xa0, 0x89, 0x18, 0xb6, 0x0f, 0xd6, 0x9b, 0x38, 0x46, 0xeb, 0xb6, 0x4b, 0x7d,
+	0xa2, 0xf0, 0x85, 0x4c, 0xce, 0x10, 0x45, 0x28, 0x60, 0x12, 0x82, 0xcf, 0xc0, 0x74, 0x83, 0x79,
+	0x5b, 0xad, 0xd6, 0x53, 0xfa, 0x08, 0xe3, 0x2d, 0xd7, 0xa5, 0x6d, 0x12, 0x33, 0x7d, 0x11, 0x54,
+	0x50, 0x3b, 0xde, 0xa3, 0x91, 0x1f, 0x1f, 0x57, 0xb5, 0x65, 0x6d, 0xb5, 0xe2, 0xf4, 0x0d, 0xba,
+	0x01, 0x86, 0x91, 0x62, 0x56, 0x07, 0x96, 0x07, 0x57, 0x2b, 0x4e, 0xf2, 0x1b, 0x2e, 0x81, 0x6b,
+	0x05, 0x01, 0x1d, 0xcc, 0x42, 0x4a, 0x18, 0x86, 0x0e, 0x98, 0x6b, 0x30, 0xcf, 0xc1, 0x01, 0x3d,
+	0xc0, 0x7f, 0x2b, 0xe5, 0x32, 0x30, 0x8b, 0x63, 0x26, 0x59, 0x43, 0x30, 0xde, 0x60, 0xde, 0x76,
+	0x84, 0x51, 0x8c, 0x1f, 0xf2, 0x26, 0xe8, 0x6b, 0xa0, 0xcc, 0x30, 0x69, 0xe1, 0x48, 0xa6, 0xaa,
+	0x4f, 0x75, 0x3b, 0xb5, 0xb1, 0x63, 0x14, 0xbc, 0xdb, 0x84, 0xd2, 0x0e, 0x1d, 0x45, 0xd0, 0x6f,
+	0x82, 0xff, 0x08, 0x25, 0x2e, 0xae, 0x0e, 0x08, 0xe6, 0x64, 0xb7, 0x53, 0x1b, 0x95, 0x4c, 0x61,
+	0x86, 0x8e, 0x84, 0x37, 0x47, 0xde, 0xff, 0xfc, 0x72, 0x4b, 0x39, 0xc1, 0xd7, 0xa2, 0xce, 0x54,
+	0xc6, 0x9e, 0x16, 0xbd, 0x0e, 0x26, 0x08, 0x3e, 0xdc, 0x8d, 0xe9, 0x3e, 0x26, 0xbb, 0xe2, 0x45,
+	0x94, 0x04, 0xa3, 0xdb, 0xa9, 0xcd, 0xa9, 0xc0, 0x59, 0x02, 0x74, 0xc6, 0x08, 0x3e, 0xdc, 0xe1,
+	0x06, 0x11, 0x0b, 0x7e, 0xd5, 0xc0, 0xff, 0x0d, 0xe6, 0x35, 0x7c, 0x12, 0x5f, 0xa5, 0x92, 0xc7,
+	0xa0, 0x8c, 0x02, 0xde, 0x19, 0x51, 0xca, 0xc8, 0xc6, 0x82, 0x25, 0x07, 0xc7, 0xe2, 0x83, 0x63,
+	0xa9, 0xc1, 0xb1, 0xb6, 0xa9, 0x4f, 0xea, 0xb3, 0x27, 0x9d, 0x5a, 0xa9, 0x1f, 0x49, 0xba, 0x41,
+	0x47, 0xf9, 0xeb, 0x1b, 0xa0, 0x12, 0x61, 0xd7, 0x0f, 0x7d, 0x4c, 0xe2, 0xea, 0xa0, 0xc8, 0x3b,
+	0xd3, 0xed, 0xd4, 0x26, 0x25, 0x3b, 0x81, 0xa0, 0xd3, 0xa7, 0x65, 0xfb, 0x33, 0x05, 0x26, 0x54,
+	0x01, 0xc9, 0x23, 0x7d, 0x90, 0x45, 0xd5, 0xdb, 0x11, 0xf9, 0x27, 0x45, 0x15, 0x09, 0xe4, 0x62,
+	0x12, 0x81, 0x9f, 0x35, 0x39, 0x46, 0x7b, 0x88, 0x78, 0x78, 0xab, 0x15, 0xf8, 0xe4, 0x8a, 0x63,
+	0x24, 0x5f, 0x3b, 0x37, 0x46, 0xea, 0x8d, 0x25, 0xac, 0xdf, 0x05, 0xc3, 0x04, 0x1f, 0x8a, 0xf0,
+	0xf9, 0xce, 0xf2, 0xc1, 0x40, 0x1c, 0x82, 0x4e, 0xc2, 0xca, 0xea, 0xae, 0xca, 0xc1, 0xeb, 0x6b,
+	0x4c, 0xe4, 0x7f, 0xd2, 0x44, 0x49, 0x2f, 0xc3, 0x16, 0x8a, 0xf1, 0x73, 0x71, 0x04, 0xf8, 0x3b,
+	0x5e, 0x58, 0xba, 0x74, 0xb6, 0x04, 0x82, 0xe9, 0x55, 0x7c, 0x00, 0xca, 0xf2, 0x84, 0xa8, 0x86,
+	0xcf, 0x58, 0xe9, 0xdb, 0x65, 0xc9, 0xc8, 0xe9, 0x4e, 0x48, 0x36, 0x74, 0x94, 0xdb, 0xe6, 0x38,
+	0xd7, 0xdb, 0x0f, 0x08, 0x17, 0xc0, 0xfc, 0x05, 0x5d, 0x3d, 0xcd, 0x1b, 0xdf, 0x86, 0xc0, 0x60,
+	0x83, 0x79, 0xfa, 0x1b, 0x30, 0x99, 0xbb, 0x51, 0xd7, 0xb3, 0x79, 0x0b, 0xae, 0x8e, 0xb1, 0xf6,
+	0x5b, 0x4a, 0xb2, 0x96, 0x3e, 0x98, 0x2e, 0xba, 0x4a, 0x2b, 0xb9, 0x08, 0x05, 0x2c, 0xe3, 0xf6,
+	0x9f, 0xb0, 0x92, 0x54, 0x2f, 0xc0, 0x48, 0xfa, 0x14, 0x2d, 0xe6, 0x9c, 0x53, 0xa8, 0xb1, 0x72,
+	0x19, 0x9a, 0x84, 0xbc, 0x0f, 0x86, 0xc4, 0x31, 0x98, 0xcd, 0xb1, 0xb9, 0xd9, 0x58, 0x2a, 0x34,
+	0xa7, 0xbd, 0xc5, 0xd6, 0xe5, 0xbd, 0xb9, 0xb9, 0xc0, 0x3b, 0xbd, 0x16, 0xa2, 0x9c, 0xd4, 0x4a,
+	0x14, 0x94, 0xd3, 0x47, 0x8b, 0xca, 0xc9, 0x8f, 0xaa, 0xbe, 0x03, 0x46, 0x33, 0x63, 0x9a, 0x57,
+	0x90, 0x86, 0x8d, 0x1b, 0x97, 0xc2, 0xbd, 0xa8, 0xf5, 0xed, 0x93, 0x33, 0x53, 0x3b, 0x3d, 0x33,
+	0xb5, 0x1f, 0x67, 0xa6, 0xf6, 0xf1, 0xdc, 0x2c, 0x9d, 0x9e, 0x9b, 0xa5, 0xef, 0xe7, 0x66, 0xe9,
+	0xd5, 0x9a, 0xe7, 0xc7, 0x7b, 0xed, 0xa6, 0xe5, 0xd2, 0xc0, 0xde, 0xc1, 0x28, 0xb8, 0xf3, 0x44,
+	0x7e, 0x30, 0x5d, 0x1a, 0x61, 0xfb, 0xa8, 0xf7, 0xad, 0x3e, 0x0e, 0x31, 0x6b, 0x96, 0xc5, 0x77,
+	0xf3, 0xde, 0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x8c, 0x2c, 0x49, 0xaf, 0xc8, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -577,6 +763,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	AddNoFeeAccounts(ctx context.Context, in *MsgAddNoFeeAccounts, opts ...grpc.CallOption) (*MsgAddNoFeeAccountsResponse, error)
+	RemoveNoFeeAccounts(ctx context.Context, in *MsgRemoveNoFeeAccounts, opts ...grpc.CallOption) (*MsgRemoveNoFeeAccountsResponse, error)
 	CreateDenom(ctx context.Context, in *MsgCreateDenom, opts ...grpc.CallOption) (*MsgCreateDenomResponse, error)
 	Mint(ctx context.Context, in *MsgMint, opts ...grpc.CallOption) (*MsgMintResponse, error)
 	Burn(ctx context.Context, in *MsgBurn, opts ...grpc.CallOption) (*MsgBurnResponse, error)
@@ -594,6 +782,24 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
+}
+
+func (c *msgClient) AddNoFeeAccounts(ctx context.Context, in *MsgAddNoFeeAccounts, opts ...grpc.CallOption) (*MsgAddNoFeeAccountsResponse, error) {
+	out := new(MsgAddNoFeeAccountsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.denom.Msg/AddNoFeeAccounts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveNoFeeAccounts(ctx context.Context, in *MsgRemoveNoFeeAccounts, opts ...grpc.CallOption) (*MsgRemoveNoFeeAccountsResponse, error) {
+	out := new(MsgRemoveNoFeeAccountsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.denom.Msg/RemoveNoFeeAccounts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *msgClient) CreateDenom(ctx context.Context, in *MsgCreateDenom, opts ...grpc.CallOption) (*MsgCreateDenomResponse, error) {
@@ -643,6 +849,8 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	AddNoFeeAccounts(context.Context, *MsgAddNoFeeAccounts) (*MsgAddNoFeeAccountsResponse, error)
+	RemoveNoFeeAccounts(context.Context, *MsgRemoveNoFeeAccounts) (*MsgRemoveNoFeeAccountsResponse, error)
 	CreateDenom(context.Context, *MsgCreateDenom) (*MsgCreateDenomResponse, error)
 	Mint(context.Context, *MsgMint) (*MsgMintResponse, error)
 	Burn(context.Context, *MsgBurn) (*MsgBurnResponse, error)
@@ -658,6 +866,12 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) AddNoFeeAccounts(ctx context.Context, req *MsgAddNoFeeAccounts) (*MsgAddNoFeeAccountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddNoFeeAccounts not implemented")
+}
+func (*UnimplementedMsgServer) RemoveNoFeeAccounts(ctx context.Context, req *MsgRemoveNoFeeAccounts) (*MsgRemoveNoFeeAccountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveNoFeeAccounts not implemented")
+}
 func (*UnimplementedMsgServer) CreateDenom(ctx context.Context, req *MsgCreateDenom) (*MsgCreateDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDenom not implemented")
 }
@@ -676,6 +890,42 @@ func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateP
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_AddNoFeeAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddNoFeeAccounts)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AddNoFeeAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/kujira.denom.Msg/AddNoFeeAccounts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AddNoFeeAccounts(ctx, req.(*MsgAddNoFeeAccounts))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveNoFeeAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveNoFeeAccounts)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveNoFeeAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/kujira.denom.Msg/RemoveNoFeeAccounts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveNoFeeAccounts(ctx, req.(*MsgRemoveNoFeeAccounts))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_CreateDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -773,6 +1023,14 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "AddNoFeeAccounts",
+			Handler:    _Msg_AddNoFeeAccounts_Handler,
+		},
+		{
+			MethodName: "RemoveNoFeeAccounts",
+			Handler:    _Msg_RemoveNoFeeAccounts_Handler,
+		},
+		{
 			MethodName: "CreateDenom",
 			Handler:    _Msg_CreateDenom_Handler,
 		},
@@ -795,6 +1053,130 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "kujira/denom/tx.proto",
+}
+
+func (m *MsgAddNoFeeAccounts) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddNoFeeAccounts) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddNoFeeAccounts) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Accounts) > 0 {
+		for iNdEx := len(m.Accounts) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Accounts[iNdEx])
+			copy(dAtA[i:], m.Accounts[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.Accounts[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddNoFeeAccountsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddNoFeeAccountsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddNoFeeAccountsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveNoFeeAccounts) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveNoFeeAccounts) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveNoFeeAccounts) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Accounts) > 0 {
+		for iNdEx := len(m.Accounts) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Accounts[iNdEx])
+			copy(dAtA[i:], m.Accounts[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.Accounts[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveNoFeeAccountsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveNoFeeAccountsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveNoFeeAccountsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
 }
 
 func (m *MsgCreateDenom) Marshal() (dAtA []byte, err error) {
@@ -1140,6 +1522,62 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *MsgAddNoFeeAccounts) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.Accounts) > 0 {
+		for _, s := range m.Accounts {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgAddNoFeeAccountsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgRemoveNoFeeAccounts) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.Accounts) > 0 {
+		for _, s := range m.Accounts {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgRemoveNoFeeAccountsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MsgCreateDenom) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1283,6 +1721,334 @@ func sovTx(x uint64) (n int) {
 }
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgAddNoFeeAccounts) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddNoFeeAccounts: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddNoFeeAccounts: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Accounts", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Accounts = append(m.Accounts, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddNoFeeAccountsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddNoFeeAccountsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddNoFeeAccountsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveNoFeeAccounts) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveNoFeeAccounts: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveNoFeeAccounts: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Accounts", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Accounts = append(m.Accounts, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveNoFeeAccountsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveNoFeeAccountsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveNoFeeAccountsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *MsgCreateDenom) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)

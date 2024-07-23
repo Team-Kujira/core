@@ -70,7 +70,7 @@ func TestQueryExchangeRates(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	res, err = querier(ctx, bz)
+	_, err = querier(ctx, bz)
 	require.NoError(t, err)
 
 	queryParams = wasm.ExchangeRateQueryParams{
@@ -118,6 +118,7 @@ func TestSupply(t *testing.T) {
 	var x banktypes.QuerySupplyOfResponse
 
 	res, err := querier(ctx, bz)
+	require.NoError(t, err)
 
 	err = json.Unmarshal(res, &x)
 	require.NoError(t, err)
@@ -138,14 +139,14 @@ func TestVerifyMembership(t *testing.T) {
 			Proof:          []byte{},
 			Value:          []byte{},
 			PathPrefix:     "ibc",
-			PathKey:        "connections/connection-0",
+			PathKey:        []byte("connections/connection-0"),
 		},
 	}
 
 	bz, err := json.Marshal(queryMsg)
 	require.NoError(t, err)
 
-	bz, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
+	_, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
 	require.Error(t, err)
 }
 
@@ -163,13 +164,13 @@ func TestVerifyNonMembership(t *testing.T) {
 			RevisionHeight: 0,
 			Proof:          []byte{},
 			PathPrefix:     "ibc",
-			PathKey:        "connections/connection-0",
+			PathKey:        []byte("connections/connection-0"),
 		},
 	}
 
 	bz, err := json.Marshal(queryMsg)
 	require.NoError(t, err)
 
-	bz, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
+	_, err = app.WasmKeeper.QuerySmart(ctx, contractAddr, bz)
 	require.Error(t, err)
 }

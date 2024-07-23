@@ -101,7 +101,6 @@ message QueryMissCounterResponse {
   uint64 miss_counter = 1;
 }
 
-
 // QueryParamsRequest is the request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 

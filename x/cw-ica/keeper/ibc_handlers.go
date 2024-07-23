@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"cosmossdk.io/errors"
+	"github.com/Team-Kujira/core/x/cw-ica/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -63,7 +64,9 @@ func (k *Keeper) createCachedContext(ctx sdk.Context) (sdk.Context, func(), stor
 			newLimit = gasLeft - GasReserve
 		}
 
-		gasMeter = storetypes.NewGasMeter(newLimit)
+		gasMeter = sdk.NewGasMeter(newLimit)
+	} else {
+		gasMeter = sdk.NewInfiniteGasMeter()
 	}
 
 	cacheCtx = cacheCtx.WithGasMeter(gasMeter)
@@ -102,7 +105,20 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Pack
 	}
 
 	if err != nil {
-		k.Logger(ctx).Debug("HandleAcknowledgement: failed to Sudo contract on packet acknowledgement", "error", err)
+		k.Logger(ctx).Debug(
+			"HandleAcknowledgement: failed to Sudo contract on packet acknowledgement",
+			"source_port", packet.SourcePort,
+			"source_channel", packet.SourceChannel,
+			"sequence", packet.Sequence,
+			"error", err)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeICATxCallbackFailure,
+				sdk.NewAttribute(types.AttributePacketSourcePort, packet.SourcePort),
+				sdk.NewAttribute(types.AttributePacketSourceChannel, packet.SourceChannel),
+				sdk.NewAttribute(types.AttributePacketSequence, fmt.Sprintf("%d", packet.Sequence)),
+			),
+		})
 	} else {
 		ctx.EventManager().EmitEvents(cacheCtx.EventManager().Events())
 		writeFn()
@@ -125,7 +141,20 @@ func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, _ sd
 		Timeout: &types.IcaCallbackTimeout{},
 	})
 	if err != nil {
-		k.Logger(ctx).Error("HandleTimeout: failed to Sudo contract on packet timeout", "port", packet.SourcePort, "error", err)
+		k.Logger(ctx).Debug(
+			"HandleTimeout: failed to Sudo contract on packet timeout",
+			"source_port", packet.SourcePort,
+			"source_channel", packet.SourceChannel,
+			"sequence", packet.Sequence,
+			"error", err)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeICATimeoutCallbackFailure,
+				sdk.NewAttribute(types.AttributePacketSourcePort, packet.SourcePort),
+				sdk.NewAttribute(types.AttributePacketSourceChannel, packet.SourceChannel),
+				sdk.NewAttribute(types.AttributePacketSequence, fmt.Sprintf("%d", packet.Sequence)),
+			),
+		})
 	} else {
 		ctx.EventManager().EmitEvents(cacheCtx.EventManager().Events())
 		writeFn()
@@ -166,10 +195,23 @@ func (k *Keeper) HandleChanOpenAck(
 		},
 	})
 	if err != nil {
-		k.Logger(ctx).Error("SudoCallback failure", "error", err)
+		k.Logger(ctx).Error(
+			"HandleChanOpenAck: failed to Sudo contract on packet ChanOpenAck",
+			"port", portID,
+			"channel", channelID,
+			"error", err)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeICARegisterCallbackFailure,
+				sdk.NewAttribute(types.AttributePacketSourcePort, portID),
+				sdk.NewAttribute(types.AttributePacketSourceChannel, channelID),
+			),
+		})
 	} else {
+		ctx.EventManager().EmitEvents(cacheCtx.EventManager().Events())
 		writeFn()
 	}
+	ctx.GasMeter().ConsumeGas(newGasMeter.GasConsumed(), "consume from cached context")
 
 	// remove the callback data
 	k.RemoveCallbackData(ctx, callbackDataKey)

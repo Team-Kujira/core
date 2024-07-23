@@ -650,9 +650,11 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		app.BatchKeeper,
 		*app.IBCKeeper,
 		app.CwICAKeeper,
 		app.ICAControllerKeeper,
+		app.TransferKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
@@ -733,6 +735,7 @@ func New(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+	transferStack = cwica.NewIBCMiddleware(transferStack, app.CwICAKeeper, app.IBCKeeper.ChannelKeeper)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -743,7 +746,7 @@ func New(
 
 	icaControllerStack = cwica.NewIBCModule(app.CwICAKeeper)
 	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, app.ICAControllerKeeper)
-	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
+	// icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
 
 	// RecvPacket, message that originates from core IBC and goes down to app, the flow is:
 	// channel.RecvPacket -> fee.OnRecvPacket -> icaHost.OnRecvPacket
@@ -1091,7 +1094,7 @@ func New(
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: txConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  SigVerificationGasConsumer,
 			},
 			IBCKeeper:             app.IBCKeeper,
 			WasmConfig:            &wasmConfig,

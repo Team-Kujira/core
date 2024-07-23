@@ -29,6 +29,7 @@ var (
 	DenomsPrefixKey           = "denoms"
 	CreatorPrefixKey          = "creator"
 	AdminPrefixKey            = "admin"
+	NoFeeAccountPrefixKey     = "nofeeaccount"
 	ParamsKey                 = []byte("params")
 )
 
@@ -47,4 +48,9 @@ func GetCreatorPrefix(creator string) []byte {
 // GetCreatorsPrefix returns the store prefix where a list of all creator addresses are stored
 func GetCreatorsPrefix() []byte {
 	return []byte(strings.Join([]string{CreatorPrefixKey, ""}, KeySeparator))
+}
+
+// GetNoFeeAccountPrefix returns the store prefix where a list of all no fee spending accounts in denom creation
+func GetNoFeeAccountPrefix() []byte {
+	return []byte(strings.Join([]string{NoFeeAccountPrefixKey, ""}, KeySeparator))
 }
