@@ -21,7 +21,7 @@ type (
 	Keeper struct {
 		cdc        codec.Codec
 		storeKey   storetypes.StoreKey
-		paramSpace paramtypes.Subspace
+		paramSpace paramstypes.Subspace
 
 		accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper

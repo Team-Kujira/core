@@ -212,12 +212,12 @@ func PerformSubmitTxs(
 	return res, nil
 }
 
-func transfer(ctx sdk.Context, contractAddr sdk.AccAddress, transferTx *Transfer, cwicak cwicakeeper.Keeper, tk ibctransferkeeper.Keeper) ([]sdk.Event, [][]byte, error) {
-	_, err := PerformTransfer(tk, cwicak, ctx, contractAddr, transferTx)
+func transfer(ctx sdk.Context, contractAddr sdk.AccAddress, transferTx *Transfer, cwicak cwicakeeper.Keeper, tk ibctransferkeeper.Keeper) (*ibctransfertypes.MsgTransferResponse, error) {
+	res, err := PerformTransfer(tk, cwicak, ctx, contractAddr, transferTx)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "perform submit txs")
+		return nil, errors.Wrap(err, "perform submit txs")
 	}
-	return nil, nil, nil
+	return res, nil
 }
 
 // PerformTransfer is used to perform ibc transfer through wasmbinding.
@@ -262,6 +262,7 @@ func HandleMsg(
 	ctx sdk.Context,
 	cwicak cwicakeeper.Keeper,
 	icak icacontrollerkeeper.Keeper,
+	transferk ibctransferkeeper.Keeper,
 	contractAddr sdk.AccAddress,
 	msg *CwIcaMsg,
 ) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {

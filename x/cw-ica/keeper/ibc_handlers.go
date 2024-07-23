@@ -10,7 +10,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	storetypes "cosmossdk.io/store/types"
-	"github.com/Team-Kujira/core/x/cw-ica/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
 
@@ -64,9 +63,9 @@ func (k *Keeper) createCachedContext(ctx sdk.Context) (sdk.Context, func(), stor
 			newLimit = gasLeft - GasReserve
 		}
 
-		gasMeter = sdk.NewGasMeter(newLimit)
+		gasMeter = storetypes.NewGasMeter(newLimit)
 	} else {
-		gasMeter = sdk.NewInfiniteGasMeter()
+		gasMeter = storetypes.NewInfiniteGasMeter()
 	}
 
 	cacheCtx = cacheCtx.WithGasMeter(gasMeter)

@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/Team-Kujira/core/x/denom/types"
 )
 
@@ -32,7 +33,7 @@ func (k Keeper) RemoveNoFeeAccount(ctx sdk.Context, address string) {
 // GetNoFeeAccounts returns all no fee accounts
 func (k Keeper) GetNoFeeAccounts(ctx sdk.Context) []string {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetNoFeeAccountPrefix())
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetNoFeeAccountPrefix())
 	defer iterator.Close()
 
 	accounts := []string{}

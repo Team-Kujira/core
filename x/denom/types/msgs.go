@@ -245,10 +245,6 @@ func (m MsgAddNoFeeAccounts) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgAddNoFeeAccounts) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 func (m MsgAddNoFeeAccounts) GetSigners() []sdk.AccAddress {
 	sender, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{sender}
@@ -273,10 +269,6 @@ func (m MsgRemoveNoFeeAccounts) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m MsgRemoveNoFeeAccounts) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgRemoveNoFeeAccounts) GetSigners() []sdk.AccAddress {
