@@ -52,26 +52,26 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 
 		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)))
 		validator, _ = validator.AddTokensFromDel(valTokens)
-		err = suite.app.StakingKeeper.SetValidator(sdk.WrapSDKContext(suite.ctx), validator)
+		err = suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
 		suite.NoError(err)
-		err = suite.app.StakingKeeper.SetValidatorByConsAddr(sdk.WrapSDKContext(suite.ctx), validator)
+		err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
 		suite.NoError(err)
-		err = suite.app.StakingKeeper.SetValidatorByPowerIndex(sdk.WrapSDKContext(suite.ctx), validator)
+		err = suite.app.StakingKeeper.SetValidatorByPowerIndex(suite.ctx, validator)
 		suite.NoError(err)
 
 		// Call the after-creation hook
 		valAddr, err := sdk.ValAddressFromBech32(validator.GetOperator())
 		suite.Require().NoError(err)
-		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(sdk.WrapSDKContext(suite.ctx), valAddr)
+		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, valAddr)
 		suite.NoError(err)
 
 		// Delegate to the validator
 		delAmount := sdk.NewCoin(sdk.DefaultBondDenom, delTokens)
-		err = suite.app.BankKeeper.MintCoins(sdk.WrapSDKContext(suite.ctx), minttypes.ModuleName, sdk.Coins{delAmount})
-		suite.app.BankKeeper.SendCoinsFromModuleToAccount(sdk.WrapSDKContext(suite.ctx), minttypes.ModuleName, delAddr, sdk.Coins{delAmount})
+		err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, sdk.Coins{delAmount})
+		suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, minttypes.ModuleName, delAddr, sdk.Coins{delAmount})
 		suite.Require().NoError(err)
 
-		_, err = suite.app.StakingKeeper.Delegate(sdk.WrapSDKContext(suite.ctx), delAddr, delAmount.Amount, stakingtypes.Unbonded, validator, true)
+		_, err = suite.app.StakingKeeper.Delegate(suite.ctx, delAddr, delAmount.Amount, stakingtypes.Unbonded, validator, true)
 		suite.Require().NoError(err)
 	}
 
@@ -85,8 +85,8 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	}
 	distrModuleTokens = distrModuleTokens.Sort()
 
-	err := suite.app.BankKeeper.MintCoins(sdk.WrapSDKContext(suite.ctx), minttypes.ModuleName, distrModuleTokens)
-	suite.app.BankKeeper.SendCoinsFromModuleToModule(sdk.WrapSDKContext(suite.ctx), minttypes.ModuleName, distrtypes.ModuleName, distrModuleTokens)
+	err := suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, distrModuleTokens)
+	suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, minttypes.ModuleName, distrtypes.ModuleName, distrModuleTokens)
 	suite.Require().NoError(err)
 
 	// Allocate rewards to validators
@@ -98,14 +98,14 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	}
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		validator, err := suite.app.StakingKeeper.Validator(sdk.WrapSDKContext(suite.ctx), valAddr)
+		validator, err := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
 		suite.Require().NoError(err)
-		suite.app.DistrKeeper.AllocateTokensToValidator(sdk.WrapSDKContext(suite.ctx), validator, valRewardTokens)
+		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, validator, valRewardTokens)
 	}
 
 	// Withdraw all rewards using a single batch transaction
 	gasForBatchWithdrawal := suite.ctx.GasMeter().GasConsumed()
-	res, err := batchMsgServer.WithdrawAllDelegatorRewards(sdk.WrapSDKContext(suite.ctx), batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
+	res, err := batchMsgServer.WithdrawAllDelegatorRewards(suite.ctx, batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
 	gasForBatchWithdrawal = suite.ctx.GasMeter().GasConsumed() - gasForBatchWithdrawal
 	suite.Require().NoError(err)
 	suite.Require().False(res.Amount.IsZero())
@@ -114,13 +114,13 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	// check if there are no pending rewards for any validator
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		val, err := suite.app.StakingKeeper.Validator(sdk.WrapSDKContext(suite.ctx), valAddr)
+		val, err := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
 		suite.Require().NoError(err)
-		delegation, err := suite.app.StakingKeeper.Delegation(sdk.WrapSDKContext(suite.ctx), delAddr, valAddr)
+		delegation, err := suite.app.StakingKeeper.Delegation(suite.ctx, delAddr, valAddr)
 		suite.Require().NoError(err)
-		endingPeriod, err := suite.app.DistrKeeper.IncrementValidatorPeriod(sdk.WrapSDKContext(suite.ctx), val)
+		endingPeriod, err := suite.app.DistrKeeper.IncrementValidatorPeriod(suite.ctx, val)
 		suite.Require().NoError(err)
-		rewards, err := suite.app.DistrKeeper.CalculateDelegationRewards(sdk.WrapSDKContext(suite.ctx), val, delegation, endingPeriod)
+		rewards, err := suite.app.DistrKeeper.CalculateDelegationRewards(suite.ctx, val, delegation, endingPeriod)
 		suite.Require().NoError(err)
 		suite.Require().True(rewards.IsZero())
 	}
@@ -131,9 +131,9 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	// Allocate rewards to validators
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		validator, err := suite.app.StakingKeeper.Validator(sdk.WrapSDKContext(suite.ctx), valAddr)
+		validator, err := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
 		suite.Require().NoError(err)
-		suite.app.DistrKeeper.AllocateTokensToValidator(sdk.WrapSDKContext(suite.ctx), validator, valRewardTokens)
+		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, validator, valRewardTokens)
 		suite.Require().NoError(err)
 	}
 
@@ -143,7 +143,7 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
 		// Withdraw rewards
-		res, err := distrMsgServer.WithdrawDelegatorReward(sdk.WrapSDKContext(suite.ctx), distrtypes.NewMsgWithdrawDelegatorReward(delAddr.String(), valAddr.String()))
+		res, err := distrMsgServer.WithdrawDelegatorReward(suite.ctx, distrtypes.NewMsgWithdrawDelegatorReward(delAddr.String(), valAddr.String()))
 		suite.Require().NoError(err)
 		suite.Require().False(res.Amount.IsZero())
 		// check individual rewards are accurate
@@ -185,14 +185,14 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 
 		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)))
 		validator, _ = validator.AddTokensFromDel(valTokens)
-		suite.app.StakingKeeper.SetValidator(sdk.WrapSDKContext(suite.ctx), validator)
-		suite.app.StakingKeeper.SetValidatorByConsAddr(sdk.WrapSDKContext(suite.ctx), validator)
-		suite.app.StakingKeeper.SetValidatorByPowerIndex(sdk.WrapSDKContext(suite.ctx), validator)
+		suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
+		suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
+		suite.app.StakingKeeper.SetValidatorByPowerIndex(suite.ctx, validator)
 
 		// Call the after-creation hook
 		valAddr, err := sdk.ValAddressFromBech32(validator.GetOperator())
 		suite.Require().NoError(err)
-		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(sdk.WrapSDKContext(suite.ctx), valAddr)
+		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, valAddr)
 		suite.Require().NoError(err)
 
 		validators = append(validators, validator.GetOperator())
@@ -200,12 +200,12 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 
 		// Mint coins for delegation
 		delAmount := sdk.NewCoin(sdk.DefaultBondDenom, delTokens)
-		err = suite.app.BankKeeper.MintCoins(sdk.WrapSDKContext(suite.ctx), minttypes.ModuleName, sdk.Coins{delAmount})
-		suite.app.BankKeeper.SendCoinsFromModuleToAccount(sdk.WrapSDKContext(suite.ctx), minttypes.ModuleName, delAddr, sdk.Coins{delAmount})
+		err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, sdk.Coins{delAmount})
+		suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, minttypes.ModuleName, delAddr, sdk.Coins{delAmount})
 		suite.Require().NoError(err)
 
 		// setup initial delegation
-		_, err = suite.app.StakingKeeper.Delegate(sdk.WrapSDKContext(suite.ctx), delAddr, math.NewInt(1000), stakingtypes.Unbonded, validator, true)
+		_, err = suite.app.StakingKeeper.Delegate(suite.ctx, delAddr, math.NewInt(1000), stakingtypes.Unbonded, validator, true)
 		suite.Require().NoError(err)
 	}
 
@@ -214,7 +214,7 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 
 	// Set all delegations using a single batch transaction
 	gasForBatchDelegation := cacheCtx1.GasMeter().GasConsumed()
-	_, err := batchMsgServer.BatchResetDelegation(sdk.WrapSDKContext(cacheCtx1), batchtypes.NewMsgBatchResetDelegation(delAddr, validators, amounts))
+	_, err := batchMsgServer.BatchResetDelegation(cacheCtx1, batchtypes.NewMsgBatchResetDelegation(delAddr, validators, amounts))
 	gasForBatchDelegation = cacheCtx1.GasMeter().GasConsumed() - gasForBatchDelegation
 	suite.Require().NoError(err)
 
@@ -228,7 +228,7 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 		existingDelegation := math.NewInt(1000)
 		if amounts[i].GT(existingDelegation) {
 			_, err := stakingMsgServer.Delegate(
-				sdk.WrapSDKContext(cacheCtx2),
+				cacheCtx2,
 				stakingtypes.NewMsgDelegate(
 					delAddr.String(),
 					valAddr.String(),
@@ -238,7 +238,7 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 			suite.Require().NoError(err)
 		} else if amounts[i].LT(existingDelegation) {
 			_, err := stakingMsgServer.Undelegate(
-				sdk.WrapSDKContext(cacheCtx2),
+				cacheCtx2,
 				stakingtypes.NewMsgUndelegate(
 					delAddr.String(),
 					valAddr.String(),

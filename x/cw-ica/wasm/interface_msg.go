@@ -241,7 +241,7 @@ func PerformTransfer(f ibctransferkeeper.Keeper, cwicak cwicakeeper.Keeper, ctx 
 		Memo:             transferTx.Memo,
 	}
 
-	res, err := f.Transfer(sdk.WrapSDKContext(ctx), msg)
+	res, err := f.Transfer(ctx, msg)
 	if err != nil {
 		return nil, errors.Wrap(err, "submitting transfer tx")
 	}
