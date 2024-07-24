@@ -43,6 +43,7 @@ func MigrateParams(
 		VoteThreshold:     voteThreshold,
 		MaxDeviation:      rewardBand,
 		RequiredSymbols:   symbols,
+		LastSymbolId:      uint32(len(symbols)),
 		SlashFraction:     slashFraction,
 		SlashWindow:       slashWindow,
 		MinValidPerWindow: minValidPerWindow,
