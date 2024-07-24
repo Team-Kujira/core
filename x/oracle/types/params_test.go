@@ -15,11 +15,6 @@ func TestParamsEqual(t *testing.T) {
 	err := p1.Validate()
 	require.NoError(t, err)
 
-	// minus vote period
-	p1.VotePeriod = 0
-	err = p1.Validate()
-	require.Error(t, err)
-
 	// small vote threshold
 	p2 := types.DefaultParams()
 	p2.VoteThreshold = math.LegacyZeroDec()
@@ -60,11 +55,6 @@ func TestValidate(t *testing.T) {
 	pairs := p1.ParamSetPairs()
 	for _, pair := range pairs {
 		switch {
-		case bytes.Equal(types.KeyVotePeriod, pair.Key) ||
-			bytes.Equal(types.KeySlashWindow, pair.Key):
-			require.NoError(t, pair.ValidatorFn(uint64(1)))
-			require.Error(t, pair.ValidatorFn("invalid"))
-			require.Error(t, pair.ValidatorFn(uint64(0)))
 		case bytes.Equal(types.KeyVoteThreshold, pair.Key):
 			require.NoError(t, pair.ValidatorFn(math.LegacyNewDecWithPrec(33, 2)))
 			require.Error(t, pair.ValidatorFn("invalid"))

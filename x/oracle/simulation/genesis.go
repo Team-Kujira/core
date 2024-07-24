@@ -99,7 +99,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	oracleGenesis := types.NewGenesisState(
 		types.Params{
-			VotePeriod:        votePeriod,
 			VoteThreshold:     voteThreshold,
 			MaxDeviation:      maxDeviation,
 			RequiredSymbols:   []types.Symbol{},

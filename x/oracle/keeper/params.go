@@ -7,11 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// VotePeriod returns the number of blocks during which voting takes place.
-func (k Keeper) VotePeriod(ctx sdk.Context) (res uint64) {
-	return k.GetParams(ctx).VotePeriod
-}
-
 // VoteThreshold returns the minimum percentage of votes that must be received for a ballot to pass.
 func (k Keeper) VoteThreshold(ctx sdk.Context) (res math.LegacyDec) {
 	return k.GetParams(ctx).VoteThreshold
