@@ -215,7 +215,7 @@ replace (
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	github.com/cosmos/ibc-go/v8 => github.com/Team-Kujira/ibc-go/v8 v8.3.2-factory
+	github.com/cosmos/ibc-go/v8 => github.com/Team-Kujira/ibc-go/v8 v8.3.2-factory2
 
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/13134
@@ -229,7 +229,4 @@ replace (
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	// https://github.com/cosmos/cosmos-sdk/issues/14949
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-	// https://github.com/cosmos/cosmos-sdk/issues/20159
-	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )

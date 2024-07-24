@@ -6,8 +6,6 @@ import (
 )
 
 func (suite *KeeperTestSuite) TestNoFeeAccounts() {
-	suite.SetupTest()
-
 	// Set accounts
 	addr1 := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 	addr2 := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
