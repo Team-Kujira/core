@@ -30,6 +30,7 @@ var (
 	CreatorPrefixKey          = "creator"
 	AdminPrefixKey            = "admin"
 	NoFeeAccountPrefixKey     = "nofeeaccount"
+	ParamsKey                 = []byte("params")
 )
 
 // GetDenomPrefixStore returns the store prefix where all the data associated with a specific denom

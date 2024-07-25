@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
@@ -28,26 +29,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgAggregateExchangeRatePrevote represents a message to submit
-// aggregate exchange rate prevote.
-type MsgAggregateExchangeRatePrevote struct {
-	Hash      string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty" yaml:"hash"`
-	Feeder    string `protobuf:"bytes,2,opt,name=feeder,proto3" json:"feeder,omitempty" yaml:"feeder"`
-	Validator string `protobuf:"bytes,3,opt,name=validator,proto3" json:"validator,omitempty" yaml:"validator"`
+// MsgAddRequiredSymbol represents a message to add a symbol to the whitelist
+type MsgAddRequiredSymbols struct {
+	Authority string   `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
+	Symbols   []string `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty" yaml:"symbols"`
 }
 
-func (m *MsgAggregateExchangeRatePrevote) Reset()         { *m = MsgAggregateExchangeRatePrevote{} }
-func (m *MsgAggregateExchangeRatePrevote) String() string { return proto.CompactTextString(m) }
-func (*MsgAggregateExchangeRatePrevote) ProtoMessage()    {}
-func (*MsgAggregateExchangeRatePrevote) Descriptor() ([]byte, []int) {
+func (m *MsgAddRequiredSymbols) Reset()         { *m = MsgAddRequiredSymbols{} }
+func (m *MsgAddRequiredSymbols) String() string { return proto.CompactTextString(m) }
+func (*MsgAddRequiredSymbols) ProtoMessage()    {}
+func (*MsgAddRequiredSymbols) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{0}
 }
-func (m *MsgAggregateExchangeRatePrevote) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddRequiredSymbols) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAggregateExchangeRatePrevote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddRequiredSymbols) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAggregateExchangeRatePrevote.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddRequiredSymbols.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -57,36 +56,48 @@ func (m *MsgAggregateExchangeRatePrevote) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *MsgAggregateExchangeRatePrevote) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAggregateExchangeRatePrevote.Merge(m, src)
+func (m *MsgAddRequiredSymbols) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddRequiredSymbols.Merge(m, src)
 }
-func (m *MsgAggregateExchangeRatePrevote) XXX_Size() int {
+func (m *MsgAddRequiredSymbols) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAggregateExchangeRatePrevote) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAggregateExchangeRatePrevote.DiscardUnknown(m)
+func (m *MsgAddRequiredSymbols) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddRequiredSymbols.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAggregateExchangeRatePrevote proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddRequiredSymbols proto.InternalMessageInfo
 
-// MsgAggregateExchangeRatePrevoteResponse defines the Msg/AggregateExchangeRatePrevote response type.
-type MsgAggregateExchangeRatePrevoteResponse struct {
+func (m *MsgAddRequiredSymbols) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
 }
 
-func (m *MsgAggregateExchangeRatePrevoteResponse) Reset() {
-	*m = MsgAggregateExchangeRatePrevoteResponse{}
+func (m *MsgAddRequiredSymbols) GetSymbols() []string {
+	if m != nil {
+		return m.Symbols
+	}
+	return nil
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAggregateExchangeRatePrevoteResponse) ProtoMessage()    {}
-func (*MsgAggregateExchangeRatePrevoteResponse) Descriptor() ([]byte, []int) {
+
+// MsgAddRequiredSymbolResponse defines the Msg/AddRequiredSymbol response type.
+type MsgAddRequiredSymbolsResponse struct {
+}
+
+func (m *MsgAddRequiredSymbolsResponse) Reset()         { *m = MsgAddRequiredSymbolsResponse{} }
+func (m *MsgAddRequiredSymbolsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddRequiredSymbolsResponse) ProtoMessage()    {}
+func (*MsgAddRequiredSymbolsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{1}
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddRequiredSymbolsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddRequiredSymbolsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAggregateExchangeRatePrevoteResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddRequiredSymbolsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -96,39 +107,36 @@ func (m *MsgAggregateExchangeRatePrevoteResponse) XXX_Marshal(b []byte, determin
 		return b[:n], nil
 	}
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAggregateExchangeRatePrevoteResponse.Merge(m, src)
+func (m *MsgAddRequiredSymbolsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddRequiredSymbolsResponse.Merge(m, src)
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) XXX_Size() int {
+func (m *MsgAddRequiredSymbolsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAggregateExchangeRatePrevoteResponse.DiscardUnknown(m)
+func (m *MsgAddRequiredSymbolsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddRequiredSymbolsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAggregateExchangeRatePrevoteResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddRequiredSymbolsResponse proto.InternalMessageInfo
 
-// MsgAggregateExchangeRateVote represents a message to submit
-// aggregate exchange rate vote.
-type MsgAggregateExchangeRateVote struct {
-	Salt          string `protobuf:"bytes,1,opt,name=salt,proto3" json:"salt,omitempty" yaml:"salt"`
-	ExchangeRates string `protobuf:"bytes,2,opt,name=exchange_rates,json=exchangeRates,proto3" json:"exchange_rates,omitempty" yaml:"exchange_rates"`
-	Feeder        string `protobuf:"bytes,3,opt,name=feeder,proto3" json:"feeder,omitempty" yaml:"feeder"`
-	Validator     string `protobuf:"bytes,4,opt,name=validator,proto3" json:"validator,omitempty" yaml:"validator"`
+// MsgRemoveRequiredSymbol represents a message to remove a symbol from the whitelist
+type MsgRemoveRequiredSymbols struct {
+	Authority string   `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
+	Symbols   []string `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty" yaml:"symbols"`
 }
 
-func (m *MsgAggregateExchangeRateVote) Reset()         { *m = MsgAggregateExchangeRateVote{} }
-func (m *MsgAggregateExchangeRateVote) String() string { return proto.CompactTextString(m) }
-func (*MsgAggregateExchangeRateVote) ProtoMessage()    {}
-func (*MsgAggregateExchangeRateVote) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveRequiredSymbols) Reset()         { *m = MsgRemoveRequiredSymbols{} }
+func (m *MsgRemoveRequiredSymbols) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveRequiredSymbols) ProtoMessage()    {}
+func (*MsgRemoveRequiredSymbols) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{2}
 }
-func (m *MsgAggregateExchangeRateVote) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveRequiredSymbols) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAggregateExchangeRateVote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveRequiredSymbols) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAggregateExchangeRateVote.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveRequiredSymbols.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -138,34 +146,48 @@ func (m *MsgAggregateExchangeRateVote) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgAggregateExchangeRateVote) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAggregateExchangeRateVote.Merge(m, src)
+func (m *MsgRemoveRequiredSymbols) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveRequiredSymbols.Merge(m, src)
 }
-func (m *MsgAggregateExchangeRateVote) XXX_Size() int {
+func (m *MsgRemoveRequiredSymbols) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAggregateExchangeRateVote) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAggregateExchangeRateVote.DiscardUnknown(m)
+func (m *MsgRemoveRequiredSymbols) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveRequiredSymbols.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAggregateExchangeRateVote proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveRequiredSymbols proto.InternalMessageInfo
 
-// MsgAggregateExchangeRateVoteResponse defines the Msg/AggregateExchangeRateVote response type.
-type MsgAggregateExchangeRateVoteResponse struct {
+func (m *MsgRemoveRequiredSymbols) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
 }
 
-func (m *MsgAggregateExchangeRateVoteResponse) Reset()         { *m = MsgAggregateExchangeRateVoteResponse{} }
-func (m *MsgAggregateExchangeRateVoteResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAggregateExchangeRateVoteResponse) ProtoMessage()    {}
-func (*MsgAggregateExchangeRateVoteResponse) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveRequiredSymbols) GetSymbols() []string {
+	if m != nil {
+		return m.Symbols
+	}
+	return nil
+}
+
+// MsgRemoveRequiredSymbolResponse defines the Msg/RemoveRequiredSymbol response type.
+type MsgRemoveRequiredSymbolsResponse struct {
+}
+
+func (m *MsgRemoveRequiredSymbolsResponse) Reset()         { *m = MsgRemoveRequiredSymbolsResponse{} }
+func (m *MsgRemoveRequiredSymbolsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveRequiredSymbolsResponse) ProtoMessage()    {}
+func (*MsgRemoveRequiredSymbolsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{3}
 }
-func (m *MsgAggregateExchangeRateVoteResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAggregateExchangeRateVoteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAggregateExchangeRateVoteResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveRequiredSymbolsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -175,37 +197,35 @@ func (m *MsgAggregateExchangeRateVoteResponse) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
-func (m *MsgAggregateExchangeRateVoteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAggregateExchangeRateVoteResponse.Merge(m, src)
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveRequiredSymbolsResponse.Merge(m, src)
 }
-func (m *MsgAggregateExchangeRateVoteResponse) XXX_Size() int {
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAggregateExchangeRateVoteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAggregateExchangeRateVoteResponse.DiscardUnknown(m)
+func (m *MsgRemoveRequiredSymbolsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveRequiredSymbolsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAggregateExchangeRateVoteResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveRequiredSymbolsResponse proto.InternalMessageInfo
 
-// MsgDelegateFeedConsent represents a message to
-// delegate oracle voting rights to another address.
-type MsgDelegateFeedConsent struct {
-	Operator string `protobuf:"bytes,1,opt,name=operator,proto3" json:"operator,omitempty" yaml:"operator"`
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty" yaml:"delegate"`
+type MsgUpdateParams struct {
+	Authority string  `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty" yaml:"authority"`
+	Params    *Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty" yaml:"params"`
 }
 
-func (m *MsgDelegateFeedConsent) Reset()         { *m = MsgDelegateFeedConsent{} }
-func (m *MsgDelegateFeedConsent) String() string { return proto.CompactTextString(m) }
-func (*MsgDelegateFeedConsent) ProtoMessage()    {}
-func (*MsgDelegateFeedConsent) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateParams) Reset()         { *m = MsgUpdateParams{} }
+func (m *MsgUpdateParams) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateParams) ProtoMessage()    {}
+func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{4}
 }
-func (m *MsgDelegateFeedConsent) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDelegateFeedConsent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDelegateFeedConsent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateParams.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -215,34 +235,48 @@ func (m *MsgDelegateFeedConsent) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgDelegateFeedConsent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDelegateFeedConsent.Merge(m, src)
+func (m *MsgUpdateParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateParams.Merge(m, src)
 }
-func (m *MsgDelegateFeedConsent) XXX_Size() int {
+func (m *MsgUpdateParams) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDelegateFeedConsent) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDelegateFeedConsent.DiscardUnknown(m)
+func (m *MsgUpdateParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateParams.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDelegateFeedConsent proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateParams proto.InternalMessageInfo
 
-// MsgDelegateFeedConsentResponse defines the Msg/DelegateFeedConsent response type.
-type MsgDelegateFeedConsentResponse struct {
+func (m *MsgUpdateParams) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
 }
 
-func (m *MsgDelegateFeedConsentResponse) Reset()         { *m = MsgDelegateFeedConsentResponse{} }
-func (m *MsgDelegateFeedConsentResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDelegateFeedConsentResponse) ProtoMessage()    {}
-func (*MsgDelegateFeedConsentResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateParams) GetParams() *Params {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
+// MsgUpdateParamsResponse defines the Msg/UpdateParams response type.
+type MsgUpdateParamsResponse struct {
+}
+
+func (m *MsgUpdateParamsResponse) Reset()         { *m = MsgUpdateParamsResponse{} }
+func (m *MsgUpdateParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateParamsResponse) ProtoMessage()    {}
+func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_15c3977432059018, []int{5}
 }
-func (m *MsgDelegateFeedConsentResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDelegateFeedConsentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDelegateFeedConsentResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateParamsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -252,62 +286,58 @@ func (m *MsgDelegateFeedConsentResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *MsgDelegateFeedConsentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDelegateFeedConsentResponse.Merge(m, src)
+func (m *MsgUpdateParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateParamsResponse.Merge(m, src)
 }
-func (m *MsgDelegateFeedConsentResponse) XXX_Size() int {
+func (m *MsgUpdateParamsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDelegateFeedConsentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDelegateFeedConsentResponse.DiscardUnknown(m)
+func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateParamsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDelegateFeedConsentResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgAggregateExchangeRatePrevote)(nil), "kujira.oracle.MsgAggregateExchangeRatePrevote")
-	proto.RegisterType((*MsgAggregateExchangeRatePrevoteResponse)(nil), "kujira.oracle.MsgAggregateExchangeRatePrevoteResponse")
-	proto.RegisterType((*MsgAggregateExchangeRateVote)(nil), "kujira.oracle.MsgAggregateExchangeRateVote")
-	proto.RegisterType((*MsgAggregateExchangeRateVoteResponse)(nil), "kujira.oracle.MsgAggregateExchangeRateVoteResponse")
-	proto.RegisterType((*MsgDelegateFeedConsent)(nil), "kujira.oracle.MsgDelegateFeedConsent")
-	proto.RegisterType((*MsgDelegateFeedConsentResponse)(nil), "kujira.oracle.MsgDelegateFeedConsentResponse")
+	proto.RegisterType((*MsgAddRequiredSymbols)(nil), "kujira.oracle.MsgAddRequiredSymbols")
+	proto.RegisterType((*MsgAddRequiredSymbolsResponse)(nil), "kujira.oracle.MsgAddRequiredSymbolsResponse")
+	proto.RegisterType((*MsgRemoveRequiredSymbols)(nil), "kujira.oracle.MsgRemoveRequiredSymbols")
+	proto.RegisterType((*MsgRemoveRequiredSymbolsResponse)(nil), "kujira.oracle.MsgRemoveRequiredSymbolsResponse")
+	proto.RegisterType((*MsgUpdateParams)(nil), "kujira.oracle.MsgUpdateParams")
+	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "kujira.oracle.MsgUpdateParamsResponse")
 }
 
 func init() { proto.RegisterFile("kujira/oracle/tx.proto", fileDescriptor_15c3977432059018) }
 
 var fileDescriptor_15c3977432059018 = []byte{
-	// 492 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0xbf, 0x6f, 0xd3, 0x40,
-	0x14, 0xc7, 0x7d, 0x4d, 0x55, 0xb5, 0x87, 0x42, 0xc1, 0x2d, 0x55, 0x1a, 0x55, 0x76, 0x75, 0xfc,
-	0x2c, 0xa8, 0xb6, 0xd4, 0x4a, 0x0c, 0x9d, 0xa0, 0x14, 0x16, 0x14, 0x09, 0x9d, 0x10, 0x03, 0x0b,
-	0xba, 0x26, 0x8f, 0x4b, 0xa8, 0x93, 0x8b, 0xee, 0xae, 0x55, 0x3a, 0xb0, 0x21, 0xc4, 0xc8, 0x9f,
-	0xd0, 0xff, 0x80, 0x7f, 0x83, 0xb1, 0x23, 0x93, 0x85, 0x92, 0x85, 0x89, 0xc1, 0x23, 0x13, 0xf2,
-	0x9d, 0xed, 0xa6, 0x6a, 0xda, 0xc6, 0x9b, 0xf5, 0xbe, 0x9f, 0x7b, 0x3f, 0xbe, 0x7e, 0x7a, 0x78,
-	0xe5, 0xe0, 0xf0, 0x53, 0x47, 0xb2, 0x50, 0x48, 0xd6, 0x8c, 0x20, 0xd4, 0x83, 0xa0, 0x2f, 0x85,
-	0x16, 0x6e, 0xd5, 0xc6, 0x03, 0x1b, 0xaf, 0x2f, 0x73, 0xc1, 0x85, 0x51, 0xc2, 0xf4, 0xcb, 0x42,
-	0xe4, 0x07, 0xc2, 0x7e, 0x43, 0xf1, 0xe7, 0x9c, 0x4b, 0xe0, 0x4c, 0xc3, 0xcb, 0x41, 0xb3, 0xcd,
-	0x7a, 0x1c, 0x28, 0xd3, 0xf0, 0x46, 0xc2, 0x91, 0xd0, 0xe0, 0xde, 0xc5, 0xb3, 0x6d, 0xa6, 0xda,
-	0x35, 0xb4, 0x8e, 0x1e, 0x2d, 0xec, 0x2e, 0x26, 0xb1, 0x7f, 0xe3, 0x98, 0x75, 0xa3, 0x1d, 0x92,
-	0x46, 0x09, 0x35, 0xa2, 0xbb, 0x81, 0xe7, 0x3e, 0x02, 0xb4, 0x40, 0xd6, 0x66, 0x0c, 0x76, 0x3b,
-	0x89, 0xfd, 0xaa, 0xc5, 0x6c, 0x9c, 0xd0, 0x0c, 0x70, 0xb7, 0xf0, 0xc2, 0x11, 0x8b, 0x3a, 0x2d,
-	0xa6, 0x85, 0xac, 0x55, 0x0c, 0xbd, 0x9c, 0xc4, 0xfe, 0x2d, 0x4b, 0x17, 0x12, 0xa1, 0x67, 0xd8,
-	0xce, 0xfc, 0xb7, 0x13, 0xdf, 0xf9, 0x73, 0xe2, 0x3b, 0x64, 0x03, 0x3f, 0xbc, 0xa6, 0x61, 0x0a,
-	0xaa, 0x2f, 0x7a, 0x0a, 0xc8, 0x5f, 0x84, 0xd7, 0x2e, 0x63, 0xdf, 0x65, 0x93, 0x29, 0x16, 0xe9,
-	0x8b, 0x93, 0xa5, 0x51, 0x42, 0x8d, 0xe8, 0x3e, 0xc3, 0x37, 0x21, 0x7b, 0xf8, 0x41, 0x32, 0x0d,
-	0x2a, 0x9b, 0x70, 0x35, 0x89, 0xfd, 0x3b, 0x16, 0x3f, 0xaf, 0x13, 0x5a, 0x85, 0xb1, 0x4a, 0x6a,
-	0xcc, 0x9b, 0x4a, 0x29, 0x6f, 0x66, 0xcb, 0x7a, 0xf3, 0x00, 0xdf, 0xbb, 0x6a, 0xde, 0xc2, 0x98,
-	0x2f, 0x08, 0xaf, 0x34, 0x14, 0xdf, 0x83, 0xc8, 0x70, 0xaf, 0x00, 0x5a, 0x2f, 0x52, 0xa1, 0xa7,
-	0xdd, 0x10, 0xcf, 0x8b, 0x3e, 0x48, 0x53, 0xdf, 0xda, 0xb2, 0x94, 0xc4, 0xfe, 0xa2, 0xad, 0x9f,
-	0x2b, 0x84, 0x16, 0x50, 0xfa, 0xa0, 0x95, 0xe5, 0xc9, 0x8c, 0x19, 0x7b, 0x90, 0x2b, 0x84, 0x16,
-	0xd0, 0x58, 0xbb, 0xeb, 0xd8, 0x9b, 0xdc, 0x45, 0xde, 0xe8, 0xd6, 0xbf, 0x19, 0x5c, 0x69, 0x28,
-	0xee, 0x7e, 0x45, 0x78, 0xed, 0xca, 0x1d, 0x0d, 0x82, 0x73, 0xdb, 0x1e, 0x5c, 0xb3, 0x22, 0xf5,
-	0xa7, 0xe5, 0xf8, 0xbc, 0x21, 0xf7, 0x33, 0x5e, 0xbd, 0x7c, 0x9d, 0x9e, 0x4c, 0x99, 0x34, 0x85,
-	0xeb, 0xdb, 0x25, 0xe0, 0xa2, 0xfc, 0x01, 0x5e, 0x9a, 0xf4, 0xd3, 0xee, 0x5f, 0xcc, 0x35, 0x01,
-	0xab, 0x6f, 0x4e, 0x85, 0xe5, 0xc5, 0x76, 0xf7, 0x7e, 0x0e, 0x3d, 0x74, 0x3a, 0xf4, 0xd0, 0xef,
-	0xa1, 0x87, 0xbe, 0x8f, 0x3c, 0xe7, 0x74, 0xe4, 0x39, 0xbf, 0x46, 0x9e, 0xf3, 0xfe, 0x31, 0xef,
-	0xe8, 0xf6, 0xe1, 0x7e, 0xd0, 0x14, 0xdd, 0xf0, 0x2d, 0xb0, 0xee, 0xe6, 0x6b, 0x7b, 0x82, 0x9a,
-	0x42, 0x42, 0x38, 0x28, 0x2e, 0xd1, 0x71, 0x1f, 0xd4, 0xfe, 0x9c, 0x39, 0x34, 0xdb, 0xff, 0x03,
-	0x00, 0x00, 0xff, 0xff, 0xe7, 0xd7, 0x8e, 0xe4, 0xa7, 0x04, 0x00, 0x00,
+	// 426 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcb, 0x2e, 0xcd, 0xca,
+	0x2c, 0x4a, 0xd4, 0xcf, 0x2f, 0x4a, 0x4c, 0xce, 0x49, 0xd5, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca,
+	0x2f, 0xc9, 0x17, 0xe2, 0x85, 0x88, 0xeb, 0x41, 0xc4, 0xa5, 0x44, 0xd2, 0xf3, 0xd3, 0xf3, 0xc1,
+	0x32, 0xfa, 0x20, 0x16, 0x44, 0x91, 0x94, 0x78, 0x72, 0x7e, 0x71, 0x6e, 0x7e, 0xb1, 0x7e, 0x6e,
+	0x71, 0xba, 0x7e, 0x99, 0x21, 0x88, 0x82, 0x4a, 0x48, 0xa1, 0x9a, 0x0a, 0xa1, 0x20, 0x72, 0x4a,
+	0x9d, 0x8c, 0x5c, 0xa2, 0xbe, 0xc5, 0xe9, 0x8e, 0x29, 0x29, 0x41, 0xa9, 0x85, 0xa5, 0x99, 0x45,
+	0xa9, 0x29, 0xc1, 0x95, 0xb9, 0x49, 0xf9, 0x39, 0xc5, 0x42, 0x46, 0x5c, 0x9c, 0x89, 0xa5, 0x25,
+	0x19, 0xf9, 0x45, 0x99, 0x25, 0x95, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x4e, 0x22, 0x9f, 0xee,
+	0xc9, 0x0b, 0x54, 0x26, 0xe6, 0xe6, 0x58, 0x29, 0xc1, 0xa5, 0x94, 0x82, 0x10, 0xca, 0x84, 0x74,
+	0xb8, 0xd8, 0x8b, 0x21, 0xda, 0x25, 0x98, 0x14, 0x98, 0x35, 0x38, 0x9d, 0x84, 0x3e, 0xdd, 0x93,
+	0xe7, 0x83, 0xe8, 0x80, 0x4a, 0x28, 0x05, 0xc1, 0x94, 0x58, 0xf1, 0x35, 0x3d, 0xdf, 0xa0, 0x85,
+	0xd0, 0xad, 0x24, 0xcf, 0x25, 0x8b, 0xd5, 0x29, 0x41, 0xa9, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9,
+	0x4a, 0x3d, 0x8c, 0x5c, 0x12, 0xbe, 0xc5, 0xe9, 0x41, 0xa9, 0xb9, 0xf9, 0x65, 0xa9, 0x03, 0xef,
+	0x5e, 0x25, 0x2e, 0x05, 0x5c, 0xae, 0x81, 0x3b, 0x79, 0x3a, 0x23, 0x17, 0xbf, 0x6f, 0x71, 0x7a,
+	0x68, 0x41, 0x4a, 0x62, 0x49, 0x6a, 0x40, 0x62, 0x51, 0x62, 0x2e, 0x79, 0x2e, 0x75, 0xe0, 0x62,
+	0x2b, 0x00, 0xeb, 0x96, 0x60, 0x52, 0x60, 0xd4, 0xe0, 0x36, 0x12, 0xd5, 0x43, 0x49, 0x12, 0x7a,
+	0x10, 0xa3, 0x9d, 0x04, 0x3f, 0xdd, 0x93, 0xe7, 0x85, 0x98, 0x03, 0x51, 0xae, 0x14, 0x04, 0xd5,
+	0x87, 0xe1, 0x7a, 0x49, 0x2e, 0x71, 0x34, 0x87, 0xc1, 0x1c, 0x6d, 0xb4, 0x8b, 0x89, 0x8b, 0xd9,
+	0xb7, 0x38, 0x5d, 0x28, 0x83, 0x4b, 0x08, 0x4b, 0xc2, 0x50, 0x41, 0xb3, 0x1a, 0x6b, 0x9c, 0x49,
+	0xe9, 0x10, 0xa3, 0x0a, 0x66, 0xa3, 0x50, 0x21, 0x97, 0x28, 0xf6, 0x58, 0x55, 0xc7, 0x34, 0x06,
+	0xab, 0x42, 0x29, 0x7d, 0x22, 0x15, 0xc2, 0xad, 0x0c, 0xe3, 0xe2, 0x41, 0x89, 0x15, 0x39, 0x4c,
+	0x03, 0x90, 0xe5, 0xa5, 0xd4, 0xf0, 0xcb, 0xc3, 0xcc, 0x75, 0x72, 0x39, 0xf1, 0x48, 0x8e, 0xf1,
+	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e,
+	0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xad, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc,
+	0x5c, 0xfd, 0x90, 0xd4, 0xc4, 0x5c, 0x5d, 0x6f, 0x48, 0xbe, 0x4c, 0xce, 0x2f, 0x4a, 0xd5, 0xaf,
+	0x80, 0x67, 0xfa, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0x70, 0xf6, 0x34, 0x06, 0x04, 0x00, 0x00,
+	0xff, 0xff, 0x41, 0x98, 0xb8, 0x5b, 0x12, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -322,14 +352,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// AggregateExchangeRatePrevote defines a method for submitting
-	// aggregate exchange rate prevote
-	AggregateExchangeRatePrevote(ctx context.Context, in *MsgAggregateExchangeRatePrevote, opts ...grpc.CallOption) (*MsgAggregateExchangeRatePrevoteResponse, error)
-	// AggregateExchangeRateVote defines a method for submitting
-	// aggregate exchange rate vote
-	AggregateExchangeRateVote(ctx context.Context, in *MsgAggregateExchangeRateVote, opts ...grpc.CallOption) (*MsgAggregateExchangeRateVoteResponse, error)
-	// DelegateFeedConsent defines a method for setting the feeder delegation
-	DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeedConsent, opts ...grpc.CallOption) (*MsgDelegateFeedConsentResponse, error)
+	// AddRequiredSymbol adds a new price to the required list of prices
+	AddRequiredSymbols(ctx context.Context, in *MsgAddRequiredSymbols, opts ...grpc.CallOption) (*MsgAddRequiredSymbolsResponse, error)
+	// RemoveRequiredSymbol removes a price from the required list of prices
+	RemoveRequiredSymbols(ctx context.Context, in *MsgRemoveRequiredSymbols, opts ...grpc.CallOption) (*MsgRemoveRequiredSymbolsResponse, error)
+	// UpdateParams sets new module params
+	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 }
 
 type msgClient struct {
@@ -340,27 +368,27 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) AggregateExchangeRatePrevote(ctx context.Context, in *MsgAggregateExchangeRatePrevote, opts ...grpc.CallOption) (*MsgAggregateExchangeRatePrevoteResponse, error) {
-	out := new(MsgAggregateExchangeRatePrevoteResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AggregateExchangeRatePrevote", in, out, opts...)
+func (c *msgClient) AddRequiredSymbols(ctx context.Context, in *MsgAddRequiredSymbols, opts ...grpc.CallOption) (*MsgAddRequiredSymbolsResponse, error) {
+	out := new(MsgAddRequiredSymbolsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AddRequiredSymbols", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) AggregateExchangeRateVote(ctx context.Context, in *MsgAggregateExchangeRateVote, opts ...grpc.CallOption) (*MsgAggregateExchangeRateVoteResponse, error) {
-	out := new(MsgAggregateExchangeRateVoteResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/AggregateExchangeRateVote", in, out, opts...)
+func (c *msgClient) RemoveRequiredSymbols(ctx context.Context, in *MsgRemoveRequiredSymbols, opts ...grpc.CallOption) (*MsgRemoveRequiredSymbolsResponse, error) {
+	out := new(MsgRemoveRequiredSymbolsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/RemoveRequiredSymbols", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeedConsent, opts ...grpc.CallOption) (*MsgDelegateFeedConsentResponse, error) {
-	out := new(MsgDelegateFeedConsentResponse)
-	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/DelegateFeedConsent", in, out, opts...)
+func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
+	out := new(MsgUpdateParamsResponse)
+	err := c.cc.Invoke(ctx, "/kujira.oracle.Msg/UpdateParams", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -369,84 +397,82 @@ func (c *msgClient) DelegateFeedConsent(ctx context.Context, in *MsgDelegateFeed
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// AggregateExchangeRatePrevote defines a method for submitting
-	// aggregate exchange rate prevote
-	AggregateExchangeRatePrevote(context.Context, *MsgAggregateExchangeRatePrevote) (*MsgAggregateExchangeRatePrevoteResponse, error)
-	// AggregateExchangeRateVote defines a method for submitting
-	// aggregate exchange rate vote
-	AggregateExchangeRateVote(context.Context, *MsgAggregateExchangeRateVote) (*MsgAggregateExchangeRateVoteResponse, error)
-	// DelegateFeedConsent defines a method for setting the feeder delegation
-	DelegateFeedConsent(context.Context, *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error)
+	// AddRequiredSymbol adds a new price to the required list of prices
+	AddRequiredSymbols(context.Context, *MsgAddRequiredSymbols) (*MsgAddRequiredSymbolsResponse, error)
+	// RemoveRequiredSymbol removes a price from the required list of prices
+	RemoveRequiredSymbols(context.Context, *MsgRemoveRequiredSymbols) (*MsgRemoveRequiredSymbolsResponse, error)
+	// UpdateParams sets new module params
+	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) AggregateExchangeRatePrevote(ctx context.Context, req *MsgAggregateExchangeRatePrevote) (*MsgAggregateExchangeRatePrevoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AggregateExchangeRatePrevote not implemented")
+func (*UnimplementedMsgServer) AddRequiredSymbols(ctx context.Context, req *MsgAddRequiredSymbols) (*MsgAddRequiredSymbolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddRequiredSymbols not implemented")
 }
-func (*UnimplementedMsgServer) AggregateExchangeRateVote(ctx context.Context, req *MsgAggregateExchangeRateVote) (*MsgAggregateExchangeRateVoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AggregateExchangeRateVote not implemented")
+func (*UnimplementedMsgServer) RemoveRequiredSymbols(ctx context.Context, req *MsgRemoveRequiredSymbols) (*MsgRemoveRequiredSymbolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveRequiredSymbols not implemented")
 }
-func (*UnimplementedMsgServer) DelegateFeedConsent(ctx context.Context, req *MsgDelegateFeedConsent) (*MsgDelegateFeedConsentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DelegateFeedConsent not implemented")
+func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_AggregateExchangeRatePrevote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAggregateExchangeRatePrevote)
+func _Msg_AddRequiredSymbols_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddRequiredSymbols)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AggregateExchangeRatePrevote(ctx, in)
+		return srv.(MsgServer).AddRequiredSymbols(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/AggregateExchangeRatePrevote",
+		FullMethod: "/kujira.oracle.Msg/AddRequiredSymbols",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AggregateExchangeRatePrevote(ctx, req.(*MsgAggregateExchangeRatePrevote))
+		return srv.(MsgServer).AddRequiredSymbols(ctx, req.(*MsgAddRequiredSymbols))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_AggregateExchangeRateVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAggregateExchangeRateVote)
+func _Msg_RemoveRequiredSymbols_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveRequiredSymbols)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AggregateExchangeRateVote(ctx, in)
+		return srv.(MsgServer).RemoveRequiredSymbols(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/AggregateExchangeRateVote",
+		FullMethod: "/kujira.oracle.Msg/RemoveRequiredSymbols",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AggregateExchangeRateVote(ctx, req.(*MsgAggregateExchangeRateVote))
+		return srv.(MsgServer).RemoveRequiredSymbols(ctx, req.(*MsgRemoveRequiredSymbols))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DelegateFeedConsent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDelegateFeedConsent)
+func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DelegateFeedConsent(ctx, in)
+		return srv.(MsgServer).UpdateParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kujira.oracle.Msg/DelegateFeedConsent",
+		FullMethod: "/kujira.oracle.Msg/UpdateParams",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DelegateFeedConsent(ctx, req.(*MsgDelegateFeedConsent))
+		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -456,23 +482,23 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AggregateExchangeRatePrevote",
-			Handler:    _Msg_AggregateExchangeRatePrevote_Handler,
+			MethodName: "AddRequiredSymbols",
+			Handler:    _Msg_AddRequiredSymbols_Handler,
 		},
 		{
-			MethodName: "AggregateExchangeRateVote",
-			Handler:    _Msg_AggregateExchangeRateVote_Handler,
+			MethodName: "RemoveRequiredSymbols",
+			Handler:    _Msg_RemoveRequiredSymbols_Handler,
 		},
 		{
-			MethodName: "DelegateFeedConsent",
-			Handler:    _Msg_DelegateFeedConsent_Handler,
+			MethodName: "UpdateParams",
+			Handler:    _Msg_UpdateParams_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "kujira/oracle/tx.proto",
 }
 
-func (m *MsgAggregateExchangeRatePrevote) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddRequiredSymbols) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -482,41 +508,36 @@ func (m *MsgAggregateExchangeRatePrevote) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAggregateExchangeRatePrevote) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbols) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAggregateExchangeRatePrevote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbols) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0x1a
+	if len(m.Symbols) > 0 {
+		for iNdEx := len(m.Symbols) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Symbols[iNdEx])
+			copy(dAtA[i:], m.Symbols[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.Symbols[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
 	}
-	if len(m.Feeder) > 0 {
-		i -= len(m.Feeder)
-		copy(dAtA[i:], m.Feeder)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Feeder)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Hash) > 0 {
-		i -= len(m.Hash)
-		copy(dAtA[i:], m.Hash)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Hash)))
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAggregateExchangeRatePrevoteResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddRequiredSymbolsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -526,12 +547,12 @@ func (m *MsgAggregateExchangeRatePrevoteResponse) Marshal() (dAtA []byte, err er
 	return dAtA[:n], nil
 }
 
-func (m *MsgAggregateExchangeRatePrevoteResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbolsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAggregateExchangeRatePrevoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddRequiredSymbolsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -539,7 +560,7 @@ func (m *MsgAggregateExchangeRatePrevoteResponse) MarshalToSizedBuffer(dAtA []by
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAggregateExchangeRateVote) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveRequiredSymbols) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -549,48 +570,36 @@ func (m *MsgAggregateExchangeRateVote) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAggregateExchangeRateVote) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbols) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAggregateExchangeRateVote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbols) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0x22
+	if len(m.Symbols) > 0 {
+		for iNdEx := len(m.Symbols) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Symbols[iNdEx])
+			copy(dAtA[i:], m.Symbols[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.Symbols[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
 	}
-	if len(m.Feeder) > 0 {
-		i -= len(m.Feeder)
-		copy(dAtA[i:], m.Feeder)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Feeder)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.ExchangeRates) > 0 {
-		i -= len(m.ExchangeRates)
-		copy(dAtA[i:], m.ExchangeRates)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ExchangeRates)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Salt) > 0 {
-		i -= len(m.Salt)
-		copy(dAtA[i:], m.Salt)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Salt)))
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAggregateExchangeRateVoteResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveRequiredSymbolsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -600,12 +609,12 @@ func (m *MsgAggregateExchangeRateVoteResponse) Marshal() (dAtA []byte, err error
 	return dAtA[:n], nil
 }
 
-func (m *MsgAggregateExchangeRateVoteResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbolsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAggregateExchangeRateVoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveRequiredSymbolsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -613,7 +622,7 @@ func (m *MsgAggregateExchangeRateVoteResponse) MarshalToSizedBuffer(dAtA []byte)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDelegateFeedConsent) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateParams) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -623,34 +632,39 @@ func (m *MsgDelegateFeedConsent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDelegateFeedConsent) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateParams) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDelegateFeedConsent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Delegate) > 0 {
-		i -= len(m.Delegate)
-		copy(dAtA[i:], m.Delegate)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Delegate)))
+	if m.Params != nil {
+		{
+			size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Operator) > 0 {
-		i -= len(m.Operator)
-		copy(dAtA[i:], m.Operator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Operator)))
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDelegateFeedConsentResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateParamsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -660,12 +674,12 @@ func (m *MsgDelegateFeedConsentResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDelegateFeedConsentResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateParamsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDelegateFeedConsentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -684,62 +698,26 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgAggregateExchangeRatePrevote) Size() (n int) {
+func (m *MsgAddRequiredSymbols) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Hash)
+	l = len(m.Authority)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Feeder)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if len(m.Symbols) > 0 {
+		for _, s := range m.Symbols {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
 	}
 	return n
 }
 
-func (m *MsgAggregateExchangeRatePrevoteResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgAggregateExchangeRateVote) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Salt)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.ExchangeRates)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Feeder)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgAggregateExchangeRateVoteResponse) Size() (n int) {
+func (m *MsgAddRequiredSymbolsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -748,24 +726,52 @@ func (m *MsgAggregateExchangeRateVoteResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDelegateFeedConsent) Size() (n int) {
+func (m *MsgRemoveRequiredSymbols) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Operator)
+	l = len(m.Authority)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Delegate)
+	if len(m.Symbols) > 0 {
+		for _, s := range m.Symbols {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgRemoveRequiredSymbolsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateParams) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
 	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Params != nil {
+		l = m.Params.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgDelegateFeedConsentResponse) Size() (n int) {
+func (m *MsgUpdateParamsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -780,7 +786,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgAggregateExchangeRatePrevote) Unmarshal(dAtA []byte) error {
+func (m *MsgAddRequiredSymbols) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -803,15 +809,15 @@ func (m *MsgAggregateExchangeRatePrevote) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRatePrevote: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddRequiredSymbols: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRatePrevote: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddRequiredSymbols: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -839,11 +845,11 @@ func (m *MsgAggregateExchangeRatePrevote) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Hash = string(dAtA[iNdEx:postIndex])
+			m.Authority = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Feeder", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Symbols", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -871,39 +877,7 @@ func (m *MsgAggregateExchangeRatePrevote) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Feeder = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = string(dAtA[iNdEx:postIndex])
+			m.Symbols = append(m.Symbols, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -926,7 +900,7 @@ func (m *MsgAggregateExchangeRatePrevote) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAggregateExchangeRatePrevoteResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddRequiredSymbolsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -949,10 +923,10 @@ func (m *MsgAggregateExchangeRatePrevoteResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRatePrevoteResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddRequiredSymbolsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRatePrevoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddRequiredSymbolsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -976,7 +950,7 @@ func (m *MsgAggregateExchangeRatePrevoteResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveRequiredSymbols) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -999,15 +973,15 @@ func (m *MsgAggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRateVote: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbols: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRateVote: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbols: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Salt", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1035,11 +1009,11 @@ func (m *MsgAggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Salt = string(dAtA[iNdEx:postIndex])
+			m.Authority = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ExchangeRates", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Symbols", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1067,71 +1041,7 @@ func (m *MsgAggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ExchangeRates = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Feeder", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Feeder = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = string(dAtA[iNdEx:postIndex])
+			m.Symbols = append(m.Symbols, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1154,7 +1064,7 @@ func (m *MsgAggregateExchangeRateVote) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAggregateExchangeRateVoteResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveRequiredSymbolsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1177,10 +1087,10 @@ func (m *MsgAggregateExchangeRateVoteResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRateVoteResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbolsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAggregateExchangeRateVoteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveRequiredSymbolsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1204,7 +1114,7 @@ func (m *MsgAggregateExchangeRateVoteResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDelegateFeedConsent) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1227,15 +1137,15 @@ func (m *MsgDelegateFeedConsent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDelegateFeedConsent: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateParams: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDelegateFeedConsent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateParams: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1263,13 +1173,13 @@ func (m *MsgDelegateFeedConsent) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Operator = string(dAtA[iNdEx:postIndex])
+			m.Authority = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1279,23 +1189,27 @@ func (m *MsgDelegateFeedConsent) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Delegate = string(dAtA[iNdEx:postIndex])
+			if m.Params == nil {
+				m.Params = &Params{}
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1318,7 +1232,7 @@ func (m *MsgDelegateFeedConsent) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDelegateFeedConsentResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateParamsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1341,10 +1255,10 @@ func (m *MsgDelegateFeedConsentResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDelegateFeedConsentResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateParamsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDelegateFeedConsentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

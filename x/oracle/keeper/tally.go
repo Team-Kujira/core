@@ -1,6 +1,7 @@
-package oracle
+package keeper
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
@@ -11,29 +12,29 @@ import (
 // CONTRACT: pb must be sorted
 func Tally(_ sdk.Context,
 	pb types.ExchangeRateBallot,
-	rewardBand sdk.Dec,
+	maxDeviation math.LegacyDec,
 	validatorClaimMap map[string]types.Claim,
 	missMap map[string]sdk.ValAddress,
-) (sdk.Dec, error) {
+) (math.LegacyDec, error) {
 	weightedMedian, err := pb.WeightedMedian()
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return math.LegacyZeroDec(), err
 	}
 
 	standardDeviation, err := pb.StandardDeviation()
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return math.LegacyZeroDec(), err
 	}
 
-	rewardSpread := weightedMedian.Mul(rewardBand.QuoInt64(2))
-	rewardSpread = sdk.MaxDec(rewardSpread, standardDeviation)
+	spread := weightedMedian.Mul(maxDeviation)
+	spread = math.LegacyMaxDec(spread, standardDeviation)
 
 	for _, vote := range pb {
 		key := vote.Voter.String()
 		claim := validatorClaimMap[key]
 		// Filter ballot winners & abstain voters
-		if (vote.ExchangeRate.GTE(weightedMedian.Sub(rewardSpread)) &&
-			vote.ExchangeRate.LTE(weightedMedian.Add(rewardSpread))) ||
+		if (vote.ExchangeRate.GTE(weightedMedian.Sub(spread)) &&
+			vote.ExchangeRate.LTE(weightedMedian.Add(spread))) ||
 			!vote.ExchangeRate.IsPositive() {
 			claim := validatorClaimMap[key]
 			claim.Weight += vote.Power

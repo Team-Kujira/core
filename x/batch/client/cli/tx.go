@@ -96,7 +96,7 @@ $ %[1]s tx batch batch-reset-delegation kujiravaloper1uf9knclap4a0vrqn8dj726anyh
 			amountStrs := strings.Split(args[1], ",")
 			amounts := []math.Int{}
 			for _, amountStr := range amountStrs {
-				amount, ok := sdk.NewIntFromString(amountStr)
+				amount, ok := math.NewIntFromString(amountStr)
 				if !ok {
 					return types.ErrInvalidAmount
 				}

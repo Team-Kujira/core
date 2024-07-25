@@ -5,12 +5,15 @@ import (
 
 	"cosmossdk.io/errors"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+
+	// bankkeeper "github.com/terra-money/alliance/custom/bank/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 
 	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
 	batch "github.com/Team-Kujira/core/x/batch/wasm"
@@ -18,7 +21,7 @@ import (
 	cwica "github.com/Team-Kujira/core/x/cw-ica/wasm"
 	denomkeeper "github.com/Team-Kujira/core/x/denom/keeper"
 	denom "github.com/Team-Kujira/core/x/denom/wasm"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 )
 
 // CustomMessageDecorator returns decorator for custom CosmWasm bindings messages
@@ -61,13 +64,13 @@ func (m *CustomMessenger) DispatchMsg(
 	contractAddr sdk.AccAddress,
 	contractIBCPortID string,
 	msg wasmvmtypes.CosmosMsg,
-) ([]sdk.Event, [][]byte, error) {
+) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {
 	if msg.Custom != nil {
 		// only handle the happy path where this is really creating / minting / swapping ...
 		// leave everything else for the wrapped version
 		var contractMsg bindings.CosmosMsg
 		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
-			return nil, nil, errors.Wrap(err, "kujira msg")
+			return nil, nil, nil, errors.Wrap(err, "kujira msg")
 		}
 
 		if contractMsg.Denom != nil {
@@ -82,7 +85,7 @@ func (m *CustomMessenger) DispatchMsg(
 			return cwica.HandleMsg(ctx, m.cwica, m.ica, m.transfer, contractAddr, contractMsg.CwIca)
 		}
 
-		return nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
+		return nil, nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }

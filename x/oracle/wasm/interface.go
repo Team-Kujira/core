@@ -3,7 +3,7 @@ package wasm
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
 
 	"github.com/Team-Kujira/core/x/oracle/keeper"
 )

@@ -57,7 +57,7 @@ func (suite *KeeperTestSuite) TestMsgServerCreateDenom() {
 
 			msgServer := keeper.NewMsgServerImpl(*suite.App.DenomKeeper)
 			resp, err := msgServer.CreateDenom(
-				sdk.WrapSDKContext(suite.Ctx),
+				suite.Ctx,
 				&types.MsgCreateDenom{
 					Sender: sender.String(),
 					Nonce:  "1",

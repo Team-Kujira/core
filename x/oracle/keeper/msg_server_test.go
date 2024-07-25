@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,148 +9,17 @@ import (
 
 	"github.com/Team-Kujira/core/x/oracle/types"
 
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
-func TestMsgServer_FeederDelegation(t *testing.T) {
-	input, msgServer := setup(t)
-
-	salt := "1"
-	hash := types.GetAggregateVoteHash(salt, randomExchangeRate.String()+types.TestDenomD, ValAddrs[0])
-
-	// Case 1: empty message
-	delegateFeedConsentMsg := types.MsgDelegateFeedConsent{}
-	_, err := msgServer.DelegateFeedConsent(sdk.WrapSDKContext(input.Ctx), &delegateFeedConsentMsg)
-	require.Error(t, err)
-
-	// Case 2: Normal Prevote - without delegation
-	prevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), prevoteMsg)
-	require.NoError(t, err)
-
-	// Case 2.1: Normal Prevote - with delegation fails
-	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[1], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), prevoteMsg)
-	require.Error(t, err)
-
-	// Case 2.2: Normal Vote - without delegation
-	voteMsg := types.NewMsgAggregateExchangeRateVote(salt, randomExchangeRate.String()+types.TestDenomD, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx.WithBlockHeight(1)), voteMsg)
-	require.NoError(t, err)
-
-	// Case 2.3: Normal Vote - with delegation fails
-	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, randomExchangeRate.String()+types.TestDenomD, Addrs[1], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx.WithBlockHeight(1)), voteMsg)
-	require.Error(t, err)
-
-	// Case 3: Normal MsgDelegateFeedConsent succeeds
-	msg := types.NewMsgDelegateFeedConsent(ValAddrs[0], Addrs[1])
-	_, err = msgServer.DelegateFeedConsent(sdk.WrapSDKContext(input.Ctx), msg)
-	require.NoError(t, err)
-
-	// Case 4.1: Normal Prevote - without delegation fails
-	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[2], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), prevoteMsg)
-	require.Error(t, err)
-
-	// Case 4.2: Normal Prevote - with delegation succeeds
-	prevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[1], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), prevoteMsg)
-	require.NoError(t, err)
-
-	// Case 4.3: Normal Vote - without delegation fails
-	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, randomExchangeRate.String()+types.TestDenomD, Addrs[2], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx.WithBlockHeight(1)), voteMsg)
-	require.Error(t, err)
-
-	// Case 4.4: Normal Vote - with delegation succeeds
-	voteMsg = types.NewMsgAggregateExchangeRateVote(salt, randomExchangeRate.String()+types.TestDenomD, Addrs[1], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx.WithBlockHeight(1)), voteMsg)
-	require.NoError(t, err)
-}
-
-func TestMsgServer_AggregatePrevoteVote(t *testing.T) {
-	input, msgServer := setup(t)
-
-	salt := "1"
-	exchangeRatesStr := fmt.Sprintf("1000.23%s,0.29%s,0.27%s", types.TestDenomC, types.TestDenomB, types.TestDenomD)
-	otherExchangeRateStr := fmt.Sprintf("1000.12%s,0.29%s,0.27%s", types.TestDenomC, types.TestDenomB, types.TestDenomB)
-	unintendedExchageRateStr := fmt.Sprintf("1000.23%s,0.29%s,0.27%s", types.TestDenomC, types.TestDenomB, types.TestDenomE)
-	invalidExchangeRateStr := fmt.Sprintf("1000.23%s,0.29%s,0.27", types.TestDenomC, types.TestDenomB)
-
-	hash := types.GetAggregateVoteHash(salt, exchangeRatesStr, ValAddrs[0])
-
-	aggregateExchangeRatePrevoteMsg := types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[0], ValAddrs[0])
-	_, err := msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRatePrevoteMsg)
-	require.NoError(t, err)
-
-	// Unauthorized feeder
-	aggregateExchangeRatePrevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[1], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRatePrevoteMsg)
-	require.Error(t, err)
-
-	// Invalid addr
-	aggregateExchangeRatePrevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, sdk.AccAddress{}, ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRatePrevoteMsg)
-	require.Error(t, err)
-
-	// Invalid validator addr
-	aggregateExchangeRatePrevoteMsg = types.NewMsgAggregateExchangeRatePrevote(hash, Addrs[0], sdk.ValAddress{})
-	_, err = msgServer.AggregateExchangeRatePrevote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRatePrevoteMsg)
-	require.Error(t, err)
-
-	// Invalid reveal period
-	aggregateExchangeRateVoteMsg := types.NewMsgAggregateExchangeRateVote(salt, exchangeRatesStr, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.Error(t, err)
-
-	// Invalid reveal period
-	input.Ctx = input.Ctx.WithBlockHeight(2)
-	aggregateExchangeRateVoteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRatesStr, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.Error(t, err)
-
-	// Other exchange rate with valid real period
-	input.Ctx = input.Ctx.WithBlockHeight(1)
-	aggregateExchangeRateVoteMsg = types.NewMsgAggregateExchangeRateVote(salt, otherExchangeRateStr, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.Error(t, err)
-
-	// Invalid exchange rate with valid real period
-	input.Ctx = input.Ctx.WithBlockHeight(1)
-	aggregateExchangeRateVoteMsg = types.NewMsgAggregateExchangeRateVote(salt, invalidExchangeRateStr, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.Error(t, err)
-
-	// Unauthorized feeder
-	aggregateExchangeRateVoteMsg = types.NewMsgAggregateExchangeRateVote(salt, invalidExchangeRateStr, Addrs[1], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.Error(t, err)
-
-	// Unintended denom vote
-	aggregateExchangeRateVoteMsg = types.NewMsgAggregateExchangeRateVote(salt, unintendedExchageRateStr, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.Error(t, err)
-
-	// Valid exchange rate reveal submission
-	input.Ctx = input.Ctx.WithBlockHeight(1)
-	aggregateExchangeRateVoteMsg = types.NewMsgAggregateExchangeRateVote(salt, exchangeRatesStr, Addrs[0], ValAddrs[0])
-	_, err = msgServer.AggregateExchangeRateVote(sdk.WrapSDKContext(input.Ctx), aggregateExchangeRateVoteMsg)
-	require.NoError(t, err)
-}
-
 var (
-	stakingAmt         = sdk.TokensFromConsensusPower(10, sdk.DefaultPowerReduction)
-	randomExchangeRate = sdk.NewDec(1700)
+	stakingAmt = sdk.TokensFromConsensusPower(10, sdk.DefaultPowerReduction)
 )
 
 func setup(t *testing.T) (TestInput, types.MsgServer) {
 	input := CreateTestInput(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.VotePeriod = 1
 	params.SlashWindow = 100
-	params.RewardDistributionWindow = 100
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	msgServer := NewMsgServerImpl(input.OracleKeeper)
 
@@ -164,7 +32,123 @@ func setup(t *testing.T) (TestInput, types.MsgServer) {
 	require.NoError(t, err)
 	_, err = sh.CreateValidator(input.Ctx, NewTestMsgCreateValidator(ValAddrs[2], ValPubKeys[2], stakingAmt))
 	require.NoError(t, err)
-	staking.EndBlocker(input.Ctx, &input.StakingKeeper)
+
+	input.StakingKeeper.EndBlocker(input.Ctx)
 
 	return input, msgServer
+}
+
+func TestMsgUpdateParams(t *testing.T) {
+	input, msgServer := setup(t)
+
+	// Test default params setting
+	input.OracleKeeper.SetParams(input.Ctx, types.DefaultParams())
+	params := input.OracleKeeper.GetParams(input.Ctx)
+	require.NotNil(t, params)
+
+	// Test updating with invalid authority
+	_, err := msgServer.UpdateParams(input.Ctx, &types.MsgUpdateParams{
+		Authority: "invalid_authority",
+		Params:    &params,
+	})
+	require.Error(t, err)
+
+	// Test updating with correct authority
+	_, err = msgServer.UpdateParams(input.Ctx, &types.MsgUpdateParams{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Params:    &params,
+	})
+	require.NoError(t, err)
+
+	// Test updating required denoms
+	params.RequiredSymbols = []types.Symbol{{Symbol: "BTC", Id: 1}}
+	_, err = msgServer.UpdateParams(input.Ctx, &types.MsgUpdateParams{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Params:    &params,
+	})
+	require.Error(t, err)
+}
+
+func TestMsgAddRequiredSymbols(t *testing.T) {
+	input, msgServer := setup(t)
+
+	params := input.OracleKeeper.GetParams(input.Ctx)
+	require.Len(t, params.RequiredSymbols, 3)
+	require.Equal(t, params.LastSymbolId, uint32(3))
+
+	// Test with invalid authority
+	_, err := msgServer.AddRequiredSymbols(input.Ctx, &types.MsgAddRequiredSymbols{
+		Authority: "invalid_authority",
+		Symbols:   []string{"ATOM"},
+	})
+	require.Error(t, err)
+
+	// Adding a single denom
+	_, err = msgServer.AddRequiredSymbols(input.Ctx, &types.MsgAddRequiredSymbols{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Symbols:   []string{"ATOM"},
+	})
+	require.NoError(t, err)
+	params = input.OracleKeeper.GetParams(input.Ctx)
+	require.Len(t, params.RequiredSymbols, 4)
+	require.Equal(t, params.LastSymbolId, uint32(4))
+
+	// Adding two denoms
+	_, err = msgServer.AddRequiredSymbols(input.Ctx, &types.MsgAddRequiredSymbols{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Symbols:   []string{"AKT", "ARB"},
+	})
+	require.NoError(t, err)
+	params = input.OracleKeeper.GetParams(input.Ctx)
+	require.Len(t, params.RequiredSymbols, 6)
+	require.Equal(t, params.LastSymbolId, uint32(6))
+
+	// Adding already existing denom
+	_, err = msgServer.AddRequiredSymbols(input.Ctx, &types.MsgAddRequiredSymbols{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Symbols:   []string{"ATOM"},
+	})
+	require.Error(t, err)
+}
+
+func TestMsgRemoveRequiredSymbols(t *testing.T) {
+	input, msgServer := setup(t)
+
+	params := input.OracleKeeper.GetParams(input.Ctx)
+	require.Len(t, params.RequiredSymbols, 3)
+	require.Equal(t, params.LastSymbolId, uint32(3))
+
+	// Test with invalid authority
+	_, err := msgServer.RemoveRequiredSymbols(input.Ctx, &types.MsgRemoveRequiredSymbols{
+		Authority: "invalid_authority",
+		Symbols:   []string{"BTC"},
+	})
+	require.Error(t, err)
+
+	// Removing a single denom
+	_, err = msgServer.RemoveRequiredSymbols(input.Ctx, &types.MsgRemoveRequiredSymbols{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Symbols:   []string{"BTC"},
+	})
+	require.NoError(t, err)
+	params = input.OracleKeeper.GetParams(input.Ctx)
+	require.Len(t, params.RequiredSymbols, 2)
+	require.Equal(t, params.LastSymbolId, uint32(3))
+
+	// Removing two denoms
+	_, err = msgServer.RemoveRequiredSymbols(input.Ctx, &types.MsgRemoveRequiredSymbols{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Symbols:   []string{"ETH", "USDT"},
+	})
+	require.NoError(t, err)
+	params = input.OracleKeeper.GetParams(input.Ctx)
+	require.Len(t, params.RequiredSymbols, 0)
+	require.Equal(t, params.LastSymbolId, uint32(3))
+
+	// Removing not existing denom
+	_, err = msgServer.RemoveRequiredSymbols(input.Ctx, &types.MsgRemoveRequiredSymbols{
+		Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Symbols:   []string{"BTC"},
+	})
+	require.NoError(t, err)
 }

@@ -16,24 +16,14 @@ import (
 // on the simulation
 func ParamChanges(_ *rand.Rand) []simtypes.LegacyParamChange {
 	return []simtypes.LegacyParamChange{
-		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyVotePeriod),
-			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%d\"", GenVotePeriod(r))
-			},
-		),
 		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyVoteThreshold),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf("\"%s\"", GenVoteThreshold(r))
 			},
 		),
-		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyRewardBand),
+		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyMaxDeviation),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%s\"", GenRewardBand(r))
-			},
-		),
-		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyRewardDistributionWindow),
-			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%d\"", GenRewardDistributionWindow(r))
+				return fmt.Sprintf("\"%s\"", GenMaxDeviation(r))
 			},
 		),
 		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeySlashFraction),

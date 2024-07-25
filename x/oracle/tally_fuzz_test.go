@@ -4,13 +4,14 @@ import (
 	"sort"
 	"testing"
 
+	"cosmossdk.io/math"
 	fuzz "github.com/google/gofuzz"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/Team-Kujira/core/x/oracle"
+	"github.com/Team-Kujira/core/x/oracle/keeper"
 	"github.com/Team-Kujira/core/x/oracle/types"
 )
 
@@ -18,8 +19,8 @@ func TestFuzz_Tally(t *testing.T) {
 	validators := map[string]int64{}
 
 	f := fuzz.New().NilChance(0).Funcs(
-		func(e *sdk.Dec, c fuzz.Continue) {
-			*e = sdk.NewDec(c.Int63())
+		func(e *math.LegacyDec, c fuzz.Continue) {
+			*e = math.LegacyNewDec(c.Int63())
 		},
 		func(e *map[string]int64, c fuzz.Continue) {
 			numValidators := c.Intn(100) + 5
@@ -40,7 +41,7 @@ func TestFuzz_Tally(t *testing.T) {
 			for addr, power := range validators {
 				addr, _ := sdk.ValAddressFromBech32(addr)
 
-				var rate sdk.Dec
+				var rate math.LegacyDec
 				c.Fuzz(&rate)
 
 				ballot = append(ballot, types.NewVoteForTally(rate, c.RandString(), addr, power))
@@ -63,12 +64,12 @@ func TestFuzz_Tally(t *testing.T) {
 	ballot := types.ExchangeRateBallot{}
 	f.Fuzz(&ballot)
 
-	var rewardBand sdk.Dec
+	var rewardBand math.LegacyDec
 	f.Fuzz(&rewardBand)
 
 	missMap := map[string]sdk.ValAddress{}
 
 	require.NotPanics(t, func() {
-		oracle.Tally(input.Ctx, ballot, rewardBand, claimMap, missMap)
+		keeper.Tally(input.Ctx, ballot, rewardBand, claimMap, missMap)
 	})
 }

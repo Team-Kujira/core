@@ -34,10 +34,3 @@ linters:
 linters-settings:
   nolintlint:
     allow-leading-space: true
-
-issues:
-  exclude-rules:
-    - path: x/scheduler/client/cli/tx_hook
-      text: "SA1019: cli.FlagDescription is deprecated: only used for v1beta1 legacy proposals."
-    - path: x/scheduler/client/cli/tx_hook
-      text: "SA1019: cli.FlagProposal is deprecated: only used for v1beta1 legacy proposals."

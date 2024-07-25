@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+.PHONY: proto
+
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 
@@ -43,7 +45,7 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 # process linker flags
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=kujira \
-		  -X github.com/cosmos/cosmos-sdk/version.ServerName=kujirad \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=kujirad \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"

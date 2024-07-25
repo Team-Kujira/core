@@ -1,10 +1,12 @@
 package wasmbinding_test
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/crypto"
@@ -21,13 +23,13 @@ import (
 
 func CreateTestInput(t *testing.T) (*app.App, sdk.Context) {
 	app := app.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
+	ctx := app.BaseApp.NewContextLegacy(false, tmproto.Header{Height: 1, ChainID: "kujira-1", Time: time.Now().UTC()})
 	return app, ctx
 }
 
-func FundAccount(t *testing.T, ctx sdk.Context, app *app.App, acct sdk.AccAddress) {
-	err := testutil.FundAccount(app.BankKeeper, ctx, acct, sdk.NewCoins(
-		sdk.NewCoin("uosmo", sdk.NewInt(10000000000)),
+func FundAccount(t *testing.T, ctx context.Context, app *app.App, acct sdk.AccAddress) {
+	err := testutil.FundAccount(ctx, app.BankKeeper, acct, sdk.NewCoins(
+		sdk.NewCoin("uosmo", math.NewInt(10000000000)),
 	))
 	require.NoError(t, err)
 }

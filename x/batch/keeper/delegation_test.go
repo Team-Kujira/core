@@ -8,7 +8,6 @@ import (
 	batchtypes "github.com/Team-Kujira/core/x/batch/types"
 	"github.com/cometbft/cometbft/crypto/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtestutil "github.com/cosmos/cosmos-sdk/x/distribution/testutil"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -43,7 +42,6 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 
 	delPub := secp256k1.GenPrivKey().PubKey()
 	delAddr := sdk.AccAddress(delPub.Address())
-	suite.app.AccountKeeper.SetAccount(suite.ctx, authtypes.NewBaseAccount(delAddr, nil, 0, 0))
 
 	delTokens := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
 
@@ -52,14 +50,19 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 		validator, err := distrtestutil.CreateValidator(valConsPks[i], delTokens)
 		suite.Require().NoError(err)
 
-		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(5, 1), math.LegacyNewDec(0)))
+		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)))
 		validator, _ = validator.AddTokensFromDel(valTokens)
-		suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
-		suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
-		suite.app.StakingKeeper.SetValidatorByPowerIndex(suite.ctx, validator)
+		err = suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
+		suite.NoError(err)
+		err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
+		suite.NoError(err)
+		err = suite.app.StakingKeeper.SetValidatorByPowerIndex(suite.ctx, validator)
+		suite.NoError(err)
 
 		// Call the after-creation hook
-		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, validator.GetOperator())
+		valAddr, err := sdk.ValAddressFromBech32(validator.GetOperator())
+		suite.Require().NoError(err)
+		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, valAddr)
 		suite.NoError(err)
 
 		// Delegate to the validator
@@ -95,12 +98,14 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	}
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, suite.app.StakingKeeper.Validator(suite.ctx, valAddr), valRewardTokens)
+		validator, err := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
+		suite.Require().NoError(err)
+		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, validator, valRewardTokens)
 	}
 
 	// Withdraw all rewards using a single batch transaction
 	gasForBatchWithdrawal := suite.ctx.GasMeter().GasConsumed()
-	res, err := batchMsgServer.WithdrawAllDelegatorRewards(sdk.WrapSDKContext(suite.ctx), batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
+	res, err := batchMsgServer.WithdrawAllDelegatorRewards(suite.ctx, batchtypes.NewMsgWithdrawAllDelegatorRewards(delAddr))
 	gasForBatchWithdrawal = suite.ctx.GasMeter().GasConsumed() - gasForBatchWithdrawal
 	suite.Require().NoError(err)
 	suite.Require().False(res.Amount.IsZero())
@@ -109,10 +114,14 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	// check if there are no pending rewards for any validator
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		val := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
-		delegation := suite.app.StakingKeeper.Delegation(suite.ctx, delAddr, valAddr)
-		endingPeriod := suite.app.DistrKeeper.IncrementValidatorPeriod(suite.ctx, val)
-		rewards := suite.app.DistrKeeper.CalculateDelegationRewards(suite.ctx, val, delegation, endingPeriod)
+		val, err := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
+		suite.Require().NoError(err)
+		delegation, err := suite.app.StakingKeeper.Delegation(suite.ctx, delAddr, valAddr)
+		suite.Require().NoError(err)
+		endingPeriod, err := suite.app.DistrKeeper.IncrementValidatorPeriod(suite.ctx, val)
+		suite.Require().NoError(err)
+		rewards, err := suite.app.DistrKeeper.CalculateDelegationRewards(suite.ctx, val, delegation, endingPeriod)
+		suite.Require().NoError(err)
 		suite.Require().True(rewards.IsZero())
 	}
 
@@ -122,7 +131,10 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	// Allocate rewards to validators
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, suite.app.StakingKeeper.Validator(suite.ctx, valAddr), valRewardTokens)
+		validator, err := suite.app.StakingKeeper.Validator(suite.ctx, valAddr)
+		suite.Require().NoError(err)
+		suite.app.DistrKeeper.AllocateTokensToValidator(suite.ctx, validator, valRewardTokens)
+		suite.Require().NoError(err)
 	}
 
 	totalGasForIndividualWithdrawals := suite.ctx.GasMeter().GasConsumed()
@@ -131,7 +143,7 @@ func (suite *KeeperTestSuite) TestWithdrawAllDelegationRewards() {
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
 		// Withdraw rewards
-		res, err := distrMsgServer.WithdrawDelegatorReward(sdk.WrapSDKContext(suite.ctx), distrtypes.NewMsgWithdrawDelegatorReward(delAddr, valAddr))
+		res, err := distrMsgServer.WithdrawDelegatorReward(suite.ctx, distrtypes.NewMsgWithdrawDelegatorReward(delAddr.String(), valAddr.String()))
 		suite.Require().NoError(err)
 		suite.Require().False(res.Amount.IsZero())
 		// check individual rewards are accurate
@@ -161,29 +173,30 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 
 	delPub := secp256k1.GenPrivKey().PubKey()
 	delAddr := sdk.AccAddress(delPub.Address())
-	suite.app.AccountKeeper.SetAccount(suite.ctx, authtypes.NewBaseAccount(delAddr, nil, 0, 0))
 
 	delTokens := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
 
 	validators := []string{}
-	amounts := []sdk.Int{}
+	amounts := []math.Int{}
 	for i := 0; i < totalVals; i++ {
 		// Setup the validator
 		validator, err := distrtestutil.CreateValidator(valConsPks[i], delTokens)
 		suite.Require().NoError(err)
 
-		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(5, 1), math.LegacyNewDec(0)))
+		validator, _ = validator.SetInitialCommission(stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)))
 		validator, _ = validator.AddTokensFromDel(valTokens)
 		suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
 		suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
 		suite.app.StakingKeeper.SetValidatorByPowerIndex(suite.ctx, validator)
 
 		// Call the after-creation hook
-		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, validator.GetOperator())
+		valAddr, err := sdk.ValAddressFromBech32(validator.GetOperator())
+		suite.Require().NoError(err)
+		err = suite.app.StakingKeeper.Hooks().AfterValidatorCreated(suite.ctx, valAddr)
 		suite.Require().NoError(err)
 
-		validators = append(validators, validator.GetOperator().String())
-		amounts = append(amounts, sdk.NewInt(int64(500*(i%5)))) // 0, 500, 1000, 1500, 2000
+		validators = append(validators, validator.GetOperator())
+		amounts = append(amounts, math.NewInt(int64(500*(i%5)))) // 0, 500, 1000, 1500, 2000
 
 		// Mint coins for delegation
 		delAmount := sdk.NewCoin(sdk.DefaultBondDenom, delTokens)
@@ -192,7 +205,7 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 		suite.Require().NoError(err)
 
 		// setup initial delegation
-		_, err = suite.app.StakingKeeper.Delegate(suite.ctx, delAddr, sdk.NewInt(1000), stakingtypes.Unbonded, validator, true)
+		_, err = suite.app.StakingKeeper.Delegate(suite.ctx, delAddr, math.NewInt(1000), stakingtypes.Unbonded, validator, true)
 		suite.Require().NoError(err)
 	}
 
@@ -201,7 +214,7 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 
 	// Set all delegations using a single batch transaction
 	gasForBatchDelegation := cacheCtx1.GasMeter().GasConsumed()
-	_, err := batchMsgServer.BatchResetDelegation(sdk.WrapSDKContext(cacheCtx1), batchtypes.NewMsgBatchResetDelegation(delAddr, validators, amounts))
+	_, err := batchMsgServer.BatchResetDelegation(cacheCtx1, batchtypes.NewMsgBatchResetDelegation(delAddr, validators, amounts))
 	gasForBatchDelegation = cacheCtx1.GasMeter().GasConsumed() - gasForBatchDelegation
 	suite.Require().NoError(err)
 
@@ -212,23 +225,23 @@ func (suite *KeeperTestSuite) TestBatchResetDelegation() {
 	// Delegate using multiple individual transactions
 	for i := 0; i < totalVals; i++ {
 		valAddr := sdk.ValAddress(valConsAddrs[i])
-		existingDelegation := sdk.NewInt(1000)
+		existingDelegation := math.NewInt(1000)
 		if amounts[i].GT(existingDelegation) {
 			_, err := stakingMsgServer.Delegate(
-				sdk.WrapSDKContext(cacheCtx2),
+				cacheCtx2,
 				stakingtypes.NewMsgDelegate(
-					delAddr,
-					valAddr,
+					delAddr.String(),
+					valAddr.String(),
 					sdk.NewCoin(sdk.DefaultBondDenom, amounts[i].Sub(existingDelegation)),
 				),
 			)
 			suite.Require().NoError(err)
 		} else if amounts[i].LT(existingDelegation) {
 			_, err := stakingMsgServer.Undelegate(
-				sdk.WrapSDKContext(cacheCtx2),
+				cacheCtx2,
 				stakingtypes.NewMsgUndelegate(
-					delAddr,
-					valAddr,
+					delAddr.String(),
+					valAddr.String(),
 					sdk.NewCoin(sdk.DefaultBondDenom, existingDelegation.Sub(amounts[i])),
 				),
 			)
