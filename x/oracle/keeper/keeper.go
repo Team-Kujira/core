@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/hashicorp/go-metrics"
+
 	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"cosmossdk.io/errors"
@@ -11,6 +13,7 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	"github.com/Team-Kujira/core/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -145,12 +148,24 @@ func (k Keeper) SetMissCounter(ctx sdk.Context, operator sdk.ValAddress, missCou
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: missCounter})
 	store.Set(types.GetMissCounterKey(operator), bz)
+
+	telemetry.SetGaugeWithLabels(
+		[]string{"oracle", "miss"},
+		float32(missCounter),
+		[]metrics.Label{telemetry.NewLabel("validator", operator.String())},
+	)
 }
 
 // DeleteMissCounter removes miss counter for the validator
 func (k Keeper) DeleteMissCounter(ctx sdk.Context, operator sdk.ValAddress) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetMissCounterKey(operator))
+
+	telemetry.SetGaugeWithLabels(
+		[]string{"oracle", "miss"},
+		float32(0),
+		[]metrics.Label{telemetry.NewLabel("validator", operator.String())},
+	)
 }
 
 // IterateMissCounters iterates over the miss counters and performs a callback function.
