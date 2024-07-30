@@ -1,4 +1,4 @@
-package types
+package scheduler
 
 import (
 	"fmt"
@@ -11,10 +11,12 @@ import (
 	govtypesv1beta "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
+const RouterKey = "scheduler"
+
 const (
-	ProposalTypeCreateHook ProposalType = "CreateHook"
-	ProposalTypeUpdateHook ProposalType = "UpdateHook"
-	ProposalTypeDeleteHook ProposalType = "DeleteHook"
+	ProposalTypeCreateHook string = "CreateHook"
+	ProposalTypeUpdateHook string = "UpdateHook"
+	ProposalTypeDeleteHook string = "DeleteHook"
 )
 
 func init() { // register new content types with the sdk
