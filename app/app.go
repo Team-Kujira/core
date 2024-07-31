@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 
 	appparams "github.com/Team-Kujira/core/app/params"
+	legacygovalliance "github.com/Team-Kujira/core/legacygov/alliance"
+	legacygovscheduler "github.com/Team-Kujira/core/legacygov/scheduler"
 
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	"github.com/cosmos/gogoproto/proto"
@@ -297,6 +299,8 @@ func New(
 	std.RegisterInterfaces(interfaceRegistry)
 	kujiracryptocodec.RegisterCrypto(legacyAmino)
 	kujiracryptocodec.RegisterInterfaces(interfaceRegistry)
+	legacygovalliance.RegisterInterfaces(interfaceRegistry)
+	legacygovscheduler.RegisterInterfaces(interfaceRegistry)
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)

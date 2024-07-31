@@ -1,0 +1,73 @@
+syntax = "proto3";
+package alliance.alliance;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/Team-Kujira/core/legacygov/alliance";
+
+message RewardWeightRange {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+
+  string min = 1 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  string max = 2 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+}
+// key: denom value: AllianceAsset
+message AllianceAsset {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+
+  // Denom of the asset. It could either be a native token or an IBC token
+  string denom      = 1 [(gogoproto.moretags) = "yaml:\"denom\""];
+  // The reward weight specifies the ratio of rewards that will be given to each alliance asset
+  // It does not need to sum to 1. rate = weight / total_weight
+  // Native asset is always assumed to have a weight of 1.s
+  string reward_weight = 2 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  // A positive take rate is used for liquid staking derivatives. It defines an rate that is applied per take_rate_interval
+  // that will be redirected to the distribution rewards pool
+  string take_rate = 3 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  string total_tokens = 4 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false
+  ];
+  string total_validator_shares = 5 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Timestamp reward_start_time = 6 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable)   = false
+  ];
+  string reward_change_rate = 7 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Duration reward_change_interval = 8 [
+    (gogoproto.nullable)   = false,
+    (gogoproto.stdduration) = true
+  ];
+  google.protobuf.Timestamp last_reward_change_time = 9 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable)   = false
+  ];
+  // set a bound of weight range to limit how much reward weights can scale.
+  RewardWeightRange reward_weight_range = 10 [(gogoproto.nullable) = false];
+  // flag to check if an asset has completed the initialization process after the reward delay
+  bool is_initialized = 11;
+}
