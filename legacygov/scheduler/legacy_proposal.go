@@ -35,7 +35,7 @@ var (
 func (p CreateHookProposal) ProposalRoute() string { return RouterKey }
 
 // ProposalType returns the type
-func (p CreateHookProposal) ProposalType() string { return string(ProposalTypeCreateHook) }
+func (p CreateHookProposal) ProposalType() string { return ProposalTypeCreateHook }
 
 // ValidateBasic validates the proposal
 func (p CreateHookProposal) ValidateBasic() error {
@@ -93,7 +93,7 @@ func (p UpdateHookProposal) ProposalRoute() string { return RouterKey }
 
 // ProposalType returns the type
 func (p UpdateHookProposal) ProposalType() string {
-	return string(ProposalTypeUpdateHook)
+	return ProposalTypeUpdateHook
 }
 
 // ValidateBasic validates the proposal
@@ -161,7 +161,7 @@ func (p UpdateHookProposal) MarshalYAML() (interface{}, error) {
 func (p DeleteHookProposal) ProposalRoute() string { return RouterKey }
 
 // ProposalType returns the type
-func (p DeleteHookProposal) ProposalType() string { return string(ProposalTypeDeleteHook) }
+func (p DeleteHookProposal) ProposalType() string { return ProposalTypeDeleteHook }
 
 // ValidateBasic validates the proposal
 func (p DeleteHookProposal) ValidateBasic() error {
