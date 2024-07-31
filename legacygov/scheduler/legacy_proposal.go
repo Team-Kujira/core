@@ -20,9 +20,9 @@ const (
 )
 
 func init() { // register new content types with the sdk
-	govtypesv1beta.RegisterProposalType(string(ProposalTypeCreateHook))
-	govtypesv1beta.RegisterProposalType(string(ProposalTypeUpdateHook))
-	govtypesv1beta.RegisterProposalType(string(ProposalTypeDeleteHook))
+	govtypesv1beta.RegisterProposalType(ProposalTypeCreateHook)
+	govtypesv1beta.RegisterProposalType(ProposalTypeUpdateHook)
+	govtypesv1beta.RegisterProposalType(ProposalTypeDeleteHook)
 }
 
 var (
