@@ -16,7 +16,6 @@ func MigrateParams(
 	cdc codec.BinaryCodec,
 ) error {
 	var (
-		votePeriod        uint64
 		voteThreshold     math.LegacyDec
 		rewardBand        math.LegacyDec
 		whitelist         oracletypes.DenomList
@@ -25,7 +24,6 @@ func MigrateParams(
 		minValidPerWindow math.LegacyDec
 	)
 
-	subspace.Get(ctx, []byte("VotePeriod"), &votePeriod)
 	subspace.Get(ctx, []byte("VoteThreshold"), &voteThreshold)
 	subspace.Get(ctx, []byte("RewardBand"), &rewardBand)
 	subspace.Get(ctx, []byte("Whitelist"), &whitelist)
@@ -42,10 +40,10 @@ func MigrateParams(
 	}
 
 	oracleParams := oracletypes.Params{
-		VotePeriod:        votePeriod,
 		VoteThreshold:     voteThreshold,
 		MaxDeviation:      rewardBand,
 		RequiredSymbols:   symbols,
+		LastSymbolId:      uint32(len(symbols)),
 		SlashFraction:     slashFraction,
 		SlashWindow:       slashWindow,
 		MinValidPerWindow: minValidPerWindow,

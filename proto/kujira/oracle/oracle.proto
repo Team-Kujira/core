@@ -11,29 +11,28 @@ message Params {
   option (gogoproto.equal)            = true;
   option (gogoproto.goproto_stringer) = false;
 
-  uint64 vote_period    = 1 [(gogoproto.moretags) = "yaml:\"vote_period\""];
-  string vote_threshold = 2 [
+  string vote_threshold = 1 [
     (gogoproto.moretags)   = "yaml:\"vote_threshold\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-  string max_deviation = 3 [
+  string max_deviation = 2 [
     (gogoproto.moretags)   = "yaml:\"max_deviation\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-  repeated Symbol required_symbols = 4 [
+  repeated Symbol required_symbols = 3 [
     (gogoproto.moretags) = "yaml:\"required_symbols\"",
     (gogoproto.nullable) = false
   ];
-  uint32 last_symbol_id = 5;
-  string slash_fraction = 6 [
+  uint32 last_symbol_id = 4;
+  string slash_fraction = 5 [
     (gogoproto.moretags)   = "yaml:\"slash_fraction\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-  uint64 slash_window         = 7 [(gogoproto.moretags) = "yaml:\"slash_window\""];
-  string min_valid_per_window = 8 [
+  uint64 slash_window         = 6 [(gogoproto.moretags) = "yaml:\"slash_window\""];
+  string min_valid_per_window = 7 [
     (gogoproto.moretags)   = "yaml:\"min_valid_per_window\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false

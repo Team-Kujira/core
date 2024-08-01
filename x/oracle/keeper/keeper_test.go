@@ -105,7 +105,6 @@ func TestParams(t *testing.T) {
 	require.NotNil(t, params)
 
 	// Test custom params setting
-	votePeriod := uint64(10)
 	voteThreshold := math.LegacyNewDecWithPrec(70, 2)
 	maxDeviation := math.LegacyNewDecWithPrec(1, 1)
 	slashFraction := math.LegacyNewDecWithPrec(1, 2)
@@ -118,7 +117,6 @@ func TestParams(t *testing.T) {
 
 	// Should really test validateParams, but skipping because obvious
 	newParams := types.Params{
-		VotePeriod:        votePeriod,
 		VoteThreshold:     voteThreshold,
 		MaxDeviation:      maxDeviation,
 		RequiredSymbols:   requiredSymbols,

@@ -16,11 +16,6 @@ import (
 // on the simulation
 func ParamChanges(_ *rand.Rand) []simtypes.LegacyParamChange {
 	return []simtypes.LegacyParamChange{
-		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyVotePeriod),
-			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%d\"", GenVotePeriod(r))
-			},
-		),
 		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyVoteThreshold),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf("\"%s\"", GenVoteThreshold(r))

@@ -9,7 +9,8 @@ import (
 
 // Parameter store keys.
 var (
-	KeyCreationFee = []byte("CreationFee")
+	KeyCreationFee   = []byte("CreationFee")
+	KeyNoFeeAccounts = []byte("NoFeeAccounts")
 )
 
 // ParamTable for gamm module.

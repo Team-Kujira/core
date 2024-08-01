@@ -8,12 +8,14 @@ import (
 
 // constants
 const (
-	TypeMsgCreateDenom   = "create_denom"
-	TypeMsgMint          = "mint"
-	TypeMsgBurn          = "burn"
-	TypeMsgForceTransfer = "force_transfer"
-	TypeMsgChangeAdmin   = "change_admin"
-	TypeMsgUpdateParams  = "update_params"
+	TypeMsgCreateDenom         = "create_denom"
+	TypeMsgMint                = "mint"
+	TypeMsgBurn                = "burn"
+	TypeMsgForceTransfer       = "force_transfer"
+	TypeMsgChangeAdmin         = "change_admin"
+	TypeMsgUpdateParams        = "update_params"
+	TypeMsgAddNoFeeAccounts    = "add_no_fee_accounts"
+	TypeMsgRemoveNoFeeAccounts = "remove_no_fee_accounts"
 )
 
 var (
@@ -220,4 +222,56 @@ func (m MsgUpdateParams) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+var _ sdk.Msg = &MsgAddNoFeeAccounts{}
+
+// NewMsgAddNoFeeAccounts creates a message to add no fee accounts
+func NewMsgAddNoFeeAccounts(authority string, accounts []string) *MsgAddNoFeeAccounts {
+	return &MsgAddNoFeeAccounts{
+		Authority: authority,
+		Accounts:  accounts,
+	}
+}
+
+func (m MsgAddNoFeeAccounts) Route() string { return RouterKey }
+func (m MsgAddNoFeeAccounts) Type() string  { return TypeMsgAddNoFeeAccounts }
+func (m MsgAddNoFeeAccounts) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid sender address (%s)", err)
+	}
+
+	return nil
+}
+
+func (m MsgAddNoFeeAccounts) GetSigners() []sdk.AccAddress {
+	sender, _ := sdk.AccAddressFromBech32(m.Authority)
+	return []sdk.AccAddress{sender}
+}
+
+var _ sdk.Msg = &MsgRemoveNoFeeAccounts{}
+
+// NewMsgRemoveNoFeeAccounts creates a message to add no fee accounts
+func NewMsgRemoveNoFeeAccounts(authority string, accounts []string) *MsgRemoveNoFeeAccounts {
+	return &MsgRemoveNoFeeAccounts{
+		Authority: authority,
+		Accounts:  accounts,
+	}
+}
+
+func (m MsgRemoveNoFeeAccounts) Route() string { return RouterKey }
+func (m MsgRemoveNoFeeAccounts) Type() string  { return TypeMsgRemoveNoFeeAccounts }
+func (m MsgRemoveNoFeeAccounts) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid sender address (%s)", err)
+	}
+
+	return nil
+}
+
+func (m MsgRemoveNoFeeAccounts) GetSigners() []sdk.AccAddress {
+	sender, _ := sdk.AccAddressFromBech32(m.Authority)
+	return []sdk.AccAddress{sender}
 }

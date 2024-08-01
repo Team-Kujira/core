@@ -14,6 +14,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.7
 	github.com/cosmos/gogoproto v1.4.12
 	github.com/cosmos/iavl v1.1.2 // indirect
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.2.1-0.20240523101951-4b45d1822fb6
 	github.com/cosmos/ibc-go/v8 v8.3.2
 	github.com/golang/protobuf v1.5.4
 	github.com/google/gofuzz v1.2.0
@@ -27,7 +28,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240227224415-6ceb2ff114de
 	google.golang.org/grpc v1.63.2
 	gopkg.in/yaml.v2 v2.4.0
-
 )
 
 require (
@@ -41,9 +41,9 @@ require (
 	cosmossdk.io/x/upgrade v0.1.1
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.2.1-0.20240523101951-4b45d1822fb6
 	github.com/cosmos/rosetta v0.50.4
 	github.com/hashicorp/go-metrics v0.5.3
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
@@ -203,7 +203,6 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
@@ -216,7 +215,7 @@ replace (
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// github.com/cosmos/ibc-go/v8 => github.com/Team-Kujira/ibc-go/v7 v7.3.0-factory
+	github.com/cosmos/ibc-go/v8 => github.com/Team-Kujira/ibc-go/v8 v8.3.2-factory2
 
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/13134

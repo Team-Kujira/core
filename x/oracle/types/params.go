@@ -11,7 +11,6 @@ import (
 
 // Parameter keys
 var (
-	KeyVotePeriod        = []byte("VotePeriod")
 	KeyVoteThreshold     = []byte("VoteThreshold")
 	KeyMaxDeviation      = []byte("MaxDeviation")
 	KeyRequiredSymbols   = []byte("RequiredSymbols")
@@ -25,7 +24,6 @@ var (
 
 // Default parameter values
 const (
-	DefaultVotePeriod               = uint64(14)       // 30 seconds
 	DefaultSlashWindow              = uint64(274000)   // window for a week
 	DefaultRewardDistributionWindow = uint64(14250000) // window for a year
 )
@@ -44,7 +42,6 @@ var _ paramstypes.ParamSet = &Params{}
 // DefaultParams creates default oracle module parameters
 func DefaultParams() Params {
 	return Params{
-		VotePeriod:        DefaultVotePeriod,
 		VoteThreshold:     DefaultVoteThreshold,
 		MaxDeviation:      DefaultMaxDeviation,
 		RequiredSymbols:   DefaultRequiredSymbols,
@@ -65,7 +62,6 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	rewardBand := math.LegacyDec{}
 	whitelist := DenomList{}
 	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(KeyVotePeriod, &p.VotePeriod, validateVotePeriod),
 		paramstypes.NewParamSetPair(KeyVoteThreshold, &p.VoteThreshold, validateVoteThreshold),
 		paramstypes.NewParamSetPair(KeyMaxDeviation, &p.MaxDeviation, validateMaxDeviation),
 		paramstypes.NewParamSetPair(KeyRequiredSymbols, &p.RequiredSymbols, validateRequiredSymbols),
@@ -85,9 +81,6 @@ func (p Params) String() string {
 
 // Validate performs basic validation on oracle parameters.
 func (p Params) Validate() error {
-	if p.VotePeriod == 0 {
-		return fmt.Errorf("oracle parameter VotePeriod must be > 0, is %d", p.VotePeriod)
-	}
 	if p.VoteThreshold.LTE(math.LegacyNewDecWithPrec(33, 2)) {
 		return fmt.Errorf("oracle parameter VoteThreshold must be greater than 33 percent")
 	}
@@ -100,8 +93,8 @@ func (p Params) Validate() error {
 		return fmt.Errorf("oracle parameter SlashFraction must be between [0, 1]")
 	}
 
-	if p.SlashWindow < p.VotePeriod {
-		return fmt.Errorf("oracle parameter SlashWindow must be greater than or equal with VotePeriod")
+	if p.SlashWindow == 0 {
+		return fmt.Errorf("oracle parameter SlashWindow must be positive")
 	}
 
 	if p.MinValidPerWindow.GT(math.LegacyOneDec()) || p.MinValidPerWindow.IsNegative() {
@@ -110,19 +103,6 @@ func (p Params) Validate() error {
 
 	if err := validateRequiredSymbols(p.RequiredSymbols); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func validateVotePeriod(i interface{}) error {
-	v, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v == 0 {
-		return fmt.Errorf("vote period must be positive: %d", v)
 	}
 
 	return nil

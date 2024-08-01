@@ -7,10 +7,18 @@ import (
 	"github.com/Team-Kujira/core/x/denom/types"
 )
 
+func (k Keeper) GetCreationFee(ctx sdk.Context, creatorAddr string) sdk.Coins {
+	if k.IsNoFeeAccount(ctx, creatorAddr) {
+		return sdk.Coins{}
+	}
+	params := k.GetParams(ctx)
+	return params.CreationFee
+}
+
 // ConvertToBaseToken converts a fee amount in a whitelisted fee token to the base fee token amount
 func (k Keeper) CreateDenom(ctx sdk.Context, creatorAddr string, denomNonce string) (newTokenDenom string, err error) {
 	// Send creation fee to community pool
-	creationFee := k.GetParams(ctx).CreationFee
+	creationFee := k.GetCreationFee(ctx, creatorAddr)
 	accAddr, err := sdk.AccAddressFromBech32(creatorAddr)
 	if err != nil {
 		return "", err

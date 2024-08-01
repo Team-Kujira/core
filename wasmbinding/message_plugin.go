@@ -13,6 +13,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	"github.com/Team-Kujira/core/wasmbinding/bindings"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 
 	batchkeeper "github.com/Team-Kujira/core/x/batch/keeper"
 	batch "github.com/Team-Kujira/core/x/batch/wasm"
@@ -27,27 +28,32 @@ import (
 func CustomMessageDecorator(
 	bank bankkeeper.Keeper,
 	denom denomkeeper.Keeper,
+	batch batchkeeper.Keeper,
 	cwica cwicakeeper.Keeper,
 	ica icacontrollerkeeper.Keeper,
+	transfer ibctransferkeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
-			wrapped: old,
-			bank:    bank,
-			denom:   denom,
-			cwica:   cwica,
-			ica:     ica,
+			wrapped:  old,
+			bank:     bank,
+			denom:    denom,
+			cwica:    cwica,
+			ica:      ica,
+			batch:    batch,
+			transfer: transfer,
 		}
 	}
 }
 
 type CustomMessenger struct {
-	wrapped wasmkeeper.Messenger
-	bank    bankkeeper.Keeper
-	denom   denomkeeper.Keeper
-	cwica   cwicakeeper.Keeper
-	ica     icacontrollerkeeper.Keeper
-	batch   batchkeeper.Keeper
+	wrapped  wasmkeeper.Messenger
+	bank     bankkeeper.Keeper
+	denom    denomkeeper.Keeper
+	cwica    cwicakeeper.Keeper
+	ica      icacontrollerkeeper.Keeper
+	batch    batchkeeper.Keeper
+	transfer ibctransferkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -76,7 +82,7 @@ func (m *CustomMessenger) DispatchMsg(
 		}
 
 		if contractMsg.CwIca != nil {
-			return cwica.HandleMsg(ctx, m.cwica, m.ica, contractAddr, contractMsg.CwIca)
+			return cwica.HandleMsg(ctx, m.cwica, m.ica, m.transfer, contractAddr, contractMsg.CwIca)
 		}
 
 		return nil, nil, nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown Custom variant"}

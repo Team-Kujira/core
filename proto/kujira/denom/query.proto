@@ -27,6 +27,20 @@ service Query {
     option (google.api.http).get =
         "/kujira/denoms/by_creator/{creator}";
   }
+
+  // NoFeeAccounts returns accounts whitelisted to create denom without fee
+  rpc NoFeeAccounts(QueryNoFeeAccountsRequest) returns (QueryNoFeeAccountsResponse) {
+    option (google.api.http).get = "/kujira/denoms/no_fee_accounts";
+  }
+}
+
+// QueryNoFeeAccountsRequest is the request type for the Query/NoFeeAccounts RPC method.
+message QueryNoFeeAccountsRequest {}
+
+// QueryNoFeeAccountsResponse is the response type for the Query/NoFeeAccounts RPC method.
+message QueryNoFeeAccountsResponse {
+  // params defines the parameters of the module.
+  repeated string accounts = 1;
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.

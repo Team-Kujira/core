@@ -19,7 +19,6 @@ var (
 func setup(t *testing.T) (TestInput, types.MsgServer) {
 	input := CreateTestInput(t)
 	params := input.OracleKeeper.GetParams(input.Ctx)
-	params.VotePeriod = 1
 	params.SlashWindow = 100
 	input.OracleKeeper.SetParams(input.Ctx, params)
 	msgServer := NewMsgServerImpl(input.OracleKeeper)

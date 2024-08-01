@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 
 	appparams "github.com/Team-Kujira/core/app/params"
+	legacygovalliance "github.com/Team-Kujira/core/legacygov/alliance"
+	legacygovscheduler "github.com/Team-Kujira/core/legacygov/scheduler"
 
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	"github.com/cosmos/gogoproto/proto"
@@ -23,6 +25,7 @@ import (
 	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
 	feegrantmodule "cosmossdk.io/x/feegrant/module"
 	"cosmossdk.io/x/tx/signing"
+	kujiracryptocodec "github.com/Team-Kujira/core/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -37,7 +40,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/mempool"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -295,6 +297,10 @@ func New(
 
 	std.RegisterLegacyAminoCodec(legacyAmino)
 	std.RegisterInterfaces(interfaceRegistry)
+	kujiracryptocodec.RegisterCrypto(legacyAmino)
+	kujiracryptocodec.RegisterInterfaces(interfaceRegistry)
+	legacygovalliance.RegisterInterfaces(interfaceRegistry)
+	legacygovscheduler.RegisterInterfaces(interfaceRegistry)
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -650,9 +656,11 @@ func New(
 		app.BankKeeper,
 		app.OracleKeeper,
 		*app.DenomKeeper,
+		app.BatchKeeper,
 		*app.IBCKeeper,
 		app.CwICAKeeper,
 		app.ICAControllerKeeper,
+		app.TransferKeeper,
 		keys[ibcexported.StoreKey],
 	), wasmOpts...)
 
@@ -733,6 +741,7 @@ func New(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+	transferStack = cwica.NewIBCMiddleware(transferStack, app.CwICAKeeper, app.IBCKeeper.ChannelKeeper)
 
 	// Create Interchain Accounts Stack
 	// SendPacket, since it is originating from the application to core IBC:
@@ -743,7 +752,7 @@ func New(
 
 	icaControllerStack = cwica.NewIBCModule(app.CwICAKeeper)
 	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, app.ICAControllerKeeper)
-	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
+	// icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, app.IBCFeeKeeper)
 
 	// RecvPacket, message that originates from core IBC and goes down to app, the flow is:
 	// channel.RecvPacket -> fee.OnRecvPacket -> icaHost.OnRecvPacket
@@ -1091,7 +1100,7 @@ func New(
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: txConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  SigVerificationGasConsumer,
 			},
 			IBCKeeper:             app.IBCKeeper,
 			WasmConfig:            &wasmConfig,
@@ -1107,16 +1116,14 @@ func New(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
-	nonceMempool := mempool.NewSenderNonceMempool()
 	propHandler := oracleabci.NewProposalHandler(
 		logger,
 		app.OracleKeeper,
 		app.StakingKeeper,
 		app.ModuleManager,
-		nonceMempool,
+		nil,
 		bApp,
 	)
-	bApp.SetMempool(nonceMempool)
 	bApp.SetPrepareProposal(propHandler.PrepareProposal())
 	bApp.SetProcessProposal(propHandler.ProcessProposal())
 	bApp.SetPreBlocker(propHandler.PreBlocker)

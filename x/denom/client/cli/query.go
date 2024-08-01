@@ -31,6 +31,7 @@ func GetQueryCmd() *cobra.Command {
 		GetParams(),
 		GetCmdDenomAuthorityMetadata(),
 		GetCmdDenomsFromCreator(),
+		GetCmdNoFeeAccounts(),
 	)
 
 	return cmd
@@ -108,6 +109,33 @@ func GetCmdDenomsFromCreator() *cobra.Command {
 			res, err := queryClient.DenomsFromCreator(cmd.Context(), &types.QueryDenomsFromCreatorRequest{
 				Creator: args[0],
 			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdNoFeeAccounts a command to get a list of no fee accounts
+func GetCmdNoFeeAccounts() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "no-fee-accounts [flags]",
+		Short: "Returns a list of no fee accounts",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.NoFeeAccounts(cmd.Context(), &types.QueryNoFeeAccountsRequest{})
 			if err != nil {
 				return err
 			}

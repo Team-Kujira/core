@@ -19,9 +19,8 @@ import (
 
 type (
 	Keeper struct {
-		cdc      codec.Codec
-		storeKey storetypes.StoreKey
-
+		cdc        codec.Codec
+		storeKey   storetypes.StoreKey
 		paramSpace paramstypes.Subspace
 
 		accountKeeper types.AccountKeeper

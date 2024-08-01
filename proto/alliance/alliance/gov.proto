@@ -1,0 +1,98 @@
+syntax = "proto3";
+package alliance.alliance;
+
+import "alliance/alliance/alliance.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/Team-Kujira/core/legacygov/alliance";
+
+message MsgCreateAllianceProposal {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+    
+    // the title of the update proposal
+    string title = 1;
+    // the description of the proposal
+    string description = 2;
+    // Denom of the asset. It could either be a native token or an IBC token
+    string denom      = 3 [(gogoproto.moretags) = "yaml:\"denom\""];
+    // The reward weight specifies the ratio of rewards that will be given to each alliance asset
+    // It does not need to sum to 1. rate = weight / total_weight
+    // Native asset is always assumed to have a weight of 1.
+    string reward_weight = 4 [
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+        (gogoproto.nullable)   = false
+    ];
+    // A positive take rate is used for liquid staking derivatives. It defines an annualized reward rate that
+    // will be redirected to the distribution rewards pool
+    string take_rate = 5 [
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+      (gogoproto.nullable)   = false
+    ];
+
+    string reward_change_rate = 6 [
+      (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+      (gogoproto.nullable)   = false
+    ];
+
+    google.protobuf.Duration reward_change_interval = 7 [
+      (gogoproto.nullable)   = false,
+      (gogoproto.stdduration) = true
+    ];
+
+    // set a bound of weight range to limit how much reward weights can scale. 
+    RewardWeightRange reward_weight_range = 8 [
+      (gogoproto.nullable)   = false
+    ];
+}
+  
+message MsgUpdateAllianceProposal {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+
+    // the title of the update proposal
+    string title = 1;
+    // the description of the proposal
+    string description = 2;
+    // Denom of the asset. It could either be a native token or an IBC token
+    string denom      = 3 [(gogoproto.moretags) = "yaml:\"denom\""];
+    // The reward weight specifies the ratio of rewards that will be given to each alliance asset
+    // It does not need to sum to 1. rate = weight / total_weight
+    // Native asset is always assumed to have a weight of 1.
+    string reward_weight = 4 [
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+        (gogoproto.nullable)   = false
+    ];
+
+    string take_rate = 5 [
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+        (gogoproto.nullable)   = false
+    ];
+
+    string reward_change_rate = 6 [
+      (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+      (gogoproto.nullable)   = false
+    ];
+
+    google.protobuf.Duration reward_change_interval = 7 [
+      (gogoproto.nullable)   = false,
+      (gogoproto.stdduration) = true
+    ];
+
+    // set a bound of weight range to limit how much reward weights can scale.
+    RewardWeightRange reward_weight_range = 8 [
+      (gogoproto.nullable)   = false
+    ];
+}
+
+message MsgDeleteAllianceProposal {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+    
+    // the title of the update proposal
+    string title = 1;
+    // the description of the proposal
+    string description = 2;
+    string denom      = 3 [(gogoproto.moretags) = "yaml:\"denom\""];
+}
