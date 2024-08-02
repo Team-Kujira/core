@@ -62,12 +62,6 @@ func Tally(_ sdk.Context,
 		key := vote.Voter.String()
 		claim := validatorClaimMap[key]
 
-		telemetry.SetGaugeWithLabels(
-			[]string{"oracle", "price"},
-			float32(vote.ExchangeRate.MustFloat64()),
-			append(labels, telemetry.NewLabel("validator", key)),
-		)
-
 		// Filter ballot winners & abstain voters
 		if (vote.ExchangeRate.GTE(weightedMedian.Sub(spread)) &&
 			vote.ExchangeRate.LTE(weightedMedian.Add(spread))) ||
