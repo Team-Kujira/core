@@ -16,7 +16,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 )
 
-const UpgradeName = "v2.0.0"
+const UpgradeName = "v2.0.1"
 
 func (app App) RegisterUpgradeHandlers() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
