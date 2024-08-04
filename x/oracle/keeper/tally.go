@@ -1,7 +1,10 @@
 package keeper
 
 import (
+	"github.com/hashicorp/go-metrics"
+
 	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Team-Kujira/core/x/oracle/types"
@@ -29,9 +32,36 @@ func Tally(_ sdk.Context,
 	spread := weightedMedian.Mul(maxDeviation)
 	spread = math.LegacyMaxDec(spread, standardDeviation)
 
+	if pb.Len() == 0 {
+		return weightedMedian, nil
+	}
+
+	labels := []metrics.Label{
+		telemetry.NewLabel("denom", pb[0].Denom),
+	}
+
+	telemetry.SetGaugeWithLabels(
+		[]string{"oracle", "median"},
+		float32(weightedMedian.MustFloat64()),
+		labels,
+	)
+
+	telemetry.SetGaugeWithLabels(
+		[]string{"oracle", "stddev"},
+		float32(standardDeviation.MustFloat64()),
+		labels,
+	)
+
+	telemetry.SetGaugeWithLabels(
+		[]string{"oracle", "spread"},
+		float32(spread.MustFloat64()),
+		labels,
+	)
+
 	for _, vote := range pb {
 		key := vote.Voter.String()
 		claim := validatorClaimMap[key]
+
 		// Filter ballot winners & abstain voters
 		if (vote.ExchangeRate.GTE(weightedMedian.Sub(spread)) &&
 			vote.ExchangeRate.LTE(weightedMedian.Add(spread))) ||

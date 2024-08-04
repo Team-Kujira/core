@@ -30,11 +30,11 @@ const (
 
 // Default parameter values
 var (
-	DefaultVoteThreshold     = math.LegacyNewDecWithPrec(50, 2) // 50%
-	DefaultMaxDeviation      = math.LegacyNewDecWithPrec(2, 1)  // 2% (-1, 1)
+	DefaultVoteThreshold     = math.LegacyNewDecWithPrec(5, 1) // 0.5   (50%)
+	DefaultMaxDeviation      = math.LegacyNewDecWithPrec(2, 2) // 0.02  ( 2%)
 	DefaultRequiredSymbols   = []Symbol{}
-	DefaultSlashFraction     = math.LegacyNewDecWithPrec(1, 4) // 0.01%
-	DefaultMinValidPerWindow = math.LegacyNewDecWithPrec(5, 2) // 5%
+	DefaultSlashFraction     = math.LegacyNewDecWithPrec(1, 4) // 0.0001 (0.01%)
+	DefaultMinValidPerWindow = math.LegacyNewDecWithPrec(5, 2) // 0.05   (5%)
 )
 
 var _ paramstypes.ParamSet = &Params{}

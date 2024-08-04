@@ -13,9 +13,11 @@ import (
 	"github.com/Team-Kujira/core/x/oracle/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/hashicorp/go-metrics"
 )
 
 // StakeWeightedPrices defines the structure a proposer should use to calculate
@@ -263,6 +265,15 @@ func (h *ProposalHandler) GetBallotByDenom(ctx sdk.Context, ci abci.ExtendedComm
 					// Make the power of abstain vote zero
 					tmpPower = 0
 				}
+
+				telemetry.SetGaugeWithLabels(
+					[]string{"oracle", "price"},
+					float32(price.MustFloat64()),
+					[]metrics.Label{
+						telemetry.NewLabel("denom", base),
+						telemetry.NewLabel("validator", valAddr.String()),
+					},
+				)
 
 				votes[base] = append(votes[base],
 					types.NewVoteForTally(
