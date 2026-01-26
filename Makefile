@@ -59,8 +59,8 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 #### Command List ####
 
 check-go-version:
-	@if ! go version | grep -Eq "go1.21.8"; then \
-		echo "\033[0;31mERROR:\033[0m Go version 1.21.8 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
+	@if ! go version | grep -Eq "go1.23.12"; then \
+		echo "\033[0;31mERROR:\033[0m Go version 1.23.12 is required for compiling kujirad. Installed version:" "$(shell go version)"; \
 		exit 1; \
 	fi
 
